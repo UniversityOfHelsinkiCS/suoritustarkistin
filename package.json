@@ -4,7 +4,8 @@
   "description": "Tool for collecting course completions.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "execute": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/issues"
   },
-  "homepage": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin#readme"
+  "homepage": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin#readme",
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "suoritustarkistin",
+  "version": "0.0.1",
+  "description": "Tool for collecting course completions.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UniversityOfHelsinkiCS/suoritustarkistin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/issues"
+  },
+  "homepage": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin#readme"
+}

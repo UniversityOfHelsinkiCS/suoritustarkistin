@@ -6,6 +6,9 @@ services:
     environment:
       PGDATA: /data/test
     volumes:
-      - /data/test:/data/test
+      - pg-data:/data/test
     ports:
       - '5432:5432'
+
+volumes:
+  pg-data:

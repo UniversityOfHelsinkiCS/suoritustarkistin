@@ -1,0 +1,1 @@
+npx sequelize-cli model:generate --name Credits --attributes studentId:string,courseId:string,isInOodikone:boolean

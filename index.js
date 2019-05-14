@@ -2,13 +2,18 @@ require('dotenv').config()
 
 const getRegistrations = require('./services/eduweb')
 const hasOodiEntry = require('./services/oodikone')
+const getCompletions = require('./services/pointsmooc')
 
 const courseCodes = ['AYTKT21018']
 
 const script = async (course) => {
   try {
     //const registrations = await getRegistrations(course)
-    console.log('Has oodi mark: ', await hasOodiEntry('014822795'))
+    //const completions = await getCompletions(course)
+    console.log(
+      'Has oodi mark: ',
+      await hasOodiEntry('014822795', courseCodes[0])
+    )
   } catch (error) {
     console.log('Error:', error.message)
   }

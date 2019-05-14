@@ -1,0 +1,11 @@
+version: '2'
+services:
+  db:
+    image: postgres:10.6
+    restart: always
+    environment:
+      PGDATA: /data/test
+    volumes:
+      - /data/test:/data/test
+    ports:
+      - '5432:5432'

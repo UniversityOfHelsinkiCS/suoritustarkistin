@@ -5,21 +5,11 @@ const courseNames = {
 }
 
 const getCompletions = async (course) => {
-  const usersQuery = `
-   {
-    users {
-      id
-      administrator
-      last_name
-      completed_enough
-	  }
-  }
-  `
   const completionsQuery = `
   {
     completions (course: "${courseNames[course]}") {
       id
-      student_number
+      email
       completion_language
     }
   }
@@ -30,7 +20,7 @@ const getCompletions = async (course) => {
       Authorization: process.env.MOOC_TOKEN
     }
   })
-  const { data } = await client.rawRequest(usersQuery)
+  const { data } = await client.rawRequest(completionsQuery)
   return data
 }
 

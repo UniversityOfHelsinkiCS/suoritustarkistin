@@ -8,7 +8,9 @@ module.exports = {
     return queryInterface.bulkInsert('Credits', [{
         studentId: '987654321',
         courseId: 'AYTKT21018',
-        isInOodikone: false
+        isInOodikone: false,
+        createdAt: Sequelize.fn('NOW'),
+        updatedAt: Sequelize.fn('NOW')
       }], {});
   },
 

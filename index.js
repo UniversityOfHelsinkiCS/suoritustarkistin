@@ -4,6 +4,7 @@ const getRegistrations = require('./services/eduweb')
 const hasOodiEntry = require('./services/oodikone')
 const getCompletions = require('./services/pointsmooc')
 const db = require('./models/index')
+const fs = require('fs')
 
 const courseCodes = ['AYTKT21018']
 
@@ -63,6 +64,27 @@ const script = async (course) => {
     console.log(
       `Found ${matchesEn.length} matches for english course ${course}.`
     )
+    const dateNow =  new Date()
+
+    const date = `${dateNow.getDate()}.${dateNow.getMonth() + 1}.${dateNow.getFullYear()}`
+    const shortDate = `${dateNow.getDate()}.${dateNow.getMonth() + 1}.${dateNow.getYear()}`
+    
+    const reportEn = matchesEn.map((entry) => 
+      `${entry.studentId}##6#AYTKT21018#The Elements of AI#${date}#0#Hyv.#106##${TEACHERCODE}#1#H930#11#93013#3##2,0`
+    ).join('\n')
+
+    const reportFi = matchesFi.map((entry) => 
+      `${entry.studentId}##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#${date}#0#Hyv.#106##${TEACHERCODE}$#1#H930#11#93013#3##2,0`
+    ).join('\n')
+
+    fs.writeFile(`reports/AYTKT21018%${shortDate}-V1-S2019.dat`, reportEn, (err) => {
+      if (err) throw err;
+    });
+
+    fs.writeFile(`reports/AYTKT21018fi%${shortDate}-V1-S2019.dat`, reportFi, (err) => {
+      if (err) throw err;
+    });
+
     /*     console.log('Example: ', matches[0])
     console.log(
       'Example has oodi entry:',
@@ -72,6 +94,7 @@ const script = async (course) => {
     console.log('Error:', error.message)
   }
 }
+
 
 courseCodes.forEach((course) => {
   script(course)

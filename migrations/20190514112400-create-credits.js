@@ -16,6 +16,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      moocId: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
       isInOodikone: {
         allowNull: false,
         type: Sequelize.BOOLEAN

@@ -1,40 +1,40 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Credits', {
+    return queryInterface.createTable('credits', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      studentId: {
+      student_id: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      courseId: {
+      course_id: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      moocId: {
+      mooc_id: {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      isInOodikone: {
+      is_in_oodikone: {
         allowNull: false,
         type: Sequelize.BOOLEAN
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Credits');
+    return queryInterface.dropTable('credits');
   }
 };

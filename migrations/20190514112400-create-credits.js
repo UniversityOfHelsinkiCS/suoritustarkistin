@@ -8,27 +8,27 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      student_id: {
+      studentId: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      course_id: {
+      courseId: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      mooc_id: {
+      moocId: {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      is_in_oodikone: {
+      isInOodikone: {
         allowNull: false,
         type: Sequelize.BOOLEAN
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }

@@ -4,17 +4,16 @@ const fs = require('fs')
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    console.log('what')
     const rawData = fs.readFileSync("sids.txt", 'utf8')
     const oldList = rawData.split('\n').map((sid) => ({
-        student_id: sid,
-        course_id: 'AYTKT21018',
-        mooc_id: -1,
-        is_in_oodikone: false,
-        created_at: Sequelize.fn('NOW'),
-        updated_at: Sequelize.fn('NOW')
+        studentId: sid,
+        courseId: 'AYTKT21018',
+        moocId: -1,
+        isInOodikone: false,
+        createdAt: Sequelize.fn('NOW'),
+        updatedAt: Sequelize.fn('NOW')
         }))
-    console.log('# of entries ', oldList.length)
+    console.log('# of entries', oldList.length)
     return queryInterface.bulkInsert('credits', oldList, {});
   },
 

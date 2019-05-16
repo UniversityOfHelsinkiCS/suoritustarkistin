@@ -73,7 +73,9 @@ const processNewCompletions = async (course) => {
         (entry) =>
           `${
             entry.studentId
-          }##6#AYTKT21018#The Elements of AI#${date}#0#Hyv.#106##${TEACHERCODE}#1#H930#11#93013#3##2,0`
+          }##6#AYTKT21018#The Elements of AI#${date}#0#Hyv.#106##${
+            process.env.TEACHERCODE
+          }#1#H930#11#93013#3##2,0`
       )
       .join('\n')
 
@@ -82,7 +84,9 @@ const processNewCompletions = async (course) => {
         (entry) =>
           `${
             entry.studentId
-          }##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#${date}#0#Hyv.#106##${TEACHERCODE}#1#H930#11#93013#3##2,0`
+          }##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#${date}#0#Hyv.#106##${
+            process.env.TEACHERCODE
+          }#1#H930#11#93013#3##2,0`
       )
       .join('\n')
     const pathEn = `reports/AYTKT21018%${shortDate}-V1-S2019.dat`

@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-const getRegistrations = async (course) => {
+const eduwebGet = async (course) => {
   const { data } = await axios.get(
     `https://www.avoin.helsinki.fi/eduweb/api/?course=${course}`,
     {
@@ -9,22 +9,21 @@ const getRegistrations = async (course) => {
       }
     }
   )
-  const instances = data.map((instance) => instance.url)
+  return data
+}
 
-  let participants = []
-  for (const instance of instances) {
-    const { data } = await axios.get(
-      `https://www.avoin.helsinki.fi/eduweb/api/?course=${instance}`,
-      {
-        headers: {
-          Authorized: process.env.EDUWEB_TOKEN
-        }
-      }
-    )
-    participants = participants.concat(data)
-  }
-  console.log(`Found ${participants.length} registrations for ${course}`)
-  return participants
+const getRegistrations = async (course) => {
+  const instances = await eduwebGet(course)
+
+  const registrations = await instances.reduce(async (accPromise, instance) => {
+    const instanceRegistrations = await eduwebGet(instance.url)
+    const acc = await accPromise
+
+    return acc.concat(instanceRegistrations)
+  }, [])
+
+  console.log(`Found ${registrations.length} registrations for ${course}`)
+  return registrations
 }
 
 module.exports = getRegistrations

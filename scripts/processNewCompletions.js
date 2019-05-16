@@ -107,13 +107,13 @@ const processNewCompletions = async (course) => {
       sendEmail(attachments)
     }
 
-    /* matchesEn.forEach((entry) => {
+    matchesEn.forEach((entry) => {
       db.credits.create(entry)
     })
 
     matchesFi.forEach((entry) => {
       db.credits.create(entry)
-    }) */
+    })
   } catch (error) {
     console.log('Error:', error.message)
   }

@@ -66,7 +66,7 @@ const processNewCompletions = async (course) => {
     const date = `${dateNow.getDate()}.${dateNow.getMonth() +
       1}.${dateNow.getFullYear()}`
     const shortDate = `${dateNow.getDate()}.${dateNow.getMonth() +
-      1}.${dateNow.getYear()}`
+      1}.${dateNow.getYear() - 100}`
 
     const reportEn = matchesEn
       .map(

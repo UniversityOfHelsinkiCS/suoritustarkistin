@@ -1,8 +1,12 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
 module.exports = {
   development: {
     username: process.env.PGUSERNAME,
     password: process.env.PGPASSWORD,
-    database: 'database_development',
+    database: 'suoritustarkistin_dev',
     host: process.env.PGHOST,
     dialect: 'postgres',
     port: process.env.PGPORT

@@ -3,9 +3,16 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const processNewCompletions = require('./scripts/processNewCompletions')
-
+const processOldCompletions = require('./scripts/processOldCompletions')
+const fixMoocIds = require('./scripts/fixMoocIds')
 const courseCodes = ['AYTKT21018']
 
-courseCodes.forEach((course) => {
-  processNewCompletions(course)
-})
+if (process.env.OLD_HY === 'true') {
+  processOldCompletions(courseCodes[0])
+} else if (process.env.FIX_MOOC === 'true') {
+  fixMoocIds(courseCodes[0])
+} else {
+  courseCodes.forEach((course) => {
+    processNewCompletions(course)
+  })
+}

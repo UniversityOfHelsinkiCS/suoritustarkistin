@@ -6,7 +6,13 @@ const sendEmail = require('./sendEmail')
 
 const processNewCompletions = async (course) => {
   try {
-    const credits = await db.credits.findAll({ raw: true })
+    const credits = await db.credits.findAll({
+      where: {
+        courseId: course
+      },
+      raw: true
+    })
+
     const moocIdsInDb = credits.map((credit) => credit.moocId)
     const studentIdsInDb = credits.map((credit) => credit.studentId)
 

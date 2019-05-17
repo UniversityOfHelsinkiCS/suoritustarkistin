@@ -11,6 +11,7 @@ const getCompletions = async (course) => {
       id
       email
       completion_language
+      student_number
     }
   }
   `

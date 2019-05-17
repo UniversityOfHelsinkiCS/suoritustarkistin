@@ -46,14 +46,9 @@ const processOldCompletions = async (course) => {
 
     const completions = await getCompletions(course)
 
-    console.log('Raw completions:', completions.length)
     const unmarkedCompletionsWithStudentNumber = completions.filter(
       (completion) =>
         completion.student_number !== '' && !moocIdsInDb.includes(completion.id)
-    )
-    console.log(
-      'Unmarked completions with some kind of studentId:',
-      unmarkedCompletionsWithStudentNumber.length
     )
 
     const unmarkedCompletionsWithValidStudentNumber = unmarkedCompletionsWithStudentNumber.filter(
@@ -61,19 +56,11 @@ const processOldCompletions = async (course) => {
         return isValidStudentId(c.student_number)
       }
     )
-    console.log(
-      'valid numbers',
-      unmarkedCompletionsWithValidStudentNumber.length
-    )
 
     const unmarkedCompletionsWithInvalidStudentNumber = unmarkedCompletionsWithStudentNumber.filter(
       (c) => {
         return !isValidStudentId(c.student_number)
       }
-    )
-    console.log(
-      'invalid numbers',
-      unmarkedCompletionsWithInvalidStudentNumber.length
     )
     const completionsAlmostToBeMarked = unmarkedCompletionsWithInvalidStudentNumber.reduce(
       (acc, curr) => {
@@ -90,8 +77,90 @@ const processOldCompletions = async (course) => {
       return !studentIdsInDb.includes(c.student_number)
     })
 
-    console.log('completionsToBeMarked:', completionsToBeMarked.length)
-    console.log(completionsToBeMarked)
+    console.log(
+      `Found ${completionsToBeMarked.length} unmarked old completions`
+    )
+
+    const completionsEn = completionsToBeMarked.filter(
+      (c) => c.completion_language === 'en_us'
+    )
+    const completionsFi = completionsToBeMarked.filter(
+      (c) => c.completion_language === 'fi_fi'
+    )
+
+    const dateNow = new Date()
+
+    const date = `${dateNow.getDate()}.${dateNow.getMonth() +
+      1}.${dateNow.getFullYear()}`
+    const shortDate = `${dateNow.getDate()}.${dateNow.getMonth() +
+      1}.${dateNow.getYear() - 100}`
+
+    const reportEn = completionsEn
+      .map(
+        (entry) =>
+          `${
+            entry.student_number
+          }##6#AYTKT21018#The Elements of AI#${date}#0#Hyv.#106##${
+            process.env.TEACHERCODE
+          }#1#H930#11#93013#3##2,0`
+      )
+      .join('\n')
+
+    const reportFi = completionsFi
+      .map(
+        (entry) =>
+          `${
+            entry.student_number
+          }##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#${date}#0#Hyv.#106##${
+            process.env.TEACHERCODE
+          }#1#H930#11#93013#3##2,0`
+      )
+      .join('\n')
+    const pathEn = `reports/AYTKT21018%${shortDate}-V1-S2019.dat`
+    const pathFi = `reports/AYTKT21018fi%${shortDate}-V1-S2019.dat`
+
+    fs.writeFile(pathEn, reportEn, (err) => {
+      if (err) throw err
+    })
+
+    fs.writeFile(pathFi, reportFi, (err) => {
+      if (err) throw err
+    })
+
+    let attachments = []
+    if (completionsEn.length > 0) {
+      attachments = attachments.concat({ path: pathEn })
+    }
+    if (completionsFi.length > 0) {
+      attachments = attachments.concat({ path: pathFi })
+    }
+    if (attachments.length > 0) {
+      sendEmail(attachments)
+    }
+
+    completionsEn.forEach((entry) => {
+      const { id, student_number } = entry
+      const newEntry = {
+        studentId: student_number,
+        courseId: course,
+        moocId: id,
+        isInOodikone: false
+      }
+
+      db.credits.create(newEntry)
+    })
+
+    completionsFi.forEach((entry) => {
+      const { id, student_number } = entry
+      const newEntry = {
+        studentId: student_number,
+        courseId: course,
+        moocId: id,
+        isInOodikone: false
+      }
+
+      db.credits.create(newEntry)
+    })
   } catch (error) {
     console.log('Error:', error.message)
   }

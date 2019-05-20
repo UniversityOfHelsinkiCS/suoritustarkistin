@@ -3,16 +3,16 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
       return queryInterface.addColumn(
         'credits',
-        'completionsId',
+        'completionId',
         {
         type: Sequelize.STRING
         }
       )
     },
     down: (queryInterface, Sequelize) => {
-      return queryInterface.removeColum(
+      return queryInterface.removeColumn(
         'credits',
-        'completionsId'
+        'completionId'
       )
     }
 }

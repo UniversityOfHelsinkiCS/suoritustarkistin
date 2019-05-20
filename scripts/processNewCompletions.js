@@ -2,7 +2,7 @@ const getRegistrations = require('../services/eduweb')
 const getCompletions = require('../services/pointsmooc')
 const db = require('../models/index')
 const fs = require('fs')
-const sendEmail = require('./sendEmail')
+const sendEmail = require('../utils/sendEmail')
 
 const processNewCompletions = async (course) => {
   try {
@@ -69,6 +69,10 @@ const processNewCompletions = async (course) => {
         }
       }
     }
+
+    console.log(
+      `${course}: Found ${matchesEn.length + matchesFi.length} new completions.`
+    )
 
     const dateNow = new Date()
 

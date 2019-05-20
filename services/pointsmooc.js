@@ -22,11 +22,9 @@ const getCompletions = async (course) => {
       Authorization: process.env.MOOC_TOKEN
     }
   })
-  console.log('Starting GraphQL-query..')
+
   const { data } = await client.rawRequest(completionsQuery)
-  console.log(
-    `Found ${data.completions.length} completions for course ${course}`
-  )
+
   return data.completions
 }
 

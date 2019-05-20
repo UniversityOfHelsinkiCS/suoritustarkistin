@@ -8,5 +8,4 @@ COPY . .
 
 EXPOSE 6060
 
-RUN npm run execute
 CMD ["npm", "run", "execute"]

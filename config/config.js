@@ -25,6 +25,7 @@ module.exports = {
     database: 'suoritustarkistin_production',
     host: process.env.PGHOST,
     dialect: 'postgres',
-    port: process.env.PGPORT
+    port: process.env.PGPORT,
+    logging: false
   }
 }

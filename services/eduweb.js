@@ -22,7 +22,6 @@ const getRegistrations = async (course) => {
     return acc.concat(instanceRegistrations)
   }, [])
 
-  console.log(`Found ${registrations.length} registrations for ${course}`)
   return registrations
 }
 

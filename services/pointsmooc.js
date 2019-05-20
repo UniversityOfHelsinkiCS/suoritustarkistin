@@ -16,7 +16,7 @@ const getCompletions = async (course) => {
   }
   `
 
-  const client = new GraphQLClient('http://localhost:4000', {
+  const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
     headers: {
       Authorization: process.env.MOOC_TOKEN
     }

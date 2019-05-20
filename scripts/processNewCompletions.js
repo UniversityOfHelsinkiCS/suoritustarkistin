@@ -114,16 +114,28 @@ const processNewCompletions = async (course) => {
       attachments = attachments.concat({ path: pathFi })
     }
     if (attachments.length > 0) {
-      sendEmail(attachments)
+      const info = await sendEmail(
+        'New course completions.',
+        'Transfer files as attachments.',
+        attachments
+      )
+      if (info) {
+        info.accepted.forEach((accepted) =>
+          console.log(`Email sent to ${accepted}.`)
+        )
+        matchesEn.forEach((entry) => {
+          db.credits.create(entry)
+        })
+
+        matchesFi.forEach((entry) => {
+          db.credits.create(entry)
+        })
+      } else if (info) {
+        info.rejected.forEach((rejected) =>
+          console.log(`Address ${rejected} was rejected.`)
+        )
+      }
     }
-
-    matchesEn.forEach((entry) => {
-      db.credits.create(entry)
-    })
-
-    matchesFi.forEach((entry) => {
-      db.credits.create(entry)
-    })
   } catch (error) {
     console.log('Error:', error.message)
   }

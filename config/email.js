@@ -1,8 +1,8 @@
 const isEnabled = process.env.EMAIL_ENABLED === 'true'
 const messageOptions = {
   from: 'Suoritustarkistin Robot <noreply@helsinki.fi>',
-  replyTo: 'matti.luukkainen@helsinki.fi',
-  cc: 'matti.luukkainen@helsinki.fi',
+  replyTo: process.env.CC_RECEIVER,
+  cc: process.env.CC_RECEIVER,
   to: process.env.EMAIL_RECEIVER
 }
 const smtpOptions = {

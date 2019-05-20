@@ -135,32 +135,45 @@ const processOldCompletions = async (course) => {
       attachments = attachments.concat({ path: pathFi })
     }
     if (attachments.length > 0) {
-      sendEmail(attachments)
+      const info = await sendEmail(
+        'New course completions.',
+        'Old style HY course completions for Elements of AI. Transfer files as attachments.',
+        attachments
+      )
+      if (info) {
+        info.accepted.forEach((accepted) =>
+          console.log(`Email sent to ${accepted}.`)
+        )
+
+        completionsEn.forEach((entry) => {
+          const { id, student_number } = entry
+          const newEntry = {
+            studentId: student_number,
+            courseId: course,
+            moocId: id,
+            isInOodikone: false
+          }
+
+          db.credits.create(newEntry)
+        })
+
+        completionsFi.forEach((entry) => {
+          const { id, student_number } = entry
+          const newEntry = {
+            studentId: student_number,
+            courseId: course,
+            moocId: id,
+            isInOodikone: false
+          }
+
+          db.credits.create(newEntry)
+        })
+      } else if (info) {
+        info.rejected.forEach((rejected) =>
+          console.log(`Address ${rejected} was rejected.`)
+        )
+      }
     }
-
-    completionsEn.forEach((entry) => {
-      const { id, student_number } = entry
-      const newEntry = {
-        studentId: student_number,
-        courseId: course,
-        moocId: id,
-        isInOodikone: false
-      }
-
-      db.credits.create(newEntry)
-    })
-
-    completionsFi.forEach((entry) => {
-      const { id, student_number } = entry
-      const newEntry = {
-        studentId: student_number,
-        courseId: course,
-        moocId: id,
-        isInOodikone: false
-      }
-
-      db.credits.create(newEntry)
-    })
   } catch (error) {
     console.log('Error:', error.message)
   }

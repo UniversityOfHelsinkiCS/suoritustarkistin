@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer')
 const { isEnabled, messageOptions, smtpOptions } = require('../config/email')
 
-const sendEmail = (attachments) => {
+const sendEmail = async (subject, text, attachments) => {
   if (!isEnabled) {
     console.log('Email disabled, set EMAIL_ENABLED=true to enable.')
     return
@@ -10,18 +10,12 @@ const sendEmail = (attachments) => {
   const transporter = nodemailer.createTransport(smtpOptions)
   const emailOptions = {
     ...messageOptions,
-    subject: 'New course completions.',
-    text: 'Transfer files as attachments.',
+    subject,
+    text,
     attachments
   }
 
-  transporter.sendMail(emailOptions, (error, info) => {
-    if (error) {
-      throw error
-    } else {
-      console.log('Email sent:', info.response)
-    }
-  })
+  return transporter.sendMail(emailOptions)
 }
 
 module.exports = sendEmail

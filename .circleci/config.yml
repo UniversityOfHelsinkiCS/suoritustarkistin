@@ -13,3 +13,5 @@ jobs: # a collection of steps
           name: create and push build
           command: |
             docker build -t toska/suoritustarkistin:latest .
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push toska/suoritustarkistin:latest

@@ -42,13 +42,16 @@ const processOldCompletions = async (course) => {
       raw: true
     })
     const moocIdsInDb = credits.map((credit) => credit.moocId)
+    const completionIdsInDb = credits.map((credit) => credit.completionId)
     const studentIdsInDb = credits.map((credit) => credit.studentId)
 
     const completions = await getCompletions(course)
 
     const unmarkedCompletionsWithStudentNumber = completions.filter(
       (completion) =>
-        completion.student_number !== '' && !moocIdsInDb.includes(completion.id)
+        completion.student_number !== '' &&
+        !completionIdsInDb.includes(completion.id) &&
+        !moocIdsInDb.includes(completion.user_upstream_id)
     )
 
     const unmarkedCompletionsWithValidStudentNumber = unmarkedCompletionsWithStudentNumber.filter(
@@ -146,11 +149,12 @@ const processOldCompletions = async (course) => {
         )
 
         completionsEn.forEach((entry) => {
-          const { id, student_number } = entry
+          const { id, student_number, user_upstream_id } = entry
           const newEntry = {
             studentId: student_number,
             courseId: course,
-            moocId: id,
+            completionId: id,
+            moocId: user_upstream_id,
             isInOodikone: false
           }
 
@@ -162,7 +166,8 @@ const processOldCompletions = async (course) => {
           const newEntry = {
             studentId: student_number,
             courseId: course,
-            moocId: id,
+            completionId: id,
+            moocId: user_upstream_id,
             isInOodikone: false
           }
 

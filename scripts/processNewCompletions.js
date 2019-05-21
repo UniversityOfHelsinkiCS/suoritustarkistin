@@ -13,13 +13,9 @@ const processNewCompletions = async (course) => {
       raw: true
     })
 
-    let moocIdsInDb = []
-    if(process.env.PROCESS_COMPLETIONS==='true') {
-      moocIdsInDb = credits.map((credit) => credit.completionId)
-    } else {
-      moocIdsInDb = credits.map((credit) => credit.moocId)
-    }
-    
+    const completionIdsInDb = credits.map((credit) => credit.completionId)
+    const moocIdsInDb = credits.map((credit) => credit.moocId)
+
     const studentIdsInDb = credits.map((credit) => credit.studentId)
 
     const registrations = await getRegistrations(course)
@@ -29,12 +25,11 @@ const processNewCompletions = async (course) => {
       (registration) =>
         registration.onro && !studentIdsInDb.includes(registration.onro)
     )
-    console.log('Filtered registrations:', filteredRegistrations.length)
-      const filteredCompletions = completions.filter(
-        (completion) => !moocIdsInDb.includes(completion.id)
-      )
-
-      console.log('Filtered completions:', filteredCompletions.length)
+    const filteredCompletions = completions.filter(
+      (completion) =>
+        !moocIdsInDb.includes(completion.user_upstream_id) &&
+        !completionIdsInDd.includes(completion.id)
+    )
 
     let matchesFi = []
     let matchesEn = []
@@ -44,62 +39,37 @@ const processNewCompletions = async (course) => {
           completion.email === registration.email ||
           completion.email === registration.mooc
         ) {
-          if(process.env.PROCESS_COMPLETIONS==='true') {
-            const { id, completion_language, user_upstream_id, ...rest } = completion
-            if (completion_language === 'fi_fi') {
-              matchesFi = matchesFi.concat({
-                ...rest,
-                completionId: id,
-                moocId: user_upstream_id,
-                studentId: registration.onro,
-                courseId: course,
-                isInOodikone: false
-              })
-            } else if (completion_language === 'en_us') {
-              matchesEn = matchesEn.concat({
-                ...rest,
-                completionId: id,
-                moocId: user_upstream_id,
-                studentId: registration.onro,
-                courseId: course,
-                isInOodikone: false
-              })
-            } else {
-              console.log('unknown language')
-            }
+          const {
+            id,
+            completion_language,
+            user_upstream_id,
+            ...rest
+          } = completion
+          if (completion_language === 'fi_FI') {
+            matchesFi = matchesFi.concat({
+              ...rest,
+              completionId: id,
+              moocId: user_upstream_id,
+              studentId: registration.onro,
+              courseId: course,
+              isInOodikone: false
+            })
+          } else if (completion_language === 'en_US') {
+            matchesEn = matchesEn.concat({
+              ...rest,
+              completionId: id,
+              moocId: user_upstream_id,
+              studentId: registration.onro,
+              courseId: course,
+              isInOodikone: false
+            })
           } else {
-            const { id, completion_language, ...rest } = completion
-            if (completion_language === 'fi_fi') {
-              matchesFi = matchesFi.concat({
-                ...rest,
-                moocId: id,
-                studentId: registration.onro,
-                courseId: course,
-                isInOodikone: false
-              })
-            } else if (completion_language === 'en_us') {
-              matchesEn = matchesEn.concat({
-                ...rest,
-                moocId: id,
-                studentId: registration.onro,
-                courseId: course,
-                isInOodikone: false
-              })
-            } else {
-              console.log('unknown language')
-            }
+            console.log('Unknown language code!')
           }
-          
         }
       }
     }
-    console.log(
-      `Found ${matchesFi.length} matches for finnish course ${course}.`
-    )
 
-    console.log(
-      `Found ${matchesEn.length} matches for english course ${course}.`
-    )
     const dateNow = new Date()
 
     const date = `${dateNow.getDate()}.${dateNow.getMonth() +

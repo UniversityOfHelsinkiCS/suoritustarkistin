@@ -1,13 +1,18 @@
-'use strict';
+'use strict'
 module.exports = (sequelize, DataTypes) => {
-  const Credits = sequelize.define('credits', {
-    studentId: DataTypes.STRING,
-    courseId: DataTypes.STRING,
-    moocId: DataTypes.INTEGER,
-    isInOodikone: DataTypes.BOOLEAN
-  }, {});
+  const Credits = sequelize.define(
+    'credits',
+    {
+      studentId: DataTypes.STRING,
+      courseId: DataTypes.STRING,
+      moocId: DataTypes.INTEGER,
+      completionId: DataTypes.STRING,
+      isInOodikone: DataTypes.BOOLEAN
+    },
+    {}
+  )
   Credits.associate = function(models) {
     // associations can be defined here
-  };
-  return Credits;
-};
+  }
+  return Credits
+}

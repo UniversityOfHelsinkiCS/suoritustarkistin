@@ -46,6 +46,11 @@ const processOldCompletions = async (course) => {
     const studentIdsInDb = credits.map((credit) => credit.studentId)
 
     const completions = await getCompletions(course)
+    const registrations = await getRegistrations(course)
+
+    const registeredStudentIds = registrations
+      .filter((reg) => reg.onro !== '')
+      .map((reg) => reg.onro)
 
     const unmarkedCompletionsWithStudentNumber = completions.filter(
       (completion) =>
@@ -77,7 +82,10 @@ const processOldCompletions = async (course) => {
     )
 
     const completionsToBeMarked = completionsAlmostToBeMarked.filter((c) => {
-      return !studentIdsInDb.includes(c.student_number)
+      return (
+        !studentIdsInDb.includes(c.student_number) &&
+        !registeredStudentIds.includes(c.student_number)
+      )
     })
 
     console.log(
@@ -87,10 +95,10 @@ const processOldCompletions = async (course) => {
     )
 
     const completionsEn = completionsToBeMarked.filter(
-      (c) => c.completion_language === 'en_us'
+      (c) => c.completion_language === 'en_US'
     )
     const completionsFi = completionsToBeMarked.filter(
-      (c) => c.completion_language === 'fi_fi'
+      (c) => c.completion_language === 'fi_FI'
     )
 
     const dateNow = new Date()
@@ -164,7 +172,7 @@ const processOldCompletions = async (course) => {
         })
 
         completionsFi.forEach((entry) => {
-          const { id, student_number } = entry
+          const { id, student_number, user_upstream_id } = entry
           const newEntry = {
             studentId: student_number,
             courseId: course,

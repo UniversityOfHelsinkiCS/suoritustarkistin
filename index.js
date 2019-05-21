@@ -20,7 +20,7 @@ const now = () => {
   return new Date(Date.now())
 }
 
-cron.schedule('0 10 * * 1', () => {
+cron.schedule('0 8 * * 3', () => {
   newCompletionTimestamp = now()
   console.log(
     `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions.`
@@ -28,7 +28,7 @@ cron.schedule('0 10 * * 1', () => {
   processNewCompletions(courseCodes[0])
 })
 
-cron.schedule('0 10 1,15 * *', () => {
+cron.schedule('0 8 * * 4', () => {
   oldCompletionTimestamp = now()
   console.log(
     `${oldCompletionTimestamp.toLocaleString()} node-cron: Processing old HY course completions.`
@@ -36,13 +36,13 @@ cron.schedule('0 10 1,15 * *', () => {
   processOldCompletions(courseCodes[0])
 })
 
-cron.schedule('0 10 * * 2', () => {
+/* cron.schedule('0 10 * * 2', () => {
   oodiCheckTimestamp = now()
   console.log(
-    `${oodiCheckTimestamp.toLocaleString()} node-cron: Processing old HY course completions.`
+    `${oodiCheckTimestamp.toLocaleString()} node-cron: Checking oodi entries.`
   )
   checkOodiEntries(courseCodes[0])
-})
+}) */
 
 server.get('/', (req, res) => {
   const newStamp = newCompletionTimestamp
@@ -57,8 +57,7 @@ server.get('/', (req, res) => {
 
   return res.status(200).send(
     `<p>New completions last processed: ${newStamp}</p>
-      <p>Old HY completions last processed: ${oldStamp}</p>
-      <p>Oodi entries last "checked": ${oodiStamp}</p>`
+      <p>Old HY completions last processed: ${oldStamp}</p>`
   )
 })
 

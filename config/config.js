@@ -9,7 +9,8 @@ module.exports = {
     database: 'suoritustarkistin_dev',
     host: process.env.PGHOST,
     dialect: 'postgres',
-    port: process.env.PGPORT
+    port: process.env.PGPORT,
+    logging: false
   },
   test: {
     username: process.env.PGUSERNAME,

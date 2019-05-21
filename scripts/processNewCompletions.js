@@ -28,7 +28,7 @@ const processNewCompletions = async (course) => {
     const filteredCompletions = completions.filter(
       (completion) =>
         !moocIdsInDb.includes(completion.user_upstream_id) &&
-        !completionIdsInDd.includes(completion.id)
+        !completionIdsInDb.includes(completion.id)
     )
 
     let matchesFi = []

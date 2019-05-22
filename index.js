@@ -35,14 +35,14 @@ cron.schedule('0 8 * * 4', () => {
   )
   processOldCompletions(courseCodes[0])
 })
-
-/* cron.schedule('0 10 * * 2', () => {
+/*
+ cron.schedule('0 10 * * 2', () => {
   oodiCheckTimestamp = now()
   console.log(
     `${oodiCheckTimestamp.toLocaleString()} node-cron: Checking oodi entries.`
   )
-  checkOodiEntries(courseCodes[0])
-}) */
+  checkOodiEntries()
+}) */ 
 
 server.get('/', (req, res) => {
   const newStamp = newCompletionTimestamp

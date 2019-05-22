@@ -28,4 +28,8 @@ const getCompletions = async (course) => {
   return data.completions
 }
 
-module.exports = getCompletions
+const postRegistration = (completionId) => {
+  console.log(`Completion ${completionId} is registered, updating to points.mooc.fi.`)  
+}
+
+module.exports = {getCompletions, postRegistration}

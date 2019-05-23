@@ -1,11 +1,11 @@
 const getRegistrations = require('../services/eduweb')
-const getCompletions = require('../services/pointsmooc')
+const { getMultipleCourseCompletions } = require('../services/pointsmooc')
 const hasOodiEntry = require('../services/oodikone')
 const db = require('../models/index')
 
 const isValidStudentId = (id) => {
   if (/^0\d{8}$/.test(id)) {
-    // is a 9 digit number
+    // is a 9 digit  number
     const multipliers = [7, 1, 3, 7, 1, 3, 7]
     const checksum = id
       .substring(1, 8)
@@ -38,7 +38,7 @@ const fixMoocIds = async (course) => {
       raw: true
     })
 
-    const completions = await getCompletions(course)
+    const completions = await getMultipleCourseCompletions([course])
     const registrations = await getRegistrations(course)
 
     const fixedCompletions = completions.reduce((acc, curr) => {

@@ -2,7 +2,7 @@ const axios = require('axios')
 
 const eduwebGet = async course => {
 	const { data } = await axios.get(
-		`https://www.avoin.helsinki.fi/eduweb/api/?course=${course}`,
+		`${process.env.EDUWEB_URL}${course}`,
 		{
 			headers: {
 				Authorized: process.env.EDUWEB_TOKEN

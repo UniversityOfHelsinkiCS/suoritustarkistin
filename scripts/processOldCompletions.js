@@ -2,7 +2,9 @@ const {
 	getRegistrations,
 	getMultipleCourseRegistrations
 } = require('../services/eduweb')
-const getCompletions = require('../services/pointsmooc')
+const {
+	getMultipleCourseCompletions
+} = require('../services/pointsmooc')
 const db = require('../models/index')
 const fs = require('fs')
 const sendEmail = require('../utils/sendEmail')
@@ -48,7 +50,7 @@ const processOldCompletions = async course => {
 		const completionIdsInDb = credits.map(credit => credit.completionId)
 		const studentIdsInDb = credits.map(credit => credit.studentId)
 
-		const completions = await getCompletions(course)
+		const completions = await getMultipleCourseCompletions([course])
 		const registrations = await getRegistrations(course)
 
 		const registeredStudentIds = registrations

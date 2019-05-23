@@ -1,28 +1,32 @@
 const {
-	getRegistrations,
 	getMultipleCourseRegistrations
 } = require('../services/eduweb')
-const getCompletions = require('../services/pointsmooc')
+const {getCompletions, getMultipleCourseCompletions} = require('../services/pointsmooc')
 const db = require('../models/index')
 const fs = require('fs')
 const sendEmail = require('../utils/sendEmail')
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op;
 
-const processNewCompletions = async course => {
+const processNewCompletions = async courses => {
 	try {
 		const credits = await db.credits.findAll({
 			where: {
-				courseId: course
+				[Op.or]: courses.map((c) => ({courseId: c}))
 			},
 			raw: true
-		})
+    })
+    console.log(credits.length, 'completions found')
+    
 
-		const completionIdsInDb = credits.map(credit => credit.completionId)
+    const completionIdsInDb = credits.map(credit => credit.completionId)
 		const moocIdsInDb = credits.map(credit => credit.moocId)
 
 		const studentIdsInDb = credits.map(credit => credit.studentId)
 
-		const registrations = await getRegistrations(course)
-		const completions = await getCompletions(course)
+    //const registrations = []
+		const registrations = await getMultipleCourseRegistrations(courses)
+		const completions = await getMultipleCourseCompletions(courses)
 
 		const filteredRegistrations = registrations.filter(
 			registration =>
@@ -54,7 +58,7 @@ const processNewCompletions = async course => {
 							completionId: id,
 							moocId: user_upstream_id,
 							studentId: registration.onro,
-							courseId: course,
+							courseId: courses[0],
 							isInOodikone: false
 						})
 					} else if (completion_language === 'en_US') {
@@ -63,7 +67,7 @@ const processNewCompletions = async course => {
 							completionId: id,
 							moocId: user_upstream_id,
 							studentId: registration.onro,
-							courseId: course,
+							courseId: courses[0],
 							isInOodikone: false
 						})
 					} else {
@@ -74,7 +78,7 @@ const processNewCompletions = async course => {
 		}
 
 		console.log(
-			`${course}: Found ${matchesEn.length + matchesFi.length} new completions.`
+			`${courses[0]}: Found ${matchesEn.length + matchesFi.length} new completions.`
 		)
 
 		const dateNow = new Date()

@@ -21,21 +21,22 @@ const now = () => {
   return new Date(Date.now())
 }
 
-cron.schedule('0 8 * * 3', () => {
+cron.schedule('0 4 * * 4', () => {
   newCompletionTimestamp = now()
   console.log(
     `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions.`
   )
-  processNewCompletions(courseCodes[0])
+  processNewCompletions(courseCodes)
 })
 
-cron.schedule('0 8 * * 4', () => {
+cron.schedule('0 5 * * 4', () => {
   oldCompletionTimestamp = now()
   console.log(
     `${oldCompletionTimestamp.toLocaleString()} node-cron: Processing old HY course completions.`
   )
   processOldCompletions(courseCodes[0])
 })
+
 /*
  cron.schedule('0 10 * * 2', () => {
   oodiCheckTimestamp = now()
@@ -43,7 +44,7 @@ cron.schedule('0 8 * * 4', () => {
     `${oodiCheckTimestamp.toLocaleString()} node-cron: Checking oodi entries.`
   )
   checkOodiEntries()
-}) */ 
+}) */
 
 server.get('/', (req, res) => {
   const newStamp = newCompletionTimestamp

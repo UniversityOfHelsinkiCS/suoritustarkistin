@@ -5,6 +5,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+RUN mkdir reports
 
 EXPOSE 6060
 

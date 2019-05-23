@@ -46,6 +46,8 @@ cron.schedule('0 5 * * 4', () => {
   checkOodiEntries()
 }) */
 
+const serverTimestamp = now()
+
 server.get('/', (req, res) => {
   const newStamp = newCompletionTimestamp
     ? newCompletionTimestamp.toLocaleString()
@@ -58,8 +60,9 @@ server.get('/', (req, res) => {
     : 'before server restart'
 
   return res.status(200).send(
-    `<p>New completions last processed: ${newStamp}</p>
-      <p>Old HY completions last processed: ${oldStamp}</p>`
+    `<p>Server last restarted: ${serverTimestamp.toLocaleString()}</p>
+    <p>New completions last processed: ${newStamp}</p>
+    <p>Old HY completions last processed: ${oldStamp}</p>`
   )
 })
 

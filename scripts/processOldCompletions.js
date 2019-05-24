@@ -144,10 +144,21 @@ const processOldCompletions = async (course) => {
     })
 
     let attachments = []
+    let dbReportEn = {}
+    let dbReportFi = {}
+
     if (completionsEn.length > 0) {
+      dbReportEn = await db.reports.create({
+        fileName: `AYTKT21018%${shortDate}-V2-S2019.dat`,
+        data: reportEn
+      })
       attachments = attachments.concat({ path: pathEn })
     }
     if (completionsFi.length > 0) {
+      dbReportFi = await db.reports.create({
+        fileName: `AYTKT21018fi%${shortDate}-V2-S2019.dat`,
+        data: reportFi
+      })
       attachments = attachments.concat({ path: pathFi })
     }
     if (attachments.length > 0) {
@@ -168,7 +179,8 @@ const processOldCompletions = async (course) => {
             courseId: course,
             completionId: id,
             moocId: user_upstream_id,
-            isInOodikone: false
+            isInOodikone: false,
+            reportId: dbReportEn.id
           }
 
           db.credits.create(newEntry)
@@ -181,7 +193,8 @@ const processOldCompletions = async (course) => {
             courseId: course,
             completionId: id,
             moocId: user_upstream_id,
-            isInOodikone: false
+            isInOodikone: false,
+            reportId: dbReportFi.id
           }
 
           db.credits.create(newEntry)

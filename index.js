@@ -10,8 +10,8 @@ const port = process.env.PORT
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
-// const courseCodes = ['AYTKT21018', 'AYTKT21018fi']
-const courseCodes = ['AYTKT21018']
+const courseCodes = ['AYTKT21018', 'AYTKT21018fi']
+//const courseCodes = ['AYTKT21018']
 
 let newCompletionTimestamp = null
 let oldCompletionTimestamp = null

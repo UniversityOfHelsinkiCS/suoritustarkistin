@@ -7,12 +7,13 @@ module.exports = (sequelize, DataTypes) => {
       courseId: DataTypes.STRING,
       moocId: DataTypes.INTEGER,
       completionId: DataTypes.STRING,
-      isInOodikone: DataTypes.BOOLEAN
+      isInOodikone: DataTypes.BOOLEAN,
+      reportId: DataTypes.INTEGER
     },
     {}
   )
   Credits.associate = function(models) {
-    // associations can be defined here
+    Credits.belongsTo(models.Reports)
   }
   return Credits
 }

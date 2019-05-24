@@ -1,4 +1,4 @@
-const getRegistrations = require('../services/eduweb')
+const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getMultipleCourseCompletions } = require('../services/pointsmooc')
 const hasOodiEntry = require('../services/oodikone')
 const db = require('../models/index')
@@ -35,11 +35,17 @@ const fixStudentId = (id) => {
 const fixMoocIds = async (course) => {
   try {
     const credits = await db.credits.findAll({
+      where: {
+        completionId: null
+      },
       raw: true
     })
 
     const completions = await getMultipleCourseCompletions([course])
-    const registrations = await getRegistrations(course)
+    const registrations = await getMultipleCourseRegistrations([
+      course,
+      course + 'fi'
+    ])
 
     const fixedCompletions = completions.reduce((acc, curr) => {
       if (isValidStudentId(curr.student_number)) {
@@ -54,17 +60,23 @@ const fixMoocIds = async (course) => {
       }
     }, [])
 
-    console.log('fixedcompletions:', fixedCompletions.length)
+    //console.log('fixedcompletions:', fixedCompletions.length)
     let updatecount = 0
+    let justOodi = 0
+
     for (const credit of credits) {
+      console.log('processing', credit.studentId)
       const registration = registrations.find(
         (reg) => credit.studentId === reg.onro
       )
       if (registration) {
+        //console.log('has registration')
         const completion = completions.find(
           (comp) =>
-            comp.email === registration.email ||
-            comp.email === registration.mooc
+            comp.email.trim().toLowerCase() ===
+              registration.email.trim().toLowerCase() ||
+            comp.email.trim().toLowerCase() ===
+              registration.mooc.trim().toLowerCase()
         )
         if (completion) {
           const isInOodikone = await hasOodiEntry(registration.onro, course)
@@ -77,12 +89,48 @@ const fixMoocIds = async (course) => {
             { where: { id: credit.id } }
           )
           if (res) updatecount++
+        } else {
+          //console.log('no completion by email, has completion by studentId?')
+          const completion = fixedCompletions.find(
+            (comp) => comp.student_number === credit.studentId
+          )
+          if (completion) {
+            //console.log('yes')
+            const isInOodikone = await hasOodiEntry(
+              completion.student_number,
+              course
+            )
+            const res = await db.credits.update(
+              {
+                moocId: completion.user_upstream_id,
+                completionId: completion.id,
+                isInOodikone: isInOodikone
+              },
+              { where: { id: credit.id } }
+            )
+            if (res) updatecount++
+          } else {
+            //console.log('still no')
+            const isInOodikone = await hasOodiEntry(credit.studentId, course)
+            //console.log(
+            //  `Credit ${credit.studentId} has oodi entry ${isInOodikone}`
+            //)
+            const res = await db.credits.update(
+              {
+                isInOodikone: isInOodikone
+              },
+              { where: { id: credit.id } }
+            )
+            if (res) justOodi++
+          }
         }
       } else {
+        //console.log('no reg, has completion?')
         const completion = fixedCompletions.find(
           (comp) => comp.student_number === credit.studentId
         )
         if (completion) {
+          //console.log('yes')
           const isInOodikone = await hasOodiEntry(
             completion.student_number,
             course
@@ -96,12 +144,26 @@ const fixMoocIds = async (course) => {
             { where: { id: credit.id } }
           )
           if (res) updatecount++
+        } else {
+          //console.log('no')
+          const isInOodikone = await hasOodiEntry(credit.studentId, course)
+          //console.log(
+          //  `Credit ${credit.studentId} has oodi entry ${isInOodikone}`
+          //)
+          const res = await db.credits.update(
+            {
+              isInOodikone: isInOodikone
+            },
+            { where: { id: credit.id } }
+          )
+          if (res) justOodi++
         }
       }
+      console.log('---------------------------')
     }
 
     console.log(
-      `Updated ${updatecount} credit entries with new completionIds and isInOodikone`
+      `Updated ${updatecount} credit entries with new completionIds and isInOodikone\nUpdated ${justOodi} with only oodi status`
     )
   } catch (error) {
     console.log('Error:', error.message)

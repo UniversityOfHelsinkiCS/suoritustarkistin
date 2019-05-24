@@ -10,8 +10,8 @@ const port = process.env.PORT
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
-// const courseCodes = ['AYTKT21018', 'AYTKT21018fi']
-const courseCodes = ['AYTKT21018']
+const fixMoocIds = require('./scripts/fixMoocIds')
+const courseCodes = ['AYTKT21018', 'AYTKT21018fi']
 
 let newCompletionTimestamp = null
 let oldCompletionTimestamp = null
@@ -20,6 +20,8 @@ let oodiCheckTimestamp = null
 const now = () => {
   return new Date(Date.now())
 }
+
+fixMoocIds(courseCodes[0])
 
 cron.schedule('0 4 * * 4', () => {
   newCompletionTimestamp = now()

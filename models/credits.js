@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   )
   Credits.associate = function(models) {
-    Credits.belongsTo(models.Reports)
+    Credits.belongsTo(models.reports)
   }
   return Credits
 }

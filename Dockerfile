@@ -9,5 +9,4 @@ RUN mkdir reports
 
 EXPOSE 6060
 
-RUN npx sequelize db:migrate
 CMD ["npm", "run", "execute"]

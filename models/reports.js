@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     data: DataTypes.TEXT
   })
   Reports.associate = (models) => {
-    Reports.hasMany(models.Credits)
+    Reports.hasMany(models.credits)
   }
   return Reports
 }

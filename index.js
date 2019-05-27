@@ -10,6 +10,8 @@ const port = process.env.PORT
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
+const reportsRouter = require('./controllers/reports')
+
 const courseCodes = ['AYTKT21018', 'AYTKT21018fi']
 //const courseCodes = ['AYTKT21018']
 
@@ -47,6 +49,8 @@ cron.schedule('0 5 * * 4', () => {
 }) */
 
 const serverTimestamp = now()
+
+server.use('/api/reports', reportsRouter)
 
 server.get('/', (req, res) => {
   const newStamp = newCompletionTimestamp

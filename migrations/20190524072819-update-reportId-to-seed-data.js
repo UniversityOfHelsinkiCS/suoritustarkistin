@@ -2,10 +2,18 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkUpdate('credits', { reportId: 1 }, { id: null })
+    return queryInterface.bulkUpdate(
+      'credits',
+      { reportId: 1 },
+      { reportId: null }
+    )
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkUpdate('credits', { reportId: null }, { id: 1 })
+    return queryInterface.bulkUpdate(
+      'credits',
+      { reportId: null },
+      { reportId: 1 }
+    )
   }
 }

@@ -7,9 +7,8 @@ module.exports = {
         createdAt: Sequelize.fn('NOW'),
         updatedAt: Sequelize.fn('NOW'),
         data:
-          'This is a placeholder report for the seed data that was reported before the implementation of this system.',
-        fileName:
-          'A placeholder for all the completions reported before implementation of this system and db.'
+          '000000000##6#TKT00000#The Art of Mocking#16.5.2019#0#Hyv.#106##000000-0000#1#H930#11#93013#3##0,0',
+        fileName: 'MOCKDATA.dat'
       }
     ])
   },

@@ -22,7 +22,7 @@ module.exports = {
       },
       credits: {
         allowNull: false,
-        type: Sequelize.DECIMAL
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

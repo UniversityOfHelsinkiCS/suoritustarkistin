@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const cron = require('node-cron')
 const express = require('express')
+const bodyParser = require('body-parser')
 
 const server = express()
 const port = process.env.PORT
@@ -11,6 +12,7 @@ const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
 const reportsRouter = require('./controllers/reports')
+const processCSV = require('./scripts/processCSV')
 
 const courseCodes = ['AYTKT21018', 'AYTKT21018fi']
 //const courseCodes = ['AYTKT21018']
@@ -49,7 +51,7 @@ cron.schedule('0 5 * * 4', () => {
 }) */
 
 const serverTimestamp = now()
-
+server.use(bodyParser.json())
 server.use('/api/reports', reportsRouter)
 
 server.get('/', (req, res) => {

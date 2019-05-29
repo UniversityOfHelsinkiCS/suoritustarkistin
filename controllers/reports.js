@@ -1,6 +1,7 @@
 const reportsRouter = require('express').Router()
 const db = require('../models/index')
 const { checkToken } = require('../utils/middleware')
+const processCSV = require('../scripts/processCSV')
 
 const handleDatabaseError = () => {
   return res.status(500).json({ error: 'server went BOOM!' })
@@ -10,6 +11,29 @@ const getCourseName = (data) => {
   const hackySplit = data.split('#')
   return hackySplit[4] || 'Unnamed course'
 }
+
+reportsRouter.post('/', checkToken, async (req, res) => {
+  try {
+    const { courseId, graderId, date, data } = req.body
+    if (!courseId || !graderId || !date || !data) {
+      console.log('Unsuccessful CVS insert: missing form fields')
+      return res.status(400).json({ error: 'invalid form values' })
+    }
+
+    processCSV(data, courseId, graderId, date)
+      .then(() => {
+        console.log('Successful CSV insert.')
+        return res.status(200).json({ message: 'report created successfully' })
+      })
+      .catch((err) => {
+        console.log('Unsuccessful CVS insert:', err.message)
+        return res.status(400).json({ error: err.message })
+      })
+  } catch (error) {
+    console.log(error)
+    handleDatabaseError()
+  }
+})
 
 reportsRouter.get('/list', checkToken, async (req, res) => {
   try {

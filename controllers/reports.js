@@ -1,6 +1,6 @@
 const reportsRouter = require('express').Router()
 const db = require('../models/index')
-const { checkToken } = require('../utils/middleware')
+const { checkSuotarToken, checkCSVToken } = require('../utils/middleware')
 const processCSV = require('../scripts/processCSV')
 
 const handleDatabaseError = () => {
@@ -12,7 +12,7 @@ const getCourseName = (data) => {
   return hackySplit[4] || 'Unnamed course'
 }
 
-reportsRouter.post('/', checkToken, async (req, res) => {
+reportsRouter.post('/', checkCSVToken, async (req, res) => {
   try {
     const { courseId, graderId, date, data } = req.body
     if (!courseId || !graderId || !date || !data) {
@@ -35,7 +35,7 @@ reportsRouter.post('/', checkToken, async (req, res) => {
   }
 })
 
-reportsRouter.get('/list', checkToken, async (req, res) => {
+reportsRouter.get('/list', checkSuotarToken, async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll()
     const reportFileInfo = fetchedReports.map((report) => {
@@ -52,7 +52,7 @@ reportsRouter.get('/list', checkToken, async (req, res) => {
   }
 })
 
-reportsRouter.get('/undownloaded', checkToken, async (req, res) => {
+reportsRouter.get('/undownloaded', checkSuotarToken, async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll({
       where: {
@@ -73,7 +73,7 @@ reportsRouter.get('/undownloaded', checkToken, async (req, res) => {
   }
 })
 
-reportsRouter.get('/:id', checkToken, async (req, res) => {
+reportsRouter.get('/:id', checkSuotarToken, async (req, res) => {
   try {
     const fetchedReport = await db.reports.findOne({
       where: {

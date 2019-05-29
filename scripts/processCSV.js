@@ -11,8 +11,8 @@ const shortDate = (date) => {
 }
 
 const isValidStudentId = (id) => {
-  if (/^0\d{8}$/.test(id)) {
-    // is a 9 digit number with leading 0
+  if (/^0[12]\d{7}$/.test(id)) {
+    // is a 9 digit number with leading 01 or 02
     const multipliers = [7, 1, 3, 7, 1, 3, 7]
     const checksum = id
       .substring(1, 8)
@@ -25,20 +25,22 @@ const isValidStudentId = (id) => {
   return false
 }
 
-const isValidRow = (splitRow) => {
-  if (!isValidStudentId(splitRow[0])) {
+const isValidDate = (date) =>
+  /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date)
+const isValidGrade = (grade) => /^([0-5]|Hyv\.)$/.test(grade)
+const isValidCreditAmount = (credits) => /^[0-9]?[0-9],[05]$/.test(credits)
+
+const isValidRow = (row) => {
+  if (!isValidStudentId(row[0])) {
     return false
   }
-  if (
-    splitRow[1] &&
-    (splitRow[1].length != 1 ||
-      isNaN(splitRow[1]) ||
-      splitRow[1] < 0 ||
-      splitRow[1] > 5)
-  ) {
+  if (row[1] && !isValidGrade(row[1])) {
     return false
   }
-  if (splitRow[2] && !LANGUAGES[splitRow[2]]) {
+  if (row[2] && !isValidCreditAmount(row[2])) {
+    return false
+  }
+  if (row[3] && !LANGUAGES[row[3]]) {
     return false
   }
 
@@ -46,6 +48,10 @@ const isValidRow = (splitRow) => {
 }
 
 const processCSV = async (data, courseId, graderId, date) => {
+  if (!isValidDate(date)) {
+    throw new Error('Error in date.')
+  }
+
   const course = await db.courses.findOne({
     where: {
       id: courseId
@@ -58,17 +64,17 @@ const processCSV = async (data, courseId, graderId, date) => {
     }
   })
 
-  const splitData = data.split('\n')
+  const splitData = data.trim().split('\n')
   const report = splitData
     .map((row) => {
-      const splitRow = row.split(',')
+      const splitRow = row.split(';')
       if (isValidRow(splitRow)) {
-        return `${splitRow[0]}##${LANGUAGES[splitRow[2]] ||
+        return `${splitRow[0]}##${LANGUAGES[splitRow[3]] ||
           LANGUAGES[course.language]}#${course.courseCode}#${
           course.name
         }#${date}#0#${splitRow[1] || 'Hyv.'}#106##${
           grader.identityCode
-        }#1#H930#11#93013#3##${course.credits}`
+        }#1#H930#11#93013#3##${splitRow[2] || course.credits}`
       } else {
         throw new Error(`Validation error in row "${row}"`)
       }

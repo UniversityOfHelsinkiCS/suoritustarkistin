@@ -1,4 +1,4 @@
-const checkToken = (req, res, next) => {
+const checkSuotarToken = (req, res, next) => {
   if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
     next()
   } else {
@@ -6,4 +6,12 @@ const checkToken = (req, res, next) => {
   }
 }
 
-module.exports = { checkToken }
+const checkCSVToken = (req, res, next) => {
+  if (req.headers.authorization === process.env.CSV_TOKEN) {
+    next()
+  } else {
+    return res.status(401).json({ error: 'Invalid token.' })
+  }
+}
+
+module.exports = { checkSuotarToken, checkCSVToken }

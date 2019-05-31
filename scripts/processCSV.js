@@ -1,4 +1,10 @@
 const db = require('../models/index')
+const {
+  isValidStudentId,
+  isValidOodiDate,
+  isValidGrade,
+  isValidCreditAmount
+} = require('../utils/validators')
 
 const LANGUAGES = {
   fi: 1,
@@ -9,26 +15,6 @@ const shortDate = (date) => {
   const splitDate = date.split('.')
   return `${splitDate[0]}.${splitDate[1]}.${splitDate[2].substring(2)}`
 }
-
-const isValidStudentId = (id) => {
-  if (/^0[12]\d{7}$/.test(id)) {
-    // is a 9 digit number with leading 01 or 02
-    const multipliers = [7, 1, 3, 7, 1, 3, 7]
-    const checksum = id
-      .substring(1, 8)
-      .split('')
-      .reduce((sum, curr, index) => {
-        return (sum + curr * multipliers[index]) % 10
-      }, 0)
-    return (10 - checksum) % 10 == id[8]
-  }
-  return false
-}
-
-const isValidDate = (date) =>
-  /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date)
-const isValidGrade = (grade) => /^([0-5]|Hyv\.)$/.test(grade)
-const isValidCreditAmount = (credits) => /^[0-9]?[0-9],[05]$/.test(credits)
 
 const isValidRow = (row) => {
   if (!isValidStudentId(row[0])) {
@@ -48,7 +34,7 @@ const isValidRow = (row) => {
 }
 
 const processCSV = async (data, courseId, graderId, date) => {
-  if (!isValidDate(date)) {
+  if (!isValidOodiDate(date)) {
     throw new Error('Error in date.')
   }
 

@@ -7,18 +7,10 @@ const courseNames = {
 
 const getMultipleCourseCompletions = async (courses) => {
   const uniqueCourseNames = [...new Set(courses.map((c) => courseNames[c]))]
-  console.log(uniqueCourseNames)
   let completionData = []
   for (n of uniqueCourseNames) {
-    console.log('Getting completions for', n)
-
     completionData = await completionData.concat(await getCompletions(n))
   }
-  console.log(
-    `Total of ${completionData.length} completions found for ${
-      courses.length
-    } courses.`
-  )
 
   return completionData
 }

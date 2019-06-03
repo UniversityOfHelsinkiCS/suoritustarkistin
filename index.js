@@ -10,9 +10,7 @@ const port = process.env.PORT
 
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
-const checkOodiEntries = require('./scripts/checkOodiEntries')
 const reportsRouter = require('./controllers/reports')
-const processCSV = require('./scripts/processCSV')
 
 const courseCodes = ['AYTKT21018', 'AYTKT21018fi']
 //const courseCodes = ['AYTKT21018']
@@ -33,7 +31,7 @@ cron.schedule('0 4 * * 4', () => {
   processNewCompletions(courseCodes)
 })
 
-cron.schedule('0 5 * * 4', () => {
+cron.schedule('0 5 1,15 6,7,8 *', () => {
   oldCompletionTimestamp = now()
   console.log(
     `${oldCompletionTimestamp.toLocaleString()} node-cron: Processing old HY course completions.`

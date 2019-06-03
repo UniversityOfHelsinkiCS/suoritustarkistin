@@ -77,17 +77,16 @@ const processOldCompletions = async (course) => {
       )
     })
 
-    console.log(
-      `${course}: Found ${
-        completionsToBeMarked.length
-      } unmarked old completions.`
-    )
-
     const completionsEn = completionsToBeMarked.filter(
       (c) => c.completion_language === 'en_US'
     )
     const completionsFi = completionsToBeMarked.filter(
       (c) => c.completion_language === 'fi_FI'
+    )
+
+    console.log(
+      `${course}: Found ${completionsEn.length +
+        completionsFi.length} unmarked old completions.`
     )
 
     const dateNow = new Date()
@@ -118,73 +117,58 @@ const processOldCompletions = async (course) => {
           }#1#H930#11#93013#3##2,0`
       )
       .join('\n')
-    const pathEn = `reports/AYTKT21018%${shortDate}-V2-S2019.dat`
-    const pathFi = `reports/AYTKT21018fi%${shortDate}-V2-S2019.dat`
 
-    fs.writeFile(pathEn, reportEn, (err) => {
-      if (err) throw err
-    })
-
-    fs.writeFile(pathFi, reportFi, (err) => {
-      if (err) throw err
-    })
-
-    let attachments = []
-    let dbReportEn = {}
-    let dbReportFi = {}
+    let dbReportEn = null
+    let dbReportFi = null
 
     if (completionsEn.length > 0) {
       dbReportEn = await db.reports.create({
         fileName: `AYTKT21018%${shortDate}-V2-S2019.dat`,
         data: reportEn
       })
-      attachments = attachments.concat({ path: pathEn })
+      completionsEn.forEach((entry) => {
+        const { id, student_number, user_upstream_id } = entry
+        const newEntry = {
+          studentId: student_number,
+          courseId: course,
+          completionId: id,
+          moocId: user_upstream_id,
+          isInOodikone: false,
+          reportId: dbReportEn.id
+        }
+
+        db.credits.create(newEntry)
+      })
     }
+
     if (completionsFi.length > 0) {
       dbReportFi = await db.reports.create({
         fileName: `AYTKT21018fi%${shortDate}-V2-S2019.dat`,
         data: reportFi
       })
-      attachments = attachments.concat({ path: pathFi })
+      completionsFi.forEach((entry) => {
+        const { id, student_number, user_upstream_id } = entry
+        const newEntry = {
+          studentId: student_number,
+          courseId: course,
+          completionId: id,
+          moocId: user_upstream_id,
+          isInOodikone: false,
+          reportId: dbReportFi.id
+        }
+
+        db.credits.create(newEntry)
+      })
     }
-    if (attachments.length > 0) {
+    if (dbReportEn || dbReportFi) {
       const info = await sendEmail(
         'New course completions.',
-        'Old style HY course completions for Elements of AI. Transfer files as attachments.',
-        attachments
+        'Old style HY course completions for Elements of AI now available in OodiTool'
       )
       if (info) {
         info.accepted.forEach((accepted) =>
           console.log(`Email sent to ${accepted}.`)
         )
-
-        completionsEn.forEach((entry) => {
-          const { id, student_number, user_upstream_id } = entry
-          const newEntry = {
-            studentId: student_number,
-            courseId: course,
-            completionId: id,
-            moocId: user_upstream_id,
-            isInOodikone: false,
-            reportId: dbReportEn.id
-          }
-
-          db.credits.create(newEntry)
-        })
-
-        completionsFi.forEach((entry) => {
-          const { id, student_number, user_upstream_id } = entry
-          const newEntry = {
-            studentId: student_number,
-            courseId: course,
-            completionId: id,
-            moocId: user_upstream_id,
-            isInOodikone: false,
-            reportId: dbReportFi.id
-          }
-
-          db.credits.create(newEntry)
-        })
       } else if (info) {
         info.rejected.forEach((rejected) =>
           console.log(`Address ${rejected} was rejected.`)

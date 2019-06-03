@@ -17,7 +17,6 @@ const processNewCompletions = async (courses) => {
       },
       raw: true
     })
-    console.log(credits.length, 'completions found')
 
     const completionIdsInDb = credits.map((credit) => credit.completionId)
     const moocIdsInDb = credits.map((credit) => credit.moocId)
@@ -109,52 +108,39 @@ const processNewCompletions = async (courses) => {
           }#1#H930#11#93013#3##2,0`
       )
       .join('\n')
-    const pathEn = `reports/AYTKT21018%${shortDate}-V1-S2019.dat`
-    const pathFi = `reports/AYTKT21018fi%${shortDate}-V1-S2019.dat`
 
-    fs.writeFile(pathEn, reportEn, (err) => {
-      if (err) throw err
-    })
-
-    fs.writeFile(pathFi, reportFi, (err) => {
-      if (err) throw err
-    })
-
-    let attachments = []
-    let dbReportEn = {}
-    let dbReportFi = {}
+    let dbReportEn = null
+    let dbReportFi = null
 
     if (matchesEn.length > 0) {
       dbReportEn = await db.reports.create({
         fileName: `AYTKT21018%${shortDate}-V1-S2019.dat`,
         data: reportEn
       })
-      attachments = attachments.concat({ path: pathEn })
+      matchesEn.forEach((entry) => {
+        db.credits.create({ ...entry, reportId: dbReportEn.id })
+      })
     }
+
     if (matchesFi.length > 0) {
       dbReportFi = await db.reports.create({
         fileName: `AYTKT21018fi%${shortDate}-V1-S2019.dat`,
         data: reportFi
       })
-      attachments = attachments.concat({ path: pathFi })
+      matchesFi.forEach((entry) => {
+        db.credits.create({ ...entry, reportId: dbReportFi.id })
+      })
     }
-    if (attachments.length > 0) {
+
+    if (dbReportEn || dbReportFi) {
       const info = await sendEmail(
         'New course completions.',
-        'Transfer files as attachments.',
-        attachments
+        'Weekly Elements of AI transfer files available in OodiTool.'
       )
       if (info) {
         info.accepted.forEach((accepted) =>
           console.log(`Email sent to ${accepted}.`)
         )
-        matchesEn.forEach((entry) => {
-          db.credits.create({ ...entry, reportId: dbReportEn.id })
-        })
-
-        matchesFi.forEach((entry) => {
-          db.credits.create({ ...entry, reportId: dbReportFi.id })
-        })
       } else if (info) {
         info.rejected.forEach((rejected) =>
           console.log(`Address ${rejected} was rejected.`)

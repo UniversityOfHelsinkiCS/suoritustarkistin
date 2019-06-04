@@ -1,7 +1,7 @@
 const fs = require('fs')
 const { GraphQLClient } = require('graphql-request')
 const db = require('../models/index')
-const Sequelize = require('Sequelize')
+const Sequelize = require('sequelize')
 const op = Sequelize.op
 
 const courseNames = {

@@ -50,19 +50,7 @@ const postRegistrations = async (completionAndStudentIdList) => {
   // `
 
   try {
-    fs.writeFile(
-      './reports/upload.lst',
-      completionAndStudentIdList.reduce(
-        (acc, item) => `${acc.concat(JSON.stringify(item))}\n`,
-        ''
-      ),
-      (error) => {
-        if (error) console.log(`Error writing to file:\n${error}`)
-      }
-    )
     // const response = await client.rawRequest(registrationsMutation)
-
-    // update local db
 
     console.log(
       `Found items: ${

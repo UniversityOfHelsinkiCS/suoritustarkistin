@@ -2,11 +2,21 @@ const { postRegistrations } = require('../services/pointsmooc')
 const db = require('../models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
+const fs = require('fs')
+const sendMail = require('../utils/sendEmail')
 
-const initialiseMoocConfirmations = async () =>
-  postRegistrations(formatListForMoocUpdate(await gatherConfirmedCompletions()))
+const initialiseMoocConfirmations = async () => {
+  const data = formatListForMoocUpdate(await gatherConfirmedCompletions())
+  postRegistrations(data)
+  const path = await saveToDisk(data)
+  sendMail(
+    'Upload report',
+    'list of student numbers and completions uploaded to points.mooc attached.',
+    path
+  )
+}
 
-const gatherConfirmedCompletions = () =>
+const gatherConfirmedCompletions = async () =>
   db.credits.findAll({
     where: {
       isInOodikone: true,
@@ -22,6 +32,28 @@ const formatListForMoocUpdate = (CompletedAndConfirmedList) =>
     student_number: entry.studentId,
     completion_id: entry.completionId
   }))
+
+const saveToDisk = async (completionAndStudentIdList) => {
+  let data = completionAndStudentIdList.reduce(
+    (acc, item) => `${acc.concat(JSON.stringify(item))},\n`,
+    '[ '
+  )
+  data = data.concat(' ]')
+  try {
+    fs.writeFile(
+      './reports/uploadedConfirmationsToPointsMooc.lst',
+      data,
+      (error) => {
+        if (error) console.log(`Error writing to file:\n${error}`)
+      }
+    )
+    return [{ path: './reports/uploadedConfirmationsToPointsMooc.lst' }]
+  } catch (e) {
+    console.log(
+      `Error in updating confirmed registrations. Error message:\n${e}`
+    )
+  }
+}
 
 module.exports = {
   initialiseMoocConfirmations

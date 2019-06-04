@@ -1,7 +1,7 @@
 const reportsRouter = require('express').Router()
 const db = require('../models/index')
 const { checkSuotarToken, checkCSVToken } = require('../utils/middleware')
-const processCSV = require('../scripts/processCSV')
+const { processCSV, processManualEntry } = require('../scripts/processCSV')
 
 const handleDatabaseError = () => {
   return res.status(500).json({ error: 'server went BOOM!' })
@@ -20,7 +20,7 @@ reportsRouter.post('/', checkCSVToken, async (req, res) => {
       return res.status(400).json({ error: 'invalid form values' })
     }
 
-    processCSV(data, courseId, graderId, date)
+    processManualEntry({ data, courseId, graderId, date })
       .then(() => {
         console.log('Successful CSV insert.')
         return res.status(200).json({ message: 'report created successfully' })

@@ -1,9 +1,19 @@
+const fs = require('fs')
 const { GraphQLClient } = require('graphql-request')
+const db = require('../models/index')
+const Sequelize = require('Sequelize')
+const op = Sequelize.op
 
 const courseNames = {
   AYTKT21018: 'elements-of-ai',
   AYTKT21018fi: 'elements-of-ai'
 }
+
+const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
+  headers: {
+    Authorization: process.env.MOOC_TOKEN
+  }
+})
 
 const getMultipleCourseCompletions = async (courses) => {
   const uniqueCourseNames = [...new Set(courses.map((c) => courseNames[c]))]
@@ -27,26 +37,46 @@ const getCompletions = async (course) => {
     }
   }
   `
-
-  const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
-    headers: {
-      Authorization: process.env.MOOC_TOKEN
-    }
-  })
-
   const { data } = await client.rawRequest(completionsQuery)
 
   return data.completions
 }
 
-const postRegistration = (completionId) => {
-  //not yet implemented
-  console.log(
-    `Completion ${completionId} is registered, updating to points.mooc.fi.`
-  )
+const postRegistrations = async (completionAndStudentIdList) => {
+  // const registrationsMutation = `
+  // {
+
+  // }
+  // `
+
+  try {
+    fs.writeFile(
+      './reports/upload.lst',
+      completionAndStudentIdList.reduce(
+        (acc, item) => `${acc.concat(JSON.stringify(item))}\n`,
+        ''
+      ),
+      (error) => {
+        if (error) console.log(`Error writing to file:\n${error}`)
+      }
+    )
+    // const response = await client.rawRequest(registrationsMutation)
+
+    // update local db
+
+    console.log(
+      `Found items: ${
+        completionAndStudentIdList.length
+      }\nUpdated items: <not yet implemented>`
+    )
+  } catch (e) {
+    console.log(
+      `Error in updating confirmed registrations. Error message:\n${e}`
+    )
+  }
 }
 
 module.exports = {
   getMultipleCourseCompletions,
-  postRegistration
+  postRegistrations
 }

@@ -43,20 +43,29 @@ const getCompletions = async (course) => {
 }
 
 const postRegistrations = async (completionAndStudentIdList) => {
-  // const registrationsMutation = `
-  // {
-
-  // }
-  // `
+  const registerMutation = `
+    mutation registerCompletion($completions: [CompletionArg!]) {
+      registerCompletion(completions: $completions) {
+        completion {
+          id
+        }
+      }
+    }
+  `
+  const variables = {
+    completions: completionAndStudentIdList
+  }
 
   try {
-    // const response = await client.rawRequest(registrationsMutation)
-
-    console.log(
-      `Found items: ${
-        completionAndStudentIdList.length
-      }\nUpdated items: <not yet implemented>`
-    )
+    const { data } = await client.request(registerMutation, variables)
+    if (data) {
+      const registeredCompletions = data.registerCompletion.map(
+        ({ completion }) => completion.id
+      )
+      return registeredCompletions
+    } else {
+      return []
+    }
   } catch (e) {
     console.log(
       `Error in updating confirmed registrations. Error message:\n${e}`

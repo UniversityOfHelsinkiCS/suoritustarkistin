@@ -4,7 +4,7 @@ const { inProduction } = require('@util/common')
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { service: 'boilerplate' },
+  defaultMeta: { service: 'suoritustarkistin' },
   transports: [
     //
     // - Write to all logs with level `info` and below to `combined.log`
@@ -21,9 +21,11 @@ const logger = winston.createLogger({
 //
 
 if (!inProduction) {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple(),
-  }))
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    }),
+  )
 }
 
 module.exports = logger

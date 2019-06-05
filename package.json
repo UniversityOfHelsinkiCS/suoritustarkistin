@@ -9,7 +9,13 @@
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "stats": "webpack --mode production --json --optimize-minimize > stats.json"
+    "stats": "webpack --mode production --json --optimize-minimize > stats.json",
+    "db:create": "sequelize db:create",
+    "db:drop": "sequelize db:drop",
+    "db:migrate": "sequelize db:migrate",
+    "db:seed:all": "sequelize db:seed:all",
+    "db:nuke": "npx npm-run-all -s db:drop db:create",
+    "db:recreate": "npx npm-run-all -s db:nuke db:migrate db:seed:all"
   },
   "engines": {
     "node": ">=10.15"

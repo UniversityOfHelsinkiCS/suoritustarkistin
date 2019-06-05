@@ -1,6 +1,4 @@
 node_modules
-dist
-stats.json
 npm-debug.log
 .env
 sids.txt

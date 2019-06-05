@@ -7,8 +7,7 @@ const sendMail = require('../utils/sendEmail')
 
 const initialiseMoocConfirmations = async () => {
   const data = formatListForMoocUpdate(await gatherConfirmedCompletions())
-  const postedRegistrations = await postRegistrations(data)
-  console.log(postedRegistrations)
+  postRegistrations(data)
   const path = await saveToDisk(data)
 }
 

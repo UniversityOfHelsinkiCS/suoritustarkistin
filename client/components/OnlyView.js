@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button } from 'semantic-ui-react'
 
-import Dropzone from 'components/Dropzone'
+import Dropzone from 'Components/Dropzone'
 
 export default () => {
   const [reportData, setReportData] = useState('')

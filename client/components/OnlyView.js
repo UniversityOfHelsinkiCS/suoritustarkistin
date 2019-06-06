@@ -1,20 +1,16 @@
 import React, { useState } from 'react'
 import { Button } from 'semantic-ui-react'
 
-import MessageComponent from 'Components/MessageComponent'
+import Dropzone from 'Components/Dropzone'
 
 export default () => {
-  const [greetings, setGreetings] = useState(['Hello'])
+  const [reportData, setReportData] = useState('')
 
-  const nextGreeting = `${greetings[greetings.length - 1]}!`
   return (
     <div>
-      {greetings.join(' ')}
       <br />
-      <Button color="purple" onClick={() => setGreetings([...greetings, nextGreeting])}>
-        {nextGreeting}
-      </Button>
-      <MessageComponent />
+      <Dropzone setReportData={setReportData} />
+      <p>{reportData}</p>
     </div>
   )
 }

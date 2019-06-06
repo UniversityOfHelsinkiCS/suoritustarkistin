@@ -44,6 +44,14 @@ cron.schedule('0 4 * * 4', () => {
   processNewCompletions(courseCodes)
 })
 
+cron.schedule('0 4 1 7 *', () => {
+  newCompletionTimestamp = now()
+  console.log(
+    `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions (DEFA-special run).`,
+  )
+  processNewCompletions(courseCodes)
+})
+
 cron.schedule('0 5 1,15 6,7,8 *', () => {
   oldCompletionTimestamp = now()
   console.log(

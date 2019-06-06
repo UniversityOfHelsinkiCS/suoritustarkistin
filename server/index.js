@@ -62,8 +62,8 @@ cron.schedule('0 5 1,15 6,7,8 *', () => {
 }) */
 
 app.use(bodyParser.json({ limit: '5mb' }))
-// app.use('/api', routes)
 app.use('/api/reports', reportsRouter)
+app.use('/api', routes)
 
 app.get('/serverinfo', (req, res) => {
   const newStamp = newCompletionTimestamp

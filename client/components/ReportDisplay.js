@@ -1,4 +1,5 @@
 import React from 'react'
+import { Table } from 'semantic-ui-react'
 
 const {
   isValidStudentId,
@@ -16,11 +17,12 @@ const LANGUAGES = {
 const grader = { name: 'Jami Kousa', identityCode: 'jakousa' }
 const course = {
   credits: '3,0',
-  name: 'devops',
+  name: 'Devops with Docker',
   courseCode: 'DOPS',
   language: 'en',
 }
 const date = '1.1.1900'
+const auth = 'lolskis'
 
 const isValidRow = (row) => {
   if (!isValidStudentId(row[0])) {
@@ -44,38 +46,38 @@ const parseDataToReport = (data) => {
     const splitRow = row.split(';')
     if (isValidRow(splitRow)) {
       return (
-        <tr key={splitRow[0]}>
-          <td>{course.name}</td>
-          <td>{splitRow[0]}</td>
-          <td>{splitRow[1] || 'Hyv.'}</td>
-          <td>{splitRow[2] || course.credits}</td>
-          <td>{splitRow[3] || course.language}</td>
-          <td>{grader.name}</td>
-          <td>{date}</td>
-        </tr>
+        <Table.Row key={splitRow[0]}>
+          <Table.Cell>{course.name}</Table.Cell>
+          <Table.Cell>{splitRow[0]}</Table.Cell>
+          <Table.Cell>{splitRow[1] || 'Hyv.'}</Table.Cell>
+          <Table.Cell>{splitRow[2] || course.credits}</Table.Cell>
+          <Table.Cell>{splitRow[3] || course.language}</Table.Cell>
+          <Table.Cell>{grader.name}</Table.Cell>
+          <Table.Cell>{date}</Table.Cell>
+        </Table.Row>
       )
     }
     throw new Error(`Validation error in row "${row}"`)
   })
 
   return (
-    <table>
-      <tbody>
-        <tr>
-          <th>Kurssi</th>
-          <th>Opiskelijanumero</th>
-          <th>Arvosana</th>
-          <th>Laajuus (op)</th>
-          <th>Kieli</th>
-          <th>Arvostelija</th>
-          <th>Arvostelupäivämäärä</th>
-        </tr>
-        {reportRows}
-      </tbody>
-    </table>
+    <Table celled>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell>Kurssi</Table.HeaderCell>
+          <Table.HeaderCell>Opiskelijanumero</Table.HeaderCell>
+          <Table.HeaderCell>Arvosana</Table.HeaderCell>
+          <Table.HeaderCell>Laajuus (op)</Table.HeaderCell>
+          <Table.HeaderCell>Kieli</Table.HeaderCell>
+          <Table.HeaderCell>Arvostelija</Table.HeaderCell>
+          <Table.HeaderCell>Arvostelupäivämäärä</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>{reportRows}</Table.Body>
+    </Table>
   )
 }
 
 export default ({ reportData }) => (
-  <div>{reportData === 'No report given.' ? reportData : parseDataToReport(reportData)}</div>
+  <div>{reportData === '' ? reportData : parseDataToReport(reportData)}</div>
 )

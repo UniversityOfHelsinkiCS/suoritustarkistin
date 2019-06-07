@@ -5,10 +5,7 @@
     "browser": true
   },
   "rules": {
-    "semi": [
-      "error",
-      "never"
-    ],
+    "semi": ["error", "never"],
     "import/no-unresolved": "off",
     "react/jsx-filename-extension": "off",
     "react/prop-types": [

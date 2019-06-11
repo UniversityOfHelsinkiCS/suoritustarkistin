@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Button } from 'semantic-ui-react'
 
 import Dropzone from 'Components/Dropzone'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
 import graderService from '../services/graders.js'
-import courseService from '../services/graders.js'
+import courseService from '../services/courses.js'
 
 export default () => {
   const [reportData, setReportData] = useState('')
@@ -24,8 +23,8 @@ export default () => {
 
   return (
     <div>
-      <InputOptions graders={graders} />
       <Dropzone setReportData={setReportData} />
+      <InputOptions graders={graders} courses={courses} />
       <ReportDisplay reportData={reportData} />
     </div>
   )

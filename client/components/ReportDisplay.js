@@ -78,6 +78,6 @@ const parseDataToReport = (data) => {
   )
 }
 
-export default ({ reportData }) => (
-  <div>{reportData === '' ? reportData : parseDataToReport(reportData)}</div>
+export default ({ report }) => (
+  <div>{report.data === '' ? report.data : parseDataToReport(report.data)}</div>
 )

@@ -29,7 +29,7 @@ const rejectStyle = {
   borderColor: '#ff1744',
 }
 
-export default ({ setReportData }) => {
+export default ({ report, setReport }) => {
   const onDrop = useCallback((acceptedFiles) => {
     const reader = new FileReader()
 
@@ -37,7 +37,12 @@ export default ({ setReportData }) => {
     reader.onerror = () => alert('file reading has failed')
     reader.onload = () => {
       const binaryStr = reader.result
-      setReportData(binaryStr)
+
+      if ('validation is true') {
+        setReport({ ...report, data: binaryStr })
+      } else {
+        // report errors as messages array
+      }
     }
 
     acceptedFiles.forEach(file => reader.readAsBinaryString(file))

@@ -79,5 +79,5 @@ const parseDataToReport = (data) => {
 }
 
 export default ({ report }) => (
-  <div>{report.data === '' ? report.data : parseDataToReport(report.data)}</div>
+  <div>{report.data === null ? '' : parseDataToReport(report.data)}</div>
 )

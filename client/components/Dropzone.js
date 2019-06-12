@@ -39,7 +39,9 @@ export default ({ report, setReport }) => {
       const binaryStr = reader.result
 
       if ('validation is true') {
+        // console.log('pre-dropzone', report)
         setReport({ ...report, data: binaryStr })
+        // console.log('post-dropzone', report)
       } else {
         // report errors as messages array
       }

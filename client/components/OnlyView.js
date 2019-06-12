@@ -13,8 +13,8 @@ export default () => {
   const [report, setReport] = useState({
     courseId: null,
     graderId: null,
-    token: '',
-    data: '',
+    token: null,
+    data: null,
     date: today,
   })
   const [graders, setGraders] = useState([])

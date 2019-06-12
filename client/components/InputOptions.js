@@ -1,5 +1,5 @@
-import React from 'react'
-import { Select } from 'semantic-ui-react'
+import React, { useState } from 'react'
+import { Select, Button } from 'semantic-ui-react'
 
 const formatGradersForSelection = data => data.map(g => ({ key: g.id, text: g.name, value: g.id }))
 const formatCoursesForSelection = data => data.map(c => ({ key: c.id, text: c.courseCode, value: c.id }))
@@ -7,6 +7,8 @@ const formatCoursesForSelection = data => data.map(c => ({ key: c.id, text: c.co
 export default ({
   setReport, report, graders, courses,
 }) => {
+  const [readyToSend, setReadyToSend] = useState(false)
+
   const handleTokenChange = (event) => {
     setReport({ ...report, token: event.target.value })
   }
@@ -23,17 +25,34 @@ export default ({
     setReport({ ...report, courseId: data.value })
   }
 
-  const validateAndSend = () => {
-    console.log('check report state has everything, send')
-    if (
-      report.courseId
-      && report.graderId
-      && 'validate token'
-      && 'data is not null'
-      && 'validate date'
-    ) {
-      // send to server
+  const validateAndShowReport = () => {
+    let errors = []
+    if (!report.courseId) errors = errors.concat({ type: 'error', message: 'Valitse kurssi.' })
+    if (!report.graderId) errors = errors.concat({ type: 'error', message: 'Valitse arvostelija.' })
+    if (!report.date) errors = errors.concat({ type: 'error', message: 'Merkitse arvostelupäivämäärä.' })
+    if (!report.data) errors = errors.concat({ type: 'error', message: 'Lähetä tiedosto.' })
+    if (!report.token) errors = errors.concat({ type: 'error', message: 'Lisää arvostelijatunnuksesi.' })
+
+    console.log(errors)
+    if (errors.length === 0) {
+      // validoi data, eka virherivi errorsiin
     }
+    console.log(errors)
+
+    if (errors.length === 0) {
+      setReadyToSend(true)
+      // aktivoi lähetysnappi (tilan kautta)
+    }
+  }
+
+  const sendReport = () => {
+    // send report
+    setReport({
+      ...report,
+      token: null,
+      data: null,
+    })
+    setReadyToSend(false)
   }
 
   return (
@@ -55,16 +74,20 @@ export default ({
         <input
           type="text"
           onChange={handleTokenChange}
-          value={report.token}
+          value={report.token || ''}
           placeholder="Arvostelijatunnus"
         />
       </div>
-      <button onClick={validateAndSend} className="right floated disabled negative ui button">
+      <Button
+        onClick={sendReport}
+        disabled={!readyToSend}
+        className="right floated negative ui button"
+      >
         Lähetä raportti
-      </button>
-      <button onClick={validateAndSend} className="right floated positive ui button">
+      </Button>
+      <Button onClick={validateAndShowReport} className="right floated positive ui button">
         Luo raportti
-      </button>
+      </Button>
     </div>
   )
 }

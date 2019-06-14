@@ -36,6 +36,22 @@ let oldCompletionTimestamp = null
 const oodiCheckTimestamp = null
 const serverTimestamp = now()
 
+if (process.argv[2] && process.argv[2] === 'processnew') {
+  newCompletionTimestamp = now()
+  console.log(
+    `${newCompletionTimestamp.toLocaleString()} manual run: Processing new course completions.`,
+  )
+  processNewCompletions(courseCodes)
+}
+
+if (process.argv[2] && process.argv[2] === 'processold') {
+  oldCompletionTimestamp = now()
+  console.log(
+    `${oldCompletionTimestamp.toLocaleString()} manual run: Processing old HY course completions.`,
+  )
+  processOldCompletions(courseCodes[0])
+}
+
 cron.schedule('0 4 * * 4', () => {
   newCompletionTimestamp = now()
   console.log(

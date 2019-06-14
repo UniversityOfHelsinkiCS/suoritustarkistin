@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import Dropzone from 'Components/Dropzone'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
+import MessageField from 'Components/MessageField'
 import graderService from '../services/graders.js'
 import courseService from '../services/courses.js'
 
@@ -19,7 +20,7 @@ export default () => {
   })
   const [graders, setGraders] = useState([])
   const [courses, setCourses] = useState([])
-  const [messages, setMessages] = useState([{ type: 'error', message: 'test message' }])
+  const [messages, setMessages] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,8 +35,15 @@ export default () => {
   return (
     <div>
       <Dropzone report={report} setReport={setReport} />
-      <InputOptions setReport={setReport} report={report} graders={graders} courses={courses} />
-
+      <InputOptions
+        messages={messages}
+        setMessages={setMessages}
+        setReport={setReport}
+        report={report}
+        graders={graders}
+        courses={courses}
+      />
+      <MessageField messages={messages} />
       <ReportDisplay report={report} />
     </div>
   )

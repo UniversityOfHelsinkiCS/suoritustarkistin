@@ -1,12 +1,12 @@
 import axios from 'axios'
-
-const baseUrl = '/api/reports'
+import { BACKEND_API_BASE } from '../config/config'
+const baseUrl = `${BACKEND_API_BASE}/reports`
 
 const createNew = async (token, report) => {
   const response = await axios.post(baseUrl, report, {
     headers: {
-      Authorization: token,
-    },
+      Authorization: token
+    }
   })
   return response.data
 }

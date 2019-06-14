@@ -1,6 +1,6 @@
 import axios from 'axios'
-
-const baseUrl = '/api/graders'
+import { BACKEND_API_BASE } from '../config/config'
+const baseUrl = `${BACKEND_API_BASE}/graders`
 
 const getAll = async () => {
   const graders = await axios.get(baseUrl)

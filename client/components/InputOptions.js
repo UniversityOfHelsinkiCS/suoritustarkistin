@@ -38,26 +38,30 @@ export default ({
     if (!report.token) errors = errors.concat([{ type: 'error', content: ' Lisää arvostelijatunnuksesi.' }])
 
     setMessages(errors)
-    if (messages.length === 0) {
+    if (errors.length === 0) {
       // validoi data, eka virherivi errorsiin
       // kasaa raportti jsoniksi
     }
 
     setMessages(errors)
-    if (messages.length === 0) {
+    if (errors.length === 0) {
       setReadyToSend(true)
     }
   }
 
   const sendReport = async () => {
-    const response = await reportService.createNew(report.token, report)
-    setReport({
-      ...report,
-      token: null,
-      data: null,
-    })
+    try {
+      const response = await reportService.createNew(report.token, report)
+      setReport({
+        ...report,
+        token: null,
+        data: null,
+      })
+      return response
+    } catch (e) {
+      alert(`Lähetys epäonnistui:\n${e}`)
+    }
     setReadyToSend(false)
-    return response
   }
 
   return (

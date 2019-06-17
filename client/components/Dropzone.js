@@ -30,25 +30,24 @@ const rejectStyle = {
 }
 
 export default ({ report, setReport }) => {
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = (acceptedFiles) => {
     const reader = new FileReader()
 
     reader.onabort = () => alert('file reading was aborted')
     reader.onerror = () => alert('file reading has failed')
     reader.onload = () => {
       const binaryStr = reader.result
+      console.log('luettu', binaryStr)
 
       if ('validation is true') {
-        // console.log('pre-dropzone', report)
         setReport({ ...report, data: binaryStr })
-        // console.log('post-dropzone', report)
       } else {
-        // report errors as messages array
+        // add errors to messages state
       }
     }
-
     acceptedFiles.forEach(file => reader.readAsBinaryString(file))
-  }, [])
+  }
+
   const style = useMemo(
     () => ({
       ...baseStyle,

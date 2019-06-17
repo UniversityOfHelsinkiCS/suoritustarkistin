@@ -31,7 +31,7 @@ module.exports = (env, argv) => {
     ],
     resolve: {
       alias: {
-        Utilities: path.resolve(__dirname, 'client/util/'),
+        Utilities: path.resolve(__dirname, 'client/utils/'),
         Components: path.resolve(__dirname, 'client/components/'),
         Assets: path.resolve(__dirname, 'client/assets/'),
         Root: path.resolve(__dirname),

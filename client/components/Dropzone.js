@@ -37,13 +37,7 @@ export default ({ report, setReport }) => {
     reader.onerror = () => alert('file reading has failed')
     reader.onload = () => {
       const binaryStr = reader.result
-      console.log('luettu', binaryStr)
-
-      if ('validation is true') {
-        setReport({ ...report, data: binaryStr })
-      } else {
-        // add errors to messages state
-      }
+      setReport({ ...report, data: binaryStr })
     }
     acceptedFiles.forEach(file => reader.readAsBinaryString(file))
   }

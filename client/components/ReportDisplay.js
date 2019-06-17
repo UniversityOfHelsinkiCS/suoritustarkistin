@@ -6,7 +6,7 @@ const {
   isValidOodiDate,
   isValidGrade,
   isValidCreditAmount,
-} = require('../../util/validators')
+} = require('../../utils/validators')
 
 const LANGUAGES = {
   fi: 1,

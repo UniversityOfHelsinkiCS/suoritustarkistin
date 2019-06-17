@@ -1,4 +1,4 @@
-const logger = require('@util/logger')
+const logger = require('@utils/logger')
 const db = require('../models/index')
 
 const getGraders = async (req, res) => {

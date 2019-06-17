@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Select, Button } from 'semantic-ui-react'
 import reportService from '../services/reports'
 
-const { parseAndValidateReport } = require('../util/reportCsvToJson')
+const { parseAndValidateReport } = require('../utils/reportCsvToJson')
 
 const formatGradersForSelection = data => data.map(g => ({ key: g.id, text: g.name, value: g.id }))
 const formatCoursesForSelection = data => data.map(c => ({ key: c.id, text: c.courseCode, value: c.id }))

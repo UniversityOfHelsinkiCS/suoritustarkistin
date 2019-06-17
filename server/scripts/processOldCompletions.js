@@ -3,7 +3,7 @@ const { getMultipleCourseCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const fs = require('fs')
 const sendEmail = require('../utils/sendEmail')
-const { isValidStudentId } = require('../../util/validators')
+const { isValidStudentId } = require('../../utils/validators')
 
 const fixStudentId = (id) => {
   if (id.length === 8 && id[0] === '1' && isValidStudentId(`0${id}`)) {
@@ -60,10 +60,10 @@ const processOldCompletions = async (course) => {
       unmarkedCompletionsWithValidStudentNumber,
     )
 
-    const completionsToBeMarked = completionsAlmostToBeMarked.filter(c => (
-      !studentIdsInDb.includes(c.student_number)
-        && !registeredStudentIds.includes(c.student_number)
-    ))
+    const completionsToBeMarked = completionsAlmostToBeMarked.filter(
+      c => !studentIdsInDb.includes(c.student_number)
+        && !registeredStudentIds.includes(c.student_number),
+    )
 
     const completionsEn = completionsToBeMarked.filter(c => c.completion_language === 'en_US')
     const completionsFi = completionsToBeMarked.filter(c => c.completion_language === 'fi_FI')

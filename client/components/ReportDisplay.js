@@ -3,12 +3,12 @@ import { Table } from 'semantic-ui-react'
 
 const { isValidRow } = require('../../utils/validators')
 
-const parseDataToReport = (report) => {
-  const grader = report.graderId ? report.graderId : 'Valitse arvostelija'
-  const course = report.courseId ? report.courseId : 'Valitse kurssi'
+const parseDataToReport = (report, graders, courses) => {
+  const grader = report.graderId
+    ? graders.find(g => g.id === report.graderId).name
+    : 'Valitse arvostelija'
+  const course = report.courseId ? courses.find(c => c.id === report.courseId) : 'Valitse kurssi'
   const date = report.date ? report.date : 'Merkitse arvostelupäivämäärä'
-
-  console.log('pvm', report.date)
 
   const splitData = report.data.trim().split('\n')
   const reportRows = splitData.map((row) => {
@@ -16,7 +16,7 @@ const parseDataToReport = (report) => {
     if (isValidRow(splitRow)) {
       return (
         <Table.Row key={splitRow[0]}>
-          <Table.Cell>{course}</Table.Cell>
+          <Table.Cell>{course.courseCode}</Table.Cell>
           <Table.Cell>{splitRow[0]}</Table.Cell>
           <Table.Cell>{splitRow[1] || 'Hyv.'}</Table.Cell>
           <Table.Cell>{splitRow[2] || course.credits}</Table.Cell>
@@ -52,4 +52,6 @@ const parseDataToReport = (report) => {
   )
 }
 
-export default ({ report }) => <div>{report.data === null ? '' : parseDataToReport(report)}</div>
+export default ({ report, graders, courses }) => (
+  <div>{report.data === null ? '' : parseDataToReport(report, graders, courses)}</div>
+)

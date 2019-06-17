@@ -32,6 +32,8 @@ export default () => {
     fetchData()
   }, [])
 
+  console.log(graders)
+
   return (
     <div>
       <Dropzone report={report} setReport={setReport} />
@@ -44,7 +46,7 @@ export default () => {
         courses={courses}
       />
       <MessageField messages={messages} />
-      <ReportDisplay report={report} />
+      <ReportDisplay graders={graders} courses={courses} report={report} />
     </div>
   )
 }

@@ -7,35 +7,41 @@ const webpack = require('webpack')
 
 module.exports = (env, argv) => {
   const { mode } = argv
-  const additionalPlugins = mode === 'production'
-    ? [] // Make JS smaller
-    : [new webpack.HotModuleReplacementPlugin()] // Enable hot module replacement
 
-  const additionalOptimizations = mode === 'production'
-    ? {
-      minimizer: [
-        // Make CSS smaller
-        new OptimizeCssAssetsPlugin(),
-      ],
-    }
-    : {}
+  const additionalPlugins =
+    mode === 'production'
+      ? [] // Make JS smaller
+      : [new webpack.HotModuleReplacementPlugin()] // Enable hot module replacement
 
-  const additionalEntries = mode === 'production' ? [] : ['webpack-hot-middleware/client?http://localhost:8000']
+  const additionalOptimizations =
+    mode === 'production'
+      ? {
+          minimizer: [
+            // Make CSS smaller
+            new OptimizeCssAssetsPlugin()
+          ]
+        }
+      : {}
+
+  const additionalEntries =
+    mode === 'production'
+      ? []
+      : ['webpack-hot-middleware/client?http://localhost:8000']
 
   return {
     mode,
     entry: [
       '@babel/polyfill', // so we don't need to import it anywhere
       './client',
-      ...additionalEntries,
+      ...additionalEntries
     ],
     resolve: {
       alias: {
         Utilities: path.resolve(__dirname, 'client/utils/'),
         Components: path.resolve(__dirname, 'client/components/'),
         Assets: path.resolve(__dirname, 'client/assets/'),
-        Root: path.resolve(__dirname),
-      },
+        Root: path.resolve(__dirname)
+      }
     },
     module: {
       rules: [
@@ -44,23 +50,23 @@ module.exports = (env, argv) => {
           test: /\.js$/,
           exclude: /node_modules/,
           use: {
-            loader: 'babel-loader',
-          },
+            loader: 'babel-loader'
+          }
         },
         {
           // Load CSS files
           test: /\.css$/,
-          use: [MiniCssExtractPlugin.loader, 'css-loader'],
+          use: [MiniCssExtractPlugin.loader, 'css-loader']
         },
         {
           // Load other files
           test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
-          use: ['file-loader'],
-        },
-      ],
+          use: ['file-loader']
+        }
+      ]
     },
     optimization: {
-      ...additionalOptimizations,
+      ...additionalOptimizations
     },
     plugins: [
       // Skip the part where we would make a html template
@@ -68,14 +74,18 @@ module.exports = (env, argv) => {
         title: 'Suoritustarkistin by Toska',
         inject: false,
         template: htmlTemplate,
-        appMountId: 'root',
+        appMountId: 'root'
       }),
       // Extract css
       new MiniCssExtractPlugin({
         filename: '[name].css',
-        chunkFilename: '[name]-[id].css',
+        chunkFilename: '[name]-[id].css'
       }),
-      ...additionalPlugins,
-    ],
+      new webpack.DefinePlugin({
+        __API_BASE__:
+          mode === 'production' ? "'/suoritustarkistin/api'" : "'/api'"
+      }),
+      ...additionalPlugins
+    ]
   }
 }

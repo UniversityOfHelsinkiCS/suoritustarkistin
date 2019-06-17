@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { BACKEND_API_BASE } from '../config/config'
-const baseUrl = `${BACKEND_API_BASE}/graders`
+const baseUrl = `${__API_BASE__}/graders` // API_BASE comes from webpack.config.js
 
 const getAll = async () => {
   const graders = await axios.get(baseUrl)

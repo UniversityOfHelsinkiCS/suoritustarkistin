@@ -12,8 +12,6 @@ RUN npm ci
 
 RUN npm run build
 
-RUN mkdir reports
-
 EXPOSE 6060
 
 CMD ["npm", "start"]

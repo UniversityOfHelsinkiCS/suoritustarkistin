@@ -29,6 +29,8 @@ export default ({
   }
 
   const validateAndShowReport = () => {
+    console.log(report)
+
     setMessages([])
     let errors = []
     if (!report.courseId) errors = errors.concat([{ type: 'error', content: ' Valitse kurssi.' }])

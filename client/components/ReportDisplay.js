@@ -1,63 +1,37 @@
 import React from 'react'
 import { Table } from 'semantic-ui-react'
 
-const {
-  isValidStudentId,
-  isValidOodiDate,
-  isValidGrade,
-  isValidCreditAmount,
-} = require('../../utils/validators')
+const { isValidRow } = require('../../utils/validators')
 
-const LANGUAGES = {
-  fi: 1,
-  en: 6,
-}
+const parseDataToReport = (report) => {
+  const grader = report.graderId ? report.graderId : 'Valitse arvostelija'
+  const course = report.courseId ? report.courseId : 'Valitse kurssi'
+  const date = report.date ? report.date : 'Merkitse arvostelupäivämäärä'
 
-// to be replaced with user input
-const grader = { name: 'Jami Kousa', identityCode: 'jakousa' }
-const course = {
-  credits: '3,0',
-  name: 'Devops with Docker',
-  courseCode: 'DOPS',
-  language: 'en',
-}
-const date = '1.1.1900'
-const auth = 'lolskis'
+  console.log('pvm', report.date)
 
-const isValidRow = (row) => {
-  if (!isValidStudentId(row[0])) {
-    return false
-  }
-  if (row[1] && !isValidGrade(row[1])) {
-    return false
-  }
-  if (row[2] && !isValidCreditAmount(row[2])) {
-    return false
-  }
-  if (row[3] && !LANGUAGES[row[3]]) {
-    return false
-  }
-  return true
-}
-
-const parseDataToReport = (data) => {
-  const splitData = data.trim().split('\n')
+  const splitData = report.data.trim().split('\n')
   const reportRows = splitData.map((row) => {
     const splitRow = row.split(';')
     if (isValidRow(splitRow)) {
       return (
         <Table.Row key={splitRow[0]}>
-          <Table.Cell>{course.name}</Table.Cell>
+          <Table.Cell>{course}</Table.Cell>
           <Table.Cell>{splitRow[0]}</Table.Cell>
           <Table.Cell>{splitRow[1] || 'Hyv.'}</Table.Cell>
           <Table.Cell>{splitRow[2] || course.credits}</Table.Cell>
           <Table.Cell>{splitRow[3] || course.language}</Table.Cell>
-          <Table.Cell>{grader.name}</Table.Cell>
+          <Table.Cell>{grader}</Table.Cell>
           <Table.Cell>{date}</Table.Cell>
         </Table.Row>
       )
     }
-    throw new Error(`Validation error in row "${row}"`)
+    return (
+      <Table.Row key={splitRow[0]}>
+        <Table.Cell>{course}</Table.Cell>
+        <Table.Cell negative>{row}</Table.Cell>
+      </Table.Row>
+    )
   })
 
   return (
@@ -78,6 +52,4 @@ const parseDataToReport = (data) => {
   )
 }
 
-export default ({ report }) => (
-  <div>{report.data === null ? '' : parseDataToReport(report.data)}</div>
-)
+export default ({ report }) => <div>{report.data === null ? '' : parseDataToReport(report)}</div>

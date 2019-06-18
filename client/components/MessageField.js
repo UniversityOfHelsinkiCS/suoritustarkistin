@@ -1,27 +1,17 @@
 import React from 'react'
-import { List } from 'semantic-ui-react'
+import { Message } from 'semantic-ui-react'
 
-export default ({ messages }) => {
-  const formatMessages = () => messages.map((message) => {
-    if (message.type === 'error') {
-      return (
-        <List.Item key={message.content}>
-            VIRHE:
-          {message.content}
-        </List.Item>
-      )
-    }
+export default ({ message, setMessage }) => {
+  if (message) {
     return (
-      <List.Item key={message.content}>
-          HUOM:
-        {message.content}
-      </List.Item>
+      <Message
+        positive
+        onDismiss={() => setMessage(null)}
+        header="Tärkeä huomautus!"
+        content={message}
+      />
     )
-  })
-
-  return (
-    <div>
-      <List>{formatMessages()}</List>
-    </div>
-  )
+  } else {
+    return null
+  }
 }

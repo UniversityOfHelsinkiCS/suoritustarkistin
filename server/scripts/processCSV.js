@@ -3,12 +3,13 @@ const {
   isValidStudentId,
   isValidOodiDate,
   isValidGrade,
-  isValidCreditAmount,
-} = require('../../util/validators')
+  isValidCreditAmount
+} = require('../../utils/validators')
+const sendEmail = require('../utils/sendEmail')
 
 const LANGUAGES = {
   fi: 1,
-  en: 6,
+  en: 6
 }
 
 const shortDate = (date) => {
@@ -33,9 +34,7 @@ const isValidRow = (row) => {
   return true
 }
 
-const validateEntry = ({
-  studentId, grade, credits, language,
-}) => {
+const validateEntry = ({ studentId, grade, credits, language }) => {
   if (!isValidStudentId(studentId)) {
     throw new Error(`'${studentId}' is not valid student id`)
   }
@@ -57,14 +56,14 @@ const processCSV = async (data, courseId, graderId, date) => {
 
   const course = await db.courses.findOne({
     where: {
-      id: courseId,
-    },
+      id: courseId
+    }
   })
 
   const grader = await db.graders.findOne({
     where: {
-      id: graderId,
-    },
+      id: graderId
+    }
   })
 
   const splitData = data.trim().split('\n')
@@ -72,9 +71,10 @@ const processCSV = async (data, courseId, graderId, date) => {
     .map((row) => {
       const splitRow = row.split(';')
       if (isValidRow(splitRow)) {
-        return `${splitRow[0]}##${LANGUAGES[splitRow[3]] || LANGUAGES[course.language]}#${
-          course.courseCode
-        }#${course.name}#${date}#0#${splitRow[1] || 'Hyv.'}#106##${
+        return `${splitRow[0]}##${LANGUAGES[splitRow[3]] ||
+          LANGUAGES[course.language]}#${course.courseCode}#${
+          course.name
+        }#${date}#0#${splitRow[1] || 'Hyv.'}#106##${
           grader.identityCode
         }#1#H930#11#93013#3##${splitRow[2] || course.credits}`
       }
@@ -84,31 +84,29 @@ const processCSV = async (data, courseId, graderId, date) => {
 
   const savedReport = await db.reports.create({
     fileName: `${course.courseCode}%${shortDate(date)}-V1-S2019.dat`,
-    data: report,
+    data: report
   })
 
   return savedReport
 }
 
-const processManualEntry = async ({
-  graderId, courseId, date, data,
-}) => {
+const processManualEntry = async ({ graderId, courseId, date, data }) => {
   if (!isValidOodiDate(date)) {
     throw new Error('Validation error in date.')
   }
 
   const course = await db.courses.findOne({
     where: {
-      id: courseId,
-    },
+      id: courseId
+    }
   })
 
   if (!course) throw new Error('Course id does not exist.')
 
   const grader = await db.graders.findOne({
     where: {
-      id: graderId,
-    },
+      id: graderId
+    }
   })
 
   if (!grader) throw new Error('Grader id does not exist.')
@@ -116,12 +114,11 @@ const processManualEntry = async ({
   const report = data
     .map((entry) => {
       validateEntry(entry)
-      const {
-        studentId, grade, credits, language,
-      } = entry
-      return `${studentId}##${LANGUAGES[language] || LANGUAGES[course.language]}#${
-        course.courseCode
-      }#${course.name}#${date}#0#${grade || 'Hyv.'}#106##${
+      const { studentId, grade, credits, language } = entry
+      return `${studentId}##${LANGUAGES[language] ||
+        LANGUAGES[course.language]}#${course.courseCode}#${
+        course.name
+      }#${date}#0#${grade || 'Hyv.'}#106##${
         grader.identityCode
       }#1#H930#11#93013#3##${credits || course.credits}`
     })
@@ -129,13 +126,29 @@ const processManualEntry = async ({
 
   const savedReport = await db.reports.create({
     fileName: `${course.courseCode}%${shortDate(date)}-V1-S2019.dat`,
-    data: report,
+    data: report
   })
+
+  const info = await sendEmail(
+    `Uusia kurssisuorituksia: ${course.courseCode}`,
+    `Uusi siirtotiedosto luotu OodiTooliin kurssin ${course.name} (${
+      course.courseCode
+    }) manuaalisesti syötetystä datasta.`
+  )
+  if (info) {
+    info.accepted.forEach((accepted) =>
+      console.log(`Email sent to ${accepted}.`)
+    )
+  } else if (info) {
+    info.rejected.forEach((rejected) =>
+      console.log(`Address ${rejected} was rejected.`)
+    )
+  }
 
   return savedReport
 }
 
 module.exports = {
   processCSV,
-  processManualEntry,
+  processManualEntry
 }

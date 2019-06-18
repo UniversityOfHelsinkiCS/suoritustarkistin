@@ -99,6 +99,6 @@
   "_moduleAliases": {
     "@root": ".",
     "@controllers": "server/controllers",
-    "@util": "server/util"
+    "@utils": "server/utils"
   }
 }

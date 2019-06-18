@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { BACKEND_API_BASE } from '../config/config'
-const baseUrl = `${BACKEND_API_BASE}/reports`
+const baseUrl = `${__API_BASE__}/reports` // API_BASE comes from webpack.config.js
 
 const createNew = async (token, report) => {
   const response = await axios.post(baseUrl, report, {

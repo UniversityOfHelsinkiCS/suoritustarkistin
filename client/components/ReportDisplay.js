@@ -6,58 +6,124 @@ const {
   isValidOodiDate,
   isValidGrade,
   isValidCreditAmount,
-} = require('../../util/validators')
+  isValidLanguage
+} = require('../../utils/validators')
 
-const LANGUAGES = {
-  fi: 1,
-  en: 6,
+const validStyle = {
+  background: '#d2f3db'
 }
 
-// to be replaced with user input
-const grader = { name: 'Jami Kousa', identityCode: 'jakousa' }
-const course = {
-  credits: '3,0',
-  name: 'Devops with Docker',
-  courseCode: 'DOPS',
-  language: 'en',
-}
-const date = '1.1.1900'
-const auth = 'lolskis'
-
-const isValidRow = (row) => {
-  if (!isValidStudentId(row[0])) {
-    return false
-  }
-  if (row[1] && !isValidGrade(row[1])) {
-    return false
-  }
-  if (row[2] && !isValidCreditAmount(row[2])) {
-    return false
-  }
-  if (row[3] && !LANGUAGES[row[3]]) {
-    return false
-  }
-  return true
+const invalidStyle = {
+  background: '#fddede'
 }
 
-const parseDataToReport = (data) => {
-  const splitData = data.trim().split('\n')
-  const reportRows = splitData.map((row) => {
-    const splitRow = row.split(';')
-    if (isValidRow(splitRow)) {
+const getStudentIdCell = (studentId) => {
+  if (isValidStudentId(studentId)) {
+    return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
+  } else {
+    return (
+      <Table.Cell style={invalidStyle}>
+        <i class="icon ban" /> {studentId}
+      </Table.Cell>
+    )
+  }
+}
+
+const getGradeCell = (grade) => {
+  if (grade) {
+    if (isValidGrade(grade)) {
+      return <Table.Cell style={validStyle}>{grade}</Table.Cell>
+    } else {
       return (
-        <Table.Row key={splitRow[0]}>
-          <Table.Cell>{course.name}</Table.Cell>
-          <Table.Cell>{splitRow[0]}</Table.Cell>
-          <Table.Cell>{splitRow[1] || 'Hyv.'}</Table.Cell>
-          <Table.Cell>{splitRow[2] || course.credits}</Table.Cell>
-          <Table.Cell>{splitRow[3] || course.language}</Table.Cell>
-          <Table.Cell>{grader.name}</Table.Cell>
-          <Table.Cell>{date}</Table.Cell>
-        </Table.Row>
+        <Table.Cell style={invalidStyle}>
+          <i class="icon ban" /> {grade}
+        </Table.Cell>
       )
     }
-    throw new Error(`Validation error in row "${row}"`)
+  } else {
+    return <Table.Cell style={validStyle}>Hyv.</Table.Cell>
+  }
+}
+
+const getCreditCell = (credits, course) => {
+  if (credits) {
+    if (isValidCreditAmount(credits)) {
+      return <Table.Cell style={validStyle}>{credits}</Table.Cell>
+    } else {
+      return (
+        <Table.Cell style={invalidStyle}>
+          <i class="icon ban" /> {credits}
+        </Table.Cell>
+      )
+    }
+  } else {
+    if (course) {
+      return <Table.Cell style={validStyle}>{course.credits}</Table.Cell>
+    } else {
+      return <Table.Cell />
+    }
+  }
+}
+
+const getLanguageCell = (language, course) => {
+  if (language) {
+    if (isValidLanguage(language)) {
+      return <Table.Cell style={validStyle}>{language}</Table.Cell>
+    } else {
+      return (
+        <Table.Cell style={invalidStyle}>
+          <i class="icon ban" /> {language}
+        </Table.Cell>
+      )
+    }
+  } else {
+    if (course) {
+      return <Table.Cell style={validStyle}>{course.language}</Table.Cell>
+    } else {
+      return <Table.Cell />
+    }
+  }
+}
+
+const getDateCell = (date) => {
+  if (isValidOodiDate(date)) {
+    return <Table.Cell style={validStyle}>{date}</Table.Cell>
+  } else {
+    return (
+      <Table.Cell style={invalidStyle}>
+        <i class="icon ban" /> {date}
+      </Table.Cell>
+    )
+  }
+}
+
+const parseDataToReport = (report, graders, courses) => {
+  const grader = graders.find((g) => g.id === report.graderId)
+  const course = courses.find((c) => c.id === report.courseId)
+  const date = report.date ? report.date : 'Merkitse arvostelupäivämäärä'
+
+  const reportRows = report.data.map((row) => {
+    return (
+      <Table.Row key={row.studentId}>
+        {course ? (
+          <Table.Cell style={validStyle}>{`${course.name} (${
+            course.courseCode
+          })`}</Table.Cell>
+        ) : (
+          <Table.Cell />
+        )}
+        {getStudentIdCell(row.studentId)}
+        {getGradeCell(row.grade)}
+        {getCreditCell(row.credits, course)}
+        {getLanguageCell(row.language, course)}
+        {grader ? (
+          <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
+        ) : (
+          <Table.Cell />
+        )}
+        {getDateCell(date)}
+      </Table.Row>
+    )
   })
 
   return (
@@ -78,6 +144,8 @@ const parseDataToReport = (data) => {
   )
 }
 
-export default ({ report }) => (
-  <div>{report.data === null ? '' : parseDataToReport(report.data)}</div>
+export default ({ report, graders, courses }) => (
+  <div>
+    {report.data === null ? '' : parseDataToReport(report, graders, courses)}
+  </div>
 )

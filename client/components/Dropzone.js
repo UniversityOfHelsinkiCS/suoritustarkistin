@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { parseCSV } from '../utils/reportCsvToJson'
 
 const baseStyle = {
   flex: 1,
@@ -14,19 +15,19 @@ const baseStyle = {
   backgroundColor: '#fafafa',
   color: '#bdbdbd',
   outline: 'none',
-  transition: 'border .24s ease-in-out',
+  transition: 'border .24s ease-in-out'
 }
 
 const activeStyle = {
-  borderColor: '#2196f3',
+  borderColor: '#2196f3'
 }
 
 const acceptStyle = {
-  borderColor: '#00e676',
+  borderColor: '#00e676'
 }
 
 const rejectStyle = {
-  borderColor: '#ff1744',
+  borderColor: '#ff1744'
 }
 
 export default ({ report, setReport }) => {
@@ -36,10 +37,14 @@ export default ({ report, setReport }) => {
     reader.onabort = () => alert('file reading was aborted')
     reader.onerror = () => alert('file reading has failed')
     reader.onload = () => {
-      const binaryStr = reader.result
-      setReport({ ...report, data: binaryStr })
+      const fileString = reader.result
+      const data = parseCSV(fileString)
+      setReport({
+        ...report,
+        data: data
+      })
     }
-    acceptedFiles.forEach(file => reader.readAsBinaryString(file))
+    acceptedFiles.forEach((file) => reader.readAsBinaryString(file))
   }
 
   const style = useMemo(
@@ -47,18 +52,22 @@ export default ({ report, setReport }) => {
       ...baseStyle,
       ...(isDragActive ? activeStyle : {}),
       ...(isDragAccept ? acceptStyle : {}),
-      ...(isDragReject ? rejectStyle : {}),
+      ...(isDragReject ? rejectStyle : {})
     }),
-    [isDragActive, isDragReject],
+    [isDragActive, isDragReject]
   )
 
   const {
-    getRootProps, getInputProps, isDragActive, isDragReject, isDragAccept,
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragReject,
+    isDragAccept
   } = useDropzone({
     onDrop,
     multiple: false,
     maxSize: 5000000,
-    accept: '.csv, .txt, .dat',
+    accept: '.csv, .txt, .dat'
   })
 
   return (
@@ -69,7 +78,8 @@ export default ({ report, setReport }) => {
           Klikkaa tästä lisätäksesi tiedoston, tai raahaa tiedosto tähän.
           <br />
           <br />
-          Vain yksi .csv, .txt, tai .dat päätteinen, alle 5MB tiedosto hyväksytään.
+          Vain yksi .csv, .txt, tai .dat päätteinen, alle 5MB tiedosto
+          hyväksytään.
         </p>
         <br />
       </div>

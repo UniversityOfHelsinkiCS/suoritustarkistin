@@ -1,35 +1,97 @@
 import React from 'react'
 import { Table } from 'semantic-ui-react'
 
-const { isValidRow } = require('../../utils/validators')
+const {
+  isValidStudentId,
+  isValidOodiDate,
+  isValidGrade,
+  isValidCreditAmount,
+  isValidLanguage
+} = require('../../utils/validators')
+
+const getStudentIdCell = (studentId) => {
+  if (isValidStudentId(studentId)) {
+    return <Table.Cell positive>{studentId}</Table.Cell>
+  } else {
+    return <Table.Cell negative>{studentId}</Table.Cell>
+  }
+}
+
+const getGradeCell = (grade) => {
+  if (grade) {
+    if (isValidGrade(grade)) {
+      return <Table.Cell positive>{grade}</Table.Cell>
+    } else {
+      return <Table.Cell negative>{grade}</Table.Cell>
+    }
+  } else {
+    return <Table.Cell positive>Hyv.</Table.Cell>
+  }
+}
+
+const getCreditCell = (credits, course) => {
+  if (credits) {
+    if (isValidCreditAmount(credits)) {
+      return <Table.Cell positive>{credits}</Table.Cell>
+    } else {
+      return <Table.Cell negative>{credits}</Table.Cell>
+    }
+  } else {
+    if (course) {
+      return <Table.Cell positive>{course.credits}</Table.Cell>
+    } else {
+      return <Table.Cell />
+    }
+  }
+}
+
+const getLanguageCell = (language, course) => {
+  if (language) {
+    if (isValidLanguage(language)) {
+      return <Table.Cell positive>{language}</Table.Cell>
+    } else {
+      return <Table.Cell negative>{language}</Table.Cell>
+    }
+  } else {
+    if (course) {
+      return <Table.Cell positive>{course.language}</Table.Cell>
+    } else {
+      return <Table.Cell />
+    }
+  }
+}
+
+const getDateCell = (date) => {
+  if (isValidOodiDate(date)) {
+    return <Table.Cell positive>{date}</Table.Cell>
+  } else {
+    return <Table.Cell negative>{date}</Table.Cell>
+  }
+}
 
 const parseDataToReport = (report, graders, courses) => {
-  const grader = report.graderId
-    ? graders.find(g => g.id === report.graderId).name
-    : 'Valitse arvostelija'
-  const course = report.courseId ? courses.find(c => c.id === report.courseId) : 'Valitse kurssi'
+  const grader = graders.find((g) => g.id === report.graderId)
+  const course = courses.find((c) => c.id === report.courseId)
   const date = report.date ? report.date : 'Merkitse arvostelupäivämäärä'
 
-  const splitData = report.data.trim().split('\n')
-  const reportRows = splitData.map((row) => {
-    const splitRow = row.split(';')
-    if (isValidRow(splitRow)) {
-      return (
-        <Table.Row key={splitRow[0]}>
-          <Table.Cell>{course.courseCode}</Table.Cell>
-          <Table.Cell>{splitRow[0]}</Table.Cell>
-          <Table.Cell>{splitRow[1] || 'Hyv.'}</Table.Cell>
-          <Table.Cell>{splitRow[2] || course.credits}</Table.Cell>
-          <Table.Cell>{splitRow[3] || course.language}</Table.Cell>
-          <Table.Cell>{grader}</Table.Cell>
-          <Table.Cell>{date}</Table.Cell>
-        </Table.Row>
-      )
-    }
+  const reportRows = report.data.map((row) => {
     return (
-      <Table.Row key={splitRow[0]}>
-        <Table.Cell>{course}</Table.Cell>
-        <Table.Cell negative>{row}</Table.Cell>
+      <Table.Row key={row.studentId}>
+        {course ? (
+          <Table.Cell positive>{course.courseCode}</Table.Cell>
+        ) : (
+          <Table.Cell />
+        )}
+        {getStudentIdCell(row.studentId)}
+        {getGradeCell(row.grade)}
+        {getCreditCell(row.credits, course)}
+        {getLanguageCell(row.language, course)}
+        {grader ? (
+          <Table.Cell positive>{grader.name}</Table.Cell>
+        ) : (
+          <Table.Cell />
+        )}
+        {getDateCell(date)}
       </Table.Row>
     )
   })
@@ -53,5 +115,7 @@ const parseDataToReport = (report, graders, courses) => {
 }
 
 export default ({ report, graders, courses }) => (
-  <div>{report.data === null ? '' : parseDataToReport(report, graders, courses)}</div>
+  <div>
+    {report.data === null ? '' : parseDataToReport(report, graders, courses)}
+  </div>
 )

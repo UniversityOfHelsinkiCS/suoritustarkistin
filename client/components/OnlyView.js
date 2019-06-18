@@ -16,7 +16,7 @@ export default () => {
     graderId: null,
     token: null,
     data: null,
-    date: today,
+    date: today
   })
   const [graders, setGraders] = useState([])
   const [courses, setCourses] = useState([])
@@ -31,8 +31,6 @@ export default () => {
     }
     fetchData()
   }, [])
-
-  console.log(graders)
 
   return (
     <div>

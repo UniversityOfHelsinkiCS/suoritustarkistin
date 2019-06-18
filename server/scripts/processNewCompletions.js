@@ -134,8 +134,8 @@ const processNewCompletions = async (courses) => {
 
     if (dbReportEn || dbReportFi) {
       const info = await sendEmail(
-        'New course completions.',
-        'Weekly Elements of AI transfer files available in OodiTool.'
+        'Uusia kurssisuorituksia: Elements of AI',
+        'Viikoittaisen automaattiajon tuottamat siirtotiedostot saatavilla OodiToolissa.'
       )
       if (info) {
         info.accepted.forEach((accepted) =>

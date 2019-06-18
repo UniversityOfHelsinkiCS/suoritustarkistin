@@ -9,36 +9,56 @@ const {
   isValidLanguage
 } = require('../../utils/validators')
 
+const validStyle = {
+  background: '#d2f3db'
+}
+
+const invalidStyle = {
+  background: '#fddede'
+}
+
 const getStudentIdCell = (studentId) => {
   if (isValidStudentId(studentId)) {
-    return <Table.Cell positive>{studentId}</Table.Cell>
+    return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
   } else {
-    return <Table.Cell negative>{studentId}</Table.Cell>
+    return (
+      <Table.Cell style={invalidStyle}>
+        <i class="icon ban" /> {studentId}
+      </Table.Cell>
+    )
   }
 }
 
 const getGradeCell = (grade) => {
   if (grade) {
     if (isValidGrade(grade)) {
-      return <Table.Cell positive>{grade}</Table.Cell>
+      return <Table.Cell style={validStyle}>{grade}</Table.Cell>
     } else {
-      return <Table.Cell negative>{grade}</Table.Cell>
+      return (
+        <Table.Cell style={invalidStyle}>
+          <i class="icon ban" /> {grade}
+        </Table.Cell>
+      )
     }
   } else {
-    return <Table.Cell positive>Hyv.</Table.Cell>
+    return <Table.Cell style={validStyle}>Hyv.</Table.Cell>
   }
 }
 
 const getCreditCell = (credits, course) => {
   if (credits) {
     if (isValidCreditAmount(credits)) {
-      return <Table.Cell positive>{credits}</Table.Cell>
+      return <Table.Cell style={validStyle}>{credits}</Table.Cell>
     } else {
-      return <Table.Cell negative>{credits}</Table.Cell>
+      return (
+        <Table.Cell style={invalidStyle}>
+          <i class="icon ban" /> {credits}
+        </Table.Cell>
+      )
     }
   } else {
     if (course) {
-      return <Table.Cell positive>{course.credits}</Table.Cell>
+      return <Table.Cell style={validStyle}>{course.credits}</Table.Cell>
     } else {
       return <Table.Cell />
     }
@@ -48,13 +68,17 @@ const getCreditCell = (credits, course) => {
 const getLanguageCell = (language, course) => {
   if (language) {
     if (isValidLanguage(language)) {
-      return <Table.Cell positive>{language}</Table.Cell>
+      return <Table.Cell style={validStyle}>{language}</Table.Cell>
     } else {
-      return <Table.Cell negative>{language}</Table.Cell>
+      return (
+        <Table.Cell style={invalidStyle}>
+          <i class="icon ban" /> {language}
+        </Table.Cell>
+      )
     }
   } else {
     if (course) {
-      return <Table.Cell positive>{course.language}</Table.Cell>
+      return <Table.Cell style={validStyle}>{course.language}</Table.Cell>
     } else {
       return <Table.Cell />
     }
@@ -63,9 +87,13 @@ const getLanguageCell = (language, course) => {
 
 const getDateCell = (date) => {
   if (isValidOodiDate(date)) {
-    return <Table.Cell positive>{date}</Table.Cell>
+    return <Table.Cell style={validStyle}>{date}</Table.Cell>
   } else {
-    return <Table.Cell negative>{date}</Table.Cell>
+    return (
+      <Table.Cell style={invalidStyle}>
+        <i class="icon ban" /> {date}
+      </Table.Cell>
+    )
   }
 }
 
@@ -78,7 +106,9 @@ const parseDataToReport = (report, graders, courses) => {
     return (
       <Table.Row key={row.studentId}>
         {course ? (
-          <Table.Cell positive>{course.courseCode}</Table.Cell>
+          <Table.Cell style={validStyle}>{`${course.name} (${
+            course.courseCode
+          })`}</Table.Cell>
         ) : (
           <Table.Cell />
         )}
@@ -87,7 +117,7 @@ const parseDataToReport = (report, graders, courses) => {
         {getCreditCell(row.credits, course)}
         {getLanguageCell(row.language, course)}
         {grader ? (
-          <Table.Cell positive>{grader.name}</Table.Cell>
+          <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
         ) : (
           <Table.Cell />
         )}

@@ -7,6 +7,5 @@ export default () => (
   <div>
     <NavBar />
     <Router />
-    <Footer />
   </div>
 )

@@ -6,18 +6,13 @@ import { isValidReport } from 'Root/utils/validators'
 const formatGradersForSelection = (data) =>
   data.map((g) => ({ key: g.id, text: g.name, value: g.id }))
 const formatCoursesForSelection = (data) =>
-  data.map((c) => ({ key: c.id, text: c.courseCode, value: c.id }))
+  data.map((c) => ({
+    key: c.id,
+    text: `${c.name} (${c.courseCode})`,
+    value: c.id
+  }))
 
-export default ({
-  setMessages,
-  messages,
-  setReport,
-  report,
-  graders,
-  courses
-}) => {
-  const [readyToSend, setReadyToSend] = useState(false)
-
+export default ({ setReport, report, graders, courses, setMessage }) => {
   const handleTokenChange = (event) => {
     setReport({ ...report, token: event.target.value })
   }
@@ -34,40 +29,6 @@ export default ({
     setReport({ ...report, courseId: data.value })
   }
 
-  const validateAndShowReport = () => {
-    console.log(report)
-
-    setMessages([])
-    let errors = []
-    if (!report.courseId)
-      errors = errors.concat([{ type: 'error', content: ' Valitse kurssi.' }])
-    if (!report.graderId)
-      errors = errors.concat([
-        { type: 'error', content: ' Valitse arvostelija.' }
-      ])
-    if (!report.date)
-      errors = errors.concat([
-        { type: 'error', content: ' Merkitse arvostelupäivämäärä.' }
-      ])
-    if (!report.data)
-      errors = errors.concat([{ type: 'error', content: ' Lähetä tiedosto.' }])
-    if (!report.token)
-      errors = errors.concat([
-        { type: 'error', content: ' Lisää arvostelijatunnuksesi.' }
-      ])
-
-    setMessages(errors)
-    if (errors.length === 0) {
-      // validoi data, eka virherivi errorsiin
-      // kasaa raportti jsoniksi
-    }
-
-    setMessages(errors)
-    if (errors.length === 0) {
-      setReadyToSend(true)
-    }
-  }
-
   const sendReport = async () => {
     try {
       const response = await reportService.createNew(report.token, report)
@@ -76,11 +37,14 @@ export default ({
         token: null,
         data: null
       })
+      setMessage({
+        header: 'Raportti lähetetty!',
+        content: 'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi.'
+      })
       return response
     } catch (e) {
       alert(`Lähetys epäonnistui:\n${e}`)
     }
-    setReadyToSend(false)
   }
 
   return (

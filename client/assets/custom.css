@@ -2,11 +2,11 @@
   height: 5em;
   background-color: whitesmoke;
 }
-
+/*
 .content {
   min-height: calc(100vh - 10em);
 }
-
+*/
 .footer {
   height: 5em;
   background-color: whitesmoke;

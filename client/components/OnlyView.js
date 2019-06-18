@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 
+import { Message } from 'semantic-ui-react'
 import Dropzone from 'Components/Dropzone'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
-import MessageField from 'Components/MessageField'
 import graderService from '../services/graders.js'
 import courseService from '../services/courses.js'
 
@@ -20,7 +20,7 @@ export default () => {
   })
   const [graders, setGraders] = useState([])
   const [courses, setCourses] = useState([])
-  const [messages, setMessages] = useState([])
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,14 +36,20 @@ export default () => {
     <div>
       <Dropzone report={report} setReport={setReport} />
       <InputOptions
-        messages={messages}
-        setMessages={setMessages}
+        setMessage={setMessage}
         setReport={setReport}
         report={report}
         graders={graders}
         courses={courses}
       />
-      <MessageField messages={messages} />
+      {message ? (
+        <Message
+          positive
+          onDismiss={() => setMessage(null)}
+          header={message.header}
+          content={message.content}
+        />
+      ) : null}
       <ReportDisplay graders={graders} courses={courses} report={report} />
     </div>
   )

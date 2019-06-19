@@ -1,17 +1,11 @@
 const commify = (credits) => {
-  console.log(credits)
-
-  if (/(,[05])$/.test(credits)) {
-    console.log('comma found')
-
-    return credits
+  if (/^[0-9]?[0-9]$/.test(credits)) {
+    return credits + ',0'
   }
 
-  console.log('no comma')
-
-  return credits.concat(',0')
+  return credits
 }
 
 module.exports = {
-  commify,
+  commify
 }

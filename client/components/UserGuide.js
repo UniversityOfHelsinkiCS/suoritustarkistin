@@ -2,11 +2,11 @@ import React from 'react'
 import { Message, List } from 'semantic-ui-react'
 
 const exampleStyle = {
-  textAlign: 'center',
+  textAlign: 'center'
 }
 
 export default () => (
-  <Message style={exampleStyle}>
+  <Message data-cy="userguide" style={exampleStyle}>
     <p>
       Suoritustiedostossa suoritukset täytyy olla merkittynä muodossa:
       opiskelijanumero;arvosana;laajuus;kieli
@@ -20,12 +20,12 @@ export default () => (
       <List.Item>011110002;;;fi</List.Item>
     </List>
     <p>
-      Vain opiskelijanumero on pakollinen, muut tiedot täydennetään tarvittaessa kurssin
-      oletusarvoista. Oletusarvosana on "Hyv.".
+      Vain opiskelijanumero on pakollinen, muut tiedot täydennetään tarvittaessa
+      kurssin oletusarvoista. Oletusarvosana on "Hyv.".
       <br />
       <br />
-      Mikäli et löydä tarvitsemaasi arvostelijaa tai kurssia valikosta, tai sinulla ei ole
-      arvostelijatunnusta, ota yhteyttä grp-toska@cs.helsinki.fi.
+      Mikäli et löydä tarvitsemaasi arvostelijaa tai kurssia valikosta, tai
+      sinulla ei ole arvostelijatunnusta, ota yhteyttä grp-toska@cs.helsinki.fi.
     </p>
   </Message>
 )

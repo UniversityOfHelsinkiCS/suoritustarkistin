@@ -6,3 +6,4 @@ npm-debug.log
 sids.txt
 reports/
 docker-compose.yml
+.DS_Store

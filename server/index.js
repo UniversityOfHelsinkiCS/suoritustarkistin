@@ -39,7 +39,7 @@ const serverTimestamp = now()
 if (process.argv[2] && process.argv[2] === 'processnew') {
   newCompletionTimestamp = now()
   console.log(
-    `${newCompletionTimestamp.toLocaleString()} manual run: Processing new course completions.`,
+    `${newCompletionTimestamp.toLocaleString()} manual run: Processing new course completions.`
   )
   processNewCompletions(courseCodes)
 }
@@ -47,44 +47,45 @@ if (process.argv[2] && process.argv[2] === 'processnew') {
 if (process.argv[2] && process.argv[2] === 'processold') {
   oldCompletionTimestamp = now()
   console.log(
-    `${oldCompletionTimestamp.toLocaleString()} manual run: Processing old HY course completions.`,
+    `${oldCompletionTimestamp.toLocaleString()} manual run: Processing old HY course completions.`
   )
   processOldCompletions(courseCodes[0])
 }
 
-cron.schedule('0 4 * * 4', () => {
-  newCompletionTimestamp = now()
-  console.log(
-    `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions.`,
-  )
-  processNewCompletions(courseCodes)
-})
+if (inProduction) {
+  cron.schedule('0 4 * * 4', () => {
+    newCompletionTimestamp = now()
+    console.log(
+      `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions.`
+    )
+    processNewCompletions(courseCodes)
+  })
 
-cron.schedule('0 4 1 7 *', () => {
-  newCompletionTimestamp = now()
-  console.log(
-    `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions (DEFA-special run).`,
-  )
-  processNewCompletions(courseCodes)
-})
+  cron.schedule('0 4 1 7 *', () => {
+    newCompletionTimestamp = now()
+    console.log(
+      `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions (DEFA-special run).`
+    )
+    processNewCompletions(courseCodes)
+  })
 
-cron.schedule('0 5 1,15 6,7,8 *', () => {
-  oldCompletionTimestamp = now()
-  console.log(
-    `${oldCompletionTimestamp.toLocaleString()} node-cron: Processing old HY course completions.`,
-  )
-  processOldCompletions(courseCodes[0])
-})
+  cron.schedule('0 5 1,15 6,7,8 *', () => {
+    oldCompletionTimestamp = now()
+    console.log(
+      `${oldCompletionTimestamp.toLocaleString()} node-cron: Processing old HY course completions.`
+    )
+    processOldCompletions(courseCodes[0])
+  })
 
-/*
- cron.schedule('0 10 * * 2', () => {
-  oodiCheckTimestamp = now()
-  console.log(
-    `${oodiCheckTimestamp.toLocaleString()} node-cron: Checking oodi entries.`
-  )
-  checkOodiEntries()
-}) */
-
+  /*
+   cron.schedule('0 10 * * 2', () => {
+    oodiCheckTimestamp = now()
+    console.log(
+      `${oodiCheckTimestamp.toLocaleString()} node-cron: Checking oodi entries.`
+    )
+    checkOodiEntries()
+  }) */
+}
 app.use(bodyParser.json({ limit: '5mb' }))
 app.use('/api/reports', reportsRouter)
 app.use('/api', routes)
@@ -101,9 +102,10 @@ app.get('/serverinfo', (req, res) => {
     : 'before server restart'
 
   return res.status(200).send(
-    `<p>Server last restarted: ${serverTimestamp.toLocaleString()}</p>
+    `<h1>Suoritustarkistin serverinfo:</h1>
+    <p>Server last restarted: ${serverTimestamp.toLocaleString()}</p>
     <p>New completions last processed: ${newStamp}</p>
-    <p>Old HY completions last processed: ${oldStamp}</p>`,
+    <p>Old HY completions last processed: ${oldStamp}</p>`
   )
 })
 

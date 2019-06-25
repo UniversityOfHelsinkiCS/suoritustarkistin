@@ -14,6 +14,7 @@ workflows:
     jobs:
       - cypress/run:
           executor: test
+          no-workspace: true
           build: npm run test:setup
           start: npm run test:start
           wait-on: 'http-get://localhost:8000'

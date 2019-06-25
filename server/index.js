@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const cron = require('node-cron')
 const routes = require('@utils/routes')
 const logger = require('@utils/logger')
-const { PORT, inProduction } = require('@utils/common')
+const { PORT, inProduction, inDevelopment } = require('@utils/common')
 
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
@@ -16,7 +16,7 @@ const app = express()
 /**
  * Use hot loading when in development, else serve the static content
  */
-if (!inProduction) {
+if (inDevelopment) {
   /* eslint-disable */
   const middleware = require('webpack-dev-middleware')
   const hotMiddleWare = require('webpack-hot-middleware')

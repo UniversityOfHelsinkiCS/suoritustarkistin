@@ -16,7 +16,7 @@ workflows:
           executor: test
           build: npm run test:setup
           start: npm run test:start
-          wait-on: 'http-get://localhost:6060'
+          wait-on: 'http-get://localhost:8000'
       - dockerhub/publish:
           requires:
             - cypress/run

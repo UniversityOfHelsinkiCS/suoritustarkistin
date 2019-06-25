@@ -1,6 +1,10 @@
 node_modules
+dist
+stats.json
 npm-debug.log
 .env
 sids.txt
 reports/
 docker-compose.yml
+.DS_Store
+cypress/videos

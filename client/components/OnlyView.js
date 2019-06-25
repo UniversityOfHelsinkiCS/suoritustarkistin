@@ -4,6 +4,7 @@ import { Message } from 'semantic-ui-react'
 import Dropzone from 'Components/Dropzone'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
+import UserGuide from 'Components/UserGuide'
 import graderService from '../services/graders.js'
 import courseService from '../services/courses.js'
 
@@ -16,7 +17,7 @@ export default () => {
     graderId: null,
     token: null,
     data: null,
-    date: today
+    date: today,
   })
   const [graders, setGraders] = useState([])
   const [courses, setCourses] = useState([])
@@ -34,6 +35,7 @@ export default () => {
 
   return (
     <div>
+      <UserGuide />
       <Dropzone report={report} setReport={setReport} />
       <InputOptions
         setMessage={setMessage}

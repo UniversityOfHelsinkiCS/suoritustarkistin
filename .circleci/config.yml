@@ -1,20 +1,36 @@
-version: 2
-jobs: # a collection of steps
-  build: # runs not using Workflows must have a `build` job as entry point
-    branches:
-      only:
-        - master
-    docker: # run the steps with Docker
-      - image: circleci/node:latest # ...with this image as the primary container; this is where all `steps` will run
-    steps: # a collection of executable commands
-      - checkout # special step to check out source code to working directory
-      - setup_remote_docker
-      - run:
-          name: install node packages
-          command: npm install
-      - run:
-          name: create and push build
-          command: |
-            docker build -t toska/suoritustarkistin:latest .
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push toska/suoritustarkistin:latest
+version: 2.1
+orbs:
+  cypress: cypress-io/cypress@1.7.0
+  dockerhub: circleci/docker@0.5.1
+executors:
+  test:
+    docker:
+      - image: 'cypress/base:10'
+        environment:
+          NODE_ENV: test
+      - image: 'circleci/postgres:10.6-ram'
+workflows:
+  build-test-deploy:
+    jobs:
+      - cypress/run:
+          executor: test
+          no-workspace: true
+          build: npm run test:setup
+          start: npm run test:start
+          wait-on: 'http-get://localhost:8000'
+      - dockerhub/publish:
+          requires:
+            - cypress/run
+          image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
+          tag: 'staging'
+          filters:
+            branches:
+              only: trunk
+      - dockerhub/publish:
+          requires:
+            - cypress/run
+          image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
+          tag: 'production'
+          filters:
+            branches:
+              only: master

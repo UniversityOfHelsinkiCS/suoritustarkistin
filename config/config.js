@@ -13,12 +13,11 @@ module.exports = {
     logging: false
   },
   test: {
-    username: process.env.PGUSERNAME,
-    password: process.env.PGPASSWORD,
-    database: 'suoritustarkistin_test',
-    host: process.env.PGHOST,
-    dialect: 'postgres',
-    port: process.env.PGPORT
+    username: 'postgres',
+    password: '',
+    database: 'circle_test',
+    host: '127.0.0.1',
+    dialect: 'postgres'
   },
   production: {
     username: process.env.PGUSERNAME,

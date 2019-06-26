@@ -7,6 +7,7 @@ const webpack = require('webpack')
 
 module.exports = (env, argv) => {
   const { mode } = argv
+  const { apiPrefix } = env
 
   const additionalPlugins =
     mode === 'production'
@@ -84,6 +85,9 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         __API_BASE__:
           mode === 'production' ? "'/suoritustarkistin/api'" : "'/api'"
+      }),
+      new webpack.DefinePlugin({
+        __API_BASE__: `'${apiPrefix}'`
       }),
       ...additionalPlugins
     ]

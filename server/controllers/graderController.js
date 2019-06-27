@@ -6,7 +6,7 @@ const getGraders = async (req, res) => {
     const graders = await db.graders.findAll()
     const cleanedGraders = graders.map(({ id, name }) => ({
       id,
-      name,
+      name
     }))
     res.status(200).json(cleanedGraders)
   } catch (e) {
@@ -15,6 +15,13 @@ const getGraders = async (req, res) => {
   }
 }
 
+const addGrader = async (req, res) => {
+  const grader = req.body
+  const newGrader = await db.graders.create(grader)
+  res.status(200).json(newGrader)
+}
+
 module.exports = {
   getGraders,
+  addGrader
 }

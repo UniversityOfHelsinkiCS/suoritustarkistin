@@ -1,3 +1,5 @@
+const { inProduction } = require('./common')
+
 const checkSuotarToken = (req, res, next) => {
   if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
     next()
@@ -14,4 +16,12 @@ const checkCSVToken = (req, res, next) => {
   }
 }
 
-module.exports = { checkSuotarToken, checkCSVToken }
+const notInProduction = (req, res, next) => {
+  if (!inProduction) {
+    next()
+  } else {
+    return res.status(404)
+  }
+}
+
+module.exports = { checkSuotarToken, checkCSVToken, notInProduction }

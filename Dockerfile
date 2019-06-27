@@ -8,7 +8,7 @@ RUN dpkg-reconfigure -f noninteractive tzdata
 WORKDIR /usr/src/app
 COPY . .
 
-RUN npm ci
+RUN npm ci --only=production
 
 RUN npm run build
 

@@ -7,7 +7,7 @@ const exampleStyle = {
 
 export default () => (
   <Message data-cy="userguide" style={exampleStyle}>
-    <p>
+    <div>
       Suoritustiedostossa suoritukset täytyy olla merkittynä muodossa:
       <br />
       <br />
@@ -27,6 +27,6 @@ export default () => (
       <br />
       Mikäli et löydä tarvitsemaasi arvostelijaa tai kurssia valikosta, tai
       sinulla ei ole arvostelijatunnusta, ota yhteyttä grp-toska@cs.helsinki.fi.
-    </p>
+    </div>
   </Message>
 )

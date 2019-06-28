@@ -8,15 +8,15 @@ const {
   isValidOodiDate,
   isValidGrade,
   isValidCreditAmount,
-  isValidLanguage,
+  isValidLanguage
 } = require('../../utils/validators')
 
 const validStyle = {
-  background: '#d2f3db',
+  background: '#d2f3db'
 }
 
 const invalidStyle = {
-  background: '#fddede',
+  background: '#fddede'
 }
 
 const getStudentIdCell = (studentId) => {
@@ -25,9 +25,7 @@ const getStudentIdCell = (studentId) => {
   }
   return (
     <Table.Cell style={invalidStyle}>
-      <i className="icon ban" />
-      {' '}
-      {studentId}
+      <i className="icon ban" /> {studentId}
     </Table.Cell>
   )
 }
@@ -39,9 +37,7 @@ const getGradeCell = (grade) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" />
-        {' '}
-        {grade}
+        <i className="icon ban" /> {grade}
       </Table.Cell>
     )
   }
@@ -55,9 +51,7 @@ const getCreditCell = (credits, course) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" />
-        {' '}
-        {credits}
+        <i className="icon ban" /> {credits}
       </Table.Cell>
     )
   }
@@ -74,9 +68,7 @@ const getLanguageCell = (language, course) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" />
-        {' '}
-        {language}
+        <i className="icon ban" /> {language}
       </Table.Cell>
     )
   }
@@ -92,22 +84,22 @@ const getDateCell = (date) => {
   }
   return (
     <Table.Cell style={invalidStyle}>
-      <i className="icon ban" />
-      {' '}
-      {date}
+      <i className="icon ban" /> {date}
     </Table.Cell>
   )
 }
 
 const parseDataToReport = (report, graders, courses) => {
-  const grader = graders.find(g => g.id === report.graderId)
-  const course = courses.find(c => c.id === report.courseId)
+  const grader = graders.find((g) => g.id === report.graderId)
+  const course = courses.find((c) => c.id === report.courseId)
   const date = report.date ? report.date : 'Merkitse arvostelupäivämäärä'
 
-  const reportRows = report.data.map(row => (
-    <Table.Row key={row.studentId}>
+  const reportRows = report.data.map((row, index) => (
+    <Table.Row key={row.studentId + index}>
       {course ? (
-        <Table.Cell style={validStyle}>{`${course.name} (${course.courseCode})`}</Table.Cell>
+        <Table.Cell style={validStyle}>{`${course.name} (${
+          course.courseCode
+        })`}</Table.Cell>
       ) : (
         <Table.Cell />
       )}
@@ -115,7 +107,11 @@ const parseDataToReport = (report, graders, courses) => {
       {getGradeCell(row.grade)}
       {getCreditCell(row.credits, course)}
       {getLanguageCell(row.language, course)}
-      {grader ? <Table.Cell style={validStyle}>{grader.name}</Table.Cell> : <Table.Cell />}
+      {grader ? (
+        <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
+      ) : (
+        <Table.Cell />
+      )}
       {getDateCell(date)}
     </Table.Row>
   ))
@@ -139,5 +135,7 @@ const parseDataToReport = (report, graders, courses) => {
 }
 
 export default ({ report, graders, courses }) => (
-  <div>{report.data === null ? '' : parseDataToReport(report, graders, courses)}</div>
+  <div>
+    {report.data === null ? '' : parseDataToReport(report, graders, courses)}
+  </div>
 )

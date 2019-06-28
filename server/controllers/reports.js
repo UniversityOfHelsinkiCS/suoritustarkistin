@@ -1,9 +1,10 @@
 const reportsRouter = require('express').Router()
 const db = require('../models/index')
 const { checkSuotarToken, checkCSVToken } = require('../utils/middleware')
-const { processCSV, processManualEntry } = require('../scripts/processCSV')
+const { processManualEntry } = require('../scripts/processCSV')
 
-const handleDatabaseError = () => res.status(500).json({ error: 'server went BOOM!' })
+const handleDatabaseError = () =>
+  res.status(500).json({ error: 'server went BOOM!' })
 
 const getCourseName = (data) => {
   const hackySplit = data.split('#')
@@ -12,16 +13,17 @@ const getCourseName = (data) => {
 
 reportsRouter.post('/', checkCSVToken, async (req, res) => {
   try {
-    const {
-      courseId, graderId, date, data,
-    } = req.body
+    const { courseId, graderId, date, data } = req.body
     if (!courseId || !graderId || !date || !data) {
       console.log('Unsuccessful upload: missing form fields')
       return res.status(400).json({ error: 'invalid form values' })
     }
 
     processManualEntry({
-      data, courseId, graderId, date,
+      data,
+      courseId,
+      graderId,
+      date
     })
       .then(() => {
         console.log('Successful CSV insert.')
@@ -40,10 +42,10 @@ reportsRouter.post('/', checkCSVToken, async (req, res) => {
 reportsRouter.get('/list', checkSuotarToken, async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll()
-    const reportFileInfo = fetchedReports.map(report => ({
+    const reportFileInfo = fetchedReports.map((report) => ({
       id: report.id,
       fileName: report.fileName,
-      courseName: getCourseName(report.data),
+      courseName: getCourseName(report.data)
     }))
     return res.status(200).send(reportFileInfo)
   } catch (error) {
@@ -56,13 +58,13 @@ reportsRouter.get('/undownloaded', checkSuotarToken, async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll({
       where: {
-        lastDownloaded: null,
-      },
+        lastDownloaded: null
+      }
     })
-    const reportFileInfo = fetchedReports.map(report => ({
+    const reportFileInfo = fetchedReports.map((report) => ({
       id: report.id,
       fileName: report.fileName,
-      courseName: getCourseName(report.data),
+      courseName: getCourseName(report.data)
     }))
     return res.status(200).send(reportFileInfo)
   } catch (error) {
@@ -75,18 +77,18 @@ reportsRouter.get('/:id', checkSuotarToken, async (req, res) => {
   try {
     const fetchedReport = await db.reports.findOne({
       where: {
-        id: req.params.id,
+        id: req.params.id
       },
-      raw: true,
+      raw: true
     })
 
     if (fetchedReport) {
       db.reports.update(
         {
           ...fetchedReport,
-          lastDownloaded: db.sequelize.fn('NOW'),
+          lastDownloaded: db.sequelize.fn('NOW')
         },
-        { where: { id: fetchedReport.id } },
+        { where: { id: fetchedReport.id } }
       )
       return res.status(200).json(fetchedReport)
     }

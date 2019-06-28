@@ -15,22 +15,22 @@ const baseStyle = {
   backgroundColor: '#fafafa',
   color: '#bdbdbd',
   outline: 'none',
-  transition: 'border .24s ease-in-out',
+  transition: 'border .24s ease-in-out'
 }
 
 const activeStyle = {
-  borderColor: '#2196f3',
+  borderColor: '#2196f3'
 }
 
 const acceptStyle = {
-  borderColor: '#00e676',
+  borderColor: '#00e676'
 }
 
 const rejectStyle = {
-  borderColor: '#ff1744',
+  borderColor: '#ff1744'
 }
 
-export default ({ report, setReport }) => {
+export default ({ report, setReport, setTextData }) => {
   const onDrop = (acceptedFiles) => {
     const reader = new FileReader()
 
@@ -41,10 +41,11 @@ export default ({ report, setReport }) => {
       const data = parseCSV(fileString)
       setReport({
         ...report,
-        data,
+        data
       })
+      setTextData('')
     }
-    acceptedFiles.forEach(file => reader.readAsBinaryString(file))
+    acceptedFiles.forEach((file) => reader.readAsBinaryString(file))
   }
 
   const style = useMemo(
@@ -52,18 +53,22 @@ export default ({ report, setReport }) => {
       ...baseStyle,
       ...(isDragActive ? activeStyle : {}),
       ...(isDragAccept ? acceptStyle : {}),
-      ...(isDragReject ? rejectStyle : {}),
+      ...(isDragReject ? rejectStyle : {})
     }),
-    [isDragActive, isDragReject],
+    [isDragActive, isDragReject]
   )
 
   const {
-    getRootProps, getInputProps, isDragActive, isDragReject, isDragAccept,
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragReject,
+    isDragAccept
   } = useDropzone({
     onDrop,
     multiple: false,
     maxSize: 5000000,
-    accept: '.csv, .txt, .dat',
+    accept: '.csv, .txt, .dat'
   })
 
   return (

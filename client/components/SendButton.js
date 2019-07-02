@@ -6,10 +6,14 @@ import { isValidReport } from 'Root/utils/validators'
 export default ({ report, setReport, setMessage }) => {
   const sendReport = async () => {
     try {
-      const response = await reportService.createNew(report.token, report)
+      const token = report.token
       setReport({
         ...report,
-        token: null,
+        token: null
+      })
+      const response = await reportService.createNew(token, report)
+      setReport({
+        ...report,
         data: null
       })
       setMessage({

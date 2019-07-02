@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-
 import { Message } from 'semantic-ui-react'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'

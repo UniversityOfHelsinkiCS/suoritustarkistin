@@ -21,6 +21,7 @@ export default () => {
   const [graders, setGraders] = useState([])
   const [courses, setCourses] = useState([])
   const [message, setMessage] = useState(null)
+  const [textData, setTextData] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,13 +36,19 @@ export default () => {
   return (
     <div>
       <UserGuide />
-      <InputSelector report={report} setReport={setReport} />
+      <InputSelector
+        setTextData={setTextData}
+        textData={textData}
+        report={report}
+        setReport={setReport}
+      />
       <InputOptions
         setMessage={setMessage}
         setReport={setReport}
         report={report}
         graders={graders}
         courses={courses}
+        setTextData={setTextData}
       />
       {message ? (
         <Message

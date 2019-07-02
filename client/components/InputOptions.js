@@ -11,7 +11,14 @@ const formatCoursesForSelection = (data) =>
     value: c.id
   }))
 
-export default ({ setReport, report, graders, courses, setMessage }) => {
+export default ({
+  setReport,
+  report,
+  graders,
+  courses,
+  setMessage,
+  setTextData
+}) => {
   const handleTokenChange = (event) => {
     setReport({ ...report, token: event.target.value })
   }
@@ -60,6 +67,7 @@ export default ({ setReport, report, graders, courses, setMessage }) => {
         report={report}
         setReport={setReport}
         setMessage={setMessage}
+        setTextData={setTextData}
       />
     </div>
   )

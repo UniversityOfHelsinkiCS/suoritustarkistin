@@ -3,7 +3,7 @@ import { Button } from 'semantic-ui-react'
 import reportService from '../services/reports'
 import { isValidReport } from 'Root/utils/validators'
 
-export default ({ report, setReport, setMessage }) => {
+export default ({ report, setReport, setMessage, setTextData }) => {
   const sendReport = async () => {
     try {
       const token = report.token
@@ -16,6 +16,7 @@ export default ({ report, setReport, setMessage }) => {
         ...report,
         data: null
       })
+      setTextData('')
       setMessage({
         header: 'Raportti lähetetty!',
         content: 'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi.'

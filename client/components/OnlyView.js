@@ -36,6 +36,14 @@ export default () => {
   return (
     <div>
       <UserGuide />
+      {message ? (
+        <Message
+          positive
+          onDismiss={() => setMessage(null)}
+          header={message.header}
+          content={message.content}
+        />
+      ) : null}
       <InputSelector
         setTextData={setTextData}
         textData={textData}
@@ -50,14 +58,6 @@ export default () => {
         courses={courses}
         setTextData={setTextData}
       />
-      {message ? (
-        <Message
-          positive
-          onDismiss={() => setMessage(null)}
-          header={message.header}
-          content={message.content}
-        />
-      ) : null}
       <ReportDisplay graders={graders} courses={courses} report={report} />
     </div>
   )

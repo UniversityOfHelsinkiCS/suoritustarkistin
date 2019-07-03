@@ -1,10 +1,10 @@
 const reportsRouter = require('express').Router()
 const db = require('../models/index')
 const { checkSuotarToken, checkCSVToken } = require('../utils/middleware')
-const { processManualEntry } = require('../scripts/processCSV')
+const { processManualEntry } = require('../scripts/processManualEntry')
 
 const handleDatabaseError = () =>
-  res.status(500).json({ error: 'server went BOOM!' })
+  res.status(500).json({ error: 'Server went BOOM!' })
 
 const getCourseName = (data) => {
   const hackySplit = data.split('#')

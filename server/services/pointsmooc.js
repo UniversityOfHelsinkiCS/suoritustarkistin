@@ -6,7 +6,8 @@ const op = Sequelize.op
 
 const courseNames = {
   AYTKT21018: 'elements-of-ai',
-  AYTKT21018fi: 'elements-of-ai'
+  AYTKT21018fi: 'elements-of-ai',
+  AYTKT21018sv: 'elements-of-ai'
 }
 
 const client = new GraphQLClient(process.env.MOOC_ADDRESS, {

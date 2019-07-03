@@ -38,11 +38,13 @@ export default ({
   return (
     <div>
       <Select
+        data-cy="graderSelection"
         onChange={handleGraderSelection}
         placeholder="Valitse arvostelija"
         options={formatGradersForSelection(graders)}
       />
       <Select
+        data-cy="courseSelection"
         onChange={handleCourseSelection}
         placeholder="Valitse kurssi"
         options={formatCoursesForSelection(courses)}
@@ -57,6 +59,7 @@ export default ({
       </div>
       <div className="ui input">
         <input
+          data-cy="tokenField"
           type="text"
           onChange={handleTokenChange}
           value={report.token || ''}

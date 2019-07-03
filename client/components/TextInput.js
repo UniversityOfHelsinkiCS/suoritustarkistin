@@ -26,6 +26,7 @@ export default ({ report, setReport, textData, setTextData }) => {
   return (
     <Form>
       <TextArea
+        data-cy="pastefield"
         onChange={handleDataChange}
         placeholder={
           'Liitä suoritustiedot tähän ylläolevan ohjeen mukaan formatoituna.'

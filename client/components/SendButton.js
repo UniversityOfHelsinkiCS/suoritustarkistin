@@ -29,6 +29,7 @@ export default ({ report, setReport, setMessage, setTextData }) => {
 
   return (
     <Button
+      data-cy="sendButton"
       onClick={sendReport}
       disabled={!isValidReport(report)}
       className="right floated negative ui button"

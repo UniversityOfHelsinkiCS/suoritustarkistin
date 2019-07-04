@@ -22,7 +22,7 @@ describe('End to End testing', () => {
     )
     cy.get('[data-cy=graderSelection]').click()
     cy.get('[data-cy=courseSelection]').click()
-    cy.get('[data-cy=tokenField]').type(Cypress.env('token'))
+    cy.get('[data-cy=tokenField]').type(Cypress.env('CSV_TOKEN'))
     cy.get('[data-cy=sendButton]')
       .should('not.be.disabled')
       .click()
@@ -31,7 +31,7 @@ describe('End to End testing', () => {
     cy.request({
       url: 'api/reports/list',
       headers: {
-        Authorization: Cypress.env('suotarToken')
+        Authorization: Cypress.env('SUOTAR_TOKEN')
       }
     }).should((response) => {
       expect(response.body.length).to.equal(2)

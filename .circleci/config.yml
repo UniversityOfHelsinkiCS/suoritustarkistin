@@ -8,6 +8,7 @@ executors:
       - image: 'cypress/base:10'
         environment:
           NODE_ENV: test
+          CSV_TOKEN: token
       - image: 'circleci/postgres:10.6-ram'
 workflows:
   build-test-deploy:

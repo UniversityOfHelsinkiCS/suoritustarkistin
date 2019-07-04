@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { parseCSV } from '../utils/reportCsvToJson'
 

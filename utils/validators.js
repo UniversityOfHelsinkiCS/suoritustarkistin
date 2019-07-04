@@ -1,6 +1,7 @@
 const LANGUAGES = {
   fi: 1,
-  en: 6,
+  sv: 2,
+  en: 6
 }
 
 const isValidStudentId = (id) => {
@@ -16,15 +17,16 @@ const isValidStudentId = (id) => {
   return false
 }
 
-const isValidOodiDate = date => /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.5.2019
+const isValidOodiDate = (date) =>
+  /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.5.2019
 
-const isValidGrade = grade => /^([0-5]|Hyv\.|Hyl\.)$/.test(grade) // 0 to 5, Hyv. or Hyl.
+const isValidGrade = (grade) => /^([0-5]|Hyv\.|Hyl\.)$/.test(grade) // 0 to 5, Hyv. or Hyl.
 
-const isValidCreditAmount = credits => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
+const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
 
-const isValidLanguage = language => LANGUAGES[language]
+const isValidLanguage = (language) => LANGUAGES[language]
 
-const isValidToken = token => token
+const isValidToken = (token) => token
 
 const isValidRow = (row) => {
   if (!isValidStudentId(row.studentId)) {
@@ -73,5 +75,5 @@ module.exports = {
   isValidGrade,
   isValidCreditAmount,
   isValidLanguage,
-  isValidReport,
+  isValidReport
 }

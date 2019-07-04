@@ -1,10 +1,6 @@
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
-const {
-  getCompletions,
-  getMultipleCourseCompletions
-} = require('../services/pointsmooc')
+const { getMultipleCourseCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
-const fs = require('fs')
 const sendEmail = require('../utils/sendEmail')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
@@ -38,6 +34,8 @@ const processNewCompletions = async (courses) => {
 
     let matchesFi = []
     let matchesEn = []
+    let matchesSv = []
+
     for (const registration of filteredRegistrations) {
       for (const completion of filteredCompletions) {
         if (
@@ -68,16 +66,26 @@ const processNewCompletions = async (courses) => {
               courseId: courses[0],
               isInOodikone: false
             })
+          } else if (completion_language === 'sv_SE') {
+            matchesSv = matchesSv.concat({
+              ...rest,
+              completionId: id,
+              moocId: user_upstream_id,
+              studentId: registration.onro,
+              courseId: courses[0],
+              isInOodikone: false
+            })
           } else {
-            console.log('Unknown language code!')
+            console.log(`Unknown language code: ${completion_language}`)
           }
         }
       }
     }
 
     console.log(
-      `${courses[0]}: Found ${matchesEn.length +
-        matchesFi.length} new completions.`
+      `${courses[0]}xx: Found ${matchesEn.length} English, ${
+        matchesFi.length
+      } Finnish, and ${matchesSv.length} Swedish completions.`
     )
 
     const dateNow = new Date()
@@ -109,8 +117,20 @@ const processNewCompletions = async (courses) => {
       )
       .join('\n')
 
+    const reportSv = matchesSv
+      .map(
+        (entry) =>
+          `${
+            entry.studentId
+          }##1#AYTKT21018sv#Elements of AI: Grunderna i artificiell intelligens#${date}#0#Hyv.#106##${
+            process.env.TEACHERCODE
+          }#1#H930#11#93013#3##2,0`
+      )
+      .join('\n')
+
     let dbReportEn = null
     let dbReportFi = null
+    let dbReportSv = null
 
     if (matchesEn.length > 0) {
       dbReportEn = await db.reports.create({
@@ -132,7 +152,17 @@ const processNewCompletions = async (courses) => {
       })
     }
 
-    if (dbReportEn || dbReportFi) {
+    if (matchesSv.length > 0) {
+      dbReportSv = await db.reports.create({
+        fileName: `AYTKT21018sv%${shortDate}-V1-S2019.dat`,
+        data: reportSv
+      })
+      matchesSv.forEach((entry) => {
+        db.credits.create({ ...entry, reportId: dbReportSv.id })
+      })
+    }
+
+    if (dbReportEn || dbReportFi || dbReportSv) {
       const info = await sendEmail(
         'Uusia kurssisuorituksia: Elements of AI',
         'Viikoittaisen automaattiajon tuottamat siirtotiedostot saatavilla OodiToolissa.'
@@ -148,7 +178,7 @@ const processNewCompletions = async (courses) => {
       }
     }
   } catch (error) {
-    console.log('Error:', error.message)
+    console.log('Error processing new completions:', error.message)
   }
 }
 

@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { Select, Button } from 'semantic-ui-react'
-import reportService from '../services/reports'
-import { isValidReport } from 'Root/utils/validators'
+import SendButton from 'Components/SendButton.js'
+import React from 'react'
+import { Select } from 'semantic-ui-react'
 
 const formatGradersForSelection = (data) =>
   data.map((g) => ({ key: g.id, text: g.name, value: g.id }))
@@ -12,7 +11,14 @@ const formatCoursesForSelection = (data) =>
     value: c.id
   }))
 
-export default ({ setReport, report, graders, courses, setMessage }) => {
+export default ({
+  setReport,
+  report,
+  graders,
+  courses,
+  setMessage,
+  setTextData
+}) => {
   const handleTokenChange = (event) => {
     setReport({ ...report, token: event.target.value })
   }
@@ -29,32 +35,16 @@ export default ({ setReport, report, graders, courses, setMessage }) => {
     setReport({ ...report, courseId: data.value })
   }
 
-  const sendReport = async () => {
-    try {
-      const response = await reportService.createNew(report.token, report)
-      setReport({
-        ...report,
-        token: null,
-        data: null
-      })
-      setMessage({
-        header: 'Raportti lähetetty!',
-        content: 'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi.'
-      })
-      return response
-    } catch (e) {
-      alert(`Lähetys epäonnistui:\n${e}`)
-    }
-  }
-
   return (
     <div>
       <Select
+        data-cy="graderSelection"
         onChange={handleGraderSelection}
         placeholder="Valitse arvostelija"
         options={formatGradersForSelection(graders)}
       />
       <Select
+        data-cy="courseSelection"
         onChange={handleCourseSelection}
         placeholder="Valitse kurssi"
         options={formatCoursesForSelection(courses)}
@@ -69,19 +59,19 @@ export default ({ setReport, report, graders, courses, setMessage }) => {
       </div>
       <div className="ui input">
         <input
+          data-cy="tokenField"
           type="text"
           onChange={handleTokenChange}
           value={report.token || ''}
           placeholder="Arvostelijatunnus"
         />
       </div>
-      <Button
-        onClick={sendReport}
-        disabled={!isValidReport(report)}
-        className="right floated negative ui button"
-      >
-        Lähetä raportti
-      </Button>
+      <SendButton
+        report={report}
+        setReport={setReport}
+        setMessage={setMessage}
+        setTextData={setTextData}
+      />
     </div>
   )
 }

@@ -3,8 +3,7 @@ import { Tab } from 'semantic-ui-react'
 import Dropzone from 'Components/Dropzone'
 import TextInput from 'Components/TextInput'
 
-export default ({ report, setReport }) => {
-  const [textData, setTextData] = useState('')
+export default ({ report, setReport, setTextData, textData }) => {
   const panes = [
     {
       menuItem: 'Copy & Paste',

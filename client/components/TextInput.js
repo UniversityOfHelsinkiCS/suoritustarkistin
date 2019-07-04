@@ -5,11 +5,18 @@ import { TextArea, Form } from 'semantic-ui-react'
 export default ({ report, setReport, textData, setTextData }) => {
   const handleDataChange = (event) => {
     const rawData = event.target.value
-    const data = parseCSV(rawData.trim())
-    setReport({
-      ...report,
-      data
-    })
+    if (rawData === '') {
+      setReport({
+        ...report,
+        data: null
+      })
+    } else {
+      const data = parseCSV(rawData.trim())
+      setReport({
+        ...report,
+        data
+      })
+    }
     setTextData(rawData)
   }
   const textAreaStyle = {
@@ -19,6 +26,7 @@ export default ({ report, setReport, textData, setTextData }) => {
   return (
     <Form>
       <TextArea
+        data-cy="pastefield"
         onChange={handleDataChange}
         placeholder={
           'Liitä suoritustiedot tähän ylläolevan ohjeen mukaan formatoituna.'

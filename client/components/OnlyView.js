@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-
 import { Message } from 'semantic-ui-react'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
@@ -22,6 +21,7 @@ export default () => {
   const [graders, setGraders] = useState([])
   const [courses, setCourses] = useState([])
   const [message, setMessage] = useState(null)
+  const [textData, setTextData] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,14 +36,6 @@ export default () => {
   return (
     <div>
       <UserGuide />
-      <InputSelector report={report} setReport={setReport} />
-      <InputOptions
-        setMessage={setMessage}
-        setReport={setReport}
-        report={report}
-        graders={graders}
-        courses={courses}
-      />
       {message ? (
         <Message
           positive
@@ -52,6 +44,20 @@ export default () => {
           content={message.content}
         />
       ) : null}
+      <InputSelector
+        setTextData={setTextData}
+        textData={textData}
+        report={report}
+        setReport={setReport}
+      />
+      <InputOptions
+        setMessage={setMessage}
+        setReport={setReport}
+        report={report}
+        graders={graders}
+        courses={courses}
+        setTextData={setTextData}
+      />
       <ReportDisplay graders={graders} courses={courses} report={report} />
     </div>
   )

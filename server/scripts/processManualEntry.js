@@ -11,7 +11,13 @@ const sendEmail = require('../utils/sendEmail')
 
 const LANGUAGES = {
   fi: 1,
+  sv: 2,
   en: 6
+}
+
+const ORGANISATION_RELATED_PARAMETERS = {
+  AYTKT: '#1#H930#11#93013#3##',
+  TKT: '#1#H523#####'
 }
 
 const shortDate = (date) => {
@@ -47,6 +53,10 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
 
   if (!course) throw new Error('Course id does not exist.')
 
+  const orgParams = (courseCode) =>
+    courseCode.substring(0, 2) === 'AY'
+      ? ORGANISATION_RELATED_PARAMETERS.AYTKT
+      : ORGANISATION_RELATED_PARAMETERS.TKT
   const grader = await db.graders.findOne({
     where: {
       id: graderId
@@ -62,9 +72,9 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
       return `${studentId}##${LANGUAGES[language] ||
         LANGUAGES[course.language]}#${course.courseCode}#${
         course.name
-      }#${date}#0#${grade || 'Hyv.'}#106##${
-        grader.identityCode
-      }#1#H930#11#93013#3##${commify(credits) || course.credits}`
+      }#${date}#0#${grade || 'Hyv.'}#106##${grader.identityCode}${orgParams(
+        course.courseCode
+      )}${commify(credits) || course.credits}`
     })
     .join('\n')
 

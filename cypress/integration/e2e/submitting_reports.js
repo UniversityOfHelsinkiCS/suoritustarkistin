@@ -78,28 +78,6 @@ describe('Submitting data creates a valid report into database', () => {
   })
 
   it('When pasting (typing) English tkt course by testiope into text field', () => {
-    cy.exec('npm run db:recreate')
-    cy.request('POST', '/api/courses', {
-      name: 'avoimen kurssi',
-      courseCode: 'AYTKTTEST',
-      language: 'fi',
-      credits: '8,0'
-    })
-    cy.request('POST', '/api/courses', {
-      name: 'tkt:n kurssi',
-      courseCode: 'TKTTEST',
-      language: 'en',
-      credits: '8,0'
-    })
-    cy.request('POST', '/api/graders', {
-      name: 'testiope',
-      identityCode: '000000-000A'
-    })
-    cy.request('POST', '/api/graders', {
-      name: 'testimaikka',
-      identityCode: '000000-000B'
-    })
-
     cy.visit('')
     cy.get('[data-cy=sendButton]').should('be.disabled')
     cy.get('[data-cy=pastefield]').type(
@@ -136,11 +114,11 @@ describe('Submitting data creates a valid report into database', () => {
         Authorization: Cypress.env('SUOTAR_TOKEN')
       }
     }).should((response) => {
-      expect(response.body.length).to.equal(2) // db has one entry after recreation, here we check a new one has been added
+      expect(response.body.length).to.equal(3) // db has one entry after recreation, here we check a new one has been added
     })
 
     cy.request({
-      url: 'api/reports/2',
+      url: 'api/reports/3',
       headers: {
         Authorization: Cypress.env('SUOTAR_TOKEN')
       }

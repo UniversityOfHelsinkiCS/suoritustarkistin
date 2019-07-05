@@ -1,6 +1,6 @@
 const reportsRouter = require('express').Router()
-const db = require('../models/index')
 const logger = require('@utils/logger')
+const db = require('../models/index')
 const { checkSuotarToken, checkCSVToken } = require('../utils/middleware')
 const { processManualEntry } = require('../scripts/processManualEntry')
 

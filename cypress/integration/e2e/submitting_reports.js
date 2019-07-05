@@ -29,6 +29,7 @@ describe('Submitting data creates a valid report into database', () => {
       { delay: 1 }
     )
     cy.get('[data-cy=dateField]')
+      .children()
       .clear()
       .type('5.7.2019')
   })
@@ -46,7 +47,9 @@ describe('Submitting data creates a valid report into database', () => {
       .contains('avoimen kurssi (AYTKTTEST)')
       .click()
 
-    cy.get('[data-cy=tokenField]').type(Cypress.env('CSV_TOKEN'))
+    cy.get('[data-cy=tokenField]')
+      .children()
+      .type(Cypress.env('CSV_TOKEN'))
     cy.get('[data-cy=sendButton]')
       .should('not.be.disabled')
       .click()
@@ -88,7 +91,9 @@ describe('Submitting data creates a valid report into database', () => {
       .contains('tkt:n kurssi (TKTTEST)')
       .click()
 
-    cy.get('[data-cy=tokenField]').type(Cypress.env('CSV_TOKEN'))
+    cy.get('[data-cy=tokenField]')
+      .children()
+      .type(Cypress.env('CSV_TOKEN'))
     cy.get('[data-cy=sendButton]')
       .should('not.be.disabled')
       .click()

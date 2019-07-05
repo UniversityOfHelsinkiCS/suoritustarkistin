@@ -25,7 +25,9 @@ const getStudentIdCell = (studentId) => {
   }
   return (
     <Table.Cell style={invalidStyle}>
-      <i className="icon ban" /> {studentId}
+      <i className="icon ban" /> 
+      {' '}
+      {studentId}
     </Table.Cell>
   )
 }
@@ -37,7 +39,9 @@ const getGradeCell = (grade) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" /> {grade}
+        <i className="icon ban" /> 
+        {' '}
+        {grade}
       </Table.Cell>
     )
   }
@@ -51,7 +55,9 @@ const getCreditCell = (credits, course) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" /> {credits}
+        <i className="icon ban" /> 
+        {' '}
+        {credits}
       </Table.Cell>
     )
   }
@@ -68,7 +74,9 @@ const getLanguageCell = (language, course) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" /> {language}
+        <i className="icon ban" /> 
+        {' '}
+        {language}
       </Table.Cell>
     )
   }
@@ -84,7 +92,9 @@ const getDateCell = (date) => {
   }
   return (
     <Table.Cell style={invalidStyle}>
-      <i className="icon ban" /> {date}
+      <i className="icon ban" /> 
+      {' '}
+      {date}
     </Table.Cell>
   )
 }
@@ -97,9 +107,11 @@ const parseDataToReport = (report, graders, courses) => {
   const reportRows = report.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
       {course ? (
-        <Table.Cell style={validStyle}>{`${course.name} (${
+        <Table.Cell style={validStyle}>
+          {`${course.name} (${
           course.courseCode
-        })`}</Table.Cell>
+        })`}
+        </Table.Cell>
       ) : (
         <Table.Cell />
       )}

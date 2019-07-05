@@ -4,6 +4,7 @@ const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const Sequelize = require('sequelize')
 const logger = require('@utils/logger')
+
 const Op = Sequelize.Op
 
 const processNewCompletions = async (courses) => {

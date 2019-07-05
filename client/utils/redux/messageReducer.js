@@ -22,16 +22,16 @@ export default (state = { data: [] }, action) => {
     case 'CREATE_MESSAGE_SUCCESS':
       return {
         ...state,
-        data: [...state.data.filter(item => item.id !== action.response.id), action.response],
+        data: [...state.data.filter((item) => item.id !== action.response.id), action.response],
         pending: false,
-        error: false,
+        error: false
       }
     case 'GET_MESSAGES_SUCCESS':
       return {
         ...state,
         data: action.response,
         pending: false,
-        error: false,
+        error: false
       }
     default:
       return state

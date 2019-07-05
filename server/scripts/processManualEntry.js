@@ -6,6 +6,7 @@ const {
   isValidCreditAmount
 } = require('../../utils/validators')
 const { commify } = require('../../utils/commify')
+const logger = require('@utils/logger')
 
 const sendEmail = require('../utils/sendEmail')
 
@@ -91,11 +92,11 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
   )
   if (info) {
     info.accepted.forEach((accepted) =>
-      console.log(`Email sent to ${accepted}.`)
+      logger.info(`Email sent to ${accepted}.`)
     )
   } else if (info) {
     info.rejected.forEach((rejected) =>
-      console.log(`Address ${rejected} was rejected.`)
+      logger.error(`Address ${rejected} was rejected.`)
     )
   }
 

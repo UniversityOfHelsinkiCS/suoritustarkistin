@@ -1,12 +1,9 @@
-const {
-  getRegistrations,
-  getMultipleCourseRegistrations
-} = require('../services/eduweb')
+const { getRegistrations } = require('../services/eduweb')
 const { getMultipleCourseCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
-const fs = require('fs')
 const sendEmail = require('../utils/sendEmail')
 const { isValidStudentId } = require('../../utils/validators')
+const logger = require('@utils/logger')
 
 const fixStudentId = (id) => {
   if (id.length === 8 && id[0] === '1' && isValidStudentId(`0${id}`)) {
@@ -79,7 +76,7 @@ const processOldCompletions = async (course) => {
       (c) => c.completion_language === 'fi_FI'
     )
 
-    console.log(
+    logger.info(
       `${course}: Found ${completionsEn.length +
         completionsFi.length} unmarked old completions.`
     )
@@ -162,16 +159,16 @@ const processOldCompletions = async (course) => {
       )
       if (info) {
         info.accepted.forEach((accepted) =>
-          console.log(`Email sent to ${accepted}.`)
+          logger.info(`Email sent to ${accepted}.`)
         )
       } else if (info) {
         info.rejected.forEach((rejected) =>
-          console.log(`Address ${rejected} was rejected.`)
+          logger.error(`Address ${rejected} was rejected.`)
         )
       }
     }
   } catch (error) {
-    console.log('Error:', error.message)
+    logger.error('Error:', error.message)
   }
 }
 

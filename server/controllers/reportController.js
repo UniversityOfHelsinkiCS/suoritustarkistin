@@ -1,10 +1,13 @@
 const reportsRouter = require('express').Router()
 const db = require('../models/index')
+const logger = require('@utils/logger')
 const { checkSuotarToken, checkCSVToken } = require('../utils/middleware')
 const { processManualEntry } = require('../scripts/processManualEntry')
 
-const handleDatabaseError = () =>
-  res.status(500).json({ error: 'Server went BOOM!' })
+const handleDatabaseError = (res, error) => {
+  logger.error(error)
+  return res.status(500).json({ error: 'Server went BOOM!' })
+}
 
 const getCourseName = (data) => {
   const hackySplit = data.split('#')
@@ -15,7 +18,7 @@ reportsRouter.post('/', checkCSVToken, async (req, res) => {
   try {
     const { courseId, graderId, date, data } = req.body
     if (!courseId || !graderId || !date || !data) {
-      console.log('Unsuccessful upload: missing form fields')
+      logger.error('Unsuccessful upload: missing form fields')
       return res.status(400).json({ error: 'invalid form values' })
     }
 
@@ -26,16 +29,15 @@ reportsRouter.post('/', checkCSVToken, async (req, res) => {
       date
     })
       .then(() => {
-        console.log('Successful CSV insert.')
+        logger.info('Successful CSV insert.')
         return res.status(200).json({ message: 'report created successfully' })
       })
       .catch((err) => {
-        console.log('Unsuccessful CVS insert:', err.message)
+        logger.error('Unsuccessful CVS insert:', err.message)
         return res.status(400).json({ error: err.message })
       })
   } catch (error) {
-    console.log(error)
-    handleDatabaseError()
+    handleDatabaseError(res, error)
   }
 })
 
@@ -49,8 +51,7 @@ reportsRouter.get('/list', checkSuotarToken, async (req, res) => {
     }))
     return res.status(200).send(reportFileInfo)
   } catch (error) {
-    console.log(error)
-    handleDatabaseError()
+    handleDatabaseError(res, error)
   }
 })
 
@@ -68,8 +69,7 @@ reportsRouter.get('/undownloaded', checkSuotarToken, async (req, res) => {
     }))
     return res.status(200).send(reportFileInfo)
   } catch (error) {
-    console.log(error)
-    handleDatabaseError()
+    handleDatabaseError(res, error)
   }
 })
 
@@ -94,8 +94,7 @@ reportsRouter.get('/:id', checkSuotarToken, async (req, res) => {
     }
     return res.status(404).json({ error: 'Report not found.' })
   } catch (error) {
-    console.log(error)
-    handleDatabaseError()
+    handleDatabaseError(res, error)
   }
 })
 

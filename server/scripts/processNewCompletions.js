@@ -3,6 +3,7 @@ const { getMultipleCourseCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const Sequelize = require('sequelize')
+const logger = require('@utils/logger')
 const Op = Sequelize.Op
 
 const processNewCompletions = async (courses) => {
@@ -76,13 +77,13 @@ const processNewCompletions = async (courses) => {
               isInOodikone: false
             })
           } else {
-            console.log(`Unknown language code: ${completion_language}`)
+            logger.error(`Unknown language code: ${completion_language}`)
           }
         }
       }
     }
 
-    console.log(
+    logger.info(
       `${courses[0]}xx: Found ${matchesEn.length} English, ${
         matchesFi.length
       } Finnish, and ${matchesSv.length} Swedish completions.`
@@ -122,7 +123,7 @@ const processNewCompletions = async (courses) => {
         (entry) =>
           `${
             entry.studentId
-          }##1#AYTKT21018sv#Elements of AI: Grunderna i artificiell intelligens#${date}#0#Hyv.#106##${
+          }##2#AYTKT21018sv#Elements of AI: Grunderna i artificiell intelligens#${date}#0#Hyv.#106##${
             process.env.TEACHERCODE
           }#1#H930#11#93013#3##2,0`
       )
@@ -169,16 +170,16 @@ const processNewCompletions = async (courses) => {
       )
       if (info) {
         info.accepted.forEach((accepted) =>
-          console.log(`Email sent to ${accepted}.`)
+          logger.info(`Email sent to ${accepted}.`)
         )
       } else if (info) {
         info.rejected.forEach((rejected) =>
-          console.log(`Address ${rejected} was rejected.`)
+          logger.error(`Address ${rejected} was rejected.`)
         )
       }
     }
   } catch (error) {
-    console.log('Error processing new completions:', error.message)
+    logger.error('Error processing new completions:', error.message)
   }
 }
 

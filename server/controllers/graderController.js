@@ -10,7 +10,7 @@ const getGraders = async (req, res) => {
     }))
     res.status(200).json(cleanedGraders)
   } catch (e) {
-    console.log(e)
+    logger.error(e)
     res.status(500).json({ error: 'server went BOOM!' })
   }
 }

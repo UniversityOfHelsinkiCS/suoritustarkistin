@@ -1,8 +1,5 @@
-const fs = require('fs')
 const { GraphQLClient } = require('graphql-request')
-const db = require('../models/index')
-const Sequelize = require('sequelize')
-const op = Sequelize.op
+const logger = require('@utils/logger')
 
 const courseNames = {
   AYTKT21018: 'elements-of-ai',
@@ -19,7 +16,7 @@ const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
 const getMultipleCourseCompletions = async (courses) => {
   const uniqueCourseNames = [...new Set(courses.map((c) => courseNames[c]))]
   let completionData = []
-  for (n of uniqueCourseNames) {
+  for (const n of uniqueCourseNames) {
     completionData = await completionData.concat(await getCompletions(n))
   }
 
@@ -64,7 +61,7 @@ const postRegistrations = async (completionAndStudentIdList) => {
     //   return []
     // }
   } catch (e) {
-    console.log(
+    logger.error(
       `Error in updating confirmed registrations. Error message:\n${e}`
     )
   }

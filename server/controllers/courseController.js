@@ -13,7 +13,7 @@ const getCourses = async (req, res) => {
     }))
     res.status(200).json(cleanedCourses)
   } catch (e) {
-    console.log(e)
+    logger.error(e)
     res.status(500).json({ error: 'server went BOOM!' })
   }
 }

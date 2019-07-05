@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Tab } from 'semantic-ui-react'
 import Dropzone from 'Components/Dropzone'
 import TextInput from 'Components/TextInput'

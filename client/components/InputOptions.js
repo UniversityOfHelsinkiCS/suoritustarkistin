@@ -51,6 +51,7 @@ export default ({
       />
       <div className="ui input">
         <input
+          data-cy="dateField"
           type="text"
           onChange={handleDateChange}
           value={report.date}

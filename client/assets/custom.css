@@ -3,11 +3,17 @@
   background-color: whitesmoke;
 }
 
-.content {
+.sitecontent {
   min-height: calc(100vh - 10em);
 }
 
 .footer {
+  clear: both;
   height: 5em;
   background-color: whitesmoke;
+}
+
+.input {
+  float: left;
+  margin-right: 0px;
 }

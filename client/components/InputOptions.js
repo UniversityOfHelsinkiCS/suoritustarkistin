@@ -1,6 +1,6 @@
 import SendButton from 'Components/SendButton.js'
 import React from 'react'
-import { Select } from 'semantic-ui-react'
+import { Select, Input } from 'semantic-ui-react'
 
 const formatGradersForSelection = (data) =>
   data.map((g) => ({ key: g.id, text: g.name, value: g.id }))
@@ -38,35 +38,33 @@ export default ({
   return (
     <div>
       <Select
+        className="input"
         data-cy="graderSelection"
         onChange={handleGraderSelection}
         placeholder="Valitse arvostelija"
         options={formatGradersForSelection(graders)}
       />
       <Select
+        className="input"
         data-cy="courseSelection"
         onChange={handleCourseSelection}
         placeholder="Valitse kurssi"
         options={formatCoursesForSelection(courses)}
       />
-      <div className="ui input">
-        <input
-          data-cy="dateField"
-          type="text"
-          onChange={handleDateChange}
-          value={report.date}
-          placeholder="p.k.vvvv"
-        />
-      </div>
-      <div className="ui input">
-        <input
-          data-cy="tokenField"
-          type="text"
-          onChange={handleTokenChange}
-          value={report.token || ''}
-          placeholder="Arvostelijatunnus"
-        />
-      </div>
+      <Input
+        data-cy="dateField"
+        type="text"
+        onChange={handleDateChange}
+        value={report.date}
+        placeholder="p.k.vvvv"
+      />
+      <Input
+        data-cy="tokenField"
+        type="text"
+        onChange={handleTokenChange}
+        value={report.token || ''}
+        placeholder="Arvostelijatunnus"
+      />
       <SendButton
         report={report}
         setReport={setReport}

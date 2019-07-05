@@ -1,5 +1,7 @@
 describe('Submitting data creates a valid report into database', () => {
-  beforeEach(() => {
+  beforeEach(() => {})
+
+  it('When pasting (typing) Finnish open university course by testimaikka into text field', () => {
     cy.exec('npm run db:recreate')
     cy.request('POST', '/api/courses', {
       name: 'avoimen kurssi',
@@ -32,9 +34,6 @@ describe('Submitting data creates a valid report into database', () => {
       .children()
       .clear()
       .type('5.7.2019')
-  })
-
-  it('When pasting (typing) Finnish open university course by testimaikka into text field', () => {
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()
@@ -79,6 +78,38 @@ describe('Submitting data creates a valid report into database', () => {
   })
 
   it('When pasting (typing) English tkt course by testiope into text field', () => {
+    cy.exec('npm run db:recreate')
+    cy.request('POST', '/api/courses', {
+      name: 'avoimen kurssi',
+      courseCode: 'AYTKTTEST',
+      language: 'fi',
+      credits: '8,0'
+    })
+    cy.request('POST', '/api/courses', {
+      name: 'tkt:n kurssi',
+      courseCode: 'TKTTEST',
+      language: 'en',
+      credits: '8,0'
+    })
+    cy.request('POST', '/api/graders', {
+      name: 'testiope',
+      identityCode: '000000-000A'
+    })
+    cy.request('POST', '/api/graders', {
+      name: 'testimaikka',
+      identityCode: '000000-000B'
+    })
+
+    cy.visit('')
+    cy.get('[data-cy=sendButton]').should('be.disabled')
+    cy.get('[data-cy=pastefield]').type(
+      '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
+      { delay: 1 }
+    )
+    cy.get('[data-cy=dateField]')
+      .children()
+      .clear()
+      .type('5.7.2019')
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()

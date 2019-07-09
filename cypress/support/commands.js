@@ -23,3 +23,18 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add(
+  'upload',
+  {
+    prevSubject: 'element'
+  },
+  (subject, content, fileName) => {
+    cy.window().then((window) => {
+      const testFile = new window.File([content], fileName)
+      cy.wrap(subject).trigger('drop', {
+        dataTransfer: { files: [testFile], types: ['Files'] }
+      })
+    })
+  }
+)

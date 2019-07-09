@@ -45,6 +45,10 @@ const isValidRow = (row) => {
 }
 
 const isValidReport = (report) => {
+  if (!report.graderId || !report.courseId) {
+    return false
+  }
+
   if (!report.data) {
     return false
   }

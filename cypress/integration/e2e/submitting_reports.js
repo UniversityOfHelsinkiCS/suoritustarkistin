@@ -1,5 +1,5 @@
-describe('Submitting data creates a valid report into database', () => {
-  beforeEach(() => {
+describe('Submitting data creates a valid report into database', function() {
+  beforeEach(function() {
     cy.request('DELETE', '/api/courses')
     cy.request('DELETE', '/api/graders')
     cy.request('DELETE', '/api/reports')
@@ -136,5 +136,57 @@ describe('Submitting data creates a valid report into database', () => {
     })
   })
 
-  // it('When dragging (choosing) a file into dropzone', () => {})
+  it('When dragging (choosing) a file into dropzone', () => {
+    cy.visit('')
+    cy.get('[data-cy=sendButton]').should('be.disabled')
+    cy.get('[data-cy=dragdrop]').click()
+    cy.fixture('valid.csv').then((content) => {
+      cy.get('[data-cy=dropzone]').upload(content, 'valid.csv')
+    })
+    cy.get('[data-cy=dateField]')
+      .children()
+      .clear()
+      .type('5.7.2019')
+    cy.get('[data-cy=graderSelection]')
+      .click()
+      .children()
+      .contains('testiope')
+      .click()
+
+    cy.get('[data-cy=courseSelection]')
+      .click()
+      .children()
+      .contains('tkt:n kurssi (TKTTEST)')
+      .click()
+
+    cy.get('[data-cy=tokenField]')
+      .children()
+      .type(Cypress.env('CSV_TOKEN'))
+    cy.get('[data-cy=sendButton]')
+      .should('not.be.disabled')
+      .click()
+      .should('be.disabled')
+    cy.wait(1000)
+
+    cy.request({
+      url: 'api/reports/list',
+      headers: {
+        Authorization: Cypress.env('SUOTAR_TOKEN')
+      }
+    }).should((response) => {
+      expect(response.body.length).to.equal(1)
+      cy.request({
+        url: `api/reports/${response.body[0].id}`,
+        headers: {
+          Authorization: Cypress.env('SUOTAR_TOKEN')
+        }
+      }).should((response) => {
+        const { fileName, data } = response.body
+        expect(fileName).to.equal('TKTTEST%5.7.19-V1-S2019.dat')
+        expect(data).to.equal(
+          '010000003##1#TKTTEST#tkt:n kurssi#5.7.2019#0#2#106##000000-000A#1#H523#####5,0\n011000002##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####2,0\n011100009##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####8,0\n011110002##1#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####8,0'
+        )
+      })
+    })
+  })
 })

@@ -73,7 +73,7 @@ export default ({ report, setReport, setTextData }) => {
 
   return (
     <div className="container">
-      <div {...getRootProps({ style })}>
+      <div data-cy="dropzone" {...getRootProps({ style })}>
         <input {...getInputProps()} />
         <p>
           Lisää tiedosto raahaamalla se tähän, tai etsi se klikkaamalla tästä.

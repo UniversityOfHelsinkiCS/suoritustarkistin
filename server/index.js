@@ -8,7 +8,6 @@ const { PORT, inProduction, inDevelopment } = require('@utils/common')
 
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
-const reportsRouter = require('./controllers/reportController')
 
 const courseCodes = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
@@ -87,7 +86,6 @@ if (inProduction) {
   }) */
 }
 app.use(bodyParser.json({ limit: '5mb' }))
-app.use('/api/reports', reportsRouter)
 app.use('/api', routes)
 
 app.get('/serverinfo', (req, res) => {

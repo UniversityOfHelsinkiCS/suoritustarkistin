@@ -24,7 +24,13 @@ const addCourse = async (req, res) => {
   res.status(200).json(newCourse)
 }
 
+const deleteAllCourses = async (req, res) => {
+  await db.courses.destroy({ where: {} })
+  res.status(204).end()
+}
+
 module.exports = {
   getCourses,
-  addCourse
+  addCourse,
+  deleteAllCourses
 }

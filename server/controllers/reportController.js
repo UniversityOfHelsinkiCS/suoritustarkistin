@@ -1,7 +1,5 @@
-const reportsRouter = require('express').Router()
 const logger = require('@utils/logger')
 const db = require('../models/index')
-const { checkSuotarToken, checkCSVToken } = require('../utils/middleware')
 const { processManualEntry } = require('../scripts/processManualEntry')
 
 const handleDatabaseError = (res, error) => {
@@ -14,7 +12,7 @@ const getCourseName = (data) => {
   return hackySplit[4] || 'Unnamed course'
 }
 
-reportsRouter.post('/', checkCSVToken, async (req, res) => {
+const addReport = async (req, res) => {
   try {
     const { courseId, graderId, date, data } = req.body
     if (!courseId || !graderId || !date || !data) {
@@ -39,9 +37,9 @@ reportsRouter.post('/', checkCSVToken, async (req, res) => {
   } catch (error) {
     handleDatabaseError(res, error)
   }
-})
+}
 
-reportsRouter.get('/list', checkSuotarToken, async (req, res) => {
+const getReportList = async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll()
     const reportFileInfo = fetchedReports.map((report) => ({
@@ -53,9 +51,9 @@ reportsRouter.get('/list', checkSuotarToken, async (req, res) => {
   } catch (error) {
     handleDatabaseError(res, error)
   }
-})
+}
 
-reportsRouter.get('/undownloaded', checkSuotarToken, async (req, res) => {
+const getNewReportList = async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll({
       where: {
@@ -71,9 +69,18 @@ reportsRouter.get('/undownloaded', checkSuotarToken, async (req, res) => {
   } catch (error) {
     handleDatabaseError(res, error)
   }
-})
+}
 
-reportsRouter.get('/:id', checkSuotarToken, async (req, res) => {
+const getReports = async (req, res) => {
+  try {
+    const fetchedReports = await db.reports.findAll()
+    return res.status(200).send(fetchedReports)
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
+const getSingleReport = async (req, res) => {
   try {
     const fetchedReport = await db.reports.findOne({
       where: {
@@ -96,6 +103,22 @@ reportsRouter.get('/:id', checkSuotarToken, async (req, res) => {
   } catch (error) {
     handleDatabaseError(res, error)
   }
-})
+}
 
-module.exports = reportsRouter
+const deleteAllReports = async (req, res) => {
+  try {
+    db.reports.destroy({ where: {} })
+    return res.status(204).end()
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
+module.exports = {
+  addReport,
+  getReportList,
+  getNewReportList,
+  getReports,
+  getSingleReport,
+  deleteAllReports
+}

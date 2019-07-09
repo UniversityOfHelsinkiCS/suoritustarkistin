@@ -21,7 +21,13 @@ const addGrader = async (req, res) => {
   res.status(200).json(newGrader)
 }
 
+const deleteAllGraders = async (req, res) => {
+  await db.graders.destroy({ where: {} })
+  res.status(204).end()
+}
+
 module.exports = {
   getGraders,
-  addGrader
+  addGrader,
+  deleteAllGraders
 }

@@ -2,6 +2,7 @@ const hasOodiEntry = require('../services/oodikone')
 const { postRegistrations } = require('../services/pointsmooc')
 const Sequelize = require('sequelize')
 const db = require('../models/index')
+
 const Op = Sequelize.Op
 const logger = require('@utils/logger')
 

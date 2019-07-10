@@ -18,7 +18,7 @@
     "db:recreate": "npx npm-run-all -s db:nuke db:migrate db:seed:all",
     "test:build": "webpack --mode production --env.api-prefix=/api",
     "test:start": "cross-env NODE_ENV=test node index.js",
-    "test:setup": "npx npm-run-all -s test:build db:migrate db:seed:all"
+    "test:setup": "npx npm-run-all -s test:build db:migrate"
   },
   "engines": {
     "node": ">=10.15"

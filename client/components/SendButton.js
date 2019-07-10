@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from 'semantic-ui-react'
-import reportService from '../services/reports'
 import { isValidReport } from 'Root/utils/validators'
+import reportService from '../services/reports'
 
 export default ({ report, setReport, setMessage, setTextData }) => {
   const sendReport = async () => {

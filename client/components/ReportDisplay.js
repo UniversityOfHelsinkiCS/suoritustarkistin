@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table } from 'semantic-ui-react'
+import { Table, Icon } from 'semantic-ui-react'
 
 const { commify } = require('../../utils/commify')
 
@@ -25,7 +25,8 @@ const getStudentIdCell = (studentId) => {
   }
   return (
     <Table.Cell style={invalidStyle}>
-      <i className="icon ban" /> {studentId}
+      <Icon name="ban" />
+      {studentId}
     </Table.Cell>
   )
 }
@@ -37,7 +38,8 @@ const getGradeCell = (grade) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" /> {grade}
+        <Icon name="ban" />
+        {grade}
       </Table.Cell>
     )
   }
@@ -51,7 +53,8 @@ const getCreditCell = (credits, course) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" /> {credits}
+        <Icon name="ban" />
+        {credits}
       </Table.Cell>
     )
   }
@@ -68,7 +71,8 @@ const getLanguageCell = (language, course) => {
     }
     return (
       <Table.Cell style={invalidStyle}>
-        <i className="icon ban" /> {language}
+        <Icon name="ban" />
+        {language}
       </Table.Cell>
     )
   }
@@ -84,7 +88,8 @@ const getDateCell = (date) => {
   }
   return (
     <Table.Cell style={invalidStyle}>
-      <i className="icon ban" /> {date}
+      <Icon name="ban" />
+      {date}
     </Table.Cell>
   )
 }
@@ -97,9 +102,9 @@ const parseDataToReport = (report, graders, courses) => {
   const reportRows = report.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
       {course ? (
-        <Table.Cell style={validStyle}>{`${course.name} (${
-          course.courseCode
-        })`}</Table.Cell>
+        <Table.Cell style={validStyle}>
+          {`${course.name} (${course.courseCode})`}
+        </Table.Cell>
       ) : (
         <Table.Cell />
       )}

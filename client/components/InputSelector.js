@@ -1,12 +1,17 @@
 import React from 'react'
-import { Tab } from 'semantic-ui-react'
+import { Tab, Menu, Icon } from 'semantic-ui-react'
 import Dropzone from 'Components/Dropzone'
 import TextInput from 'Components/TextInput'
 
 export default ({ report, setReport, setTextData, textData }) => {
   const panes = [
     {
-      menuItem: 'Copy & Paste',
+      menuItem: (
+        <Menu.Item key="copypaste" data-cy="copypaste">
+          <Icon name="edit outline" />
+          Copy & Paste
+        </Menu.Item>
+      ),
       render: () => (
         <Tab.Pane>
           <TextInput
@@ -19,7 +24,12 @@ export default ({ report, setReport, setTextData, textData }) => {
       )
     },
     {
-      menuItem: 'Drag & Drop',
+      menuItem: (
+        <Menu.Item key="dragdrop" data-cy="dragdrop">
+          <Icon name="folder open outline" />
+          Drag & Drop
+        </Menu.Item>
+      ),
       render: () => (
         <Tab.Pane>
           <Dropzone

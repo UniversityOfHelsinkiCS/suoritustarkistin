@@ -26,7 +26,13 @@ const shortDate = (date) => {
   return `${splitDate[0]}.${splitDate[1]}.${splitDate[2].substring(2)}`
 }
 
-const validateEntry = ({ studentId, grade, credits, language }) => {
+const validateEntry = ({
+  studentId,
+  grade,
+  credits,
+  language,
+  completionDate
+}) => {
   if (!isValidStudentId(studentId)) {
     throw new Error(`'${studentId}' is not valid student id`)
   }
@@ -38,6 +44,9 @@ const validateEntry = ({ studentId, grade, credits, language }) => {
   }
   if (language && !LANGUAGES[language]) {
     throw new Error(`'${language}' is not valid language`)
+  }
+  if (completionDate && !isValidOodiDate(completionDate)) {
+    throw new Error('Validation error in date.')
   }
 }
 
@@ -69,13 +78,13 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
   const report = data
     .map((entry) => {
       validateEntry(entry)
-      const { studentId, grade, credits, language } = entry
+      const { studentId, grade, credits, language, completionDate } = entry
       return `${studentId}##${LANGUAGES[language] ||
         LANGUAGES[course.language]}#${course.courseCode}#${
         course.name
-      }#${date}#0#${grade || 'Hyv.'}#106##${grader.identityCode}${orgParams(
-        course.courseCode
-      )}${commify(credits) || course.credits}`
+      }#${completionDate || date}#0#${grade || 'Hyv.'}#106##${
+        grader.identityCode
+      }${orgParams(course.courseCode)}${commify(credits) || course.credits}`
     })
     .join('\n')
 

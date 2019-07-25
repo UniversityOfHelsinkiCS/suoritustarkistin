@@ -6,7 +6,8 @@ const parseCSV = (string) => {
       studentId: splitRow[0],
       grade: splitRow[1],
       credits: splitRow[2],
-      language: splitRow[3]
+      language: splitRow[3],
+      completionDate: splitRow[4]
     }
   })
   return data

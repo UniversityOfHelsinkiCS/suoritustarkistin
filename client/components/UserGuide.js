@@ -11,7 +11,9 @@ export default () => (
       Suoritustiedostossa suoritukset täytyy olla merkittynä muodossa:
       <br />
       <br />
-      <strong>opiskelijanumero;arvosana;laajuus;kieli</strong>
+      <strong>
+        opiskelijanumero;arvosana;laajuus;kieli;suorituspäivämäärä
+      </strong>
       <br />
       <br />
       Esimerkiksi kaikki seuraavat rivit kelpaavat:
@@ -19,7 +21,7 @@ export default () => (
         <List.Item>010000003;2;5;fi</List.Item>
         <List.Item>011000002;;2,0</List.Item>
         <List.Item>011100009</List.Item>
-        <List.Item>011110002;;;fi</List.Item>
+        <List.Item>011110002;;;fi;25.7.2019</List.Item>
       </List>
       Vain opiskelijanumero on pakollinen, muut tiedot täydennetään tarvittaessa
       kurssin oletusarvoista. Oletusarvosana on "Hyv.".

@@ -97,7 +97,7 @@ const getDateCell = (date) => {
 const parseDataToReport = (report, graders, courses) => {
   const grader = graders.find((g) => g.id === report.graderId)
   const course = courses.find((c) => c.id === report.courseId)
-  const date = report.date ? report.date : 'Merkitse arvostelupäivämäärä'
+  const date = report.date ? report.date : 'Merkitse suorituspäivämäärä'
 
   const reportRows = report.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
@@ -117,7 +117,7 @@ const parseDataToReport = (report, graders, courses) => {
       ) : (
         <Table.Cell />
       )}
-      {getDateCell(date)}
+      {getDateCell(row.completionDate || date)}
     </Table.Row>
   ))
 

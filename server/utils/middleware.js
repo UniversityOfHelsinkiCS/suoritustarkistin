@@ -30,4 +30,29 @@ const notInProduction = (req, res, next) => {
   }
 }
 
-module.exports = { checkSuotarToken, checkCSVToken, notInProduction }
+const fakeShibbo = (req, res, next) => {
+  req.headers.employeenumber = '9876543'
+  req.headers.mail = 'pekka.m.testaaja@helsinki.fi'
+  req.headers.schacpersonaluniquecode =
+    'urn:schac:personalUniqueCode:int:studentID:helsinki.fi:011110002'
+  req.headers.uid = 'pemtest'
+  req.headers.givenname = 'Pekka'
+  req.headers.sn = 'Testaaja'
+  next()
+}
+
+const requestLogger = (req, res, next) => {
+  logger.info(`Method: ${req.method}`)
+  logger.info(`Path: ${req.path}`)
+  logger.info(`Body: ${JSON.stringify(req.body)}`)
+  logger.info('---')
+  next()
+}
+
+module.exports = {
+  checkSuotarToken,
+  checkCSVToken,
+  notInProduction,
+  fakeShibbo,
+  requestLogger
+}

@@ -5,6 +5,7 @@ const cron = require('node-cron')
 const routes = require('@utils/routes')
 const logger = require('@utils/logger')
 const { PORT, inProduction, inDevelopment } = require('@utils/common')
+const { fakeShibbo, requestLogger } = require('./utils/middleware')
 
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
@@ -60,14 +61,6 @@ if (inProduction) {
     processNewCompletions(courseCodes)
   })
 
-  cron.schedule('0 4 1 7 *', () => {
-    newCompletionTimestamp = now()
-    logger.info(
-      `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions (DEFA-special run).`
-    )
-    processNewCompletions(courseCodes)
-  })
-
   cron.schedule('0 5 1,15 6,7,8 *', () => {
     oldCompletionTimestamp = now()
     logger.info(
@@ -86,6 +79,10 @@ if (inProduction) {
   }) */
 }
 app.use(bodyParser.json({ limit: '5mb' }))
+
+app.use(fakeShibbo)
+app.use(requestLogger)
+
 app.use('/api', routes)
 
 app.get('/serverinfo', (req, res) => {

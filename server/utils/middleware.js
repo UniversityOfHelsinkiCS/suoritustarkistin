@@ -5,7 +5,10 @@ const checkSuotarToken = (req, res, next) => {
   if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
     next()
   } else {
-    return res.status(401).json({ error: 'Invalid token.' })
+    return res
+      .status(401)
+      .json({ error: 'Invalid token.' })
+      .end()
   }
 }
 
@@ -13,7 +16,10 @@ const checkCSVToken = (req, res, next) => {
   if (req.headers.authorization === process.env.CSV_TOKEN) {
     next()
   } else {
-    return res.status(401).json({ error: 'Invalid token.' })
+    return res
+      .status(401)
+      .json({ error: 'Invalid token.' })
+      .end()
   }
 }
 
@@ -30,17 +36,6 @@ const notInProduction = (req, res, next) => {
   }
 }
 
-const fakeShibbo = (req, res, next) => {
-  req.headers.employeenumber = '9876543'
-  req.headers.mail = 'pekka.m.testaaja@helsinki.fi'
-  req.headers.schacpersonaluniquecode =
-    'urn:schac:personalUniqueCode:int:studentID:helsinki.fi:011110002'
-  req.headers.uid = 'pemtest'
-  req.headers.givenname = 'Pekka'
-  req.headers.sn = 'Testaaja'
-  next()
-}
-
 const requestLogger = (req, res, next) => {
   logger.info(`Method: ${req.method}`)
   logger.info(`Path: ${req.path}`)
@@ -53,6 +48,5 @@ module.exports = {
   checkSuotarToken,
   checkCSVToken,
   notInProduction,
-  fakeShibbo,
   requestLogger
 }

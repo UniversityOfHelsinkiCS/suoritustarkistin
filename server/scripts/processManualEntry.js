@@ -67,7 +67,7 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
     courseCode.substring(0, 2) === 'AY'
       ? ORGANISATION_RELATED_PARAMETERS.AYTKT
       : ORGANISATION_RELATED_PARAMETERS.TKT
-  const grader = await db.graders.findOne({
+  const grader = await db.users.findOne({
     where: {
       id: graderId
     }

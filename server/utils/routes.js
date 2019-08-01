@@ -5,10 +5,10 @@ const {
   deleteAllCourses
 } = require('@controllers/courseController')
 const {
-  getGraders,
-  addGrader,
-  deleteAllGraders
-} = require('@controllers/graderController')
+  getUsers,
+  addUser,
+  deleteAllUsers
+} = require('@controllers/userController')
 const {
   addReport,
   getReportList,
@@ -28,15 +28,15 @@ const router = Router()
 // Routes for testing
 router.post('/courses', notInProduction, addCourse)
 router.delete('/courses', notInProduction, deleteAllCourses)
-router.post('/graders', notInProduction, addGrader)
-router.delete('/graders', notInProduction, deleteAllGraders)
+router.post('/users', notInProduction, addUser)
+router.delete('/users', notInProduction, deleteAllUsers)
 router.get('/reports/list', notInProduction, getReportList)
 router.delete('/reports', notInProduction, deleteAllReports)
 
 // Production routes
 router.get('/courses', getCourses)
 
-router.get('/graders', getGraders)
+router.get('/users', getUsers)
 
 router.post('/reports', checkCSVToken, addReport)
 router.get('/reports', checkSuotarToken, getReports)

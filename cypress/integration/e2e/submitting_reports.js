@@ -1,7 +1,7 @@
 describe('Submitting data creates a valid report into database', function() {
   beforeEach(function() {
     cy.request('DELETE', '/api/courses')
-    cy.request('DELETE', '/api/graders')
+    cy.request('DELETE', '/api/users')
     cy.request('DELETE', '/api/reports')
 
     cy.request('POST', '/api/courses', {
@@ -16,11 +16,11 @@ describe('Submitting data creates a valid report into database', function() {
       language: 'en',
       credits: '8,0'
     })
-    cy.request('POST', '/api/graders', {
+    cy.request('POST', '/api/users', {
       name: 'testiope',
       identityCode: '000000-000A'
     })
-    cy.request('POST', '/api/graders', {
+    cy.request('POST', '/api/users', {
       name: 'testimaikka',
       identityCode: '000000-000B'
     })

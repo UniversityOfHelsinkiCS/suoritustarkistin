@@ -4,7 +4,7 @@ import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
 import InputSelector from 'Components/InputSelector'
 import UserGuide from 'Components/UserGuide'
-import graderService from '../services/graders.js'
+import userService from '../services/users.js'
 import courseService from '../services/courses.js'
 
 export default () => {
@@ -25,7 +25,7 @@ export default () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const graderData = await graderService.getAll()
+      const graderData = await userService.getAll()
       const courseData = await courseService.getAll()
       setGraders(graderData)
       setCourses(courseData)

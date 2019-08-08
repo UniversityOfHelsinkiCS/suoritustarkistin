@@ -73,7 +73,8 @@ describe('Submitting data creates a valid report into database', function() {
         }
       }).should((response) => {
         const { fileName, data } = response.body
-        expect(fileName).to.equal('AYTKTTEST%5.7.19-V1-S2019.dat')
+        expect(fileName).to.contain('AYTKTTEST%5.7.19')
+        expect(fileName).to.contain('-V1-S2019.dat')
         expect(data).to.equal(
           '010000003##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#2#106##000000-000B#1#H930#11#93013#3##5,0\n011000002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##000000-000B#1#H930#11#93013#3##2,0\n011100009##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##000000-000B#1#H930#11#93013#3##8,0\n011110002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##000000-000B#1#H930#11#93013#3##8,0'
         )
@@ -128,7 +129,8 @@ describe('Submitting data creates a valid report into database', function() {
         }
       }).should((response) => {
         const { fileName, data } = response.body
-        expect(fileName).to.equal('TKTTEST%5.7.19-V1-S2019.dat')
+        expect(fileName).to.contain('TKTTEST%5.7.19-')
+        expect(fileName).to.contain('V1-S2019.dat')
         expect(data).to.equal(
           '010000003##1#TKTTEST#tkt:n kurssi#5.7.2019#0#2#106##000000-000A#1#H523#####5,0\n011000002##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####2,0\n011100009##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####8,0\n011110002##1#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####8,0'
         )
@@ -182,7 +184,8 @@ describe('Submitting data creates a valid report into database', function() {
         }
       }).should((response) => {
         const { fileName, data } = response.body
-        expect(fileName).to.equal('TKTTEST%5.7.19-V1-S2019.dat')
+        expect(fileName).to.contain('TKTTEST%5.7.19-')
+        expect(fileName).to.contain('-V1-S2019.dat')
         expect(data).to.equal(
           '010000003##1#TKTTEST#tkt:n kurssi#5.7.2019#0#2#106##000000-000A#1#H523#####5,0\n011000002##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####2,0\n011100009##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####8,0\n011110002##1#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##000000-000A#1#H523#####8,0'
         )

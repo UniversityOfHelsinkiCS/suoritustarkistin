@@ -31,7 +31,7 @@ const addReport = async (req, res) => {
         return res.status(200).json({ message: 'report created successfully' })
       })
       .catch((err) => {
-        logger.error('Unsuccessful CVS insert:', err.message)
+        logger.error('Unsuccessful CSV insert:', err.message)
         return res.status(400).json({ error: err.message })
       })
   } catch (error) {

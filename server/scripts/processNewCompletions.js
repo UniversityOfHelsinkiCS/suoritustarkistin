@@ -137,10 +137,9 @@ const processNewCompletions = async (courses) => {
       )
       .join('\n')
 
-    let reportAll = ''
-    if (matchesEn.length > 0) reportAll.concat('\n', reportEn)
-    if (matchesFi.length > 0) reportAll.concat('\n', reportFi)
-    if (matchesSv.length > 0) reportAll.concat('\n', reportSv)
+    const reportAll = [reportEn, reportFi, reportSv]
+      .filter((report) => report)
+      .join('\n')
 
     let dbReportAll = null
     let dbReportEn = null

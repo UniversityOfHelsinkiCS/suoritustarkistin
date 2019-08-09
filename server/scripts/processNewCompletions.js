@@ -111,7 +111,7 @@ const processNewCompletions = async (courses) => {
             entry.studentId
           }##6#AYTKT21018#The Elements of AI#${date}#0#Hyv.#106##${
             process.env.TEACHERCODE
-          }#1#H930#11#93013#3##2,0`
+          }#2#H930#11#93013#3##2,0`
       )
       .join('\n')
 
@@ -122,7 +122,7 @@ const processNewCompletions = async (courses) => {
             entry.studentId
           }##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#${date}#0#Hyv.#106##${
             process.env.TEACHERCODE
-          }#1#H930#11#93013#3##2,0`
+          }#2#H930#11#93013#3##2,0`
       )
       .join('\n')
 
@@ -133,7 +133,7 @@ const processNewCompletions = async (courses) => {
             entry.studentId
           }##2#AYTKT21018sv#Elements of AI: Grunderna i artificiell intelligens#${date}#0#Hyv.#106##${
             process.env.TEACHERCODE
-          }#1#H930#11#93013#3##2,0`
+          }#2#H930#11#93013#3##2,0`
       )
       .join('\n')
 

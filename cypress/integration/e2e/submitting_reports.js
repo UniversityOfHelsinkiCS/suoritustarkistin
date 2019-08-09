@@ -18,11 +18,11 @@ describe('Submitting data creates a valid report into database', function() {
     })
     cy.request('POST', '/api/users', {
       name: 'testiope',
-      identityCode: '000000-000A'
+      employeeId: '123'
     })
     cy.request('POST', '/api/users', {
       name: 'testimaikka',
-      identityCode: '000000-000B'
+      employeeId: '321'
     })
   })
 

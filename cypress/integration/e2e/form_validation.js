@@ -18,11 +18,11 @@ describe('Validation prevents submission of invalid data', function() {
     })
     cy.request('POST', '/api/users', {
       name: 'testiope',
-      identityCode: '000000-000A'
+      employeeId: '123'
     })
     cy.request('POST', '/api/users', {
       name: 'testimaikka',
-      identityCode: '000000-000B'
+      employeeId: '321'
     })
     cy.visit('')
   })

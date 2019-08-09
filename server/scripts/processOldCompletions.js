@@ -95,7 +95,7 @@ const processOldCompletions = async (course) => {
             entry.student_number
           }##6#AYTKT21018#The Elements of AI#${date}#0#Hyv.#106##${
             process.env.TEACHERCODE
-          }#1#H930#11#93013#3##2,0`
+          }#2#H930#11#93013#3##2,0`
       )
       .join('\n')
 
@@ -106,7 +106,7 @@ const processOldCompletions = async (course) => {
             entry.student_number
           }##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#${date}#0#Hyv.#106##${
             process.env.TEACHERCODE
-          }#1#H930#11#93013#3##2,0`
+          }#2#H930#11#93013#3##2,0`
       )
       .join('\n')
 

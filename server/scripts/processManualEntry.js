@@ -18,8 +18,8 @@ const LANGUAGES = {
 }
 
 const ORGANISATION_RELATED_PARAMETERS = {
-  AYTKT: '#1#H930#11#93013#3##',
-  TKT: '#1#H523#####'
+  AYTKT: '#2#H930#11#93013#3##',
+  TKT: '#2#H523#####'
 }
 
 const validateEntry = ({
@@ -79,7 +79,7 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
         LANGUAGES[course.language]}#${course.courseCode}#${
         course.name
       }#${completionDate || date}#0#${grade || 'Hyv.'}#106##${
-        grader.identityCode
+        grader.employeeId
       }${orgParams(course.courseCode)}${commify(credits) || course.credits}`
     })
     .join('\n')

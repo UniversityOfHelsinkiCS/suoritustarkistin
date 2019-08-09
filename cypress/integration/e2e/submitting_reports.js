@@ -73,7 +73,7 @@ describe('Submitting data creates a valid report into database', function() {
         }
       }).should((response) => {
         const { fileName, data } = response.body
-        expect(fileName).to.contain('AYTKTTEST%5.7.19')
+        expect(fileName).to.contain('AYTKTTEST%')
         expect(fileName).to.contain('-V1-S2019.dat')
         expect(data).to.equal(
           '010000003##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#2#106##000000-000B#1#H930#11#93013#3##5,0\n011000002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##000000-000B#1#H930#11#93013#3##2,0\n011100009##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##000000-000B#1#H930#11#93013#3##8,0\n011110002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##000000-000B#1#H930#11#93013#3##8,0'

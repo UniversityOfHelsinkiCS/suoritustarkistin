@@ -16,18 +16,22 @@ const processNewCompletions = async (courses) => {
       raw: true
     })
 
+    // DB credit list split to various ID lists for comparisons, all of these have credit in in DB.
     const completionIdsInDb = credits.map((credit) => credit.completionId)
     const moocIdsInDb = credits.map((credit) => credit.moocId)
-
     const studentIdsInDb = credits.map((credit) => credit.studentId)
 
+    // Get all registrations from Eduweb and completions from points.mooc.fi
     const registrations = await getMultipleCourseRegistrations(courses)
     const completions = await getMultipleCourseCompletions(courses)
 
+    // Find all who are registered in Eduweb, have but have no credit in db: potential to be credited.
     const filteredRegistrations = registrations.filter(
       (registration) =>
         registration.onro && !studentIdsInDb.includes(registration.onro)
     )
+
+    // Find all completion details who don't have student id in db, and so haven't been credited yet.
     const filteredCompletions = completions.filter(
       (completion) =>
         !moocIdsInDb.includes(completion.user_upstream_id) &&
@@ -50,6 +54,7 @@ const processNewCompletions = async (courses) => {
             user_upstream_id,
             ...rest
           } = completion
+
           if (completion_language === 'fi_FI') {
             matchesFi = matchesFi.concat({
               ...rest,
@@ -83,6 +88,8 @@ const processNewCompletions = async (courses) => {
         }
       }
     }
+
+    let matchesAll = matchesEn.concat(matchesFi, matchesSv)
 
     logger.info(
       `${courses[0]}xx: Found ${matchesEn.length} English, ${
@@ -130,10 +137,26 @@ const processNewCompletions = async (courses) => {
       )
       .join('\n')
 
+    const reportAll = [reportEn, reportFi, reportSv]
+      .filter((report) => report)
+      .join('\n')
+
+    let dbReportAll = null
     let dbReportEn = null
     let dbReportFi = null
     let dbReportSv = null
 
+    if (matchesAll.length > 0) {
+      dbReportAll = await db.reports.create({
+        fileName: `AYTKT21018%${shortDate}-V1-S2019.dat`,
+        data: reportAll
+      })
+      matchesAll.forEach((entry) => {
+        db.credits.create({ ...entry, reportId: dbReportAll.id })
+      })
+    }
+
+    /*  Language specific reporting
     if (matchesEn.length > 0) {
       dbReportEn = await db.reports.create({
         fileName: `AYTKT21018%${shortDate}-V1-S2019.dat`,
@@ -163,8 +186,9 @@ const processNewCompletions = async (courses) => {
         db.credits.create({ ...entry, reportId: dbReportSv.id })
       })
     }
+*/
 
-    if (dbReportEn || dbReportFi || dbReportSv) {
+    if (dbReportAll || dbReportEn || dbReportFi || dbReportSv) {
       const info = await sendEmail(
         'Uusia kurssisuorituksia: Elements of AI',
         'Viikoittaisen automaattiajon tuottamat siirtotiedostot saatavilla OodiToolissa.'

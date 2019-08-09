@@ -22,8 +22,12 @@ const ORGANISATION_RELATED_PARAMETERS = {
 }
 
 const shortDate = (date) => {
+  const now = () => new Date(Date.now())
+  const timestamp = `${now().getHours()}:${now().getMinutes()}:${now().getSeconds()}`
   const splitDate = date.split('.')
-  return `${splitDate[0]}.${splitDate[1]}.${splitDate[2].substring(2)}`
+  return `${splitDate[0]}.${splitDate[1]}.${splitDate[2].substring(
+    2
+  )}-${timestamp}`
 }
 
 const validateEntry = ({

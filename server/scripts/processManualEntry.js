@@ -85,8 +85,9 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
     .join('\n')
 
   const savedReport = await db.reports.create({
-    fileName: `${course.courseCode}%${moment().format('DD.MM.YY-HHmmss')}
-    -V1-S2019.dat`,
+    fileName: `${course.courseCode}%${moment().format(
+      'DD.MM.YY-HHmmss'
+    )}-V1-S2019.dat`,
     data: report
   })
 

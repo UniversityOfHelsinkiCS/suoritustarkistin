@@ -1,3 +1,4 @@
+var moment = require('moment')
 const db = require('../models/index')
 const {
   isValidStudentId,
@@ -19,15 +20,6 @@ const LANGUAGES = {
 const ORGANISATION_RELATED_PARAMETERS = {
   AYTKT: '#1#H930#11#93013#3##',
   TKT: '#1#H523#####'
-}
-
-const shortDate = (date) => {
-  const now = () => new Date(Date.now())
-  const timestamp = `${now().getHours()}:${now().getMinutes()}:${now().getSeconds()}`
-  const splitDate = date.split('.')
-  return `${splitDate[0]}.${splitDate[1]}.${splitDate[2].substring(
-    2
-  )}-${timestamp}`
 }
 
 const validateEntry = ({
@@ -93,7 +85,9 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
     .join('\n')
 
   const savedReport = await db.reports.create({
-    fileName: `${course.courseCode}%${shortDate(date)}-V1-S2019.dat`,
+    fileName: `${course.courseCode}%${moment().format(
+      'DD.MM.YY-HHmmss'
+    )}-V1-S2019.dat`,
     data: report
   })
 

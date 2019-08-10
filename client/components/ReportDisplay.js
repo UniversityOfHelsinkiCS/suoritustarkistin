@@ -94,8 +94,8 @@ const getDateCell = (date) => {
   )
 }
 
-const parseDataToReport = (report, graders, courses) => {
-  const grader = graders.find((g) => g.id === report.graderId)
+const parseDataToReport = (report, users, courses) => {
+  const grader = users.find((u) => u.employeeId === report.graderEmployeeId)
   const course = courses.find((c) => c.id === report.courseId)
   const date = report.date ? report.date : 'Merkitse suorituspäivämäärä'
 
@@ -139,8 +139,8 @@ const parseDataToReport = (report, graders, courses) => {
   )
 }
 
-export default ({ report, graders, courses }) => (
+export default ({ report, users, courses }) => (
   <div>
-    {report.data === null ? '' : parseDataToReport(report, graders, courses)}
+    {report.data === null ? '' : parseDataToReport(report, users, courses)}
   </div>
 )

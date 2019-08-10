@@ -4,10 +4,14 @@ const db = require('../models/index')
 const getUsers = async (req, res) => {
   try {
     const users = await db.users.findAll()
-    const cleanedGraders = users.map(({ id, name }) => ({
-      id,
-      name
-    }))
+    const cleanedGraders = users.map(
+      ({ name, employeeId, isGrader, isAdmin }) => ({
+        name,
+        employeeId,
+        isGrader,
+        isAdmin
+      })
+    )
     res.status(200).json(cleanedGraders)
   } catch (e) {
     logger.error(e)
@@ -16,9 +20,9 @@ const getUsers = async (req, res) => {
 }
 
 const addUser = async (req, res) => {
-  const grader = req.body
-  const newGrader = await db.users.create(grader)
-  res.status(200).json(newGrader)
+  const user = req.body
+  const newUser = await db.users.create(user)
+  res.status(200).json(newUser)
 }
 
 const deleteAllUsers = async (req, res) => {

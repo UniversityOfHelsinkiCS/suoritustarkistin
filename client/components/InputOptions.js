@@ -2,8 +2,11 @@ import SendButton from 'Components/SendButton.js'
 import React from 'react'
 import { Select, Input } from 'semantic-ui-react'
 
-const formatGradersForSelection = (data) =>
-  data.map((g) => ({ key: g.id, text: g.name, value: g.id }))
+const findGradersForSelection = (data) =>
+  data
+    .filter((u) => u.isGrader)
+    .map((g) => ({ key: g.id, text: g.name, value: g.employeeId }))
+
 const formatCoursesForSelection = (data) =>
   data.map((c) => ({
     key: c.id,
@@ -14,7 +17,7 @@ const formatCoursesForSelection = (data) =>
 export default ({
   setReport,
   report,
-  graders,
+  users,
   courses,
   setMessage,
   setTextData
@@ -28,7 +31,7 @@ export default ({
   }
 
   const handleGraderSelection = (e, data) => {
-    setReport({ ...report, graderId: data.value })
+    setReport({ ...report, graderEmployeeId: data.value })
   }
 
   const handleCourseSelection = (e, data) => {
@@ -41,8 +44,8 @@ export default ({
         className="input"
         data-cy="graderSelection"
         onChange={handleGraderSelection}
-        placeholder="Valitse arvostelija"
-        options={formatGradersForSelection(graders)}
+        defaultValue="9876543"
+        options={findGradersForSelection(users)}
       />
       <Select
         className="input"

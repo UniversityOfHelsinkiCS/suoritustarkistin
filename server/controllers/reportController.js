@@ -14,8 +14,8 @@ const getCourseName = (data) => {
 
 const addReport = async (req, res) => {
   try {
-    const { courseId, graderId, date, data } = req.body
-    if (!courseId || !graderId || !date || !data) {
+    const { courseId, graderEmployeeId, date, data } = req.body
+    if (!courseId || !graderEmployeeId || !date || !data) {
       logger.error('Unsuccessful upload: missing form fields')
       return res.status(400).json({ error: 'invalid form values' })
     }
@@ -23,7 +23,7 @@ const addReport = async (req, res) => {
     processManualEntry({
       data,
       courseId,
-      graderId,
+      graderEmployeeId,
       date
     })
       .then(() => {

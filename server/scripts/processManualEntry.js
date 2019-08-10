@@ -46,7 +46,12 @@ const validateEntry = ({
   }
 }
 
-const processManualEntry = async ({ graderId, courseId, date, data }) => {
+const processManualEntry = async ({
+  graderEmployeeId,
+  courseId,
+  date,
+  data
+}) => {
   if (!isValidOodiDate(date)) {
     throw new Error('Validation error in date.')
   }
@@ -65,11 +70,11 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
       : ORGANISATION_RELATED_PARAMETERS.TKT
   const grader = await db.users.findOne({
     where: {
-      id: graderId
+      employeeId: graderEmployeeId
     }
   })
 
-  if (!grader) throw new Error('Grader id does not exist.')
+  if (!grader) throw new Error('Grader employee id does not exist.')
 
   const report = data
     .map((entry) => {

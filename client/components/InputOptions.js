@@ -3,9 +3,7 @@ import React from 'react'
 import { Select, Input } from 'semantic-ui-react'
 
 const findGradersForSelection = (data) =>
-  data
-    .filter((u) => u.isGrader)
-    .map((g) => ({ key: g.id, text: g.name, value: g.employeeId }))
+  data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
 
 const formatCoursesForSelection = (data) =>
   data.map((c) => ({
@@ -17,7 +15,7 @@ const formatCoursesForSelection = (data) =>
 export default ({
   setReport,
   report,
-  users,
+  graders,
   courses,
   setMessage,
   setTextData
@@ -44,8 +42,8 @@ export default ({
         className="input"
         data-cy="graderSelection"
         onChange={handleGraderSelection}
-        defaultValue="9876543"
-        options={findGradersForSelection(users)}
+        value={report.graderEmployeeId}
+        options={findGradersForSelection(graders)}
       />
       <Select
         className="input"

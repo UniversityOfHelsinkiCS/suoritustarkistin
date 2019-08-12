@@ -11,22 +11,29 @@ const moment = require('moment')
 export default () => {
   const [report, setReport] = useState({
     courseId: null,
-    graderEmployeeId: '9876543',
+    graderEmployeeId: null,
     token: null,
     data: null,
     date: moment().format('D.M.YYYY')
   })
 
-  const [users, setUsers] = useState([])
+  const [graders, setGraders] = useState([])
   const [courses, setCourses] = useState([])
   const [message, setMessage] = useState(null)
   const [textData, setTextData] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
-      const userData = await userService.getAll()
+      const graderData = await userService.getGraders()
       const courseData = await courseService.getAll()
-      setUsers(userData)
+      const currentGrader = await userService.getCurrentUser()
+      const prefilledReport = {
+        ...report,
+        graderEmployeeId: currentGrader.employeeId
+      }
+
+      setReport(prefilledReport)
+      setGraders(graderData)
       setCourses(courseData)
     }
     fetchData()
@@ -53,11 +60,11 @@ export default () => {
         setMessage={setMessage}
         setReport={setReport}
         report={report}
-        users={users}
+        graders={graders}
         courses={courses}
         setTextData={setTextData}
       />
-      <ReportDisplay users={users} courses={courses} report={report} />
+      <ReportDisplay graders={graders} courses={courses} report={report} />
     </div>
   )
 }

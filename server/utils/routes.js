@@ -6,6 +6,8 @@ const {
 } = require('@controllers/courseController')
 const {
   getUsers,
+  getGraders,
+  getCurrentUser,
   addUser,
   deleteAllUsers
 } = require('@controllers/userController')
@@ -37,8 +39,10 @@ router.delete('/reports', notInProduction, deleteAllReports)
 router.get('/courses', getCourses)
 
 router.get('/users', getUsers)
+router.get('/users/graders', getGraders)
+router.get('/users/current', getCurrentUser)
 
-router.post('/reports', checkCSVToken, addReport)
+router.post('/reports', addReport)
 router.get('/reports', checkSuotarToken, getReports)
 router.get('/reports/undownloaded', checkSuotarToken, getNewReportList)
 router.get('/reports/:id', checkSuotarToken, getSingleReport)

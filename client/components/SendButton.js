@@ -6,16 +6,12 @@ import reportService from '../services/reports'
 export default ({ report, setReport, setMessage, setTextData }) => {
   const sendReport = async () => {
     try {
-      const token = report.token
-      setReport({
-        ...report,
-        token: null
-      })
-      const response = await reportService.createNew(token, report)
+      const forwardReport = { ...report }
       setReport({
         ...report,
         data: null
       })
+      const response = await reportService.createNew(forwardReport)
       setTextData('')
       setMessage({
         header: 'Raportti lähetetty!',

@@ -12,7 +12,6 @@ export default () => {
   const [report, setReport] = useState({
     courseId: null,
     graderEmployeeId: null,
-    token: null,
     data: null,
     date: moment().format('D.M.YYYY')
   })

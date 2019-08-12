@@ -20,10 +20,6 @@ export default ({
   setMessage,
   setTextData
 }) => {
-  const handleTokenChange = (event) => {
-    setReport({ ...report, token: event.target.value })
-  }
-
   const handleDateChange = (event) => {
     setReport({ ...report, date: event.target.value })
   }
@@ -58,13 +54,6 @@ export default ({
         onChange={handleDateChange}
         value={report.date}
         placeholder="p.k.vvvv"
-      />
-      <Input
-        data-cy="tokenField"
-        type="text"
-        onChange={handleTokenChange}
-        value={report.token || ''}
-        placeholder="Arvostelijatunnus"
       />
       <SendButton
         report={report}

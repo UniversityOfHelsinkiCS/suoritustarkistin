@@ -122,16 +122,6 @@ describe('Validation prevents submission of invalid data', function() {
     )
     cy.get('[data-cy=sendButton]').should('not.be.disabled')
 
-    // missing token
-    cy.get('[data-cy=tokenField]')
-      .children()
-      .clear()
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=tokenField]')
-      .children()
-      .type(Cypress.env('CSV_TOKEN'))
-    cy.get('[data-cy=sendButton]').should('not.be.disabled')
-
     // missing date
     cy.get('[data-cy=dateField]')
       .children()
@@ -165,10 +155,5 @@ describe('Validation prevents submission of invalid data', function() {
       .children()
       .contains('tkt:n kurssi (TKTTEST)')
       .click()
-
-    cy.get('[data-cy=tokenField]')
-      .children()
-      .type(Cypress.env('CSV_TOKEN'))
-    cy.get('[data-cy=sendButton]').should('be.disabled')
   })
 })

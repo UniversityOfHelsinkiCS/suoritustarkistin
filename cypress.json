@@ -1,7 +1,6 @@
 {
   "baseUrl": "http://localhost:8000",
   "env": {
-    "SUOTAR_TOKEN": "token",
-    "CSV_TOKEN": "token"
+    "SUOTAR_TOKEN": "token"
   }
 }

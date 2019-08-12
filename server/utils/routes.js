@@ -19,11 +19,7 @@ const {
   getSingleReport,
   deleteAllReports
 } = require('@controllers/reportController')
-const {
-  notInProduction,
-  checkCSVToken,
-  checkSuotarToken
-} = require('./middleware')
+const { notInProduction, checkSuotarToken } = require('./middleware')
 
 const router = Router()
 

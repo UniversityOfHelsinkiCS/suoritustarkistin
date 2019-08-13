@@ -25,9 +25,10 @@ const getCurrentUser = async (req, res) => {
 
 const getGraders = async (req, res) => {
   try {
-    const users = await db.users.findAll()
     const adminRequest = await isAdmin(req.headers.employeenumber)
     const graderRequest = await isGrader(req.headers.employeenumber)
+
+    const users = await db.users.findAll()
 
     if (adminRequest) {
       res.status(200).json(users.filter((u) => u.isGrader))

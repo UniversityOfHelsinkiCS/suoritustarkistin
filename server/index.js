@@ -27,7 +27,7 @@ if (inDevelopment) {
   const compiler = webpack(webpackConf('development', { mode: 'development' }))
   app.use(middleware(compiler))
   app.use(hotMiddleWare(compiler))
-  app.use(fakeShibbo)
+  //  app.use(fakeShibbo)
   app.use(requestLogger)
 } else {
   app.use('/', express.static('dist/'))

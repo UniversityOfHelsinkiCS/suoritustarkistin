@@ -1,5 +1,11 @@
 describe('Validation prevents submission of invalid data', function() {
   beforeEach(function() {
+    cy.server({
+      onAnyRequest: (route, proxy) => {
+        proxy.xhr.setRequestHeader('employeenumber', '321')
+      }
+    })
+
     cy.request('DELETE', '/api/courses')
     cy.request('DELETE', '/api/users')
     cy.request('DELETE', '/api/reports')
@@ -18,11 +24,15 @@ describe('Validation prevents submission of invalid data', function() {
     })
     cy.request('POST', '/api/users', {
       name: 'testiope',
-      employeeId: '123'
+      employeeId: '123',
+      isAdmin: true,
+      isGrader: true
     })
     cy.request('POST', '/api/users', {
       name: 'testimaikka',
-      employeeId: '321'
+      employeeId: '321',
+      isAdmin: false,
+      isGrader: true
     })
     cy.visit('')
   })
@@ -66,50 +76,17 @@ describe('Validation prevents submission of invalid data', function() {
       .clear()
       .type('5.7.2019')
 
-    cy.get('[data-cy=tokenField]')
-      .children()
-      .type(Cypress.env('CSV_TOKEN'))
     cy.get('[data-cy=sendButton]').should('be.disabled')
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()
-      .contains('testiope')
+      .contains('testimaikka')
       .click()
     cy.get('[data-cy=sendButton]').should('be.disabled')
     cy.get('[data-cy=courseSelection]')
       .click()
       .children()
       .contains('tkt:n kurssi (TKTTEST)')
-      .click()
-    cy.get('[data-cy=sendButton]').should('not.be.disabled')
-
-    // missing grader
-    cy.visit('')
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=pastefield]').type(
-      '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
-      { delay: 1 }
-    )
-    cy.get('[data-cy=dateField]')
-      .children()
-      .clear()
-      .type('5.7.2019')
-
-    cy.get('[data-cy=tokenField]')
-      .children()
-      .type(Cypress.env('CSV_TOKEN'))
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-
-    cy.get('[data-cy=courseSelection]')
-      .click()
-      .children()
-      .contains('tkt:n kurssi (TKTTEST)')
-      .click()
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=graderSelection]')
-      .click()
-      .children()
-      .contains('testiope')
       .click()
     cy.get('[data-cy=sendButton]').should('not.be.disabled')
 
@@ -147,7 +124,7 @@ describe('Validation prevents submission of invalid data', function() {
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()
-      .contains('testiope')
+      .contains('testimaikka')
       .click()
 
     cy.get('[data-cy=courseSelection]')

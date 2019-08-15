@@ -145,11 +145,11 @@ describe('Submitting data creates a valid report into database', function() {
     cy.visit('')
     cy.get('[data-cy=sendButton]').should('be.disabled')
     cy.get('[data-cy=dragdrop]').click()
+    cy.wait(1000)
     cy.fixture('valid.csv').then((content) => {
       cy.get('[data-cy=dropzone]').upload(content, 'valid.csv')
     })
-    cy.get('[data-cy=dateField]')
-      .children()
+    cy.get('[data-cy=dateField] input')
       .clear()
       .type('5.7.2019')
     cy.get('[data-cy=graderSelection]')

@@ -1,5 +1,51 @@
 const { inProduction } = require('./common')
 const logger = require('@utils/logger')
+const db = require('../models/index')
+
+const parseUser = async (req, res, next) => {
+  if (req.headers.employeenumber) {
+    try {
+      const [user, created] = await db.users.findOrCreate({
+        where: {
+          employeeId: req.headers.employeenumber
+        },
+        defaults: {
+          email: req.headers.mail,
+          name: `${req.headers.givenname} ${req.headers.sn}`,
+          isGrader: false,
+          isAdmin: false
+        }
+      })
+      if (created) logger.info(`New user: ${user.name}, ${user.email}`)
+      req.user = user
+    } catch (error) {
+      logger.error('Database error:', error)
+    }
+  }
+  next()
+}
+
+const checkGrader = (req, res, next) => {
+  if (req.user.isGrader || req.user.isAdmin) {
+    next()
+  } else {
+    res
+      .status(401)
+      .json({ error: 'Unauthorized access.' })
+      .end()
+  }
+}
+
+const checkAdmin = (req, res, next) => {
+  if (req.user.isAdmin) {
+    next()
+  } else {
+    res
+      .status(401)
+      .json({ error: 'Unauthorized access.' })
+      .end()
+  }
+}
 
 const checkSuotarToken = (req, res, next) => {
   if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
@@ -36,5 +82,8 @@ const requestLogger = (req, res, next) => {
 module.exports = {
   checkSuotarToken,
   notInProduction,
-  requestLogger
+  requestLogger,
+  parseUser,
+  checkGrader,
+  checkAdmin
 }

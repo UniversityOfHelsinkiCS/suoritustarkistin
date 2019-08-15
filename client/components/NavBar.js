@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { images } from 'Utilities/common'
 
 const headerStyle = {
@@ -8,15 +9,20 @@ const headerStyle = {
   transform: 'translate(-50%, -50%)'
 }
 
-const contactStyle = {
-  float: 'right',
-  margin: '10px'
+const nameStyle = {
+  margin: '25px',
+  float: 'right'
 }
 
-export default () => (
-  <div className="navbar">
-    <img src={images.toska_color} style={{ height: '100%' }} alt="tosca" />
-    <h1 style={headerStyle}>SUORITUSTARKISTIN</h1>
-    <div style={contactStyle}>Tuki: grp-toska@cs.helsinki.fi</div>
-  </div>
-)
+export default () => {
+  const user = useSelector((state) => state.user)
+  return (
+    <div className="navbar">
+      <img src={images.toska_color} style={{ height: '100%' }} alt="tosca" />
+      <h1 style={headerStyle}>SUORITUSTARKISTIN</h1>
+      {user.data ? (
+        <div style={nameStyle}>Logged in as {user.data.name}</div>
+      ) : null}
+    </div>
+  )
+}

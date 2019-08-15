@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { Message } from 'semantic-ui-react'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
 import InputSelector from 'Components/InputSelector'
 import UserGuide from 'Components/UserGuide'
-import userService from '../services/users.js'
-import courseService from '../services/courses.js'
+import userService from '../services/users'
+import courseService from '../services/courses'
 const moment = require('moment')
 
 export default () => {
+  const user = useSelector((state) => state.user)
   const [report, setReport] = useState({
     courseId: null,
     graderEmployeeId: null,
@@ -20,20 +22,17 @@ export default () => {
   const [courses, setCourses] = useState([])
   const [message, setMessage] = useState(null)
   const [textData, setTextData] = useState('')
-
   useEffect(() => {
     const fetchData = async () => {
       const graderData = await userService.getGraders()
       const courseData = await courseService.getAll()
-      const currentGrader = await userService.getCurrentUser()
       const prefilledReport = {
         ...report,
-        graderEmployeeId: currentGrader.employeeId
+        graderEmployeeId: user.data.employeeId
       }
-
-      setReport(prefilledReport)
       setGraders(graderData)
       setCourses(courseData)
+      setReport(prefilledReport)
     }
     fetchData()
   }, [])

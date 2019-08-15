@@ -7,7 +7,6 @@ const {
 const {
   getUsers,
   getGraders,
-  getCurrentUser,
   addUser,
   deleteAllUsers
 } = require('@controllers/userController')
@@ -19,6 +18,7 @@ const {
   getSingleReport,
   deleteAllReports
 } = require('@controllers/reportController')
+const { login } = require('@controllers/loginController')
 const { notInProduction, checkSuotarToken } = require('./middleware')
 
 const router = Router()
@@ -32,11 +32,12 @@ router.get('/reports/list', notInProduction, getReportList)
 router.delete('/reports', notInProduction, deleteAllReports)
 
 // Production routes
+router.post('/login', login)
+
 router.get('/courses', getCourses)
 
 router.get('/users', getUsers)
 router.get('/users/graders', getGraders)
-router.get('/users/current', getCurrentUser)
 
 router.post('/reports', addReport)
 router.get('/reports', checkSuotarToken, getReports)

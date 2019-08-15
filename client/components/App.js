@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginAction } from 'Utilities/redux/userReducer'
 import NavBar from 'Components/NavBar'
@@ -7,7 +7,11 @@ import Footer from 'Components/Footer'
 
 export default () => {
   const dispatch = useDispatch()
-  dispatch(loginAction())
+
+  useEffect(() => {
+    dispatch(loginAction())
+  }, [])
+
   const user = useSelector((state) => state.user)
   if (!user.data) {
     return null

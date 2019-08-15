@@ -5,7 +5,7 @@ const cron = require('node-cron')
 const routes = require('@utils/routes')
 const logger = require('@utils/logger')
 const { PORT, inProduction, inDevelopment } = require('@utils/common')
-const { fakeShibbo } = require('./utils/fakeshibbo')
+//const { fakeShibbo } = require('./utils/fakeshibbo')
 const { requestLogger, parseUser } = require('./utils/middleware')
 
 const processNewCompletions = require('./scripts/processNewCompletions')
@@ -28,7 +28,7 @@ if (inDevelopment) {
   const compiler = webpack(webpackConf('development', { mode: 'development' }))
   app.use(middleware(compiler))
   app.use(hotMiddleWare(compiler))
-  app.use(fakeShibbo)
+  //app.use(fakeShibbo)
   app.use(requestLogger)
 } else {
   app.use('/', express.static('dist/'))

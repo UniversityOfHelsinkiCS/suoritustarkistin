@@ -18,7 +18,7 @@ const {
   getSingleReport,
   deleteAllReports
 } = require('@controllers/reportController')
-const { login } = require('@controllers/loginController')
+const { login, logout } = require('@controllers/loginController')
 const { notInProduction, checkSuotarToken } = require('./middleware')
 
 const router = Router()
@@ -33,6 +33,7 @@ router.delete('/reports', notInProduction, deleteAllReports)
 
 // Production routes
 router.post('/login', login)
+router.post('/logout', logout)
 
 router.get('/courses', getCourses)
 

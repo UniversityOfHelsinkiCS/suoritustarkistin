@@ -1,5 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { Button } from 'semantic-ui-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { logoutAction } from 'Utilities/redux/userReducer'
 import { images } from 'Utilities/common'
 
 const headerStyle = {
@@ -9,19 +11,30 @@ const headerStyle = {
   transform: 'translate(-50%, -50%)'
 }
 
-const nameStyle = {
-  margin: '25px',
+const userStyle = {
+  margin: '16px',
   float: 'right'
 }
 
 export default () => {
+  const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
+  const handleLogout = () => {
+    dispatch(logoutAction())
+  }
   return (
     <div className="navbar">
       <img src={images.toska_color} style={{ height: '100%' }} alt="tosca" />
       <h1 style={headerStyle}>SUORITUSTARKISTIN</h1>
       {user.data ? (
-        <div style={nameStyle}>Logged in as {user.data.name}</div>
+        <div style={userStyle}>
+          <Button
+            content={`Log out ${user.data.name}`}
+            icon="sign-out"
+            labelPosition="right"
+            onClick={handleLogout}
+          />
+        </div>
       ) : null}
     </div>
   )

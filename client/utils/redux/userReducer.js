@@ -9,6 +9,13 @@ export const loginAction = () => {
   return callBuilder(route, prefix, 'post')
 }
 
+export const logoutAction = () => {
+  const returnUrl = window.location.origin
+  const route = '/logout'
+  const prefix = 'LOGOUT'
+  return callBuilder(route, prefix, 'post', { returnUrl: returnUrl })
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: null }, action) => {
@@ -17,6 +24,14 @@ export default (state = { data: null }, action) => {
       return {
         ...state,
         data: action.response,
+        pending: false,
+        error: false
+      }
+    case 'LOGOUT_SUCCESS':
+      window.location = action.response.logoutUrl
+      return {
+        ...state,
+        data: null,
         pending: false,
         error: false
       }

@@ -1,19 +1,54 @@
 const { inProduction } = require('./common')
 const logger = require('@utils/logger')
+const db = require('../models/index')
 
-const checkSuotarToken = (req, res, next) => {
-  if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
+const parseUser = async (req, res, next) => {
+  if (req.headers.employeenumber) {
+    try {
+      const [user, created] = await db.users.findOrCreate({
+        where: {
+          employeeId: req.headers.employeenumber
+        },
+        defaults: {
+          email: req.headers.mail,
+          name: `${req.headers.givenname} ${req.headers.sn}`,
+          isGrader: false,
+          isAdmin: false
+        }
+      })
+      if (created) logger.info(`New user: ${user.name}, ${user.email}`)
+      req.user = user
+    } catch (error) {
+      logger.error('Database error:', error)
+    }
+  }
+  next()
+}
+
+const checkGrader = (req, res, next) => {
+  if (req.user.isGrader || req.user.isAdmin) {
     next()
   } else {
-    return res
+    res
       .status(401)
-      .json({ error: 'Invalid token.' })
+      .json({ error: 'Unauthorized access.' })
       .end()
   }
 }
 
-const checkCSVToken = (req, res, next) => {
-  if (req.headers.authorization === process.env.CSV_TOKEN) {
+const checkAdmin = (req, res, next) => {
+  if (req.user.isAdmin) {
+    next()
+  } else {
+    res
+      .status(401)
+      .json({ error: 'Unauthorized access.' })
+      .end()
+  }
+}
+
+const checkSuotarToken = (req, res, next) => {
+  if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
     next()
   } else {
     return res
@@ -46,7 +81,9 @@ const requestLogger = (req, res, next) => {
 
 module.exports = {
   checkSuotarToken,
-  checkCSVToken,
   notInProduction,
-  requestLogger
+  requestLogger,
+  parseUser,
+  checkGrader,
+  checkAdmin
 }

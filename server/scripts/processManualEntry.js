@@ -1,4 +1,4 @@
-var moment = require('moment')
+const moment = require('moment')
 const db = require('../models/index')
 const {
   isValidStudentId,
@@ -18,8 +18,8 @@ const LANGUAGES = {
 }
 
 const ORGANISATION_RELATED_PARAMETERS = {
-  AYTKT: '#1#H930#11#93013#3##',
-  TKT: '#1#H523#####'
+  AYTKT: '#2#H930#11#93013#3##',
+  TKT: '#2#H523#####'
 }
 
 const validateEntry = ({
@@ -46,7 +46,12 @@ const validateEntry = ({
   }
 }
 
-const processManualEntry = async ({ graderId, courseId, date, data }) => {
+const processManualEntry = async ({
+  graderEmployeeId,
+  courseId,
+  date,
+  data
+}) => {
   if (!isValidOodiDate(date)) {
     throw new Error('Validation error in date.')
   }
@@ -65,11 +70,11 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
       : ORGANISATION_RELATED_PARAMETERS.TKT
   const grader = await db.users.findOne({
     where: {
-      id: graderId
+      employeeId: graderEmployeeId
     }
   })
 
-  if (!grader) throw new Error('Grader id does not exist.')
+  if (!grader) throw new Error('Grader employee id does not exist.')
 
   const report = data
     .map((entry) => {
@@ -79,7 +84,7 @@ const processManualEntry = async ({ graderId, courseId, date, data }) => {
         LANGUAGES[course.language]}#${course.courseCode}#${
         course.name
       }#${completionDate || date}#0#${grade || 'Hyv.'}#106##${
-        grader.identityCode
+        grader.employeeId
       }${orgParams(course.courseCode)}${commify(credits) || course.credits}`
     })
     .join('\n')

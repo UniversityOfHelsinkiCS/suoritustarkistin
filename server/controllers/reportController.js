@@ -14,8 +14,15 @@ const getCourseName = (data) => {
 
 const addReport = async (req, res) => {
   try {
-    const { courseId, graderId, date, data } = req.body
-    if (!courseId || !graderId || !date || !data) {
+    const currentUser = await db.users.findOne({
+      where: { employeeId: req.headers.employeenumber }
+    })
+    if (!currentUser.isGrader && !currentUser.isAdmin) {
+      throw new Error('User is not authorized to report credits.')
+    }
+
+    const { courseId, graderEmployeeId, date, data } = req.body
+    if (!courseId || !graderEmployeeId || !date || !data) {
       logger.error('Unsuccessful upload: missing form fields')
       return res.status(400).json({ error: 'invalid form values' })
     }
@@ -23,16 +30,16 @@ const addReport = async (req, res) => {
     processManualEntry({
       data,
       courseId,
-      graderId,
+      graderEmployeeId,
       date
     })
       .then(() => {
         logger.info('Successful CSV insert.')
         return res.status(200).json({ message: 'report created successfully' })
       })
-      .catch((err) => {
-        logger.error('Unsuccessful CSV insert:', err.message)
-        return res.status(400).json({ error: err.message })
+      .catch((error) => {
+        logger.error('Unsuccessful CSV insert:', error)
+        return res.status(400).json({ error: error })
       })
   } catch (error) {
     handleDatabaseError(res, error)

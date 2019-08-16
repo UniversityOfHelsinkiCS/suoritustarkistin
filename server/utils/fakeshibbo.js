@@ -1,4 +1,5 @@
 const fakeShibbo = (req, res, next) => {
+  req.headers.shib_logout_url = 'https://helsinki.fi'
   req.headers.employeenumber = '9876543'
   req.headers.mail = 'pekka.m.testaaja@helsinki.fi'
   req.headers.schacpersonaluniquecode =

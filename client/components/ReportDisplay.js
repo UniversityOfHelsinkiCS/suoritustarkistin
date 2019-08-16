@@ -95,7 +95,7 @@ const getDateCell = (date) => {
 }
 
 const parseDataToReport = (report, graders, courses) => {
-  const grader = graders.find((g) => g.id === report.graderId)
+  const grader = graders.find((g) => g.employeeId === report.graderEmployeeId)
   const course = courses.find((c) => c.id === report.courseId)
   const date = report.date ? report.date : 'Merkitse suorituspäivämäärä'
 

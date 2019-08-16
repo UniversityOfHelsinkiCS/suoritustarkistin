@@ -9,7 +9,6 @@ executors:
         environment:
           NODE_ENV: test
           SUOTAR_TOKEN: token
-          CSV_TOKEN: token
       - image: 'circleci/postgres:10.6-ram'
 workflows:
   build-test-deploy:

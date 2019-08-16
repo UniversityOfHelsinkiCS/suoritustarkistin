@@ -7,4 +7,14 @@ const getAll = async () => {
   return users.data
 }
 
-export default { getAll }
+const getGraders = async () => {
+  const graders = await axios.get(`${baseUrl}/graders`)
+  return graders.data
+}
+
+const getCurrentUser = async () => {
+  const user = await axios.get(`${baseUrl}/current`)
+  return user.data
+}
+
+export default { getAll, getGraders, getCurrentUser }

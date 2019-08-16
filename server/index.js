@@ -6,7 +6,7 @@ const routes = require('@utils/routes')
 const logger = require('@utils/logger')
 const { PORT, inProduction, inDevelopment } = require('@utils/common')
 const { fakeShibbo } = require('./utils/fakeshibbo')
-const { requestLogger } = require('./utils/middleware')
+const { requestLogger, parseUser } = require('./utils/middleware')
 
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
@@ -15,6 +15,7 @@ const courseCodes = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
 const app = express()
 app.use(bodyParser.json({ limit: '5mb' }))
+
 /**
  * Use hot loading when in development, else serve the static content
  */
@@ -27,11 +28,15 @@ if (inDevelopment) {
   const compiler = webpack(webpackConf('development', { mode: 'development' }))
   app.use(middleware(compiler))
   app.use(hotMiddleWare(compiler))
-  app.use(fakeShibbo)
+  if (process.argv[2] && process.argv[2] === 'fakeshibbo') {
+    logger.info('Using fakeshibbo headers.')
+    app.use(fakeShibbo)
+  }
   app.use(requestLogger)
 } else {
   app.use('/', express.static('dist/'))
 }
+app.use(parseUser)
 
 const now = () => new Date(Date.now())
 

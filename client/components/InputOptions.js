@@ -2,8 +2,9 @@ import SendButton from 'Components/SendButton.js'
 import React from 'react'
 import { Select, Input } from 'semantic-ui-react'
 
-const formatGradersForSelection = (data) =>
-  data.map((g) => ({ key: g.id, text: g.name, value: g.id }))
+const findGradersForSelection = (data) =>
+  data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
+
 const formatCoursesForSelection = (data) =>
   data.map((c) => ({
     key: c.id,
@@ -19,16 +20,12 @@ export default ({
   setMessage,
   setTextData
 }) => {
-  const handleTokenChange = (event) => {
-    setReport({ ...report, token: event.target.value })
-  }
-
   const handleDateChange = (event) => {
     setReport({ ...report, date: event.target.value })
   }
 
   const handleGraderSelection = (e, data) => {
-    setReport({ ...report, graderId: data.value })
+    setReport({ ...report, graderEmployeeId: data.value })
   }
 
   const handleCourseSelection = (e, data) => {
@@ -41,8 +38,8 @@ export default ({
         className="input"
         data-cy="graderSelection"
         onChange={handleGraderSelection}
-        placeholder="Valitse arvostelija"
-        options={formatGradersForSelection(graders)}
+        value={report.graderEmployeeId}
+        options={findGradersForSelection(graders)}
       />
       <Select
         className="input"
@@ -57,13 +54,6 @@ export default ({
         onChange={handleDateChange}
         value={report.date}
         placeholder="p.k.vvvv"
-      />
-      <Input
-        data-cy="tokenField"
-        type="text"
-        onChange={handleTokenChange}
-        value={report.token || ''}
-        placeholder="Arvostelijatunnus"
       />
       <SendButton
         report={report}

@@ -26,8 +26,6 @@ const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) /
 
 const isValidLanguage = (language) => LANGUAGES[language]
 
-const isValidToken = (token) => token
-
 const isValidRow = (row) => {
   if (!isValidStudentId(row.studentId)) {
     return false
@@ -45,7 +43,7 @@ const isValidRow = (row) => {
 }
 
 const isValidReport = (report) => {
-  if (!report.graderId || !report.courseId) {
+  if (!report.graderEmployeeId || !report.courseId) {
     return false
   }
 
@@ -57,9 +55,6 @@ const isValidReport = (report) => {
     return false
   }
 
-  if (!isValidToken(report.token)) {
-    return false
-  }
   let allRowsValid = true
   report.data.forEach((row) => {
     if (!isValidRow(row)) {

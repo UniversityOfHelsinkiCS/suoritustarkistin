@@ -45,8 +45,8 @@ const processNewCompletions = async (courses) => {
     for (const registration of filteredRegistrations) {
       for (const completion of filteredCompletions) {
         if (
-          completion.email === registration.email ||
-          completion.email === registration.mooc
+          completion.email.toLowerCase() === registration.email.toLowerCase() ||
+          completion.email.toLowerCase() === registration.mooc.toLowerCase()
         ) {
           const {
             id,

@@ -70,14 +70,6 @@ if (inProduction) {
     processNewCompletions(courseCodes)
   })
 
-  cron.schedule('0 5 1,15 6,7,8 *', () => {
-    oldCompletionTimestamp = now()
-    logger.info(
-      `${oldCompletionTimestamp.toLocaleString()} node-cron: Processing old HY course completions.`
-    )
-    processOldCompletions(courseCodes[0])
-  })
-
   /*
    cron.schedule('0 10 * * 2', () => {
     oodiCheckTimestamp = now()

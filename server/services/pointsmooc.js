@@ -51,15 +51,8 @@ const postRegistrations = async (completionAndStudentIdList) => {
   }
 
   try {
-    client.request(registerMutation, variables)
-    // if (data) {
-    //   const registeredCompletions = data.registerCompletion.map(
-    //     ({ completion }) => completion.id
-    //   )
-    //   return registeredCompletions
-    // } else {
-    //   return []
-    // }
+    const data = await client.request(registerMutation, variables)
+    return data.registerCompletion
   } catch (e) {
     logger.error(
       `Error in updating confirmed registrations. Error message:\n${e}`

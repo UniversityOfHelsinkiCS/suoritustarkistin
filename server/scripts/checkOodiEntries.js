@@ -22,19 +22,29 @@ const checkOodiEntries = async () => {
         }
       }
     })
+    logger.info(`Found ${allUnregistered.length} unchecked credits`)
 
-    allUnregistered.forEach(async (credit) => {
-      // still wip, not all completions that are marked in db are sent forward
+    const unResolvedConfirmations = allUnregistered.map(async (credit) => {
       const hasEntry = await hasOodiEntry(credit.studentId, credit.courseId)
       if (hasEntry) {
-        const res = await markAsRegistered(credit.completionId)
-        if (res) {
-          postRegistrations(credit.completionId)
-        }
+        return { completion_id: credit.completionId, student_number: credit.studentId }
       }
     })
+
+    const unFilteredConfirmations = await Promise.all(unResolvedConfirmations)
+    const confirmations = unFilteredConfirmations.filter((c) => c)
+    logger.info(`Found ${confirmations.length} credit registrations`)
+
+    if (confirmations.length) {
+      const result = await postRegistrations(confirmations)
+      if (result === 'success') {
+        confirmations.forEach(({ completion_id }) => markAsRegistered(completion_id))
+      }
+      logger.info(`points.mooc.fi response: ${result}`)
+    }
+
   } catch (error) {
-    logger.error('Error in running Oodicheck:', error.message)
+    logger.error(`Error in running Oodicheck: ${error.message}`)
   }
 }
 

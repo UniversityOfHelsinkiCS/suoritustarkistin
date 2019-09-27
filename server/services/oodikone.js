@@ -15,7 +15,8 @@ const hasOodiEntry = async (studentNumber, course) => {
   for (const entry of data) {
     if (
       entry.learningopportunity_id === course ||
-      entry.learningopportunity_id === course + 'fi'
+      entry.learningopportunity_id === course + 'fi' ||
+      entry.learningopportunity_id === course + 'sv'
     ) {
       return true
     }

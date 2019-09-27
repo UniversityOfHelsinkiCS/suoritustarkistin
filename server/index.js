@@ -10,6 +10,7 @@ const { requestLogger, parseUser } = require('./utils/middleware')
 
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
+const checkOodiEntries = require('./scripts/checkOodiEntries')
 
 const courseCodes = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
@@ -42,13 +43,13 @@ const now = () => new Date(Date.now())
 
 let newCompletionTimestamp = null
 let oldCompletionTimestamp = null
-const oodiCheckTimestamp = null
+let oodiCheckTimestamp = null
 const serverTimestamp = now()
 
 if (process.argv[2] && process.argv[2] === 'processnew') {
   newCompletionTimestamp = now()
   logger.info(
-    `${newCompletionTimestamp.toLocaleString()} manual run: Processing new course completions.`
+    `${newCompletionTimestamp.toLocaleString()} manual run: Processing new EoAI completions.`
   )
   processNewCompletions(courseCodes)
 }
@@ -56,28 +57,35 @@ if (process.argv[2] && process.argv[2] === 'processnew') {
 if (process.argv[2] && process.argv[2] === 'processold') {
   oldCompletionTimestamp = now()
   logger.info(
-    `${oldCompletionTimestamp.toLocaleString()} manual run: Processing old HY course completions.`
+    `${oldCompletionTimestamp.toLocaleString()} manual run: Processing old HY EoAI completions. (DEPRECATED)`
   )
   processOldCompletions(courseCodes[0])
+}
+
+if (process.argv[2] && process.argv[2] === 'checkoodi') {
+  oodiCheckTimestamp = now()
+  logger.info(
+    `${oodiCheckTimestamp.toLocaleString()} manual run: Checking oodi entries.`
+  )
+  checkOodiEntries()
 }
 
 if (inProduction) {
   cron.schedule('0 4 * * 4', () => {
     newCompletionTimestamp = now()
     logger.info(
-      `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new course completions.`
+      `${newCompletionTimestamp.toLocaleString()} node-cron: Processing new EoAI completions.`
     )
     processNewCompletions(courseCodes)
   })
 
-  /*
-   cron.schedule('0 10 * * 2', () => {
+  cron.schedule('0 3 * * 5', () => {
     oodiCheckTimestamp = now()
     logger.info(
       `${oodiCheckTimestamp.toLocaleString()} node-cron: Checking oodi entries.`
     )
     checkOodiEntries()
-  }) */
+  })
 }
 
 app.use('/api', routes)

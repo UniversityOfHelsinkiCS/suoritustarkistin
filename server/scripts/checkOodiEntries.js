@@ -25,10 +25,15 @@ const checkOodiEntries = async () => {
     logger.info(`Found ${unregisteredCredits.length} unchecked credits`)
 
     const confirmations = await unregisteredCredits.reduce(async (accPromise, credit) => {
-      const hasEntry = await hasOodiEntry(credit.studentId, credit.courseId)
       const acc = await accPromise
-      if (hasEntry) {
-        return acc.concat({ completion_id: credit.completionId, student_number: credit.studentId })
+      try {
+        const hasEntry = await hasOodiEntry(credit.studentId, credit.courseId)
+
+        if (hasEntry) {
+          return acc.concat({ completion_id: credit.completionId, student_number: credit.studentId })
+        }
+      } catch (error) {
+        logger.error(`Error checking oodi entry: ${error}`)
       }
       return acc
     }, [])

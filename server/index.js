@@ -4,9 +4,10 @@ const bodyParser = require('body-parser')
 const cron = require('node-cron')
 const routes = require('@utils/routes')
 const logger = require('@utils/logger')
-const { PORT, inProduction, inDevelopment } = require('@utils/common')
+const { PORT, inProduction, inDevelopment, SHIBBOLETH_HEADERS } = require('@utils/common')
 const { fakeShibbo } = require('./utils/fakeshibbo')
 const { requestLogger, parseUser } = require('./utils/middleware')
+const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const processNewCompletions = require('./scripts/processNewCompletions')
 const processOldCompletions = require('./scripts/processOldCompletions')
@@ -37,6 +38,7 @@ if (inDevelopment) {
 } else {
   app.use('/', express.static('dist/'))
 }
+app.use(shibbolethCharsetMiddleware(SHIBBOLETH_HEADERS))
 app.use(parseUser)
 
 const now = () => new Date(Date.now())

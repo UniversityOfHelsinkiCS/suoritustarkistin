@@ -87,6 +87,16 @@ const getReports = async (req, res) => {
   }
 }
 
+const getUsersReports = async (req, res) => {
+  // TODO: CHECK THAT USER ID MATCHES THE URL
+  try {
+    const fetchedReports = await db.reports.find({ where: {graderId: req.user.id} })
+    return res.status(200).send(fetchedReports)
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
 const getSingleReport = async (req, res) => {
   try {
     const fetchedReport = await db.reports.findOne({
@@ -126,6 +136,7 @@ module.exports = {
   getReportList,
   getNewReportList,
   getReports,
+  getUsersReports,
   getSingleReport,
   deleteAllReports
 }

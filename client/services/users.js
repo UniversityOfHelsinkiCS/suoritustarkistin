@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseUrl = `${__API_BASE__}/users` // API_BASE comes from webpack.config.js
+const baseUrl = `${__BASE_PATH__}api/users` // BASE_PATH comes from webpack.config.js
 
 const getAll = async () => {
   const users = await axios.get(baseUrl)

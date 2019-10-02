@@ -7,7 +7,6 @@ const webpack = require('webpack')
 
 module.exports = (env, argv) => {
   const { mode } = argv
-  const { apiPrefix } = env
 
   const additionalPlugins =
     mode === 'production'
@@ -29,8 +28,13 @@ module.exports = (env, argv) => {
       ? []
       : ['webpack-hot-middleware/client?http://localhost:8000']
 
+  const BASE_PATH = process.env.BASE_PATH || '/'
+
   return {
     mode,
+    output: {
+      publicPath: BASE_PATH
+    },
     entry: [
       '@babel/polyfill', // so we don't need to import it anywhere
       './client',
@@ -84,7 +88,7 @@ module.exports = (env, argv) => {
         chunkFilename: '[name]-[id].css'
       }),
       new webpack.DefinePlugin({
-        __API_BASE__: mode === 'production' ? `'${apiPrefix}'` : "'/api'"
+        __BASE_PATH__: JSON.stringify(BASE_PATH)
       }),
       ...additionalPlugins
     ]

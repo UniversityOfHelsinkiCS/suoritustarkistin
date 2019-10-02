@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
-    "build": "webpack --mode production --env.api-prefix=/suoritustarkistin/api",
+    "build": "webpack --mode production",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,7 +16,7 @@
     "db:seed:all": "sequelize db:seed:all",
     "db:nuke": "npx npm-run-all -s db:drop db:create",
     "db:recreate": "npx npm-run-all -s db:nuke db:migrate db:seed:all",
-    "test:build": "webpack --mode production --env.api-prefix=/api",
+    "test:build": "webpack --mode production",
     "test:start": "cross-env NODE_ENV=test node index.js",
     "test:setup": "npx npm-run-all -s test:build db:migrate"
   },

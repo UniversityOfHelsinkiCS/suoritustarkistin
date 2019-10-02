@@ -14,10 +14,7 @@ const getCourseName = (data) => {
 
 const addReport = async (req, res) => {
   try {
-    const currentUser = await db.users.findOne({
-      where: { employeeId: req.headers.employeenumber }
-    })
-    if (!currentUser.isGrader && !currentUser.isAdmin) {
+    if (!req.user.isGrader && !req.user.isAdmin) {
       throw new Error('User is not authorized to report credits.')
     }
 
@@ -31,7 +28,8 @@ const addReport = async (req, res) => {
       data,
       courseId,
       graderEmployeeId,
-      date
+      date,
+      reporterId: req.user.id
     })
       .then(() => {
         logger.info('Successful CSV insert.')
@@ -88,9 +86,10 @@ const getReports = async (req, res) => {
 }
 
 const getUsersReports = async (req, res) => {
-  // TODO: CHECK THAT USER ID MATCHES THE URL
   try {
-    const fetchedReports = await db.reports.find({ where: {graderId: req.user.id} })
+    const fetchedReports = await db.reports.findAll({
+      where: { graderId: req.user.id }
+    })
     return res.status(200).send(fetchedReports)
   } catch (error) {
     handleDatabaseError(res, error)

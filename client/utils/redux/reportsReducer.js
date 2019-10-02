@@ -10,14 +10,14 @@ export const getAllReportsAction = () => {
 }
 
 export const getUsersReportsAction = () => {
-  const route = '/logout'
+  const route = '/reports/usersreports'
   const prefix = 'GET_USERS_REPORTS'
   return callBuilder(route, prefix, 'get')
 }
 
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
-export default (state = { data: null }, action) => {
+export default (state = { data: [] }, action) => {
   switch (action.type) {
     case 'GET_ALL_REPORTS_SUCCESS':
       return {
@@ -26,12 +26,38 @@ export default (state = { data: null }, action) => {
         pending: false,
         error: false
       }
+    case 'GET_ALL_REPORTS_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'GET_ALL_REPORTS_FAILURE':
+      return {
+        ...state,
+        data: [],
+        pending: false,
+        error: true
+      }
     case 'GET_USERS_REPORTS_SUCCESS':
       return {
         ...state,
         data: action.response,
         pending: false,
         error: false
+      }
+    case 'GET_USERS_REPORTS_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'GET_USERS_REPORTS_FAILURE':
+      return {
+        ...state,
+        data: [],
+        pending: false,
+        error: true
       }
     default:
       return state

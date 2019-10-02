@@ -29,7 +29,6 @@ export default () => {
       <h1 style={headerStyle}>SUORITUSTARKISTIN</h1>
       {user.data ? (
         <div style={{ float: 'right' }}>
-          
           <div style={userStyle}>
             <Button
               content={`Log out ${user.data.name}`}
@@ -40,16 +39,12 @@ export default () => {
           </div>
           <div style={userStyle}>
             <Link to={'/reports'}>
-              <Button
-                content={`Reports`}
-              />
+              <Button content={`View reports`} />
             </Link>
           </div>
           <div style={userStyle}>
             <Link to={'/'}>
-              <Button
-                content={`New report`}
-              />
+              <Button content={`New report`} />
             </Link>
           </div>
         </div>

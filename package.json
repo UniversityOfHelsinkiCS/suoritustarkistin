@@ -106,6 +106,8 @@
   "_moduleAliases": {
     "@root": ".",
     "@controllers": "server/controllers",
-    "@utils": "server/utils"
+    "@utils": "server/utils",
+    "@models": "server/models",
+    "@services": "server/services"
   }
 }

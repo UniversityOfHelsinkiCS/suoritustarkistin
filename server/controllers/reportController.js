@@ -3,7 +3,7 @@ const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
 
 const handleDatabaseError = (res, error) => {
-  logger.error(error)
+  logger.error(error.message)
   return res.status(500).json({ error: 'Server went BOOM!' })
 }
 
@@ -14,10 +14,7 @@ const getCourseName = (data) => {
 
 const addReport = async (req, res) => {
   try {
-    const currentUser = await db.users.findOne({
-      where: { employeeId: req.headers.employeenumber }
-    })
-    if (!currentUser.isGrader && !currentUser.isAdmin) {
+    if (!req.user.isGrader && !req.user.isAdmin) {
       throw new Error('User is not authorized to report credits.')
     }
 
@@ -31,7 +28,8 @@ const addReport = async (req, res) => {
       data,
       courseId,
       graderEmployeeId,
-      date
+      date,
+      reporterId: req.user.id
     })
       .then(() => {
         logger.info('Successful CSV insert.')
@@ -87,6 +85,19 @@ const getReports = async (req, res) => {
   }
 }
 
+const getUsersReports = async (req, res) => {
+  if (Number(req.params.id) !== req.user.id)
+    return res.status(401).json({ error: 'Unauthorized: User id mismatch.' })
+  try {
+    const fetchedReports = await db.reports.findAll({
+      where: { graderId: req.user.id }
+    })
+    return res.status(200).send(fetchedReports)
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
 const getSingleReport = async (req, res) => {
   try {
     const fetchedReport = await db.reports.findOne({
@@ -126,6 +137,7 @@ module.exports = {
   getReportList,
   getNewReportList,
   getReports,
+  getUsersReports,
   getSingleReport,
   deleteAllReports
 }

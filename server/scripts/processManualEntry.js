@@ -48,6 +48,7 @@ const validateEntry = ({
 
 const processManualEntry = async ({
   graderEmployeeId,
+  reporterId,
   courseId,
   date,
   data
@@ -93,7 +94,9 @@ const processManualEntry = async ({
     fileName: `${course.courseCode}%${moment().format(
       'DD.MM.YY-HHmmss'
     )}-V1-S2019.dat`,
-    data: report
+    data: report,
+    graderId: grader.id,
+    reporterId
   })
 
   const info = await sendEmail(

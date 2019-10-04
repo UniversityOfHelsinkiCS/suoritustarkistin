@@ -23,7 +23,7 @@
     }
   },
   "globals": {
-    "__API_BASE__": true
+    "__BASE_PATH__": true
   },
   "rules": {
     "react/jsx-uses-react": "error",

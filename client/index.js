@@ -8,14 +8,15 @@ import 'Assets/custom.css'
 import store from 'Utilities/store'
 import App from 'Components/App'
 
-const refresh = () => render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </Provider>,
-  document.getElementById('root'),
-)
+const refresh = () =>
+  render(
+    <Provider store={store}>
+      <BrowserRouter basename={__BASE_PATH__}>
+        <App />
+      </BrowserRouter>
+    </Provider>,
+    document.getElementById('root')
+  )
 
 refresh()
 

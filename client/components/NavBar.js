@@ -3,6 +3,7 @@ import { Button } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { logoutAction } from 'Utilities/redux/userReducer'
 import { images } from 'Utilities/common'
+import { Link } from 'react-router-dom'
 
 const headerStyle = {
   position: 'absolute',
@@ -27,13 +28,25 @@ export default () => {
       <img src={images.toska_color} style={{ height: '100%' }} alt="tosca" />
       <h1 style={headerStyle}>SUORITUSTARKISTIN</h1>
       {user.data ? (
-        <div style={userStyle}>
-          <Button
-            content={`Log out ${user.data.name}`}
-            icon="sign-out"
-            labelPosition="right"
-            onClick={handleLogout}
-          />
+        <div style={{ float: 'right' }}>
+          <div style={userStyle}>
+            <Button
+              content={`Log out ${user.data.name}`}
+              icon="sign-out"
+              labelPosition="right"
+              onClick={handleLogout}
+            />
+          </div>
+          <div style={userStyle}>
+            <Link to={'/reports'}>
+              <Button content={`View reports`} />
+            </Link>
+          </div>
+          <div style={userStyle}>
+            <Link to={'/'}>
+              <Button content={`New report`} />
+            </Link>
+          </div>
         </div>
       ) : null}
     </div>

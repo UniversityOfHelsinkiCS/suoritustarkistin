@@ -6,7 +6,7 @@ const getUsers = async (req, res) => {
     const users = await db.users.findAll()
     res.status(200).json(users)
   } catch (e) {
-    logger.error(e)
+    logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
   }
 }
@@ -28,7 +28,7 @@ const getGraders = async (req, res) => {
       })
     }
   } catch (e) {
-    logger.error(e)
+    logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
   }
 }

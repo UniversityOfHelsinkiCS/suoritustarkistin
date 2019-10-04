@@ -28,7 +28,7 @@ module.exports = (env, argv) => {
       ? []
       : ['webpack-hot-middleware/client?http://localhost:8000']
 
-  const BASE_PATH = process.env.BASE_PATH || ''
+  const BASE_PATH = process.env.BASE_PATH || '/'
 
   return {
     mode,

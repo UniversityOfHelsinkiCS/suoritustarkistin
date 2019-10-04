@@ -4,7 +4,7 @@ import axios from 'axios'
  * ApiConnection simplifies redux usage
  */
 
-const getAxios = axios.create({ baseURL: `${__BASE_PATH__}/api` })
+const getAxios = axios.create({ baseURL: `${__BASE_PATH__}api` })
 
 const callApi = async (url, method = 'get', data) => {
   const options = { headers: {} }

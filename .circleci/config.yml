@@ -24,7 +24,7 @@ workflows:
             - cypress/run
           image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
           tag: 'staging'
-          extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin'
+          extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin/'
           filters:
             branches:
               only: trunk
@@ -33,7 +33,7 @@ workflows:
             - cypress/run
           image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
           tag: 'production'
-          extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin'
+          extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin/'
           filters:
             branches:
               only: master

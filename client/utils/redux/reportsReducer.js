@@ -9,8 +9,8 @@ export const getAllReportsAction = () => {
   return callBuilder(route, prefix, 'get')
 }
 
-export const getUsersReportsAction = () => {
-  const route = '/reports/usersreports'
+export const getUsersReportsAction = (id) => {
+  const route = `/users/${id}/reports`
   const prefix = 'GET_USERS_REPORTS'
   return callBuilder(route, prefix, 'get')
 }

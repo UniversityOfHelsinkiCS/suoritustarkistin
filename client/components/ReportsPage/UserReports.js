@@ -14,17 +14,20 @@ const reportLines = (report) => {
 
 export default () => {
   const dispatch = useDispatch()
-  const reports = useSelector((state) => state.reports.data)
+  const reports = useSelector((state) => state.reports)
+  const user = useSelector((state) => state.user.data)
 
   useEffect(() => {
-    dispatch(getUsersReportsAction())
+    dispatch(getUsersReportsAction(user.id))
   }, [])
 
-  if (!reports) return <div>LOADING!</div>
+  if (reports.pending) return <div>LOADING!</div>
+
+  if (reports.data.length === 0) return <div>NO REPORTS FOUND.</div>
 
   return (
     <>
-      {reports.map((report) => {
+      {reports.data.map((report) => {
         return (
           <Segment key={report.id}>
             <div>

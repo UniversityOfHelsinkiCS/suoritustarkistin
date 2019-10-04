@@ -3,7 +3,7 @@ const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
 
 const handleDatabaseError = (res, error) => {
-  logger.error(error)
+  logger.error(error.message)
   return res.status(500).json({ error: 'Server went BOOM!' })
 }
 
@@ -86,6 +86,8 @@ const getReports = async (req, res) => {
 }
 
 const getUsersReports = async (req, res) => {
+  if (Number(req.params.id) !== req.user.id)
+    return res.status(401).json({ error: 'Unauthorized: User id mismatch.' })
   try {
     const fetchedReports = await db.reports.findAll({
       where: { graderId: req.user.id }

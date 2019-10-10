@@ -78,7 +78,9 @@ const getNewReportList = async (req, res) => {
 
 const getReports = async (req, res) => {
   try {
-    const fetchedReports = await db.reports.findAll()
+    const fetchedReports = await db.reports.findAll({
+      order: [['createdAt', 'DESC']]
+    })
     return res.status(200).send(fetchedReports)
   } catch (error) {
     handleDatabaseError(res, error)
@@ -88,7 +90,8 @@ const getReports = async (req, res) => {
 const getUsersReports = async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll({
-      where: { graderId: req.user.id }
+      where: { graderId: req.user.id },
+      order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(fetchedReports)
   } catch (error) {

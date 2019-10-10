@@ -1,17 +1,32 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 
+const cleanCourses = (courses) => {
+  return courses.map((course) => ({
+    id: course.id,
+    name: course.name,
+    courseCode: course.courseCode,
+    language: course.language,
+    credits: course.credits
+  }))
+}
+
 const getCourses = async (req, res) => {
   try {
     const courses = await db.courses.findAll()
-    const cleanedCourses = courses.map((course) => ({
-      id: course.id,
-      name: course.name,
-      courseCode: course.courseCode,
-      language: course.language,
-      credits: course.credits
-    }))
-    res.status(200).json(cleanedCourses)
+    res.status(200).json(cleanCourses(courses))
+  } catch (e) {
+    logger.error(e.message)
+    res.status(500).json({ error: 'server went BOOM!' })
+  }
+}
+
+const getUsersCourses = async (req, res) => {
+  try {
+    const courses = await db.courses.findAll({
+      where: { graderId: req.user.id }
+    })
+    res.status(200).json(cleanCourses(courses))
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
@@ -31,6 +46,7 @@ const deleteAllCourses = async (req, res) => {
 
 module.exports = {
   getCourses,
+  getUsersCourses,
   addCourse,
   deleteAllCourses
 }

@@ -10,18 +10,6 @@ describe('Validation prevents submission of invalid data', function() {
     cy.request('DELETE', '/api/users')
     cy.request('DELETE', '/api/reports')
 
-    cy.request('POST', '/api/courses', {
-      name: 'avoimen kurssi',
-      courseCode: 'AYTKTTEST',
-      language: 'fi',
-      credits: '8,0'
-    })
-    cy.request('POST', '/api/courses', {
-      name: 'tkt:n kurssi',
-      courseCode: 'TKTTEST',
-      language: 'en',
-      credits: '8,0'
-    })
     cy.request('POST', '/api/users', {
       name: 'testiope',
       employeeId: '123',
@@ -33,7 +21,23 @@ describe('Validation prevents submission of invalid data', function() {
       employeeId: '321',
       isAdmin: false,
       isGrader: true
+    }).then((response) => {
+      cy.request('POST', '/api/courses', {
+        name: 'avoimen kurssi',
+        courseCode: 'AYTKTTEST',
+        language: 'fi',
+        credits: '8,0',
+        graderId: response.body.id
+      })
+      cy.request('POST', '/api/courses', {
+        name: 'tkt:n kurssi',
+        courseCode: 'TKTTEST',
+        language: 'en',
+        credits: '8,0',
+        graderId: response.body.id
+      })
     })
+
     cy.visit('')
   })
 

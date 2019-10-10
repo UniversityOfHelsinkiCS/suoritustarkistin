@@ -1,12 +1,14 @@
 const Router = require('express')
 const {
   getCourses,
+  getUsersCourses,
   addCourse,
   deleteAllCourses
 } = require('@controllers/courseController')
 const {
   getUsers,
   getGraders,
+  getUsersGraders,
   addUser,
   deleteAllUsers
 } = require('@controllers/userController')
@@ -19,11 +21,15 @@ const {
   getSingleReport,
   deleteAllReports
 } = require('@controllers/reportController')
+const {
+  getCourseRegistrations
+} = require('@controllers/registrationController')
 const { login, logout } = require('@controllers/loginController')
 const {
   notInProduction,
   checkSuotarToken,
-  checkAdmin
+  checkAdmin,
+  checkIdMatch
 } = require('./middleware')
 
 const router = Router()
@@ -40,11 +46,14 @@ router.delete('/reports', notInProduction, deleteAllReports)
 router.post('/login', login)
 router.post('/logout', logout)
 
-router.get('/courses', getCourses)
+router.get('/courses', checkAdmin, getCourses)
+router.get('/courses/:id/registrations', getCourseRegistrations)
 
 router.get('/users', getUsers)
-router.get('/users/graders', getGraders)
-router.get('/users/:id/reports', getUsersReports)
+router.get('/users/graders', checkAdmin, getGraders)
+router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
+router.get('/users/:id/reports', checkIdMatch, getUsersReports)
+router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
 router.get('/reports/undownloaded', checkSuotarToken, getNewReportList)
 router.get('/reports/:id', checkSuotarToken, getSingleReport)

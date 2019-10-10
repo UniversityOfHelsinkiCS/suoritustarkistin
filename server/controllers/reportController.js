@@ -86,8 +86,6 @@ const getReports = async (req, res) => {
 }
 
 const getUsersReports = async (req, res) => {
-  if (Number(req.params.id) !== req.user.id)
-    return res.status(401).json({ error: 'Unauthorized: User id mismatch.' })
   try {
     const fetchedReports = await db.reports.findAll({
       where: { graderId: req.user.id }

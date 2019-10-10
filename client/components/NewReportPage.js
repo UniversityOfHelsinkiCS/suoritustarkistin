@@ -1,40 +1,42 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Message } from 'semantic-ui-react'
 import ReportDisplay from 'Components/ReportDisplay'
 import InputOptions from 'Components/InputOptions'
 import InputSelector from 'Components/InputSelector'
 import UserGuide from 'Components/UserGuide'
-import userService from '../services/users'
-import courseService from '../services/courses'
+import {
+  getAllGradersAction,
+  getUsersGradersAction
+} from 'Utilities/redux/gradersReducer'
+import {
+  getAllCoursesAction,
+  getUsersCoursesAction
+} from 'Utilities/redux/coursesReducer'
 const moment = require('moment')
 
 export default () => {
-  const user = useSelector((state) => state.user)
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.user.data)
+  const graders = useSelector((state) => state.graders.data)
+  const courses = useSelector((state) => state.courses.data)
   const [report, setReport] = useState({
     courseId: null,
-    graderEmployeeId: null,
+    graderEmployeeId: user.employeeId,
     data: null,
     date: moment().format('D.M.YYYY')
   })
-
-  const [graders, setGraders] = useState([])
-  const [courses, setCourses] = useState([])
   const [message, setMessage] = useState(null)
   const [textData, setTextData] = useState('')
+
   useEffect(() => {
-    const fetchData = async () => {
-      const graderData = await userService.getGraders()
-      const courseData = await courseService.getAll()
-      const prefilledReport = {
-        ...report,
-        graderEmployeeId: user.data.employeeId
-      }
-      setGraders(graderData)
-      setCourses(courseData)
-      setReport(prefilledReport)
+    if (user.isAdmin) {
+      dispatch(getAllCoursesAction())
+      dispatch(getAllGradersAction())
+    } else {
+      dispatch(getUsersCoursesAction(user.id))
+      dispatch(getUsersGradersAction(user.id))
     }
-    fetchData()
   }, [])
 
   return (

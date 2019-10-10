@@ -9,7 +9,8 @@ module.exports = {
         createdAt: Sequelize.fn('NOW'),
         updatedAt: Sequelize.fn('NOW'),
         language: 'fi',
-        credits: '5,0'
+        credits: '5,0',
+        graderId: 1
       },
       {
         name: 'grader course',
@@ -17,7 +18,8 @@ module.exports = {
         createdAt: Sequelize.fn('NOW'),
         updatedAt: Sequelize.fn('NOW'),
         language: 'en',
-        credits: '10,0'
+        credits: '10,0',
+        graderId: 2
       }
     ])
   },

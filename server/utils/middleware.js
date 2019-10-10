@@ -47,6 +47,17 @@ const checkAdmin = (req, res, next) => {
   }
 }
 
+const checkIdMatch = (req, res, next) => {
+  if (Number(req.params.id) === req.user.id) {
+    next()
+  } else {
+    res
+      .status(401)
+      .json({ error: 'Unauthorized: User id mismatch.' })
+      .end()
+  }
+}
+
 const checkSuotarToken = (req, res, next) => {
   if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
     next()
@@ -63,9 +74,7 @@ const notInProduction = (req, res, next) => {
     next()
   } else {
     logger.error(
-      `Test-only route (${req.method} ${
-        req.url
-      }) was requested while in production mode.`
+      `Test-only route (${req.method} ${req.url}) was requested while in production mode.`
     )
     return res.status(404).end()
   }
@@ -85,5 +94,6 @@ module.exports = {
   requestLogger,
   parseUser,
   checkGrader,
-  checkAdmin
+  checkAdmin,
+  checkIdMatch
 }

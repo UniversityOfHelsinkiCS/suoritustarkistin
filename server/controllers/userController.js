@@ -13,24 +13,16 @@ const getUsers = async (req, res) => {
 
 const getGraders = async (req, res) => {
   try {
-    const users = await db.users.findAll()
-
-    if (req.user.isAdmin) {
-      res.status(200).json(users.filter((u) => u.isGrader))
-    } else if (req.user.isGrader) {
-      res
-        .status(200)
-        .json(users.filter((u) => u.employeeId === req.user.employeeId))
-    } else {
-      res.status(401).json({
-        error:
-          'You are not authorized to report course credits. Contact toska-grp@cs.helsinki.fi if you should be able to use the tool.'
-      })
-    }
+    const graders = await db.users.findAll({ where: { isGrader: true } })
+    res.status(200).json(graders)
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
   }
+}
+
+const getUsersGraders = async (req, res) => {
+  res.status(200).json(req.user.isGrader ? [req.user] : [])
 }
 
 const addUser = async (req, res) => {
@@ -47,6 +39,7 @@ const deleteAllUsers = async (req, res) => {
 module.exports = {
   getUsers,
   getGraders,
+  getUsersGraders,
   addUser,
   deleteAllUsers
 }

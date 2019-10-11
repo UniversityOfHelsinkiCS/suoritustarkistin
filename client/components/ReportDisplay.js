@@ -1,5 +1,6 @@
 import React from 'react'
 import { Table, Icon } from 'semantic-ui-react'
+import { useSelector } from 'react-redux'
 
 const { commify } = require('../../utils/commify')
 
@@ -19,7 +20,14 @@ const invalidStyle = {
   background: '#fddede'
 }
 
-const getStudentIdCell = (studentId) => {
+const getStudentIdCell = (studentId, registration) => {
+  if (registration) {
+    return (
+      <Table.Cell style={validStyle}>
+        {`${registration.email} (${registration.studentnumber})`}
+      </Table.Cell>
+    )
+  }
   if (isValidStudentId(studentId)) {
     return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
   }
@@ -108,7 +116,7 @@ const parseDataToReport = (report, graders, courses) => {
       ) : (
         <Table.Cell />
       )}
-      {getStudentIdCell(row.studentId)}
+      {getStudentIdCell(row.studentId, row.registration)}
       {getGradeCell(row.grade)}
       {getCreditCell(row.credits, course)}
       {getLanguageCell(row.language, course)}
@@ -139,8 +147,13 @@ const parseDataToReport = (report, graders, courses) => {
   )
 }
 
-export default ({ report, graders, courses }) => (
-  <div>
-    {report.data === null ? '' : parseDataToReport(report, graders, courses)}
-  </div>
-)
+export default ({ graders, courses }) => {
+  const newReport = useSelector((state) => state.newReport)
+  return (
+    <div>
+      {newReport.data === null
+        ? ''
+        : parseDataToReport(newReport, graders, courses)}
+    </div>
+  )
+}

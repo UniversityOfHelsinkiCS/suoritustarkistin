@@ -1,5 +1,11 @@
 import SendButton from 'Components/SendButton.js'
 import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setNewReportAction } from 'Utilities/redux/newReportReducer'
+import {
+  getCoursesRegistrationsAction,
+  clearRegistrationsAction
+} from 'Utilities/redux/registrationsReducer'
 import { Select, Input } from 'semantic-ui-react'
 
 const findGradersForSelection = (data) =>
@@ -12,6 +18,10 @@ const formatCoursesForSelection = (data) =>
     value: c.id
   }))
 
+const isOpenUniCourse = (course) => {
+  return course.courseCode.substring(0, 2) === 'AY'
+}
+
 export default ({
   setReport,
   report,
@@ -20,16 +30,26 @@ export default ({
   setMessage,
   setTextData
 }) => {
+  const dispatch = useDispatch()
+  const newReport = useSelector((state) => state.newReport)
+
   const handleDateChange = (event) => {
-    setReport({ ...report, date: event.target.value })
+    dispatch(setNewReportAction({ ...newReport, date: event.target.value }))
   }
 
   const handleGraderSelection = (e, data) => {
-    setReport({ ...report, graderEmployeeId: data.value })
+    dispatch(setNewReportAction({ ...newReport, graderEmployeeId: data.value }))
   }
 
   const handleCourseSelection = (e, data) => {
-    setReport({ ...report, courseId: data.value })
+    const courseId = data.value
+    const course = courses.find((course) => course.id === courseId)
+    if (isOpenUniCourse(course)) {
+      dispatch(getCoursesRegistrationsAction(courseId))
+    } else {
+      dispatch(clearRegistrationsAction())
+    }
+    dispatch(setNewReportAction({ ...newReport, courseId }))
   }
 
   return (

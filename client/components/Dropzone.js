@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setNewReportAction } from 'Utilities/redux/newReportReducer'
 import { useDropzone } from 'react-dropzone'
-import { parseCSV } from '../utils/reportCsvToJson'
+import { parseCSV } from 'Utilities/inputParser'
 
 const baseStyle = {
   flex: 1,
@@ -30,7 +32,9 @@ const rejectStyle = {
   borderColor: '#ff1744'
 }
 
-export default ({ report, setReport, setTextData }) => {
+export default ({ setTextData }) => {
+  const dispatch = useDispatch()
+  const newReport = useSelector((state) => state.newReport)
   const onDrop = (acceptedFiles) => {
     const reader = new FileReader()
 
@@ -39,10 +43,12 @@ export default ({ report, setReport, setTextData }) => {
     reader.onload = () => {
       const fileString = reader.result
       const data = parseCSV(fileString)
-      setReport({
-        ...report,
-        data
-      })
+      dispatch(
+        setNewReportAction({
+          ...newReport,
+          data
+        })
+      )
       setTextData('')
     }
     acceptedFiles.forEach((file) => reader.readAsBinaryString(file))

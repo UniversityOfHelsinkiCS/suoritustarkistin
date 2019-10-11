@@ -1,21 +1,30 @@
 import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setNewReportAction } from 'Utilities/redux/newReportReducer'
 import { TextArea, Form } from 'semantic-ui-react'
-import { parseCSV } from '../utils/reportCsvToJson'
+import { parseCSV } from 'Utilities/inputParser'
 
-export default ({ report, setReport, textData, setTextData }) => {
+export default ({ textData, setTextData }) => {
+  const dispatch = useDispatch()
+  const newReport = useSelector((state) => state.newReport)
+
   const handleDataChange = (event) => {
     const rawData = event.target.value
     if (rawData === '') {
-      setReport({
-        ...report,
-        data: null
-      })
+      dispatch(
+        setNewReportAction({
+          ...newReport,
+          data: null
+        })
+      )
     } else {
       const data = parseCSV(rawData.trim())
-      setReport({
-        ...report,
-        data
-      })
+      dispatch(
+        setNewReportAction({
+          ...newReport,
+          data
+        })
+      )
     }
     setTextData(rawData)
   }

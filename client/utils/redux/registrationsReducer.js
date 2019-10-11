@@ -9,6 +9,10 @@ export const getCoursesRegistrationsAction = (id) => {
   return callBuilder(route, prefix, 'get')
 }
 
+export const clearRegistrationsAction = () => {
+  return { type: 'CLEAR_REGISTRATIONS' }
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [] }, action) => {
@@ -32,6 +36,13 @@ export default (state = { data: [] }, action) => {
         data: [],
         pending: false,
         error: true
+      }
+    case 'CLEAR_REGISTRATIONS':
+      return {
+        ...state,
+        data: [],
+        pending: false,
+        error: false
       }
     default:
       return state

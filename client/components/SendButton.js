@@ -1,23 +1,39 @@
 import React from 'react'
 import { Button } from 'semantic-ui-react'
+import { useSelector, useDispatch } from 'react-redux'
+import { sendNewReportAction } from 'Utilities/redux/newReportReducer'
 import { isValidReport } from 'Root/utils/validators'
-import reportService from '../services/reports'
 
-export default ({ report, setReport, setMessage, setTextData }) => {
+const parseReport = (report) => {
+  if (!report.data) return report
+
+  return {
+    ...report,
+    data: report.data.map((row) => {
+      if (row.registration) {
+        return {
+          ...row,
+          studentId: row.registration.onro,
+          registration: undefined
+        }
+      }
+      return row
+    })
+  }
+}
+
+export default ({ setMessage, setTextData }) => {
+  const dispatch = useDispatch()
+  const newReport = useSelector((state) => state.newReport)
+
   const sendReport = async () => {
     try {
-      const forwardReport = { ...report }
-      setReport({
-        ...report,
-        data: null
-      })
-      const response = await reportService.createNew(forwardReport)
+      dispatch(sendNewReportAction(parseReport(newReport)))
       setTextData('')
       setMessage({
         header: 'Raportti lähetetty!',
         content: 'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi.'
       })
-      return response
     } catch (e) {
       alert(`Lähetys epäonnistui:\n${e}`)
     }
@@ -27,7 +43,7 @@ export default ({ report, setReport, setMessage, setTextData }) => {
     <Button
       data-cy="sendButton"
       onClick={sendReport}
-      disabled={!isValidReport(report)}
+      disabled={!isValidReport(parseReport(newReport))}
       className="right floated negative ui button"
       content="Lähetä raportti"
     />

@@ -1,12 +1,16 @@
 import { attachRegistrations, stripRegistrations } from 'Utilities/inputParser'
 const moment = require('moment')
 
+import callBuilder from '../apiConnection'
+
 export const setNewReportAction = (report) => {
   return { type: 'SET_NEW_REPORT', payload: report }
 }
 
-export const clearNewReportAction = () => {
-  return { type: 'CLEAR_NEW_REPORT' }
+export const sendNewReportAction = (report) => {
+  const route = `/reports`
+  const prefix = 'POST_REPORT'
+  return callBuilder(route, prefix, 'post', report)
 }
 
 // Reducer
@@ -15,7 +19,7 @@ export default (state = null, action) => {
   switch (action.type) {
     case 'SET_NEW_REPORT':
       return action.payload
-    case 'CLEAR_NEW_REPORT':
+    case 'POST_REPORT_ATTEMPT':
       return {
         ...state,
         data: null,

@@ -3,6 +3,20 @@ const db = require('../models/index')
 const { getRegistrations } = require('../services/eduweb')
 
 const getCourseRegistrations = async (req, res) => {
+  /*
+  return res.status(200).json([
+    {
+      onro: '011000002',
+      email: 'testertester@helsinki.fi',
+      mooc: 'testertester@helsinki.fi'
+    },
+    {
+      nro: '010000003',
+      email: 'testertester@helsinki.fi',
+      mooc: 'testertester@helsinki.fi'
+    }
+  ])
+  */
   try {
     const course = await db.courses.findOne({ where: { id: req.params.id } })
     if (!req.user.isAdmin && req.user.id !== course.graderId)

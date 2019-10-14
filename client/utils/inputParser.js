@@ -23,9 +23,12 @@ export const parseCSV = (string) => {
 export const attachRegistrations = (data, registrations) => {
   if (!data) return null
   return data.map((row) => {
-    if (isValidEmailAddress(row.studentId.toLowerCase())) {
+    const cleanedEmail = row.studentId.trim().toLowerCase()
+    if (isValidEmailAddress(cleanedEmail)) {
       const registration = registrations.find(
-        (reg) => reg.email.toLowerCase() === row.studentId.toLowerCase()
+        (reg) =>
+          reg.email.toLowerCase() === cleanedEmail ||
+          reg.mooc.toLowerCase() === cleanedEmail
       )
       return { ...row, registration }
     }

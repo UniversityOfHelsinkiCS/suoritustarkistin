@@ -24,7 +24,7 @@ const getStudentIdCell = (studentId, registration) => {
   if (registration) {
     return (
       <Table.Cell style={validStyle}>
-        {`${registration.email} (${registration.studentnumber})`}
+        {`${studentId} (${registration.onro})`}
       </Table.Cell>
     )
   }

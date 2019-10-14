@@ -45,11 +45,12 @@ export default ({
     const courseId = data.value
     const course = courses.find((course) => course.id === courseId)
     if (isOpenUniCourse(course)) {
+      dispatch(setNewReportAction({ ...newReport, courseId }))
       dispatch(getCoursesRegistrationsAction(courseId))
     } else {
+      dispatch(setNewReportAction({ ...newReport, courseId }))
       dispatch(clearRegistrationsAction())
     }
-    dispatch(setNewReportAction({ ...newReport, courseId }))
   }
 
   return (

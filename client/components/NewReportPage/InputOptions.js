@@ -26,10 +26,6 @@ const formatCoursesForSelection = (data) =>
     value: c.id
   }))
 
-const isOpenUniCourse = (course) => {
-  return course.courseCode.substring(0, 2) === 'AY'
-}
-
 export default () => {
   const dispatch = useDispatch()
   const newReport = useSelector((state) => state.newReport)
@@ -58,7 +54,7 @@ export default () => {
   const handleCourseSelection = (e, data) => {
     const courseId = data.value
     const course = courses.find((course) => course.id === courseId)
-    if (isOpenUniCourse(course)) {
+    if (course.isMooc) {
       dispatch(setNewReportAction({ ...newReport, courseId }))
       dispatch(getCoursesRegistrationsAction(courseId))
     } else {

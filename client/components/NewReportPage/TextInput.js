@@ -1,12 +1,18 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setNewReportAction } from 'Utilities/redux/newReportReducer'
+import { attachRegistrations } from 'Utilities/inputParser'
 import { TextArea, Form } from 'semantic-ui-react'
 import { parseCSV } from 'Utilities/inputParser'
 
-export default ({ textData, setTextData }) => {
+const textAreaStyle = {
+  padding: '20px'
+}
+
+export default () => {
   const dispatch = useDispatch()
   const newReport = useSelector((state) => state.newReport)
+  const registrations = useSelector((state) => state.registrations.data)
 
   const handleDataChange = (event) => {
     const rawData = event.target.value
@@ -14,7 +20,17 @@ export default ({ textData, setTextData }) => {
       dispatch(
         setNewReportAction({
           ...newReport,
-          data: null
+          data: null,
+          rawData
+        })
+      )
+    } else if (registrations.length) {
+      const data = parseCSV(rawData.trim())
+      dispatch(
+        setNewReportAction({
+          ...newReport,
+          data: attachRegistrations(data, registrations),
+          rawData
         })
       )
     } else {
@@ -22,14 +38,11 @@ export default ({ textData, setTextData }) => {
       dispatch(
         setNewReportAction({
           ...newReport,
-          data
+          data,
+          rawData
         })
       )
     }
-    setTextData(rawData)
-  }
-  const textAreaStyle = {
-    padding: '20px'
   }
 
   return (
@@ -39,7 +52,7 @@ export default ({ textData, setTextData }) => {
         onChange={handleDataChange}
         placeholder="Liitä suoritustiedot tähän ylläolevan ohjeen mukaan formatoituna."
         rows={10}
-        value={textData}
+        value={newReport.rawData}
         style={textAreaStyle}
       />
     </Form>

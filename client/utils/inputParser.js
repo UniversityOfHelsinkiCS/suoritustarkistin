@@ -32,8 +32,7 @@ export const attachRegistrations = (data, registrations) => {
       )
       return { ...row, registration }
     }
-
-    return row
+    return { ...row, registration: undefined }
   })
 }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { Table, Icon } from 'semantic-ui-react'
 import { useSelector } from 'react-redux'
 
-const { commify } = require('../../utils/commify')
+const { commify } = require('Root/utils/commify')
 
 const {
   isValidStudentId,
@@ -10,7 +10,7 @@ const {
   isValidGrade,
   isValidCreditAmount,
   isValidLanguage
-} = require('../../utils/validators')
+} = require('Root/utils/validators')
 
 const validStyle = {
   background: '#d2f3db'
@@ -102,12 +102,20 @@ const getDateCell = (date) => {
   )
 }
 
-const parseDataToReport = (report, graders, courses) => {
-  const grader = graders.find((g) => g.employeeId === report.graderEmployeeId)
-  const course = courses.find((c) => c.id === report.courseId)
-  const date = report.date ? report.date : 'Merkitse suorituspäivämäärä'
+export default () => {
+  const newReport = useSelector((state) => state.newReport)
+  const graders = useSelector((state) => state.graders.data)
+  const courses = useSelector((state) => state.courses.data)
 
-  const reportRows = report.data.map((row, index) => (
+  if (!newReport.data) return null
+
+  const grader = graders.find(
+    (g) => g.employeeId === newReport.graderEmployeeId
+  )
+  const course = courses.find((c) => c.id === newReport.courseId)
+  const date = newReport.date ? newReport.date : 'Merkitse suorituspäivämäärä'
+
+  const reportRows = newReport.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
       {course ? (
         <Table.Cell style={validStyle}>
@@ -144,16 +152,5 @@ const parseDataToReport = (report, graders, courses) => {
       </Table.Header>
       <Table.Body>{reportRows}</Table.Body>
     </Table>
-  )
-}
-
-export default ({ graders, courses }) => {
-  const newReport = useSelector((state) => state.newReport)
-  return (
-    <div>
-      {newReport.data === null
-        ? ''
-        : parseDataToReport(newReport, graders, courses)}
-    </div>
   )
 }

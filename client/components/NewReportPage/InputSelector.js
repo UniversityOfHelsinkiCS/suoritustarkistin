@@ -1,9 +1,9 @@
 import React from 'react'
 import { Tab, Menu, Icon } from 'semantic-ui-react'
-import Dropzone from 'Components/Dropzone'
-import TextInput from 'Components/TextInput'
+import Dropzone from 'Components/NewReportPage/Dropzone'
+import TextInput from 'Components/NewReportPage/TextInput'
 
-export default ({ report, setReport, setTextData, textData }) => {
+export default () => {
   const panes = [
     {
       menuItem: (
@@ -14,12 +14,7 @@ export default ({ report, setReport, setTextData, textData }) => {
       ),
       render: () => (
         <Tab.Pane>
-          <TextInput
-            report={report}
-            setReport={setReport}
-            setTextData={setTextData}
-            textData={textData}
-          />
+          <TextInput />
         </Tab.Pane>
       )
     },
@@ -32,11 +27,7 @@ export default ({ report, setReport, setTextData, textData }) => {
       ),
       render: () => (
         <Tab.Pane>
-          <Dropzone
-            report={report}
-            setReport={setReport}
-            setTextData={setTextData}
-          />
+          <Dropzone />
         </Tab.Pane>
       )
     }

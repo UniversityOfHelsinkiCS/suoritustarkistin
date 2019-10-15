@@ -18,32 +18,25 @@ const parseReport = (report) => {
         }
       }
       return row
-    })
+    }),
+    sending: undefined,
+    rawData: undefined
   }
 }
 
-export default ({ setMessage, setTextData }) => {
+export default () => {
   const dispatch = useDispatch()
   const newReport = useSelector((state) => state.newReport)
 
-  const sendReport = async () => {
-    try {
-      dispatch(sendNewReportAction(parseReport(newReport)))
-      setTextData('')
-      setMessage({
-        header: 'Raportti lähetetty!',
-        content: 'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi.'
-      })
-    } catch (e) {
-      alert(`Lähetys epäonnistui:\n${e}`)
-    }
+  const sendReport = () => {
+    dispatch(sendNewReportAction(parseReport(newReport)))
   }
 
   return (
     <Button
       data-cy="sendButton"
       onClick={sendReport}
-      disabled={!isValidReport(parseReport(newReport))}
+      disabled={newReport.sending || !isValidReport(parseReport(newReport))}
       className="right floated negative ui button"
       content="Lähetä raportti"
     />

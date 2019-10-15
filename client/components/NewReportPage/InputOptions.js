@@ -1,12 +1,20 @@
-import SendButton from 'Components/SendButton.js'
-import React from 'react'
+import SendButton from 'Components/NewReportPage/SendButton.js'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Select, Input } from 'semantic-ui-react'
 import { setNewReportAction } from 'Utilities/redux/newReportReducer'
 import {
   getCoursesRegistrationsAction,
   clearRegistrationsAction
 } from 'Utilities/redux/registrationsReducer'
-import { Select, Input } from 'semantic-ui-react'
+import {
+  getAllGradersAction,
+  getUsersGradersAction
+} from 'Utilities/redux/gradersReducer'
+import {
+  getAllCoursesAction,
+  getUsersCoursesAction
+} from 'Utilities/redux/coursesReducer'
 
 const findGradersForSelection = (data) =>
   data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
@@ -22,16 +30,22 @@ const isOpenUniCourse = (course) => {
   return course.courseCode.substring(0, 2) === 'AY'
 }
 
-export default ({
-  setReport,
-  report,
-  graders,
-  courses,
-  setMessage,
-  setTextData
-}) => {
+export default () => {
   const dispatch = useDispatch()
   const newReport = useSelector((state) => state.newReport)
+  const user = useSelector((state) => state.user.data)
+  const graders = useSelector((state) => state.graders.data)
+  const courses = useSelector((state) => state.courses.data)
+
+  useEffect(() => {
+    if (user.isAdmin) {
+      dispatch(getAllCoursesAction())
+      dispatch(getAllGradersAction())
+    } else {
+      dispatch(getUsersCoursesAction(user.id))
+      dispatch(getUsersGradersAction(user.id))
+    }
+  }, [])
 
   const handleDateChange = (event) => {
     dispatch(setNewReportAction({ ...newReport, date: event.target.value }))
@@ -59,7 +73,7 @@ export default ({
         className="input"
         data-cy="graderSelection"
         onChange={handleGraderSelection}
-        value={report.graderEmployeeId}
+        value={newReport.graderEmployeeId}
         options={findGradersForSelection(graders)}
       />
       <Select
@@ -67,21 +81,17 @@ export default ({
         data-cy="courseSelection"
         onChange={handleCourseSelection}
         placeholder="Valitse kurssi"
+        value={newReport.courseId}
         options={formatCoursesForSelection(courses)}
       />
       <Input
         data-cy="dateField"
         type="text"
         onChange={handleDateChange}
-        value={report.date}
+        value={newReport.date}
         placeholder="p.k.vvvv"
       />
-      <SendButton
-        report={report}
-        setReport={setReport}
-        setMessage={setMessage}
-        setTextData={setTextData}
-      />
+      <SendButton />
     </div>
   )
 }

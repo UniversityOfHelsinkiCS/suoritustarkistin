@@ -10,7 +10,11 @@ export const setNewReportAction = (report) => {
 export const sendNewReportAction = (report) => {
   const route = `/reports`
   const prefix = 'POST_REPORT'
-  return callBuilder(route, prefix, 'post', report)
+  return callBuilder(route, prefix, 'post', {
+    ...report,
+    rawData: undefined,
+    sending: undefined
+  })
 }
 
 // Reducer
@@ -22,9 +26,21 @@ export default (state = null, action) => {
     case 'POST_REPORT_ATTEMPT':
       return {
         ...state,
+        sending: true
+      }
+    case 'POST_REPORT_SUCCESS':
+      return {
+        ...state,
         data: null,
         courseId: null,
-        date: moment().format('D.M.YYYY')
+        date: moment().format('D.M.YYYY'),
+        sending: false,
+        rawData: ''
+      }
+    case 'POST_REPORT_FAILURE':
+      return {
+        ...state,
+        sending: false
       }
     case 'GET_REGISTRATIONS_SUCCESS':
       return {
@@ -41,7 +57,9 @@ export default (state = null, action) => {
         courseId: null,
         graderEmployeeId: action.response.employeeId,
         data: null,
-        date: moment().format('D.M.YYYY')
+        date: moment().format('D.M.YYYY'),
+        sending: false,
+        rawData: ''
       }
     default:
       return state

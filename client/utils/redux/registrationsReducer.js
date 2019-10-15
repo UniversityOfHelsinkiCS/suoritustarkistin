@@ -44,6 +44,13 @@ export default (state = { data: [] }, action) => {
         pending: false,
         error: false
       }
+    case 'POST_REPORT_SUCCESS':
+      return {
+        ...state,
+        data: [],
+        pending: false,
+        error: false
+      }
     default:
       return state
   }

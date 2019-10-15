@@ -32,9 +32,10 @@ const rejectStyle = {
   borderColor: '#ff1744'
 }
 
-export default ({ setTextData }) => {
+export default () => {
   const dispatch = useDispatch()
   const newReport = useSelector((state) => state.newReport)
+
   const onDrop = (acceptedFiles) => {
     const reader = new FileReader()
 
@@ -46,10 +47,10 @@ export default ({ setTextData }) => {
       dispatch(
         setNewReportAction({
           ...newReport,
-          data
+          data,
+          rawData: ''
         })
       )
-      setTextData('')
     }
     acceptedFiles.forEach((file) => reader.readAsBinaryString(file))
   }

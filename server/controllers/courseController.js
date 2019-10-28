@@ -7,7 +7,8 @@ const cleanCourses = (courses) => {
     name: course.name,
     courseCode: course.courseCode,
     language: course.language,
-    credits: course.credits
+    credits: course.credits,
+    isMooc: course.isMooc
   }))
 }
 

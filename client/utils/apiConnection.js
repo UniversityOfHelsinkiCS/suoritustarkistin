@@ -35,6 +35,14 @@ export const handleRequest = (store) => (next) => async (action) => {
       const res = await callApi(route, method, data)
       store.dispatch({ type: `${prefix}_SUCCESS`, response: res.data, query })
     } catch (err) {
+      // Reload page on stale Shibboleth session
+
+      if (err.message.toLowerCase() === 'network error') {
+        console.error('Session expired, reloading...')
+        window.location.reload(true)
+        return
+      }
+
       store.dispatch({ type: `${prefix}_FAILURE`, response: err, query })
     }
   }

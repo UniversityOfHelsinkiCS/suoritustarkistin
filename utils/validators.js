@@ -26,6 +26,11 @@ const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) /
 
 const isValidLanguage = (language) => LANGUAGES[language]
 
+const isValidEmailAddress = (address) =>
+  /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
+    address
+  )
+
 const isValidRow = (row) => {
   if (!isValidStudentId(row.studentId)) {
     return false
@@ -43,6 +48,8 @@ const isValidRow = (row) => {
 }
 
 const isValidReport = (report) => {
+  if (!report) return false
+
   if (!report.graderEmployeeId || !report.courseId) {
     return false
   }
@@ -74,5 +81,6 @@ module.exports = {
   isValidGrade,
   isValidCreditAmount,
   isValidLanguage,
+  isValidEmailAddress,
   isValidReport
 }

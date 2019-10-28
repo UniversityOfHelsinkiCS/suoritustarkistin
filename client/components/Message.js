@@ -1,0 +1,43 @@
+import React from 'react'
+import { Message } from 'semantic-ui-react'
+
+import { useSelector, useDispatch } from 'react-redux'
+import { clearMessageAction } from 'Utilities/redux/messageReducer'
+
+export default () => {
+  const dispatch = useDispatch()
+  const message = useSelector((state) => state.message)
+
+  if (!message) return null
+
+  if (message.type === 'positive') {
+    return (
+      <Message
+        positive
+        onDismiss={() => dispatch(clearMessageAction())}
+        header={message.header}
+        content={message.content}
+      />
+    )
+  }
+
+  if (message.type === 'negative') {
+    return (
+      <Message
+        negative
+        onDismiss={() => dispatch(clearMessageAction())}
+        header={message.header}
+        content={message.content}
+      />
+    )
+  }
+
+  return (
+    <Message
+      info
+      onDismiss={() => dispatch(clearMessageAction())}
+      header={message.header}
+      content={message.content}
+    />
+  )
+}

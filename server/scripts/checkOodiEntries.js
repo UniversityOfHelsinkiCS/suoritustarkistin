@@ -24,30 +24,37 @@ const checkOodiEntries = async () => {
     })
     logger.info(`Found ${unregisteredCredits.length} unchecked credits`)
 
-    const confirmations = await unregisteredCredits.reduce(async (accPromise, credit) => {
-      const acc = await accPromise
-      try {
-        const hasEntry = await hasOodiEntry(credit.studentId, credit.courseId)
+    const confirmations = await unregisteredCredits.reduce(
+      async (accPromise, credit) => {
+        const acc = await accPromise
+        try {
+          const hasEntry = await hasOodiEntry(credit.studentId, credit.courseId)
 
-        if (hasEntry) {
-          return acc.concat({ completion_id: credit.completionId, student_number: credit.studentId })
+          if (hasEntry) {
+            return acc.concat({
+              completion_id: credit.completionId,
+              student_number: credit.studentId
+            })
+          }
+        } catch (error) {
+          logger.error(`Error checking oodi entry: ${error}`)
         }
-      } catch (error) {
-        logger.error(`Error checking oodi entry: ${error}`)
-      }
-      return acc
-    }, [])
+        return acc
+      },
+      []
+    )
 
     logger.info(`Found ${confirmations.length} credit registrations`)
 
     if (confirmations.length) {
       const result = await postRegistrations(confirmations)
       if (result === 'success') {
-        confirmations.forEach(({ completion_id }) => markAsRegistered(completion_id))
+        confirmations.forEach(({ completion_id }) =>
+          markAsRegistered(completion_id)
+        )
       }
       logger.info(`points.mooc.fi response: ${result}`)
     }
-
   } catch (error) {
     logger.error(`Error in running Oodicheck: ${error.message}`)
   }

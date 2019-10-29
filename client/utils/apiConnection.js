@@ -38,7 +38,6 @@ export const handleRequest = (store) => (next) => async (action) => {
       // Reload page on stale Shibboleth session
 
       if (err.message.toLowerCase() === 'network error') {
-        console.error('Session expired, reloading...')
         window.location.reload(true)
         return
       }

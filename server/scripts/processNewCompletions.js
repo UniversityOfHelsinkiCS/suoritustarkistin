@@ -2,205 +2,104 @@ const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getMultipleCourseCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
-const Sequelize = require('sequelize')
 const logger = require('@utils/logger')
-
-const Op = Sequelize.Op
 
 const processNewCompletions = async (courses) => {
   try {
     const credits = await db.credits.findAll({
       where: {
-        [Op.or]: courses.map((c) => ({ courseId: c }))
+        courseId: courses
       },
       raw: true
     })
-
-    // DB credit list split to various ID lists for comparisons, all of these have credit in in DB.
-    const completionIdsInDb = credits.map((credit) => credit.completionId)
-    const moocIdsInDb = credits.map((credit) => credit.moocId)
-    const studentIdsInDb = credits.map((credit) => credit.studentId)
-
-    // Get all registrations from Eduweb and completions from points.mooc.fi
     const registrations = await getMultipleCourseRegistrations(courses)
     const completions = await getMultipleCourseCompletions(courses)
 
-    // Find all who are registered in Eduweb, have but have no credit in db: potential to be credited.
-    const filteredRegistrations = registrations.filter(
-      (registration) =>
-        registration.onro && !studentIdsInDb.includes(registration.onro)
-    )
+    const unreportedCompletions = completions.filter((completion) => {
+      return !credits.find(
+        (credit) =>
+          credit.completionId === completion.id ||
+          credit.moocId === completion.user_upstream_id
+      )
+    })
 
-    // Find all completion details who don't have student id in db, and so haven't been credited yet.
-    const filteredCompletions = completions.filter(
-      (completion) =>
-        !moocIdsInDb.includes(completion.user_upstream_id) &&
-        !completionIdsInDb.includes(completion.id)
-    )
-
-    let matchesFi = []
-    let matchesEn = []
-    let matchesSv = []
-
-    for (const registration of filteredRegistrations) {
-      for (const completion of filteredCompletions) {
-        if (
-          completion.email.toLowerCase() === registration.email.toLowerCase() ||
-          completion.email.toLowerCase() === registration.mooc.toLowerCase()
-        ) {
-          const {
-            id,
-            completion_language,
-            user_upstream_id,
-            ...rest
-          } = completion
-
-          if (completion_language === 'fi_FI') {
-            matchesFi = matchesFi.concat({
-              ...rest,
-              completionId: id,
-              moocId: user_upstream_id,
-              studentId: registration.onro,
-              courseId: courses[0],
-              isInOodikone: false
-            })
-          } else if (completion_language === 'en_US') {
-            matchesEn = matchesEn.concat({
-              ...rest,
-              completionId: id,
-              moocId: user_upstream_id,
-              studentId: registration.onro,
-              courseId: courses[0],
-              isInOodikone: false
-            })
-          } else if (completion_language === 'sv_SE') {
-            matchesSv = matchesSv.concat({
-              ...rest,
-              completionId: id,
-              moocId: user_upstream_id,
-              studentId: registration.onro,
-              courseId: courses[0],
-              isInOodikone: false
-            })
-          } else {
-            logger.error(`Unknown language code: ${completion_language}`)
-          }
-        }
+    const matches = unreportedCompletions.reduce((matches, completion) => {
+      if (
+        !['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)
+      ) {
+        logger.error(`Unknown language code: ${completion.completion_language}`)
+        return matches
       }
-    }
 
-    let matchesAll = matchesEn.concat(matchesFi, matchesSv)
+      const registration = registrations.find(
+        (registration) =>
+          registration.email.toLowerCase() === completion.email.toLowerCase() ||
+          registration.mooc.toLowerCase() === completion.email.toLowerCase()
+      )
+
+      if (registration && registration.onro) {
+        return matches.concat({
+          studentId: registration.onro,
+          courseId: courses[0],
+          moocId: completion.user_upstream_id,
+          completionId: completion.id,
+          isInOodikone: false,
+          completionLanguage: completion.completion_language
+        })
+      } else {
+        return matches
+      }
+    }, [])
 
     logger.info(
-      `${courses[0]}xx: Found ${matchesEn.length} English, ${
-        matchesFi.length
-      } Finnish, and ${matchesSv.length} Swedish completions.`
+      `${courses[0]}xx: Found ${matches.length} new EoAI completions.`
     )
 
-    const dateNow = new Date()
+    const date = new Date()
+    const dateString = `${date.getDate()}.${date.getMonth() +
+      1}.${date.getFullYear()}`
 
-    const date = `${dateNow.getDate()}.${dateNow.getMonth() +
-      1}.${dateNow.getFullYear()}`
-    const shortDate = `${dateNow.getDate()}.${dateNow.getMonth() +
-      1}.${dateNow.getYear() - 100}`
-
-    const reportEn = matchesEn
-      .map(
-        (entry) =>
-          `${
-            entry.studentId
-          }##6#AYTKT21018#The Elements of AI#${date}#0#Hyv.#106##${
-            process.env.TEACHERCODE
-          }#2#H930#11#93013#3##2,0`
-      )
-      .join('\n')
-
-    const reportFi = matchesFi
-      .map(
-        (entry) =>
-          `${
-            entry.studentId
-          }##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#${date}#0#Hyv.#106##${
-            process.env.TEACHERCODE
-          }#2#H930#11#93013#3##2,0`
-      )
-      .join('\n')
-
-    const reportSv = matchesSv
-      .map(
-        (entry) =>
-          `${
-            entry.studentId
-          }##2#AYTKT21018sv#Elements of AI: Grunderna i artificiell intelligens#${date}#0#Hyv.#106##${
-            process.env.TEACHERCODE
-          }#2#H930#11#93013#3##2,0`
-      )
-      .join('\n')
-
-    const reportAll = [reportEn, reportFi, reportSv]
-      .filter((report) => report)
-      .join('\n')
-
-    let dbReportAll = null
-    let dbReportEn = null
-    let dbReportFi = null
-    let dbReportSv = null
-
-    if (matchesAll.length > 0) {
-      dbReportAll = await db.reports.create({
-        fileName: `AYTKT21018%${shortDate}-V1-S2019.dat`,
-        data: reportAll
-      })
-      matchesAll.forEach((entry) => {
-        db.credits.create({ ...entry, reportId: dbReportAll.id })
-      })
+    const courseStrings = {
+      en_US: '##6#AYTKT21018#The Elements of AI#',
+      fi_FI: '##1#AYTKT21018fi#Elements of AI: Tekoälyn perusteet#',
+      sv_SE:
+        '##2#AYTKT21018sv#Elements of AI: Grunderna i artificiell intelligens#'
     }
 
-    /*  Language specific reporting
-    if (matchesEn.length > 0) {
-      dbReportEn = await db.reports.create({
-        fileName: `AYTKT21018%${shortDate}-V1-S2019.dat`,
-        data: reportEn
+    const report = matches
+      .map((match) => {
+        return `${match.studentId}${
+          courseStrings[match.completionLanguage]
+        }${dateString}#0#Hyv.#106##${
+          process.env.TEACHERCODE
+        }#2#H930#11#93013#3##2,0`
       })
-      matchesEn.forEach((entry) => {
-        db.credits.create({ ...entry, reportId: dbReportEn.id })
-      })
-    }
+      .join('\n')
 
-    if (matchesFi.length > 0) {
-      dbReportFi = await db.reports.create({
-        fileName: `AYTKT21018fi%${shortDate}-V1-S2019.dat`,
-        data: reportFi
+    if (matches.length) {
+      const dbReport = await db.reports.create({
+        fileName: `${courses[0]}%${dateString}-V1-S2019.dat`,
+        data: report
       })
-      matchesFi.forEach((entry) => {
-        db.credits.create({ ...entry, reportId: dbReportFi.id })
-      })
-    }
 
-    if (matchesSv.length > 0) {
-      dbReportSv = await db.reports.create({
-        fileName: `AYTKT21018sv%${shortDate}-V1-S2019.dat`,
-        data: reportSv
+      matches.forEach((match) => {
+        match.reportId = dbReport.id
+        db.credits.create(match)
       })
-      matchesSv.forEach((entry) => {
-        db.credits.create({ ...entry, reportId: dbReportSv.id })
-      })
-    }
-*/
-
-    if (dbReportAll || dbReportEn || dbReportFi || dbReportSv) {
-      const info = await sendEmail(
-        'Uusia kurssisuorituksia: Elements of AI',
-        'Viikoittaisen automaattiajon tuottamat siirtotiedostot saatavilla OodiToolissa.'
-      )
-      if (info) {
-        info.accepted.forEach((accepted) =>
-          logger.info(`Email sent to ${accepted}.`)
+      if (dbReport) {
+        const info = await sendEmail(
+          'Uusia kurssisuorituksia: Elements of AI',
+          'Viikoittaisen automaattiajon tuottamat siirtotiedostot saatavilla OodiToolissa.'
         )
-      } else if (info) {
-        info.rejected.forEach((rejected) =>
-          logger.error(`Address ${rejected} was rejected.`)
-        )
+        if (info) {
+          info.accepted.forEach((accepted) =>
+            logger.info(`Email sent to ${accepted}.`)
+          )
+        } else if (info) {
+          info.rejected.forEach((rejected) =>
+            logger.error(`Address ${rejected} was rejected.`)
+          )
+        }
       }
     }
   } catch (error) {

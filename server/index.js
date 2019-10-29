@@ -100,7 +100,7 @@ initializeDatabaseConnection()
       checkOodiEntries()
     }
 
-    if (inProduction) {
+    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {
       cron.schedule('0 4 * * 4', () => {
         const timestamp = now()
         logger.info(

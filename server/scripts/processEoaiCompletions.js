@@ -4,7 +4,7 @@ const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
 
-const processNewCompletions = async (courses) => {
+const processEoaiCompletions = async (courses) => {
   try {
     const credits = await db.credits.findAll({
       where: {
@@ -12,10 +12,14 @@ const processNewCompletions = async (courses) => {
       },
       raw: true
     })
-    const registrations = await getMultipleCourseRegistrations(courses)
-    const completions = await getMultipleCourseCompletions(courses)
+    const rawRegistrations = await getMultipleCourseRegistrations(courses)
+    const rawCompletions = await getMultipleCourseCompletions(courses)
 
-    const unreportedCompletions = completions.filter((completion) => {
+    const registrations = rawRegistrations.filter((registration) => {
+      return !credits.find((credit) => credit.studentId === registration.onro)
+    })
+
+    const completions = rawCompletions.filter((completion) => {
       return !credits.find(
         (credit) =>
           credit.completionId === completion.id ||
@@ -23,7 +27,7 @@ const processNewCompletions = async (courses) => {
       )
     })
 
-    const matches = unreportedCompletions.reduce((matches, completion) => {
+    const matches = completions.reduce((matches, completion) => {
       if (
         !['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)
       ) {
@@ -51,9 +55,7 @@ const processNewCompletions = async (courses) => {
       }
     }, [])
 
-    logger.info(
-      `${courses[0]}xx: Found ${matches.length} new EoAI completions.`
-    )
+    logger.info(`${courses[0]}xx: Found ${matches.length} new completions.`)
 
     const date = new Date()
     const dateString = `${date.getDate()}.${date.getMonth() +
@@ -107,4 +109,4 @@ const processNewCompletions = async (courses) => {
   }
 }
 
-module.exports = processNewCompletions
+module.exports = processEoaiCompletions

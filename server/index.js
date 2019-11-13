@@ -16,11 +16,8 @@ const { requestLogger, parseUser } = require('./utils/middleware')
 const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
-const processNewCompletions = require('./scripts/processNewCompletions')
-const processOldCompletions = require('./scripts/processOldCompletions')
+const processEoaiCompletions = require('./scripts/processEoaiCompletions')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
-
-const courseCodes = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
 initializeDatabaseConnection()
   .then(() => {
@@ -76,20 +73,12 @@ initializeDatabaseConnection()
 
     const now = () => new Date(Date.now())
 
-    if (process.argv[2] && process.argv[2] === 'processnew') {
+    if (process.argv[2] && process.argv[2] === 'processeoai') {
       const timestamp = now()
       logger.info(
         `${timestamp.toLocaleString()} manual run: Processing new EoAI completions.`
       )
-      processNewCompletions(courseCodes)
-    }
-
-    if (process.argv[2] && process.argv[2] === 'processold') {
-      const timestamp = now()
-      logger.info(
-        `${timestamp.toLocaleString()} manual run: Processing old HY EoAI completions. (DEPRECATED)`
-      )
-      processOldCompletions(courseCodes[0])
+      processEoaiCompletions(['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv'])
     }
 
     if (process.argv[2] && process.argv[2] === 'checkoodi') {
@@ -100,13 +89,13 @@ initializeDatabaseConnection()
       checkOodiEntries()
     }
 
-    if (inProduction) {
+    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {
       cron.schedule('0 4 * * 4', () => {
         const timestamp = now()
         logger.info(
           `${timestamp.toLocaleString()} node-cron: Processing new EoAI completions.`
         )
-        processNewCompletions(courseCodes)
+        processEoaiCompletions(['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv'])
       })
 
       cron.schedule('0 3 * * 5', () => {

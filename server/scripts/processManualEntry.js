@@ -74,7 +74,7 @@ const processManualEntry = async ({
       return ORGANISATION_RELATED_PARAMETERS.TKT
     }
     if (courseCode.substring(0, 4) === 'BSCS') {
-      return ORGANISATION_RELATED_PARAMETERS.AYTKT
+      return ORGANISATION_RELATED_PARAMETERS.BSCS
     }
     return 'ERRORERROR'
   }

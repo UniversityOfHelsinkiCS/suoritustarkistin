@@ -19,7 +19,8 @@ const LANGUAGES = {
 
 const ORGANISATION_RELATED_PARAMETERS = {
   AYTKT: '#2#H930#11#93013#3##',
-  TKT: '#2#H523#####'
+  TKT: '#2#H523#####',
+  BSCS: '#2#H500#####'
 }
 
 const validateEntry = ({
@@ -65,10 +66,19 @@ const processManualEntry = async ({
 
   if (!course) throw new Error('Course id does not exist.')
 
-  const orgParams = (courseCode) =>
-    courseCode.substring(0, 2) === 'AY'
-      ? ORGANISATION_RELATED_PARAMETERS.AYTKT
-      : ORGANISATION_RELATED_PARAMETERS.TKT
+  const orgParams = (courseCode) => {
+    if (courseCode.substring(0, 5) === 'AYTKT') {
+      return ORGANISATION_RELATED_PARAMETERS.AYTKT
+    }
+    if (courseCode.substring(0, 3) === 'TKT') {
+      return ORGANISATION_RELATED_PARAMETERS.TKT
+    }
+    if (courseCode.substring(0, 4) === 'BSCS') {
+      return ORGANISATION_RELATED_PARAMETERS.AYTKT
+    }
+    return 'ERRORERROR'
+  }
+
   const grader = await db.users.findOne({
     where: {
       employeeId: graderEmployeeId
@@ -101,9 +111,7 @@ const processManualEntry = async ({
 
   const info = await sendEmail(
     `Uusia kurssisuorituksia: ${course.courseCode}`,
-    `Uusi siirtotiedosto luotu OodiTooliin kurssin ${course.name} (${
-      course.courseCode
-    }) manuaalisesti syötetystä datasta.`
+    `Uusi siirtotiedosto luotu OodiTooliin kurssin ${course.name} (${course.courseCode}) manuaalisesti syötetystä datasta.`
   )
   if (info) {
     info.accepted.forEach((accepted) =>

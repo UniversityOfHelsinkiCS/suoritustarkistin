@@ -18,6 +18,7 @@ const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 const { initializeDatabaseConnection } = require('./database/connection')
 const processEoaiCompletions = require('./scripts/processEoaiCompletions')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
+const processMoocCompletions = require('./scripts/processMoocCompletions')
 
 initializeDatabaseConnection()
   .then(() => {
@@ -87,6 +88,48 @@ initializeDatabaseConnection()
         `${timestamp.toLocaleString()} manual run: Checking oodi entries.`
       )
       checkOodiEntries()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'cybsec1') {
+      const timestamp = now()
+      logger.info(
+        `${timestamp.toLocaleString()} manual run: Processing new cybsec1 completions.`
+      )
+      processMoocCompletions(
+        'AY5823951',
+        'Open uni: Cyber Security Base: Introduction to Cyber Security',
+        '1,0',
+        process.env.CYBSEC_TEACHERCODE,
+        '37786'
+      )
+    }
+
+    if (process.argv[2] && process.argv[2] === 'cybsec2') {
+      const timestamp = now()
+      logger.info(
+        `${timestamp.toLocaleString()} manual run: Processing new cybsec2 completions.`
+      )
+      processMoocCompletions(
+        'AY5823952',
+        'Open uni: Cyber Security Base: Securing Software',
+        '3,0',
+        process.env.CYBSEC_TEACHERCODE,
+        '37787'
+      )
+    }
+
+    if (process.argv[2] && process.argv[2] === 'cybsec3') {
+      const timestamp = now()
+      logger.info(
+        `${timestamp.toLocaleString()} manual run: Processing new cybsec3 completions.`
+      )
+      processMoocCompletions(
+        'AY5823953',
+        'Open uni: Cyber Security Base: Course Project I',
+        '1,0',
+        process.env.CYBSEC_TEACHERCODE,
+        '37788'
+      )
     }
 
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {

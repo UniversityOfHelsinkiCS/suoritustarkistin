@@ -62,5 +62,6 @@ const postRegistrations = async (completionAndStudentIdList) => {
 
 module.exports = {
   getMultipleCourseCompletions,
+  getCompletions,
   postRegistrations
 }

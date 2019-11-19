@@ -7,7 +7,7 @@ const getCourseRegistrations = async (req, res) => {
     const course = await db.courses.findOne({ where: { id: req.params.id } })
     if (!req.user.isAdmin && req.user.id !== course.graderId)
       return res.status(403).end()
-    if (!course.isMooc) return res.status(404).end()
+    if (!course.isMooc && !course.autoSeparate) return res.status(404).end()
 
     const registrations = await getRegistrations(course.courseCode)
     res.status(200).json(registrations)

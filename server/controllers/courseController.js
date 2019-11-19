@@ -8,7 +8,8 @@ const cleanCourses = (courses) => {
     courseCode: course.courseCode,
     language: course.language,
     credits: course.credits,
-    isMooc: course.isMooc
+    isMooc: course.isMooc,
+    autoSeparate: course.autoSeparate
   }))
 }
 

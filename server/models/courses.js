@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    isMooc: DataTypes.BOOLEAN
+    isMooc: DataTypes.BOOLEAN,
+    autoSeparate: DataTypes.BOOLEAN
   })
 
   return Courses

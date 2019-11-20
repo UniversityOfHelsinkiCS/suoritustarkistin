@@ -36,14 +36,14 @@ export default () => {
   const courses = useSelector((state) => state.courses.data)
 
   useEffect(() => {
-    if (user.isAdmin) {
+    if (user.adminMode) {
       dispatch(getAllCoursesAction())
       dispatch(getAllGradersAction())
     } else {
       dispatch(getUsersCoursesAction(user.id))
       dispatch(getUsersGradersAction(user.id))
     }
-  }, [])
+  }, [user])
 
   const handleDateChange = (event) => {
     dispatch(setNewReportAction({ ...newReport, date: event.target.value }))

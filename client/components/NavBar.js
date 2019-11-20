@@ -1,21 +1,42 @@
 import React, { useState } from 'react'
-import { Menu } from 'semantic-ui-react'
+import { Menu, Header } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { logoutAction } from 'Utilities/redux/userReducer'
+import {
+  logoutAction,
+  activateAdminModeAction,
+  disableAdminModeAction
+} from 'Utilities/redux/userReducer'
 import { images } from 'Utilities/common'
 import { Link } from 'react-router-dom'
 
 export default () => {
   const [activeItem, setActiveItem] = useState('newReport')
   const dispatch = useDispatch()
-  const user = useSelector((state) => state.user)
+  const user = useSelector((state) => state.user.data)
+
   const handleLogout = () => {
     dispatch(logoutAction())
+  }
+  const handleAdminModeToggle = () => {
+    user.adminMode
+      ? dispatch(disableAdminModeAction())
+      : dispatch(activateAdminModeAction())
   }
 
   const handleItemClick = (e, { name }) => setActiveItem(name)
 
-  if (!user.data) return null
+  const getAdminButton = () => {
+    return user.adminMode ? (
+      <Menu.Item onClick={handleAdminModeToggle} style={{ color: 'red' }}>
+        <Header as="h4">AdminMode</Header>
+        <p>ENGAGED!</p>
+      </Menu.Item>
+    ) : (
+      <Menu.Item onClick={handleAdminModeToggle}>AdminMode: off</Menu.Item>
+    )
+  }
+
+  if (!user) return null
   return (
     <Menu stackable size="huge" fluid>
       <Menu.Item style={{ fontSize: 'xx-large', padding: '0.5em' }}>
@@ -47,7 +68,7 @@ export default () => {
       >
         View reports
       </Menu.Item>
-
+      {user.isAdmin ? getAdminButton() : null}
       <Menu.Item name="log-out" onClick={handleLogout}>
         Log out
       </Menu.Item>

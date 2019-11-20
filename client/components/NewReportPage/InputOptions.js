@@ -23,7 +23,7 @@ const formatCoursesForSelection = (data) =>
   data.map((c) => ({
     key: c.id,
     text: c.autoSeparate
-      ? `${c.name} ((AY)${c.courseCode})`
+      ? `${c.name} (${c.courseCode} + AY${c.courseCode})`
       : `${c.name} (${c.courseCode})`,
     value: c.id
   }))

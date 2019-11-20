@@ -53,15 +53,15 @@ const getCourseCell = (course) => {
 }
 
 const getStudentIdCell = (studentId, registration) => {
+  if (isValidStudentId(studentId)) {
+    return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
+  }
   if (registration) {
     return (
-      <Table.Cell style={validStyle}>
+      <Table.Cell style={changedStyle}>
         {`${studentId} (${registration.onro})`}
       </Table.Cell>
     )
-  }
-  if (isValidStudentId(studentId)) {
-    return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
   }
   return (
     <Table.Cell style={invalidStyle}>
@@ -150,7 +150,8 @@ export default () => {
 
   const reportRows = newReport.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
-      {hasOpenUniRegistration(course, row.studentId, registrations)
+      {row.registration ||
+      hasOpenUniRegistration(course, row.studentId, registrations)
         ? getOpenUniCourseCell(course)
         : getCourseCell(course)}
       {getStudentIdCell(row.studentId, row.registration)}

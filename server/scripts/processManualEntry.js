@@ -10,6 +10,7 @@ const { commify } = require('../../utils/commify')
 const logger = require('@utils/logger')
 
 const sendEmail = require('../utils/sendEmail')
+const { getRegistrations } = require('../services/eduweb')
 
 const LANGUAGES = {
   fi: 1,
@@ -76,8 +77,12 @@ const processManualEntry = async ({
     if (courseCode.substring(0, 4) === 'BSCS') {
       return ORGANISATION_RELATED_PARAMETERS.BSCS
     }
-    return 'ERRORERROR'
+    throw new Error(`Unknown course organization ${courseCode}.`)
   }
+
+  const registrations = course.autoSeparate
+    ? await getRegistrations([`AY${course.courseCode}`])
+    : undefined
 
   const grader = await db.users.findOne({
     where: {
@@ -91,6 +96,17 @@ const processManualEntry = async ({
     .map((entry) => {
       validateEntry(entry)
       const { studentId, grade, credits, language, completionDate } = entry
+
+      if (registrations && registrations.find((r) => r.onro === studentId)) {
+        return `${studentId}##${LANGUAGES[language] ||
+          LANGUAGES[course.language]}#AY${course.courseCode}#${
+          course.name
+        }#${completionDate || date}#0#${grade || 'Hyv.'}#106##${
+          grader.employeeId
+        }${orgParams(`AY${course.courseCode}`)}${commify(credits) ||
+          course.credits}`
+      }
+
       return `${studentId}##${LANGUAGES[language] ||
         LANGUAGES[course.language]}#${course.courseCode}#${
         course.name

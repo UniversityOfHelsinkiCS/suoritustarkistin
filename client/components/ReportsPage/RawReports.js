@@ -1,9 +1,6 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  getAllReportsAction,
-  getUsersReportsAction
-} from 'Utilities/redux/reportsReducer'
+import React from 'react'
+import { useSelector } from 'react-redux'
+
 import { Segment } from 'semantic-ui-react'
 
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
@@ -16,15 +13,7 @@ const reportLines = (report) => {
 }
 
 export default () => {
-  const dispatch = useDispatch()
   const reports = useSelector((state) => state.reports)
-  const user = useSelector((state) => state.user.data)
-
-  useEffect(() => {
-    user.adminMode
-      ? dispatch(getAllReportsAction())
-      : dispatch(getUsersReportsAction(user.id))
-  }, [user])
 
   if (reports.pending) return <div>LOADING!</div>
 

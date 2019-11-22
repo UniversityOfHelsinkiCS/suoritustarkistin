@@ -16,6 +16,14 @@ export const logoutAction = () => {
   return callBuilder(route, prefix, 'post', { returnUrl: returnUrl })
 }
 
+export const activateAdminModeAction = () => {
+  return { type: 'ACTIVATE_ADMINMODE' }
+}
+
+export const disableAdminModeAction = () => {
+  return { type: 'DISABLE_ADMINMODE' }
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: null }, action) => {
@@ -23,7 +31,7 @@ export default (state = { data: null }, action) => {
     case 'LOGIN_SUCCESS':
       return {
         ...state,
-        data: action.response,
+        data: { ...action.response, adminMode: false },
         pending: false,
         error: false
       }
@@ -34,6 +42,16 @@ export default (state = { data: null }, action) => {
         data: null,
         pending: false,
         error: false
+      }
+    case 'ACTIVATE_ADMINMODE':
+      return {
+        ...state,
+        data: { ...state.data, adminMode: true }
+      }
+    case 'DISABLE_ADMINMODE':
+      return {
+        ...state,
+        data: { ...state.data, adminMode: false }
       }
     default:
       return state

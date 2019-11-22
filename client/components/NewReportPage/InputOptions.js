@@ -22,7 +22,9 @@ const findGradersForSelection = (data) =>
 const formatCoursesForSelection = (data) =>
   data.map((c) => ({
     key: c.id,
-    text: `${c.name} (${c.courseCode})`,
+    text: c.autoSeparate
+      ? `${c.name} (${c.courseCode} + AY${c.courseCode})`
+      : `${c.name} (${c.courseCode})`,
     value: c.id
   }))
 
@@ -34,14 +36,14 @@ export default () => {
   const courses = useSelector((state) => state.courses.data)
 
   useEffect(() => {
-    if (user.isAdmin) {
+    if (user.adminMode) {
       dispatch(getAllCoursesAction())
       dispatch(getAllGradersAction())
     } else {
       dispatch(getUsersCoursesAction(user.id))
       dispatch(getUsersGradersAction(user.id))
     }
-  }, [])
+  }, [user])
 
   const handleDateChange = (event) => {
     dispatch(setNewReportAction({ ...newReport, date: event.target.value }))
@@ -54,7 +56,7 @@ export default () => {
   const handleCourseSelection = (e, data) => {
     const courseId = data.value
     const course = courses.find((course) => course.id === courseId)
-    if (course.isMooc) {
+    if (course.isMooc || course.autoSeparate) {
       dispatch(setNewReportAction({ ...newReport, courseId }))
       dispatch(getCoursesRegistrationsAction(courseId))
     } else {

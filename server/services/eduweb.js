@@ -34,4 +34,4 @@ const getRegistrations = async (course) => {
   return registrations
 }
 
-module.exports = { getRegistrations, getMultipleCourseRegistrations }
+module.exports = { eduwebGet, getRegistrations, getMultipleCourseRegistrations }

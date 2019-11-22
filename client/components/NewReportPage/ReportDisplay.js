@@ -16,20 +16,52 @@ const validStyle = {
   background: '#d2f3db'
 }
 
+const changedStyle = {
+  background: '#d6eaf8'
+}
+
 const invalidStyle = {
   background: '#fddede'
 }
 
-const getStudentIdCell = (studentId, registration) => {
-  if (registration) {
+const hasOpenUniRegistration = (course, studentId, registrations) => {
+  if (!course || !course.autoSeparate || !registrations) return false
+  return registrations.find((r) => r.onro === studentId)
+}
+
+const getOpenUniCourseCell = (course) => {
+  if (course) {
     return (
-      <Table.Cell style={validStyle}>
-        {`${studentId} (${registration.onro})`}
+      <Table.Cell style={changedStyle}>
+        {`${course.name} (AY${course.courseCode})`}
       </Table.Cell>
     )
   }
+  return <Table.Cell />
+}
+
+const getCourseCell = (course) => {
+  if (course) {
+    return (
+      <Table.Cell style={validStyle}>
+        {`${course.name} (${course.courseCode})`}
+      </Table.Cell>
+    )
+  }
+
+  return <Table.Cell />
+}
+
+const getStudentIdCell = (studentId, registration) => {
   if (isValidStudentId(studentId)) {
     return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
+  }
+  if (registration) {
+    return (
+      <Table.Cell style={changedStyle}>
+        {`${studentId} (${registration.onro})`}
+      </Table.Cell>
+    )
   }
   return (
     <Table.Cell style={invalidStyle}>
@@ -106,6 +138,7 @@ export default () => {
   const newReport = useSelector((state) => state.newReport)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
+  const registrations = useSelector((state) => state.registrations.data)
 
   if (!newReport.data) return null
 
@@ -117,13 +150,10 @@ export default () => {
 
   const reportRows = newReport.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
-      {course ? (
-        <Table.Cell style={validStyle}>
-          {`${course.name} (${course.courseCode})`}
-        </Table.Cell>
-      ) : (
-        <Table.Cell />
-      )}
+      {row.registration ||
+      hasOpenUniRegistration(course, row.studentId, registrations)
+        ? getOpenUniCourseCell(course)
+        : getCourseCell(course)}
       {getStudentIdCell(row.studentId, row.registration)}
       {getGradeCell(row.grade)}
       {getCreditCell(row.credits, course)}

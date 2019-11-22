@@ -80,7 +80,9 @@ module.exports = (env, argv) => {
         favicon: path.resolve(__dirname, 'client/assets/favicon-32x32.png'),
         inject: false,
         template: htmlTemplate,
-        appMountId: 'root'
+        appMountId: 'root',
+        headHtmlSnippet:
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
       }),
       // Extract css
       new MiniCssExtractPlugin({

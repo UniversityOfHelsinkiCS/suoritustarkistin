@@ -141,6 +141,20 @@ initializeDatabaseConnection()
         processEoaiCompletions(['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv'])
       })
 
+      cron.schedule('30 4 * * 4', () => {
+        const timestamp = now()
+        logger.info(
+          `${timestamp.toLocaleString()} manual run: Processing new cybsec1 completions.`
+        )
+        processMoocCompletions(
+          'AY5823951',
+          'Open uni: Cyber Security Base: Introduction to Cyber Security',
+          '1,0',
+          process.env.CYBSEC_TEACHERCODE,
+          '37786'
+        )
+      })
+
       cron.schedule('0 3 * * 5', () => {
         const timestamp = now()
         logger.info(

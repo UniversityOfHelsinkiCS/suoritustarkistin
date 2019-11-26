@@ -9,11 +9,6 @@ const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
 const LANGUAGES = { 1: 'fi', 2: 'sv', 6: 'en' }
 
 const reportTable = (report) => {
-  /* const tableRows = report.data
-  .split('\n')
-  .map((rawLine, index) => {
-  const line = rawLine.split('#')
-  } */
   const TableBody = () => {
     return (
       <Table.Body>

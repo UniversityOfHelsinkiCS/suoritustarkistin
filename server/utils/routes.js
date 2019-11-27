@@ -35,7 +35,6 @@ const {
 const router = Router()
 
 // Routes for testing
-router.post('/courses', notInProduction, addCourse)
 router.delete('/courses', notInProduction, deleteAllCourses)
 router.post('/users', notInProduction, addUser)
 router.delete('/users', notInProduction, deleteAllUsers)
@@ -47,6 +46,7 @@ router.post('/login', login)
 router.post('/logout', logout)
 
 router.get('/courses', checkAdmin, getCourses)
+router.post('/courses', checkAdmin, addCourse)
 router.get('/courses/:id/registrations', getCourseRegistrations)
 
 router.get('/users', getUsers)

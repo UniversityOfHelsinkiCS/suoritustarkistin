@@ -9,7 +9,8 @@ const cleanCourses = (courses) => {
     language: course.language,
     credits: course.credits,
     isMooc: course.isMooc,
-    autoSeparate: course.autoSeparate
+    autoSeparate: course.autoSeparate,
+    graderId: course.graderId
   }))
 }
 
@@ -36,6 +37,7 @@ const getUsersCourses = async (req, res) => {
 }
 
 const addCourse = async (req, res) => {
+  // VALIDATION!
   const course = req.body
   const newCourse = await db.courses.create(course)
   res.status(200).json(newCourse)

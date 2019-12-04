@@ -46,7 +46,7 @@ router.post('/login', login)
 router.post('/logout', logout)
 
 router.get('/courses', checkAdmin, getCourses)
-router.post('/courses', checkAdmin, addCourse)
+router.post('/courses', addCourse)
 router.get('/courses/:id/registrations', getCourseRegistrations)
 
 router.get('/users', getUsers)

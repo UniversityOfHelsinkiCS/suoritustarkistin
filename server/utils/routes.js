@@ -3,6 +3,7 @@ const {
   getCourses,
   getUsersCourses,
   addCourse,
+  editCourse,
   deleteAllCourses
 } = require('@controllers/courseController')
 const {
@@ -48,6 +49,7 @@ router.post('/logout', logout)
 router.get('/courses', checkAdmin, getCourses)
 router.post('/courses', addCourse)
 router.get('/courses/:id/registrations', getCourseRegistrations)
+router.put('/courses/:id', editCourse)
 
 router.get('/users', getUsers)
 router.get('/users/graders', checkAdmin, getGraders)

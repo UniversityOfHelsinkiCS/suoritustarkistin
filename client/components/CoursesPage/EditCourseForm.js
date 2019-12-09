@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Form, Checkbox, Input, Button } from 'semantic-ui-react'
-import { addCourseAction } from 'Utilities/redux/coursesReducer'
+import { editCourseAction } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
   isValidOpenCourseCode,
@@ -20,7 +20,7 @@ export default ({ course, setEditMode }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    // dispatch(addCourseAction(data))
+    dispatch(editCourseAction(data))
   }
 
   const hasValidCourseCode = (code) => {

@@ -38,9 +38,30 @@ const getUsersCourses = async (req, res) => {
 
 const addCourse = async (req, res) => {
   // VALIDATION!
-  const course = req.body
-  const newCourse = await db.courses.create(course)
-  res.status(200).json(newCourse)
+  try {
+    const course = req.body
+    const newCourse = await db.courses.create(course)
+    res.status(200).json(newCourse)
+  } catch (e) {
+    logger.error(e.message)
+    res.status(500).json({ error: 'server went BOOM!' })
+  }
+}
+
+const editCourse = async (req, res) => {
+  // VALIDATION!
+  try {
+    const course = req.body
+    const [rows, [updatedCourse]] = await db.courses.update(course, {
+      returning: true,
+      where: { id: req.params.id }
+    })
+    if (rows) return res.status(200).json(updatedCourse)
+    return res.status(400).json({ error: 'id not found.' })
+  } catch (e) {
+    logger.error(e.message)
+    res.status(500).json({ error: 'server went BOOM!' })
+  }
 }
 
 const deleteAllCourses = async (req, res) => {
@@ -52,5 +73,6 @@ module.exports = {
   getCourses,
   getUsersCourses,
   addCourse,
+  editCourse,
   deleteAllCourses
 }

@@ -1,5 +1,4 @@
 import callBuilder from '../apiConnection'
-//import { useDispatch } from 'react-redux'
 /**
  * Actions and reducers are in the same file for readability
  */
@@ -22,11 +21,15 @@ export const addCourseAction = (data) => {
   return callBuilder(route, prefix, 'post', data)
 }
 
+export const editCourseAction = (data) => {
+  const route = `/courses/${data.id}`
+  const prefix = 'EDIT_COURSE'
+  return callBuilder(route, prefix, 'put', data)
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [] }, action) => {
-  //const dispatch = useDispatch()
-
   switch (action.type) {
     case 'GET_ALL_COURSES_SUCCESS':
       return {
@@ -69,8 +72,45 @@ export default (state = { data: [] }, action) => {
         error: true
       }
     case 'ADD_COURSE_SUCCESS':
-      //dispatch(getAllCoursesAction)
-      return state
+      return {
+        ...state,
+        data: state.data.concat(action.response),
+        pending: false,
+        error: false
+      }
+    case 'ADD_COURSE_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'ADD_COURSE_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
+    case 'EDIT_COURSE_SUCCESS':
+      return {
+        ...state,
+        data: state.data.map((c) =>
+          c.id == action.response.id ? action.response : c
+        ),
+        pending: false,
+        error: false
+      }
+    case 'EDIT_COURSE_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'EDIT_COURSE_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
     default:
       return state
   }

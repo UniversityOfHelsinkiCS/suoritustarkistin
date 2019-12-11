@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import CourseInfo from './CourseInfo'
-import EditCourseForm from './EditCourseForm'
+import CourseInfo from 'Components/CoursesPage/CourseInfo'
+import EditCourseForm from 'Components/CoursesPage/EditCourseForm'
 
 export default ({ course }) => {
   const [editMode, setEditMode] = useState(false)

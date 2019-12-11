@@ -2,8 +2,9 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
 import { getAllGradersAction } from 'Utilities/redux/gradersReducer'
-import NewCourseForm from './NewCourseForm'
-import Course from './Course'
+import NewCourseForm from 'Components/CoursesPage/NewCourseForm'
+import Message from 'Components/Message'
+import Course from 'Components/CoursesPage/Course'
 import { Segment } from 'semantic-ui-react'
 
 export default () => {
@@ -17,12 +18,13 @@ export default () => {
 
   return (
     <>
+      <Message />
       <Segment>
         <NewCourseForm />
       </Segment>
       <Segment>
         {courses.map((c) => (
-          <Course course={c} />
+          <Course course={c} key={c.id} />
         ))}
       </Segment>
     </>

@@ -20,6 +20,8 @@ export default () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(addCourseAction(data))
+    setData({ isMooc: false, autoSeparate: false })
+    setActive(false)
   }
 
   const hasValidCourseCode = (code) => {

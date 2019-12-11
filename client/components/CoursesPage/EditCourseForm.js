@@ -21,6 +21,7 @@ export default ({ course, setEditMode }) => {
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(editCourseAction(data))
+    setEditMode(false)
   }
 
   const hasValidCourseCode = (code) => {

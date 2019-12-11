@@ -27,6 +27,12 @@ export const editCourseAction = (data) => {
   return callBuilder(route, prefix, 'put', data)
 }
 
+export const deleteCourseAction = (id) => {
+  const route = `/courses/${id}`
+  const prefix = 'DELETE_COURSE'
+  return callBuilder(route, prefix, 'delete')
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [] }, action) => {
@@ -106,6 +112,25 @@ export default (state = { data: [] }, action) => {
         error: false
       }
     case 'EDIT_COURSE_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
+    case 'DELETE_COURSE_SUCCESS':
+      return {
+        ...state,
+        data: state.data.filter((c) => c.id != action.response.id),
+        pending: false,
+        error: false
+      }
+    case 'DELETE_COURSE_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'DELETE_COURSE_FAILURE':
       return {
         ...state,
         pending: false,

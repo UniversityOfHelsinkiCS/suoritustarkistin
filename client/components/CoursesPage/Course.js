@@ -5,13 +5,9 @@ import EditCourseForm from 'Components/CoursesPage/EditCourseForm'
 export default ({ course }) => {
   const [editMode, setEditMode] = useState(false)
 
-  return (
-    <>
-      {editMode ? (
-        <EditCourseForm course={course} setEditMode={setEditMode} />
-      ) : (
-        <CourseInfo course={course} setEditMode={setEditMode} />
-      )}
-    </>
+  return editMode ? (
+    <EditCourseForm course={course} setEditMode={setEditMode} />
+  ) : (
+    <CourseInfo course={course} setEditMode={setEditMode} />
   )
 }

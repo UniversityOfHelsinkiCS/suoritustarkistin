@@ -5,7 +5,7 @@ import { getAllGradersAction } from 'Utilities/redux/gradersReducer'
 import NewCourseForm from 'Components/CoursesPage/NewCourseForm'
 import Message from 'Components/Message'
 import Course from 'Components/CoursesPage/Course'
-import { Segment } from 'semantic-ui-react'
+import { Segment, Grid } from 'semantic-ui-react'
 
 export default () => {
   const dispatch = useDispatch()
@@ -23,9 +23,11 @@ export default () => {
         <NewCourseForm />
       </Segment>
       <Segment>
-        {courses.map((c) => (
-          <Course course={c} key={c.id} />
-        ))}
+        <Grid celled="internally">
+          {courses.map((c) => (
+            <Course course={c} key={c.id} />
+          ))}
+        </Grid>
       </Segment>
     </>
   )

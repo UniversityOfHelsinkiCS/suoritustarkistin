@@ -46,12 +46,12 @@ export default ({ course, setEditMode }) => {
       <Grid.Column>{course.language}</Grid.Column>
       <Grid.Column>{course.credits}</Grid.Column>
       <Grid.Column>{getGraderName()}</Grid.Column>
-      <Grid.Column>
+      <Grid.Column textAlign="center">
         {course.isMooc ? (
           <Icon name="check" color="green" size="large" />
         ) : null}
       </Grid.Column>
-      <Grid.Column>
+      <Grid.Column textAlign="center">
         {course.autoSeparate ? (
           <Icon name="check" color="green" size="large" />
         ) : null}

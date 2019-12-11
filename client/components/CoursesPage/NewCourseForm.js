@@ -47,7 +47,7 @@ export default () => {
         control={Input}
         label="Course name"
         placeholder="Kurssin luomisen perusteet"
-        value={data.name}
+        value={data.name || ''}
         onChange={(e) => setData({ ...data, name: e.target.value })}
         error={false}
         icon={data.name ? 'check' : 'times'}
@@ -57,7 +57,7 @@ export default () => {
         control={Input}
         label="Course code"
         placeholder="TKT00000"
-        value={data.courseCode}
+        value={data.courseCode || ''}
         onChange={(e) => setData({ ...data, courseCode: e.target.value })}
         icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
       />
@@ -66,7 +66,7 @@ export default () => {
         control={Input}
         label="Language"
         placeholder="fi"
-        value={data.language}
+        value={data.language || ''}
         onChange={(e) => setData({ ...data, language: e.target.value })}
         icon={isValidLanguage(data.language) ? 'check' : 'times'}
       />
@@ -75,7 +75,7 @@ export default () => {
         control={Input}
         label="Credit amount"
         placeholder="5,0"
-        value={data.credits}
+        value={data.credits || ''}
         onChange={(e) => setData({ ...data, credits: e.target.value })}
         icon={isValidCreditAmount(data.credits) ? 'check' : 'times'}
       />
@@ -88,7 +88,7 @@ export default () => {
           value: grader.id,
           text: grader.name
         }))}
-        value={data.graderId}
+        value={data.graderId || ''}
         onChange={(e, d) => setData({ ...data, graderId: d.value })}
       />
       <Form.Field

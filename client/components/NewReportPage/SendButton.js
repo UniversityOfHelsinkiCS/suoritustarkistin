@@ -34,10 +34,11 @@ export default () => {
 
   return (
     <Button
+      positive
+      floated="right"
       data-cy="sendButton"
       onClick={sendReport}
       disabled={newReport.sending || !isValidReport(parseReport(newReport))}
-      className="right floated negative ui button"
       content="Lähetä raportti"
     />
   )

@@ -9,7 +9,11 @@ const getCourseRegistrations = async (req, res) => {
       return res.status(403).end()
     if (!course.isMooc && !course.autoSeparate) return res.status(404).end()
 
-    const registrations = await getRegistrations(course.courseCode)
+    const courseCode = course.autoSeparate
+      ? `AY${course.courseCode}`
+      : course.courseCode
+
+    const registrations = await getRegistrations(courseCode)
     res.status(200).json(registrations)
   } catch (e) {
     logger.error(e.message)

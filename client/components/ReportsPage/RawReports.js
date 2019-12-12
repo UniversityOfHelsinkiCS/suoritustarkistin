@@ -13,7 +13,7 @@ const reportLines = (report) => {
 export default ({ reports }) => {
   if (reports.pending) return <div>LOADING!</div>
 
-  if (reports.length === 0) return <div>NO REPORTS FOUND.</div>
+  if (reports.data.length === 0) return <div>NO REPORTS FOUND.</div>
 
   return (
     <>

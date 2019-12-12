@@ -3,7 +3,9 @@ const {
   getCourses,
   getUsersCourses,
   addCourse,
-  deleteAllCourses
+  editCourse,
+  deleteAllCourses,
+  deleteCourse
 } = require('@controllers/courseController')
 const {
   getUsers,
@@ -35,7 +37,6 @@ const {
 const router = Router()
 
 // Routes for testing
-router.post('/courses', notInProduction, addCourse)
 router.delete('/courses', notInProduction, deleteAllCourses)
 router.post('/users', notInProduction, addUser)
 router.delete('/users', notInProduction, deleteAllUsers)
@@ -47,7 +48,10 @@ router.post('/login', login)
 router.post('/logout', logout)
 
 router.get('/courses', checkAdmin, getCourses)
+router.post('/courses', addCourse)
 router.get('/courses/:id/registrations', getCourseRegistrations)
+router.put('/courses/:id', editCourse)
+router.delete('/courses/:id', checkAdmin, deleteCourse)
 
 router.get('/users', getUsers)
 router.get('/users/graders', checkAdmin, getGraders)

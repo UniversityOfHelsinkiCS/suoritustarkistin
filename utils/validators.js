@@ -31,6 +31,32 @@ const isValidEmailAddress = (address) =>
     address
   )
 
+const isValidOpenCourseCode = (courseCode) =>
+  /^AY[A-Z0-9-]{6,10}(fi|en|sv)?$/.test(courseCode)
+const isValidHYCourseCode = (courseCode) =>
+  /^(TKT|BSCS)[A-Z0-9-]{4,6}$/.test(courseCode)
+
+const isValidCourseCode = (courseCode) =>
+  isValidOpenCourseCode(courseCode) || isValidHYCourseCode(courseCode)
+
+const isValidCourse = (course) => {
+  if (course.autoSeparate && !isValidHYCourseCode(course.courseCode))
+    return false
+  if (
+    !course.autoSeparate &&
+    course.isMooc &&
+    !isValidOpenCourseCode(course.courseCode)
+  )
+    return false
+  if (!isValidCourseCode(course.courseCode)) return false
+  if (!course.name) return false
+  if (!isValidLanguage(course.language)) return false
+  if (!isValidCreditAmount(course.credits)) return false
+  if (!course.graderId) return false
+
+  return true
+}
+
 const isValidRow = (row) => {
   if (!isValidStudentId(row.studentId)) {
     return false
@@ -82,5 +108,9 @@ module.exports = {
   isValidCreditAmount,
   isValidLanguage,
   isValidEmailAddress,
-  isValidReport
+  isValidReport,
+  isValidCourse,
+  isValidHYCourseCode,
+  isValidOpenCourseCode,
+  isValidCourseCode
 }

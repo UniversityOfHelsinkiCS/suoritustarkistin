@@ -1,5 +1,6 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
+const { isValidCourse } = require('@root/utils/validators')
 
 const cleanCourses = (courses) => {
   return courses.map((course) => ({
@@ -9,7 +10,8 @@ const cleanCourses = (courses) => {
     language: course.language,
     credits: course.credits,
     isMooc: course.isMooc,
-    autoSeparate: course.autoSeparate
+    autoSeparate: course.autoSeparate,
+    graderId: course.graderId
   }))
 }
 
@@ -36,9 +38,37 @@ const getUsersCourses = async (req, res) => {
 }
 
 const addCourse = async (req, res) => {
-  const course = req.body
-  const newCourse = await db.courses.create(course)
-  res.status(200).json(newCourse)
+  try {
+    const course = req.body
+
+    if (!isValidCourse(course))
+      return res.status(400).json({ error: 'Malformed course data.' })
+
+    const newCourse = await db.courses.create(course)
+    res.status(200).json(newCourse)
+  } catch (e) {
+    logger.error(e.message)
+    res.status(500).json({ error: 'server went BOOM!' })
+  }
+}
+
+const editCourse = async (req, res) => {
+  try {
+    const course = req.body
+
+    if (!isValidCourse(course))
+      return res.status(400).json({ error: 'Malformed course data.' })
+
+    const [rows, [updatedCourse]] = await db.courses.update(course, {
+      returning: true,
+      where: { id: req.params.id }
+    })
+    if (rows) return res.status(200).json(updatedCourse)
+    return res.status(400).json({ error: 'id not found.' })
+  } catch (e) {
+    logger.error(e.message)
+    res.status(500).json({ error: 'server went BOOM!' })
+  }
 }
 
 const deleteAllCourses = async (req, res) => {
@@ -46,9 +76,16 @@ const deleteAllCourses = async (req, res) => {
   res.status(204).end()
 }
 
+const deleteCourse = async (req, res) => {
+  await db.courses.destroy({ where: { id: req.params.id } })
+  return res.status(200).json({ id: req.params.id })
+}
+
 module.exports = {
   getCourses,
   getUsersCourses,
   addCourse,
-  deleteAllCourses
+  editCourse,
+  deleteAllCourses,
+  deleteCourse
 }

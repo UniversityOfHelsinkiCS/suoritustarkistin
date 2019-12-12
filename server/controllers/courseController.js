@@ -1,5 +1,6 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
+const { isValidCourse } = require('@root/utils/validators')
 
 const cleanCourses = (courses) => {
   return courses.map((course) => ({
@@ -37,9 +38,12 @@ const getUsersCourses = async (req, res) => {
 }
 
 const addCourse = async (req, res) => {
-  // VALIDATION!
   try {
     const course = req.body
+
+    if (!isValidCourse(course))
+      return res.status(400).json({ error: 'Malformed course data.' })
+
     const newCourse = await db.courses.create(course)
     res.status(200).json(newCourse)
   } catch (e) {
@@ -49,9 +53,12 @@ const addCourse = async (req, res) => {
 }
 
 const editCourse = async (req, res) => {
-  // VALIDATION!
   try {
     const course = req.body
+
+    if (!isValidCourse(course))
+      return res.status(400).json({ error: 'Malformed course data.' })
+
     const [rows, [updatedCourse]] = await db.courses.update(course, {
       returning: true,
       where: { id: req.params.id }

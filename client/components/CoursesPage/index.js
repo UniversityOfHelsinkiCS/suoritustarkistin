@@ -19,7 +19,7 @@ export default () => {
   return (
     <>
       <Message />
-      <Segment>
+      <Segment style={{ width: '50em' }}>
         <NewCourseForm />
       </Segment>
       <Segment>

@@ -41,7 +41,7 @@ export default () => {
   }
 
   return (
-    <Form>
+    <Form width={4}>
       <Form.Field
         required={true}
         control={Input}

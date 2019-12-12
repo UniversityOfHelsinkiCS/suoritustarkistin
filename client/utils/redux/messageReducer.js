@@ -27,7 +27,7 @@ export default (state = null, action) => {
       }
     case 'ADD_COURSE_SUCCESS':
       return {
-        header: 'Kurssi luotu.',
+        header: `Kurssi ${action.response.name} luotu.`,
         content: 'Kurssille voi nyt kirjata uusia suorituksia.',
         type: 'positive'
       }
@@ -40,8 +40,8 @@ export default (state = null, action) => {
       }
     case 'EDIT_COURSE_SUCCESS':
       return {
-        header: 'Kurssin muokkaus onnistui.',
-        content: '',
+        header: `Kurssin ${action.response.name} muokkaus onnistui.`,
+        content: 'Kurssin tulevat suoritukset kirjataan uusilla tiedoilla.',
         type: 'positive'
       }
     case 'EDIT_COURSE_FAILURE':
@@ -50,6 +50,12 @@ export default (state = null, action) => {
         content:
           'Kurssin muokkaus epäonnistui. Jos vika jatkuu, ota yhteyttä grp-toska@cs.helsinki.fi.',
         type: 'negative'
+      }
+    case 'DELETE_COURSE_SUCCESS':
+      return {
+        header: `Kurssin ${action.response.name} poisto onnistui.`,
+        content: 'Kurssi on poistettu eikä sille voi enää merkitä suorituksia.',
+        type: 'positive'
       }
     default:
       return state

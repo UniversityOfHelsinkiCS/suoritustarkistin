@@ -19,7 +19,7 @@ const LANGUAGES = {
 }
 
 const ORGANISATION_RELATED_PARAMETERS = {
-  AYTKT: '#2#H930#11#93013#3##',
+  AY: '#2#H930#11#93013#3##',
   TKT: '#2#H523#####',
   BSCS: '#2#H500#####'
 }
@@ -68,8 +68,8 @@ const processManualEntry = async ({
   if (!course) throw new Error('Course id does not exist.')
 
   const orgParams = (courseCode) => {
-    if (courseCode.substring(0, 5) === 'AYTKT') {
-      return ORGANISATION_RELATED_PARAMETERS.AYTKT
+    if (courseCode.substring(0, 2) === 'AY') {
+      return ORGANISATION_RELATED_PARAMETERS.AY
     }
     if (courseCode.substring(0, 3) === 'TKT') {
       return ORGANISATION_RELATED_PARAMETERS.TKT

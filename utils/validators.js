@@ -53,40 +53,23 @@ const isValidCourse = (course) => {
   if (!isValidLanguage(course.language)) return false
   if (!isValidCreditAmount(course.credits)) return false
   if (!course.graderId) return false
-
   return true
 }
 
 const isValidRow = (row) => {
-  if (!isValidStudentId(row.studentId)) {
-    return false
-  }
-  if (row.grade && !isValidGrade(row.grade)) {
-    return false
-  }
-  if (row.credits && !isValidCreditAmount(row.credits)) {
-    return false
-  }
-  if (row.language && !isValidLanguage(row.language)) {
-    return false
-  }
+  if (!isValidStudentId(row.studentId)) return false
+  if (row.grade && !isValidGrade(row.grade)) return false
+  if (row.credits && !isValidCreditAmount(row.credits)) return false
+  if (row.language && !isValidLanguage(row.language)) return false
+  if (row.completionDate && !isValidOodiDate(row.completionDate)) return false
   return true
 }
 
 const isValidReport = (report) => {
   if (!report) return false
-
-  if (!report.graderEmployeeId || !report.courseId) {
-    return false
-  }
-
-  if (!report.data) {
-    return false
-  }
-
-  if (!isValidOodiDate(report.date)) {
-    return false
-  }
+  if (!report.graderEmployeeId || !report.courseId) return false
+  if (!report.data) return false
+  if (!isValidOodiDate(report.date)) return false
 
   let allRowsValid = true
   report.data.forEach((row) => {
@@ -94,9 +77,7 @@ const isValidReport = (report) => {
       allRowsValid = false
     }
   })
-  if (!allRowsValid) {
-    return false
-  }
+  if (!allRowsValid) return false
 
   return true
 }

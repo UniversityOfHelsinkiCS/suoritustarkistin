@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from 'semantic-ui-react'
+import { Button, Popup } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { sendNewReportAction } from 'Utilities/redux/newReportReducer'
 import { isValidReport } from 'Root/utils/validators'
@@ -33,13 +33,23 @@ export default () => {
   }
 
   return (
-    <Button
-      positive
-      floated="right"
-      data-cy="sendButton"
-      onClick={sendReport}
-      disabled={newReport.sending || !isValidReport(parseReport(newReport))}
-      content="Lähetä raportti"
+    <Popup
+      trigger={
+        <span style={{ float: 'right' }}>
+          <Button
+            positive
+            data-cy="sendButton"
+            onClick={sendReport}
+            disabled={
+              newReport.sending || !isValidReport(parseReport(newReport))
+            }
+            content="Send report"
+          />
+        </span>
+      }
+      content="Report contains validation errors, see table below."
+      disabled={!newReport.data || isValidReport(parseReport(newReport))}
+      style={{ color: 'red' }}
     />
   )
 }

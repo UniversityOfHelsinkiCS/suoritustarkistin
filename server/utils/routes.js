@@ -12,6 +12,7 @@ const {
   getGraders,
   getUsersGraders,
   addUser,
+  editUser,
   deleteAllUsers
 } = require('@controllers/userController')
 const {
@@ -53,8 +54,9 @@ router.get('/courses/:id/registrations', getCourseRegistrations)
 router.put('/courses/:id', editCourse)
 router.delete('/courses/:id', checkAdmin, deleteCourse)
 
-router.get('/users', getUsers)
+router.get('/users', checkAdmin, getUsers)
 router.get('/users/graders', checkAdmin, getGraders)
+router.put('/users/:id', checkAdmin, editUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
 router.get('/users/:id/reports', checkIdMatch, getUsersReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)

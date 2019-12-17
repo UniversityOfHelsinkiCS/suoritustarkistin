@@ -36,10 +36,27 @@ const deleteAllUsers = async (req, res) => {
   res.status(204).end()
 }
 
+const editUser = async (req, res) => {
+  try {
+    const user = req.body
+
+    const [rows, [updatedUser]] = await db.users.update(user, {
+      returning: true,
+      where: { id: req.params.id }
+    })
+    if (rows) return res.status(200).json(updatedUser)
+    return res.status(400).json({ error: 'id not found.' })
+  } catch (e) {
+    logger.error(e.message)
+    res.status(500).json({ error: 'server went BOOM!' })
+  }
+}
+
 module.exports = {
   getUsers,
   getGraders,
   getUsersGraders,
   addUser,
-  deleteAllUsers
+  deleteAllUsers,
+  editUser
 }

@@ -57,6 +57,7 @@ const isValidCourse = (course) => {
 }
 
 const isValidRow = (row) => {
+  if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
   if (row.grade && !isValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false

@@ -52,7 +52,23 @@ const getCourseCell = (course) => {
   return <Table.Cell />
 }
 
-const getStudentIdCell = (studentId, registration) => {
+const getStudentIdCell = (studentId, registration, duplicate) => {
+  if (duplicate && registration) {
+    return (
+      <Table.Cell style={invalidStyle}>
+        <Icon name="ban" />
+        {`${studentId} (${registration.onro})`} DUPLICATE!
+      </Table.Cell>
+    )
+  }
+  if (duplicate) {
+    return (
+      <Table.Cell style={invalidStyle}>
+        <Icon name="ban" />
+        {studentId} DUPLICATE!
+      </Table.Cell>
+    )
+  }
   if (isValidStudentId(studentId)) {
     return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
   }
@@ -154,7 +170,7 @@ export default () => {
       hasOpenUniRegistration(course, row.studentId, registrations)
         ? getOpenUniCourseCell(course)
         : getCourseCell(course)}
-      {getStudentIdCell(row.studentId, row.registration)}
+      {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
       {getGradeCell(row.grade)}
       {getCreditCell(row.credits, course)}
       {getLanguageCell(row.language, course)}

@@ -17,10 +17,12 @@ export const logoutAction = () => {
 }
 
 export const activateAdminModeAction = () => {
+  window.localStorage.setItem('adminmode', 'true')
   return { type: 'ACTIVATE_ADMINMODE' }
 }
 
 export const disableAdminModeAction = () => {
+  window.localStorage.setItem('adminmode', 'false')
   return { type: 'DISABLE_ADMINMODE' }
 }
 
@@ -31,7 +33,10 @@ export default (state = { data: null }, action) => {
     case 'LOGIN_SUCCESS':
       return {
         ...state,
-        data: { ...action.response, adminMode: false },
+        data: {
+          ...action.response,
+          adminMode: window.localStorage.getItem('adminmode') === 'true'
+        },
         pending: false,
         error: false
       }

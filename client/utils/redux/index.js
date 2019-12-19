@@ -7,6 +7,7 @@ import graders from './gradersReducer'
 import registrations from './registrationsReducer'
 import newReport from './newReportReducer'
 import message from './messageReducer'
+import users from './usersReducer'
 
 export default combineReducers({
   user,
@@ -15,5 +16,6 @@ export default combineReducers({
   graders,
   registrations,
   newReport,
-  message
+  message,
+  users
 })

@@ -50,6 +50,20 @@ export default () => {
     )
   }
 
+  const UsersButton = () => {
+    return (
+      <Menu.Item
+        as={Link}
+        to={'/users'}
+        name="editUsers"
+        active={activeItem === 'editUsers'}
+        onClick={handleItemClick}
+      >
+        Edit users
+      </Menu.Item>
+    )
+  }
+
   if (!user) return null
   return (
     <Menu stackable size="huge" fluid>
@@ -83,6 +97,7 @@ export default () => {
         View reports
       </Menu.Item>
       {user.adminMode ? <CoursesButton /> : null}
+      {user.adminMode ? <UsersButton /> : null}
       {user.isAdmin ? getAdminButton() : null}
       <Menu.Item name="log-out" onClick={handleLogout}>
         Log out

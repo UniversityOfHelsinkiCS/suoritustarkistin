@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Grid, Icon } from 'semantic-ui-react'
 import { deleteCourseAction } from 'Utilities/redux/coursesReducer'
+import EditCourse from 'Components/CoursesPage/EditCourse'
 
-export default ({ course, setEditMode }) => {
+export default ({ course }) => {
   const dispatch = useDispatch()
   const [really, setReally] = useState(false)
   const graders = useSelector((state) => state.graders.data)
@@ -57,7 +58,7 @@ export default ({ course, setEditMode }) => {
         ) : null}
       </Grid.Column>
       <Grid.Column width={3}>
-        <Button onClick={() => setEditMode(true)} content="Edit" />
+        <EditCourse course={course} />
         {really ? <Confirm /> : <DeleteButton />}
       </Grid.Column>
     </Grid.Row>

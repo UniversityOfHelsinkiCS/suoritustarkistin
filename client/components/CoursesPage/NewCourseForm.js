@@ -18,33 +18,22 @@ import {
   isValidLanguage
 } from 'Root/utils/validators'
 
-export default () => {
+export default ({ close }) => {
   const dispatch = useDispatch()
   const graders = useSelector((state) => state.graders.data)
   const [data, setData] = useState({ isMooc: false, autoSeparate: false })
-  const [active, setActive] = useState(false)
 
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(addCourseAction(data))
     setData({ isMooc: false, autoSeparate: false })
-    setActive(false)
+    close()
   }
 
   const hasValidCourseCode = (code) => {
     if (data.autoSeparate) return isValidHYCourseCode(code)
     if (data.isMooc) return isValidOpenCourseCode(code)
     return isValidCourseCode(code)
-  }
-
-  if (!active) {
-    return (
-      <Button
-        positive
-        onClick={() => setActive(true)}
-        content="Add new course"
-      />
-    )
   }
 
   return (
@@ -132,7 +121,7 @@ export default () => {
             negative
             control={Button}
             content="Cancel"
-            onClick={() => setActive(false)}
+            onClick={() => close()}
           />
           <Form.Field
             positive

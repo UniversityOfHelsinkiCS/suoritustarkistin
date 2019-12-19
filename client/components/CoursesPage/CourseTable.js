@@ -1,5 +1,5 @@
 import React from 'react'
-import Course from 'Components/CoursesPage/Course'
+import CourseRow from 'Components/CoursesPage/CourseRow'
 import { useSelector } from 'react-redux'
 import { Grid, Header, Segment } from 'semantic-ui-react'
 
@@ -34,7 +34,7 @@ export default () => {
           <Grid.Column />
         </Grid.Row>
         {courses.map((c) => (
-          <Course course={c} key={c.id} />
+          <CourseRow course={c} key={c.id} />
         ))}
       </Grid>
     </Segment>

@@ -15,7 +15,8 @@ export default (state = null, action) => {
     case 'POST_REPORT_SUCCESS':
       return {
         header: 'Raportti lähetetty!',
-        content: 'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi.',
+        content:
+          'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi. Näet luodun raportin View reports-sivulta.',
         type: 'positive'
       }
     case 'POST_REPORT_FAILURE':
@@ -53,7 +54,7 @@ export default (state = null, action) => {
       }
     case 'DELETE_COURSE_SUCCESS':
       return {
-        header: `Kurssin ${action.response.name} poisto onnistui.`,
+        header: `Kurssin poisto onnistui.`,
         content: 'Kurssi on poistettu eikä sille voi enää merkitä suorituksia.',
         type: 'positive'
       }

@@ -1,0 +1,22 @@
+title Suoritustarkistin: Weekly EoAI Credit Markup Script - 7.12.2020
+
+Suotar->pointsMOOCfi: Request all EoAI completions
+pointsMOOCfi->Suotar: Return all EoAI completions
+note right of Suotar: Includes language of completion and given email.
+Suotar->Suotar: Remove previously credited completions from the completions list
+
+loop repeat for all required languages, currently: en, sv, fi
+Suotar->Eduweb: Request EoAI registrations in specific language
+Eduweb->Suotar: Return EoAI registrations in desired language
+note right of Suotar: Includes student Id, AY(HY) email, and given email.
+Suotar->Suotar: Collate registrations into one list
+end
+
+Suotar->Suotar: Remove previously credited registrations from the registrations list
+
+Suotar->Suotar: Find new completion matches from remaining registrations based on emails
+
+Suotar->Suotar: Create report with student Ids and completion language
+
+Suotar->Ooditool: Send weekly report
+

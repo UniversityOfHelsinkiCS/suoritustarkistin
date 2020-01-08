@@ -18,5 +18,4 @@ Suotar->Suotar: Find new completion matches from remaining registrations based o
 
 Suotar->Suotar: Create report with student Ids and completion language
 
-Suotar->Ooditool: Send weekly report
-
+Suotar->SuotarDB: Store weekly report

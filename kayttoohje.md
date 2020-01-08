@@ -1,10 +1,6 @@
 # Käyttöohje
-## Tällä hetkellä tuetut kurssit
-
-- Full stack -websovelluskehitys (AYTKT21009)
-- Devops with Docker (AYTKT21025en)
-
-Saat oman kurssisi listalle ottamalla yhteyttä ylläpitotiimiin grp-toska@cs.helsinki.fi.
+## Tuetut kurssit
+Saat oman kurssisi listalle ottamalla yhteyttä ylläpitotiimiin grp-toska@helsinki.fi.
 
 ## Suoritusten raportointi
 1. Avaa [suoritustarkistin](https://toska.cs.helsinki.fi/suoritustarkistin/). 
@@ -26,7 +22,7 @@ Opiskelijanumero on pakollinen, muut tiedot täydennetään tarvittaessa kurssin
 010000003;2;5;fi
 011000002;;2,0;en
 011100009
-011110002;;;fi
+011110002;Hyl.;;fi
 ```
 Ensimmäisellä rivillä on kaikki tiedot annettu yksityiskohtaisesti. Toisella rivillä arvosanaa ei ole annettu, joten merkinnäksi tulee hyväksytty. Laajuus ja kieli on merkitty ja ne merkitään sellaisenaan suoritukseen.
-Kolmannella rivillä vain opiskelijanumero on annettu, joten arvosanaksi tulee hyväksytty, ja muut tiedot haetaan kurssin oletustiedoista. Neljännellä rivillä toimitaan samoin, paitsi että oletuskielen sijaan merkitään suorituskieleksi englanti.
+Kolmannella rivillä vain opiskelijanumero on annettu, joten arvosanaksi tulee hyväksytty, ja muut tiedot haetaan kurssin oletustiedoista. Neljännellä rivillä toimitaan samoin, paitsi että kurssisuoritus on hylätty, ja oletuskielen sijaan merkitään suorituskieleksi englanti.

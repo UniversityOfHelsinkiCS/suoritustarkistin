@@ -38,3 +38,19 @@ Cypress.Commands.add(
     })
   }
 )
+
+Cypress.Commands.add('asAdmin', () => {
+  cy.server({
+    onAnyRequest: (route, proxy) => {
+      proxy.xhr.setRequestHeader('employeenumber', '123')
+    }
+  })
+})
+
+Cypress.Commands.add('asUser', () => {
+  cy.server({
+    onAnyRequest: (route, proxy) => {
+      proxy.xhr.setRequestHeader('employeenumber', '321')
+    }
+  })
+})

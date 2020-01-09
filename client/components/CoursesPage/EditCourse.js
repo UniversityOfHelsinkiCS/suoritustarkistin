@@ -9,7 +9,14 @@ export default ({ course }) => {
 
   return (
     <Modal
-      trigger={<Button onClick={() => setShowForm(true)}>Edit</Button>}
+      trigger={
+        <Button
+          data-cy={`${course.courseCode}-edit-button`}
+          onClick={() => setShowForm(true)}
+        >
+          Edit
+        </Button>
+      }
       basic
       open={showForm}
       onClose={closeModal}

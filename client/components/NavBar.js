@@ -27,18 +27,25 @@ export default () => {
 
   const getAdminButton = () => {
     return user.adminMode ? (
-      <Menu.Item onClick={handleAdminModeToggle} style={{ color: 'red' }}>
+      <Menu.Item
+        data-cy="adminmode-disable"
+        onClick={handleAdminModeToggle}
+        style={{ color: 'red' }}
+      >
         <Header as="h4">AdminMode</Header>
         <p>ENGAGED!</p>
       </Menu.Item>
     ) : (
-      <Menu.Item onClick={handleAdminModeToggle}>AdminMode: off</Menu.Item>
+      <Menu.Item data-cy="adminmode-enable" onClick={handleAdminModeToggle}>
+        AdminMode: off
+      </Menu.Item>
     )
   }
 
   const CoursesButton = () => {
     return (
       <Menu.Item
+        data-cy="nav-courses"
         as={Link}
         to={'/courses'}
         name="editCourses"
@@ -53,6 +60,7 @@ export default () => {
   const UsersButton = () => {
     return (
       <Menu.Item
+        data-cy="nav-users"
         as={Link}
         to={'/users'}
         name="editUsers"
@@ -88,6 +96,7 @@ export default () => {
       </Menu.Item>
 
       <Menu.Item
+        data-cy="nav-reports"
         as={Link}
         to={'/reports'}
         name="viewReports"
@@ -99,7 +108,7 @@ export default () => {
       {user.adminMode ? <CoursesButton /> : null}
       {user.adminMode ? <UsersButton /> : null}
       {user.isAdmin ? getAdminButton() : null}
-      <Menu.Item name="log-out" onClick={handleLogout}>
+      <Menu.Item data-cy="nav-logout" name="log-out" onClick={handleLogout}>
         Log out
       </Menu.Item>
     </Menu>

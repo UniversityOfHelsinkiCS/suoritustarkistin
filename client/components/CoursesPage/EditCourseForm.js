@@ -69,6 +69,7 @@ export default ({ course, close }) => {
           icon={isValidLanguage(data.language) ? 'check' : 'times'}
         />
         <Form.Field
+          data-cy="edit-course-credits"
           required={true}
           control={Input}
           label="Credit amount"
@@ -125,6 +126,7 @@ export default ({ course, close }) => {
             onClick={() => close()}
           />
           <Form.Field
+            data-cy="edit-course-confirm"
             positive
             control={Button}
             content="Save"

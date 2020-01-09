@@ -13,22 +13,22 @@ export default () => {
     <Segment>
       <Grid celled="internally">
         <Grid.Row>
-          <Grid.Column width={2}>
+          <Grid.Column width={3}>
             <Header as="h4">Name</Header>
           </Grid.Column>
-          <Grid.Column>
+          <Grid.Column width={4}>
             <Header as="h4">Employee number</Header>
           </Grid.Column>
           <Grid.Column width={3}>
             <Header as="h4">Email</Header>
           </Grid.Column>
-          <Grid.Column>
+          <Grid.Column width={2}>
             <Header as="h4">Grader</Header>
           </Grid.Column>
-          <Grid.Column>
+          <Grid.Column width={2}>
             <Header as="h4">Admin</Header>
           </Grid.Column>
-          <Grid.Column />
+          <Grid.Column width={2} />
         </Grid.Row>
         {users.map((u) => (
           <User user={u} key={u.id} />

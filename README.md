@@ -1,11 +1,13 @@
 # Suoritustarkistin - Course Completion Checker
-[Suoritustarkistin (Suotar)](https://study.cs.helsinki.fi/suoritustarkistin/) is a tool designed to make registering course completions easy. Additionally, Suotar automatically checks for Elements of AI completions every week.
+[Suoritustarkistin (Suotar)](https://study.cs.helsinki.fi/suoritustarkistin/) is a tool designed to make registering course completions easy.
+
+Additionally, Suotar automatically checks for Elements of AI completions every week.
 
 ## User's Guide
-[Käyttöohje suomeksi](kayttoohje.md)
+[Päivittämätön käyttöohje suomeksi](kayttoohje.md)
 
 ### Who can use Suotar?
-To use Suotar, you must be a HY employee and be approved as a grader in Suotar. To get approved, **first [visit the service](https://study.cs.helsinki.fi/suoritustarkistin/)** so that your user account is automatically created, then please contact grp-toska@helsinki.fi.
+To use Suotar, you must be a HY employee and be approved as a grader in Suotar. To get approved, **first [visit the service](https://study.cs.helsinki.fi/suoritustarkistin/)** so that your user account is automatically created, then contact grp-toska@helsinki.fi.
 
 ### Supported courses
 Suotar can be used to register completions on any course CS department may register. Mostly this means all TKT, AYTKT, and some MOOC courses. However, before using Suotar, **the course details must first be added to it manually**. To get your course added, please contact grp-toska@helsinki.fi.
@@ -14,11 +16,10 @@ Suotar can be used to register completions on any course CS department may regis
 1. [Visit the site](https://study.cs.helsinki.fi/suoritustarkistin/).
 2. Request grader approval by mailing grp-toska@helsinki.fi. Also give the details of the course you want to grade.
 3. After being approved, head to the service.
-4. Select the right course from the dropdown, and paste the list of completions. You can also upload or drag a .csv, .txt, or .dat type file if you prefer.
-  - See format instructions below for details.
-5. Once everything is in order, the green "Send Report" button activates, and you can forward the report by clicking it!
+4. Select the right course from the dropdown, and paste the list of completions. You can also upload or drag a .csv, .txt, or .dat type file if you prefer. **See format instructions below for details.**
+5. Once everything is in order, the green "Send report" button activates, and you can forward the report by clicking it!
 
-In the "View Reports" tab you can see all the reports you've sent, as well as their download status.
+In the "View reports" tab you can see all the reports you've sent, as well as their download status.
 
 ### Format Instructions
 Completions are reported as rows, with values separated with a semicolon:

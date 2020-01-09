@@ -1,8 +1,16 @@
 import React from 'react'
 import { Segment } from 'semantic-ui-react'
 
-const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
-const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
+const Downloaded = () => (
+  <div data-cy="report-downloaded" style={{ color: 'green' }}>
+    DOWNLOADED
+  </div>
+)
+const NotDownloaded = () => (
+  <div data-cy="report-not-downloaded" style={{ color: 'red' }}>
+    NOT DOWNLOADED
+  </div>
+)
 
 const reportLines = (report) => {
   return report.data
@@ -16,7 +24,7 @@ export default ({ reports }) => {
   if (reports.data.length === 0) return <div>NO REPORTS FOUND.</div>
 
   return (
-    <>
+    <div data-cy="raw-reports">
       {reports.data.map((report) => {
         return (
           <Segment key={report.id}>
@@ -28,6 +36,6 @@ export default ({ reports }) => {
           </Segment>
         )
       })}
-    </>
+    </div>
   )
 }

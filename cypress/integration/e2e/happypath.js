@@ -82,25 +82,10 @@ describe('Submitting data creates a valid report into database', function() {
   it('Grader can view created report', () => {
     cy.asUser().visit('')
     cy.get('[data-cy=nav-reports]').click()
-    cy.get('[data-cy=rawReports]').click()
-
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=pastefield]').type(
-      '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi'
+    cy.get('[data-cy=raw-reports-tab]').click()
+    cy.get('[data-cy=report-not-downloaded]')
+    cy.get('[data-cy=raw-reports]').contains(
+      '011100009##1#TKT20042#E2E Testaus#5.7.2019#0#Hyv.#106##321#2#H523#####1,5'
     )
-    cy.get('[data-cy=dateField] input')
-      .clear()
-      .type('5.7.2019')
-
-    cy.get('[data-cy=courseSelection]')
-      .click()
-      .children()
-      .contains('E2E')
-      .click()
-
-    cy.get('[data-cy=sendButton]')
-      .should('not.be.disabled')
-      .click()
-      .should('be.disabled')
   })
 })

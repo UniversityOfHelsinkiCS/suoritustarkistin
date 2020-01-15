@@ -126,6 +126,14 @@ initializeDatabaseConnection()
         processCybsec1()
       })
 
+      cron.schedule('35 4 * * 4', () => {
+        processCybsec2()
+      })
+
+      cron.schedule('40 4 * * 4', () => {
+        processCybsec3()
+      })
+
       cron.schedule('0 3 * * 5', () => {
         const timestamp = now()
         logger.info(

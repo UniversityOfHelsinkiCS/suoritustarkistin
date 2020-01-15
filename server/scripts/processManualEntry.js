@@ -21,6 +21,7 @@ const LANGUAGES = {
 const ORGANISATION_RELATED_PARAMETERS = {
   AY: '#2#H930#11#93013#3##',
   TKT: '#2#H523#####',
+  CSM: '#2#H523#####',
   BSCS: '#2#H500#####'
 }
 
@@ -73,6 +74,9 @@ const processManualEntry = async ({
     }
     if (courseCode.substring(0, 3) === 'TKT') {
       return ORGANISATION_RELATED_PARAMETERS.TKT
+    }
+    if (courseCode.substring(0, 3) === 'CSM') {
+      return ORGANISATION_RELATED_PARAMETERS.CSM
     }
     if (courseCode.substring(0, 4) === 'BSCS') {
       return ORGANISATION_RELATED_PARAMETERS.BSCS

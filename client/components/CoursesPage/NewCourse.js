@@ -10,7 +10,11 @@ export default () => {
   return (
     <Modal
       trigger={
-        <Button positive onClick={() => setShowForm(true)}>
+        <Button
+          data-cy="add-course-button"
+          positive
+          onClick={() => setShowForm(true)}
+        >
           Add new course
         </Button>
       }

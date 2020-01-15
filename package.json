@@ -18,7 +18,9 @@
     "db:recreate": "npx npm-run-all -s db:nuke db:migrate db:seed:all",
     "test:build": "webpack --mode production",
     "test:start": "cross-env NODE_ENV=test node index.js",
-    "test:setup": "npx npm-run-all -s test:build db:migrate"
+    "test:setup": "npx npm-run-all -s test:build db:migrate",
+    "cypress:open": "npx cypress open -P ./",
+    "cypress:run": "npx cypress run -P ./"
   },
   "engines": {
     "node": ">=10.15"

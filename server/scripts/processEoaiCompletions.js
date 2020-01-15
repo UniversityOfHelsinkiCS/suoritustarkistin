@@ -28,12 +28,8 @@ const processEoaiCompletions = async (courses) => {
     })
 
     const matches = completions.reduce((matches, completion) => {
-      if (
-        !['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)
-      ) {
-        logger.error(`Unknown language code: ${completion.completion_language}`)
+      if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language))
         return matches
-      }
 
       const registration = registrations.find(
         (registration) =>

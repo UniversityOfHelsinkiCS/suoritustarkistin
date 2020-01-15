@@ -25,9 +25,17 @@ export default ({ user }) => {
   const GraderBadge = () => {
     return user.isGrader ? (
       <Popup
-        trigger={<Icon name="check" color="green" size="large" />}
+        trigger={
+          <Icon
+            data-cy={`${user.name}-is-grader`}
+            name="check"
+            color="green"
+            size="large"
+          />
+        }
         content={
           <Button
+            data-cy="remove-grader-confirm"
             color="red"
             content="Remove grader role"
             onClick={() => removeGrader()}
@@ -38,9 +46,17 @@ export default ({ user }) => {
       />
     ) : (
       <Popup
-        trigger={<Icon name="close" color="red" size="large" />}
+        trigger={
+          <Icon
+            data-cy={`${user.name}-not-grader`}
+            name="close"
+            color="red"
+            size="large"
+          />
+        }
         content={
           <Button
+            data-cy="grant-grader-confirm"
             color="green"
             content="Grant grader role"
             onClick={() => grantGrader()}
@@ -55,9 +71,17 @@ export default ({ user }) => {
   const AdminBadge = () => {
     return user.isAdmin ? (
       <Popup
-        trigger={<Icon name="check" color="green" size="large" />}
+        trigger={
+          <Icon
+            data-cy={`${user.name}-is-admin`}
+            name="check"
+            color="green"
+            size="large"
+          />
+        }
         content={
           <Button
+            data-cy="remove-admin-confirm"
             color="red"
             content="Remove admin role"
             onClick={() => removeAdmin()}
@@ -68,9 +92,17 @@ export default ({ user }) => {
       />
     ) : (
       <Popup
-        trigger={<Icon name="close" color="red" size="large" />}
+        trigger={
+          <Icon
+            data-cy={`${user.name}-not-admin`}
+            name="close"
+            color="red"
+            size="large"
+          />
+        }
         content={
           <Button
+            data-cy="grant-admin-confirm"
             color="green"
             content="Grant admin role"
             onClick={() => grantAdmin()}

@@ -40,6 +40,7 @@ export default ({ close }) => {
     <Segment style={{ width: '50em' }}>
       <Form width={4}>
         <Form.Field
+          data-cy="add-course-name"
           required={true}
           control={Input}
           label="Course name"
@@ -50,6 +51,7 @@ export default ({ close }) => {
           icon={data.name ? 'check' : 'times'}
         />
         <Form.Field
+          data-cy="add-course-code"
           required={true}
           control={Input}
           label="Course code"
@@ -59,6 +61,7 @@ export default ({ close }) => {
           icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
         <Form.Field
+          data-cy="add-course-language"
           required={true}
           control={Input}
           label="Language"
@@ -68,6 +71,7 @@ export default ({ close }) => {
           icon={isValidLanguage(data.language) ? 'check' : 'times'}
         />
         <Form.Field
+          data-cy="add-course-credits"
           required={true}
           control={Input}
           label="Credit amount"
@@ -77,6 +81,7 @@ export default ({ close }) => {
           icon={isValidCreditAmount(data.credits) ? 'check' : 'times'}
         />
         <Form.Dropdown
+          data-cy="add-course-grader"
           selection
           required={true}
           label="Grader"
@@ -124,6 +129,7 @@ export default ({ close }) => {
             onClick={() => close()}
           />
           <Form.Field
+            data-cy="add-course-confirm"
             positive
             control={Button}
             content="Add Course"

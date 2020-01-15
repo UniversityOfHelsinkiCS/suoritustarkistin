@@ -1,0 +1,16 @@
+Title Ooditool-Suotar Interaction
+User->Ooditool: Run Ooditool
+Ooditool->Suotar: Request list of undownloaded reports
+Suotar->SuotarDB: Request list of undownloaded reports
+SuotarDB-->Suotar: Return list of undownloaded reports
+Suotar-->Ooditool: Return list of undownloaded reports
+Ooditool->User: Display list of undownloaded reports
+User->Ooditool: Click 'Download' of a specific report
+Ooditool->Suotar: Request a specific report
+Suotar->SuotarDB: Request a specific report
+SuotarDB-->Suotar: Return a specific report
+Suotar-->Ooditool: Return a specific report
+Suotar->SuotarDB: Mark specific report as downloaded
+Ooditool->Ooditool: Store specific report on local disk
+Ooditool->Ooditool: Remove 'Download' option from specific report
+Ooditool->User: Notify of successful download

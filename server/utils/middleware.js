@@ -84,6 +84,7 @@ const requestLogger = (req, res, next) => {
   logger.info(`Method: ${req.method}`)
   logger.info(`Path: ${req.path}`)
   logger.info(`Body: ${JSON.stringify(req.body)}`)
+  logger.info(`User: ${req.headers.employeenumber}`)
   logger.info('---')
   next()
 }

@@ -1,4 +1,4 @@
-title Suoritustarkistin: Weekly EoAI Credit Markup Script - 7.12.2020
+title Suotar: Weekly EoAI Credit Markup Script - 7.12.2020
 
 Suotar->pointsMOOCfi: Request all EoAI completions
 pointsMOOCfi->Suotar: Return all EoAI completions

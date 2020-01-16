@@ -54,7 +54,7 @@ When the feature is approved for the course by AY, student ID may also be replac
 
 ### Development Environment
 1. Clone the repository
-2. Create docker-compose.yml file to run the db (c&p from documentation repo)
+2. Create docker-compose.yml file to run the db (c&p from [documentation repo](https://github.com/UniversityOfHelsinkiCS/dokumentaatio/blob/master/suotar_docker-compose.yml))
 3. ```docker-compose up -d```
 4. ```npm ci```
 5. ```npm run db:recreate```
@@ -63,4 +63,6 @@ When the feature is approved for the course by AY, student ID may also be replac
 ### Program Logic
 - [Sequence diagram for the EoAI weekly script](documentation/Suoritustarkistin_WeeklyEoAICreditMarkupScript.png)
 - [Sequence diagram for Ooditool-Suotar Interaction](documentation/Ooditool-Suotar_Interaction.png)
+
+
 See [documentation folder](documentation/) for diagram sources.

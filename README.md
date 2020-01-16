@@ -1,5 +1,5 @@
-# Suoritustarkistin - Course Completion Checker
-[Suoritustarkistin (Suotar)](https://study.cs.helsinki.fi/suoritustarkistin/) is a tool designed to make registering course completions easy.
+# Suotar - Course Completion Checker
+[Suotar](https://study.cs.helsinki.fi/suoritustarkistin/) is a tool designed to make registering course completions easy.
 
 Additionally, Suotar automatically checks for Elements of AI completions every week.
 

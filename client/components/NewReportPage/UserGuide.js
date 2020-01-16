@@ -8,27 +8,26 @@ const exampleStyle = {
 export default () => (
   <Message data-cy="userguide" style={exampleStyle}>
     <div>
-      Suoritustiedostossa suoritukset täytyy olla merkittynä muodossa:
+      Please report completions with the following format:
       <br />
       <br />
       <strong>
-        opiskelijanumero;arvosana;laajuus;kieli;suorituspäivämäärä
+        student number;grade;credits;language;date
       </strong>
       <br />
       <br />
-      Esimerkiksi kaikki seuraavat rivit kelpaavat:
+      Valid example lines:
       <List>
         <List.Item>010000003;2;5;fi</List.Item>
         <List.Item>011000002;;2,0</List.Item>
         <List.Item>011100009</List.Item>
         <List.Item>011110002;;;fi;25.7.2019</List.Item>
       </List>
-      Vain opiskelijanumero on pakollinen, muut tiedot täydennetään tarvittaessa
-      kurssin oletusarvoista. Oletusarvosana on "Hyv.".
+      Only the student number is mandatory. Rest of the details, if not given, are filled in from the course defaults. The default for grade is "Hyv." (i.e. passed). 
+      To mark a failed course, use "0" or "Hyl." (i.e. failed).
       <br />
       <br />
-      Mikäli et löydä tarvitsemaasi arvostelijaa tai kurssia valikosta, tai
-      sinulla ei ole arvostelijatunnusta, ota yhteyttä grp-toska@cs.helsinki.fi.
+      If you cannot find the right grader or course, please contact grp-toska@helsinki.fi to get it added.
     </div>
   </Message>
 )

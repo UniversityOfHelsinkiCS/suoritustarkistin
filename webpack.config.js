@@ -76,7 +76,7 @@ module.exports = (env, argv) => {
     plugins: [
       // Skip the part where we would make a html template
       new HtmlWebpackPlugin({
-        title: 'Suoritustarkistin by Toska',
+        title: 'Suotar by Toska',
         favicon: path.resolve(__dirname, 'client/assets/favicon-32x32.png'),
         inject: false,
         template: htmlTemplate,

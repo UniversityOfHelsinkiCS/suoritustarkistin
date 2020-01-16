@@ -81,7 +81,7 @@ export default () => {
           style={{ marginRight: '1em' }}
           alt="tosca"
         />{' '}
-        SUORITUSTARKISTIN
+        SUOTAR
       </Menu.Item>
 
       <Menu.Item

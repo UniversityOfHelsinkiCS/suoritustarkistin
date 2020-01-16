@@ -4,7 +4,7 @@ import { images } from 'Utilities/common'
 export default () => (
   <div className="footer">
     <div style={{ margin: '25px', float: 'left' }}>
-      Tuki: grp-toska@cs.helsinki.fi
+      Contact support: grp-toska@cs.helsinki.fi
     </div>
     <img
       src={images.toska_color}

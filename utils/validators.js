@@ -34,7 +34,7 @@ const isValidEmailAddress = (address) =>
 const isValidOpenCourseCode = (courseCode) =>
   /^AY[A-Z0-9-]{6,10}(fi|en|sv)?$/.test(courseCode)
 const isValidHYCourseCode = (courseCode) =>
-  /^(TKT|BSCS|CSM)[A-Z0-9-]{4,6}$/.test(courseCode)
+  /^(TKT|BSCS|CSM|MAT)[A-Z0-9-]{4,6}$/.test(courseCode)
 
 const isValidCourseCode = (courseCode) =>
   isValidOpenCourseCode(courseCode) || isValidHYCourseCode(courseCode)

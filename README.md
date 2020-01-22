@@ -61,7 +61,7 @@ When the feature is approved for the course by AY, student ID may also be replac
 6. ```npm run dev fakeshibbo```
 
 ### Program Logic
-- [Sequence diagram for the EoAI weekly script](documentation/Suoritustarkistin_WeeklyEoAICreditMarkupScript.png)
+- [Sequence diagram for the EoAI weekly script](documentation/Suotar_Weekly_EoAI_Credit_Markup_Script.png)
 - [Sequence diagram for Ooditool-Suotar Interaction](documentation/Ooditool-Suotar_Interaction.png)
 
 

@@ -9,6 +9,12 @@ export const loginAction = () => {
   return callBuilder(route, prefix, 'post')
 }
 
+export const pingAction = () => {
+  const route = '/login'
+  const prefix = 'PING'
+  return callBuilder(route, prefix, 'post')
+}
+
 export const logoutAction = () => {
   const returnUrl = window.location.origin
   const route = '/logout'

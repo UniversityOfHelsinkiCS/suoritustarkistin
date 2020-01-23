@@ -1,4 +1,4 @@
-const { eduwebGet } = require('../services/eduweb')
+const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
@@ -8,8 +8,7 @@ const processMoocCompletions = async (
   courseCode,
   courseName,
   creditAmount,
-  teacherCode,
-  eduwebInstanceId
+  teacherCode
 ) => {
   try {
     const credits = await db.credits.findAll({
@@ -18,7 +17,7 @@ const processMoocCompletions = async (
       },
       raw: true
     })
-    const rawRegistrations = await eduwebGet(eduwebInstanceId)
+    const rawRegistrations = await getRegistrations(courseCode)
     const rawCompletions = await getCompletions(courseCode)
 
     const registrations = rawRegistrations.filter((registration) => {

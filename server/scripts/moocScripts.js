@@ -21,8 +21,7 @@ const processCybsec1 = () => {
     'AY5823951',
     'Open uni: Cyber Security Base: Introduction to Cyber Security',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE,
-    '37786'
+    process.env.CYBSEC_TEACHERCODE
   )
 }
 
@@ -35,8 +34,7 @@ const processCybsec2 = () => {
     'AY5823952',
     'Open uni: Cyber Security Base: Securing Software',
     '3,0',
-    process.env.CYBSEC_TEACHERCODE,
-    '37787'
+    process.env.CYBSEC_TEACHERCODE
   )
 }
 
@@ -49,8 +47,7 @@ const processCybsec3 = () => {
     'AY5823953',
     'Open uni: Cyber Security Base: Course Project I',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE,
-    '37788'
+    process.env.CYBSEC_TEACHERCODE
   )
 }
 
@@ -63,8 +60,7 @@ const processCybsec4 = () => {
     'AY5823954',
     'Open uni: Cyber Security Base: Advanced Topics',
     '3,0',
-    process.env.CYBSEC_TEACHERCODE,
-    '37789'
+    process.env.CYBSEC_TEACHERCODE
   )
 }
 
@@ -77,8 +73,7 @@ const processCybsec5 = () => {
     'AY5823955',
     'Open uni: Cyber Security Base: Course Project II',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE,
-    '36977'
+    process.env.CYBSEC_TEACHERCODE
   )
 }
 
@@ -91,8 +86,7 @@ const processCybsec6 = () => {
     'AY5823956',
     'Open uni: Cyber Security Base: Capture The Flag',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE,
-    '36978'
+    process.env.CYBSEC_TEACHERCODE
   )
 }
 

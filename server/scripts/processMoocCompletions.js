@@ -4,6 +4,11 @@ const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
 
+const slugs = {
+  AY5823954: 'cyber-advanced-topics-2020',
+  AY5823953: 'cyber-course-project-i'
+}
+
 const processMoocCompletions = async (
   courseCode,
   courseName,
@@ -18,7 +23,7 @@ const processMoocCompletions = async (
       raw: true
     })
     const rawRegistrations = await getRegistrations(courseCode)
-    const rawCompletions = await getCompletions(courseCode)
+    const rawCompletions = await getCompletions(slugs[courseCode] || courseCode)
 
     const registrations = rawRegistrations.filter((registration) => {
       return !credits.find((credit) => credit.studentId === registration.onro)

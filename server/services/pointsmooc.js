@@ -1,5 +1,6 @@
 const { GraphQLClient } = require('graphql-request')
 const logger = require('@utils/logger')
+const axios = require('axios')
 
 const courseNames = {
   AYTKT21018: 'elements-of-ai',
@@ -7,6 +8,14 @@ const courseNames = {
   AYTKT21018sv: 'elements-of-ai'
 }
 
+const getEoAICompletions = async () => {
+  const { data } = await axios.get(process.env.EOAI_URL, {
+    headers: {
+      Authorization: process.env.MOOC_TOKEN
+    }
+  })
+  return data
+}
 const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
   headers: {
     Authorization: process.env.MOOC_TOKEN
@@ -63,5 +72,6 @@ const postRegistrations = async (completionAndStudentIdList) => {
 module.exports = {
   getMultipleCourseCompletions,
   getCompletions,
-  postRegistrations
+  postRegistrations,
+  getEoAICompletions
 }

@@ -41,6 +41,7 @@ const getCompletions = async (course) => {
       completion_language
       student_number
       user_upstream_id
+      grade
     }
   }
   `

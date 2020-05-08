@@ -67,7 +67,7 @@ const processCybsec4 = () => {
 const processCybsec5 = () => {
   const timestamp = now()
   logger.info(
-    `${timestamp.toLocaleString()} manual run: Processing new cybsec5 completions.`
+    `${timestamp.toLocaleString()} Processing new cybsec5 completions.`
   )
   processMoocCompletions(
     'AY5823955',
@@ -80,13 +80,24 @@ const processCybsec5 = () => {
 const processCybsec6 = () => {
   const timestamp = now()
   logger.info(
-    `${timestamp.toLocaleString()} manual run: Processing new cybsec5 completions.`
+    `${timestamp.toLocaleString()} Processing new cybsec5 completions.`
   )
   processMoocCompletions(
     'AY5823956',
     'Open uni: Cyber Security Base: Capture The Flag',
     '1,0',
     process.env.CYBSEC_TEACHERCODE
+  )
+}
+
+const processOhPe = () => {
+  const timestamp = now()
+  logger.info(`${timestamp.toLocaleString()} Processing new OhPe completions.`)
+  processMoocCompletions(
+    'AYTKT10002',
+    'Avoin yo: Ohjelmoinnin perusteet',
+    '5,0',
+    process.env.OHPE_TEACHERCODE
   )
 }
 
@@ -97,5 +108,6 @@ module.exports = {
   processCybsec3,
   processCybsec4,
   processCybsec5,
-  processCybsec6
+  processCybsec6,
+  processOhPe
 }

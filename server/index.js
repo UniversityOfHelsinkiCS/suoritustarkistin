@@ -24,7 +24,8 @@ const {
   processCybsec3,
   processCybsec4,
   processCybsec5,
-  processCybsec6
+  processCybsec6,
+  processOhPe
 } = require('./scripts/moocScripts')
 
 initializeDatabaseConnection()
@@ -115,6 +116,10 @@ initializeDatabaseConnection()
 
     if (process.argv[2] && process.argv[2] === 'cybsec6') {
       processCybsec6()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'ohpe') {
+      processOhPe()
     }
 
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {

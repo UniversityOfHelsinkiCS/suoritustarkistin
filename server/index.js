@@ -82,7 +82,7 @@ initializeDatabaseConnection()
 
     const now = () => new Date(Date.now())
 
-    if (process.argv[2] && process.argv[2] === 'processeoai') {
+    if (process.argv[2] && process.argv[2] === 'eoai') {
       processEoai()
     }
 
@@ -127,6 +127,10 @@ initializeDatabaseConnection()
         processEoai()
       })
 
+      cron.schedule('15 4 * * 4', () => {
+        processOhPe()
+      })
+
       cron.schedule('30 4 * * 4', () => {
         processCybsec1()
       })
@@ -141,6 +145,14 @@ initializeDatabaseConnection()
 
       cron.schedule('45 4 * * 4', () => {
         processCybsec4()
+      })
+
+      cron.schedule('50 4 * * 4', () => {
+        processCybsec5()
+      })
+
+      cron.schedule('55 4 * * 4', () => {
+        processCybsec6()
       })
 
       cron.schedule('0 3 * * 5', () => {

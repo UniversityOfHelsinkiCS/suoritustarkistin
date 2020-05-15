@@ -97,7 +97,8 @@ const processOhPe = () => {
     'AYTKT10002',
     'Avoin yo: Ohjelmoinnin perusteet',
     '5,0',
-    process.env.OHPE_TEACHERCODE
+    process.env.OHPE_TEACHERCODE,
+    'fi'
   )
 }
 

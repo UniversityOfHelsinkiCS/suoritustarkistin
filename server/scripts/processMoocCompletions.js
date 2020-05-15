@@ -3,17 +3,25 @@ const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
+const { isValidGrade } = require('../../utils/validators')
 
 const slugs = {
   AY5823954: 'cyber-advanced-topics-2020',
   AY5823953: 'cyber-course-project-i'
 }
 
+const languageCodes = {
+  en: '6',
+  fi: '1',
+  sv: '2'
+}
+
 const processMoocCompletions = async (
   courseCode,
   courseName,
   creditAmount,
-  teacherCode
+  teacherCode,
+  language
 ) => {
   try {
     const credits = await db.credits.findAll({
@@ -38,6 +46,11 @@ const processMoocCompletions = async (
     })
 
     const matches = completions.reduce((matches, completion) => {
+      if (completion.grade && !isValidGrade(completion.grade)) {
+        logger.error(`Invalid grade: ${completion.grade}`)
+        return matches
+      }
+
       const registration = registrations.find(
         (registration) =>
           registration.email.toLowerCase() === completion.email.toLowerCase() ||
@@ -51,7 +64,8 @@ const processMoocCompletions = async (
           moocId: completion.user_upstream_id,
           completionId: completion.id,
           isInOodikone: false,
-          completionLanguage: completion.completion_language
+          completionLanguage: completion.completion_language,
+          grade: completion.grade || 'Hyv.'
         })
       } else {
         return matches
@@ -61,12 +75,17 @@ const processMoocCompletions = async (
     logger.info(`${courseCode}: Found ${matches.length} new completions.`)
 
     const date = new Date()
-    const dateString = `${date.getDate()}.${date.getMonth() +
-      1}.${date.getFullYear()}`
+    const dateString = `${date.getDate()}.${
+      date.getMonth() + 1
+    }.${date.getFullYear()}`
 
     const report = matches
       .map((match) => {
-        return `${match.studentId}##6#${courseCode}#${courseName}#${dateString}#0#Hyv.#106##${teacherCode}#2#H930#11#93013#3##${creditAmount}`
+        return `${match.studentId}##${
+          languageCodes[language] || '6'
+        }#${courseCode}#${courseName}#${dateString}#0#${
+          match.grade
+        }#106##${teacherCode}#2#H930#11#93013#3##${creditAmount}`
       })
       .join('\n')
 

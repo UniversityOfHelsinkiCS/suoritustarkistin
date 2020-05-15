@@ -8,11 +8,12 @@ module.exports = (sequelize, DataTypes) => {
       moocId: DataTypes.INTEGER,
       completionId: DataTypes.STRING,
       isInOodikone: DataTypes.BOOLEAN,
-      reportId: DataTypes.INTEGER
+      reportId: DataTypes.INTEGER,
+      grade: DataTypes.STRING
     },
     {}
   )
-  Credits.associate = function(models) {
+  Credits.associate = function (models) {
     Credits.belongsTo(models.reports)
   }
   return Credits

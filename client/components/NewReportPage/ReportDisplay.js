@@ -193,7 +193,7 @@ export default () => {
           <Table.HeaderCell>Laajuus (op)</Table.HeaderCell>
           <Table.HeaderCell>Kieli</Table.HeaderCell>
           <Table.HeaderCell>Arvostelija</Table.HeaderCell>
-          <Table.HeaderCell>Arvostelupäivämäärä</Table.HeaderCell>
+          <Table.HeaderCell>Suorituspäivämäärä</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>{reportRows}</Table.Body>

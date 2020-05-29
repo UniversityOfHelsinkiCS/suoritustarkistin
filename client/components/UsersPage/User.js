@@ -115,16 +115,16 @@ export default ({ user }) => {
   }
   return (
     <Grid.Row>
-      <Grid.Column width={2}>{user.name}</Grid.Column>
-      <Grid.Column>{user.employeeId}</Grid.Column>
+      <Grid.Column width={3}>{user.name}</Grid.Column>
+      <Grid.Column width={4}>{user.employeeId}</Grid.Column>
       <Grid.Column width={3}>{user.email}</Grid.Column>
-      <Grid.Column textAlign="center">
+      <Grid.Column textAlign="center" width={2}>
         <GraderBadge />
       </Grid.Column>
-      <Grid.Column textAlign="center">
+      <Grid.Column textAlign="center" width={2}>
         <AdminBadge />
       </Grid.Column>
-      <Grid.Column />
+      <Grid.Column width={2} />
     </Grid.Row>
   )
 }

@@ -102,6 +102,18 @@ const processOhPe = () => {
   )
 }
 
+const processOhJa = () => {
+  const timestamp = now()
+  logger.info(`${timestamp.toLocaleString()} Processing new OhJa completions.`)
+  processMoocCompletions(
+    'AYTKT10003',
+    'Avoin yo: Ohjelmoinnin jatkokurssi',
+    '5,0',
+    process.env.OHPE_TEACHERCODE,
+    'fi'
+  )
+}
+
 module.exports = {
   processEoai,
   processCybsec1,
@@ -110,5 +122,6 @@ module.exports = {
   processCybsec4,
   processCybsec5,
   processCybsec6,
-  processOhPe
+  processOhPe,
+  processOhJa
 }

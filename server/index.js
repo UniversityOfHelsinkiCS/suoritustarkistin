@@ -25,7 +25,8 @@ const {
   processCybsec4,
   processCybsec5,
   processCybsec6,
-  processOhPe
+  processOhPe,
+  processOhJa
 } = require('./scripts/moocScripts')
 
 initializeDatabaseConnection()
@@ -122,6 +123,10 @@ initializeDatabaseConnection()
       processOhPe()
     }
 
+    if (process.argv[2] && process.argv[2] === 'ohja') {
+      processOhJa()
+    }
+
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {
       cron.schedule('0 4 * * 4', () => {
         processEoai()
@@ -129,6 +134,10 @@ initializeDatabaseConnection()
 
       cron.schedule('15 4 * * 4', () => {
         processOhPe()
+      })
+
+      cron.schedule('20 4 * * 4', () => {
+        processOhJa()
       })
 
       cron.schedule('30 4 * * 4', () => {

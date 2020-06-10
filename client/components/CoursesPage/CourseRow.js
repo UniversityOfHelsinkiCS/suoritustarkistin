@@ -43,21 +43,21 @@ export default ({ course }) => {
   return (
     <Grid.Row>
       <Grid.Column width={3}>{course.name}</Grid.Column>
-      <Grid.Column>{course.courseCode}</Grid.Column>
-      <Grid.Column>{course.language}</Grid.Column>
-      <Grid.Column>{course.credits}</Grid.Column>
-      <Grid.Column>{getGraderName()}</Grid.Column>
-      <Grid.Column textAlign="center">
+      <Grid.Column width={2}>{course.courseCode}</Grid.Column>
+      <Grid.Column width={1}>{course.language}</Grid.Column>
+      <Grid.Column width={1}>{course.credits}</Grid.Column>
+      <Grid.Column width={3}>{getGraderName()}</Grid.Column>
+      <Grid.Column textAlign="center" width={2}>
         {course.isMooc ? (
           <Icon name="check" color="green" size="large" />
         ) : null}
       </Grid.Column>
-      <Grid.Column textAlign="center">
+      <Grid.Column textAlign="center" width={2}>
         {course.autoSeparate ? (
           <Icon name="check" color="green" size="large" />
         ) : null}
       </Grid.Column>
-      <Grid.Column width={3}>
+      <Grid.Column width={2}>
         <EditCourse course={course} />
         {really ? <Confirm /> : <DeleteButton />}
       </Grid.Column>

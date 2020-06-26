@@ -42,6 +42,7 @@ const getCompletions = async (course) => {
       student_number
       user_upstream_id
       grade
+      completion_date
     }
   }
   `

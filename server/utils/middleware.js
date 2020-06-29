@@ -13,7 +13,7 @@ const parseUser = async (req, res, next) => {
           email: req.headers.mail,
           name: `${req.headers.givenname} ${req.headers.sn}`,
           isGrader: false,
-          isAdmin: false
+          isAdmin: false || !!(req.headers.uid === 'pemtest' && !inProduction)
         }
       })
       if (created) logger.info(`New user: ${user.name}, ${user.email}`)
@@ -29,10 +29,7 @@ const checkGrader = (req, res, next) => {
   if (req.user.isGrader || req.user.isAdmin) {
     next()
   } else {
-    res
-      .status(401)
-      .json({ error: 'Unauthorized access.' })
-      .end()
+    res.status(401).json({ error: 'Unauthorized access.' }).end()
   }
 }
 
@@ -40,10 +37,7 @@ const checkAdmin = (req, res, next) => {
   if (req.user.isAdmin) {
     next()
   } else {
-    res
-      .status(401)
-      .json({ error: 'Unauthorized access.' })
-      .end()
+    res.status(401).json({ error: 'Unauthorized access.' }).end()
   }
 }
 
@@ -51,10 +45,7 @@ const checkIdMatch = (req, res, next) => {
   if (Number(req.params.id) === req.user.id) {
     next()
   } else {
-    res
-      .status(401)
-      .json({ error: 'Unauthorized: User id mismatch.' })
-      .end()
+    res.status(401).json({ error: 'Unauthorized: User id mismatch.' }).end()
   }
 }
 
@@ -62,10 +53,7 @@ const checkSuotarToken = (req, res, next) => {
   if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
     next()
   } else {
-    return res
-      .status(401)
-      .json({ error: 'Invalid token.' })
-      .end()
+    return res.status(401).json({ error: 'Invalid token.' }).end()
   }
 }
 

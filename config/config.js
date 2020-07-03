@@ -9,7 +9,7 @@ module.exports = {
     logging: false
   },
   test: {
-    database_url: 'postgres://postgres@localhost/circle_test',
+    database_url: 'postgres://postgres:postgres@localhost/circle_test',
     dialect: 'postgres'
   },
   production: {

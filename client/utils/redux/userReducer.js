@@ -41,7 +41,9 @@ export default (state = { data: null }, action) => {
         ...state,
         data: {
           ...action.response,
-          adminMode: window.localStorage.getItem('adminmode') === 'true'
+          adminMode:
+            action.response.isAdmin &&
+            window.localStorage.getItem('adminmode') === 'true'
         },
         pending: false,
         error: false

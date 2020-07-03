@@ -4,15 +4,10 @@ FROM node:10.15
 RUN echo "Europe/Helsinki" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
 
-ARG BASE_PATH
-ENV BASE_PATH=$BASE_PATH
-
 # Setup
 WORKDIR /usr/src/app
 COPY . .
 
-RUN npm ci --only=production
+EXPOSE 8000
 
-RUN npm run build
-
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:dev"]

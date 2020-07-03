@@ -5,7 +5,6 @@ npm-debug.log
 .env
 sids.txt
 reports/
-docker-compose.yml
 .DS_Store
 cypress.env.json
 cypress/screenshots

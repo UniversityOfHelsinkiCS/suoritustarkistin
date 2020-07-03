@@ -6,6 +6,11 @@ import { editUserAction } from 'Utilities/redux/usersReducer'
 export default ({ user }) => {
   const dispatch = useDispatch()
 
+  const logInAs = () => {
+    localStorage.setItem('adminLoggedInAs', user.employeeId)
+    window.location.reload()
+  }
+
   const grantAdmin = () => {
     dispatch(editUserAction({ ...user, isAdmin: true }))
   }
@@ -124,7 +129,9 @@ export default ({ user }) => {
       <Grid.Column textAlign="center" width={2}>
         <AdminBadge />
       </Grid.Column>
-      <Grid.Column width={2} />
+      <Grid.Column width={2}>
+        <Icon onClick={logInAs} size="large" name="sign-in" />
+      </Grid.Column>
     </Grid.Row>
   )
 }

@@ -12,14 +12,32 @@ const parseUser = async (req, res, next) => {
         defaults: {
           email: req.headers.mail,
           name: `${req.headers.givenname} ${req.headers.sn}`,
-          isGrader: false,
-          isAdmin: false || !!(req.headers.uid === 'pemtest' && !inProduction)
+          isGrader:
+            false ||
+            !!(req.headers.employeenumber === 'grader' && !inProduction),
+          isAdmin:
+            false ||
+            !!(req.headers.employeenumber === 'admin' && !inProduction)
         }
       })
       if (created) logger.info(`New user: ${user.name}, ${user.email}`)
       req.user = user
     } catch (error) {
       logger.error('Database error:', error)
+    }
+  }
+  next()
+}
+
+const currentUser = async (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    const loggedInAs = req.headers['x-admin-logged-in-as']
+    if (loggedInAs) {
+      let fakeUser = await db.users.findOne({
+        where: { employeeId: loggedInAs }
+      })
+
+      req.user = fakeUser
     }
   }
   next()
@@ -84,5 +102,6 @@ module.exports = {
   parseUser,
   checkGrader,
   checkAdmin,
-  checkIdMatch
+  checkIdMatch,
+  currentUser
 }

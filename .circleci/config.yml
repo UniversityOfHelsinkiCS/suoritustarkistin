@@ -12,6 +12,7 @@ executors:
       - image: 'circleci/postgres:11-ram'
         environment:
           POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
 workflows:
   build-test-deploy:
     jobs:

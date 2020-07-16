@@ -10,6 +10,7 @@ module.exports = {
   },
   test: {
     database_url: 'postgres://postgres:postgres@localhost/circle_test',
+    username: 'postgres',
     dialect: 'postgres'
   },
   production: {

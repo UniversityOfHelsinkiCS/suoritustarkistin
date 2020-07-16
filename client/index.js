@@ -19,7 +19,7 @@ const refresh = () =>
     document.getElementById('root')
   )
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' && !window.localStorage.getItem("runningCypressTests")) {
   const newUser = 'admin'
   const currentFakeUser = window.localStorage.getItem('fakeUser')
   if (currentFakeUser) {

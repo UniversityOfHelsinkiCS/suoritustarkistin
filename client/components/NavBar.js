@@ -101,6 +101,7 @@ export default () => {
       </Menu.Item>
 
       <Menu.Item
+        disabled={!user.isAdmin && !user.isGrader}
         position="right"
         as={Link}
         to={'/'}
@@ -112,6 +113,7 @@ export default () => {
       </Menu.Item>
 
       <Menu.Item
+        disabled={!user.isAdmin && !user.isGrader}
         data-cy="nav-reports"
         as={Link}
         to={'/reports'}

@@ -25,4 +25,16 @@ describe("Permissions", () => {
     cy.contains("you must send an email")
   })
 
+  it("Users without employeeId see 'Employees only' message", () => {
+    cy.server({
+      onAnyRequest: (route, proxy) => {
+        proxy.xhr.setRequestHeader('name',"noEmployeeid")
+      }
+    })
+
+    cy.visit("/")
+    cy.contains("This service is for employees only.")
+    cy.contains("To use the service, you need to have an employee number.")
+  })
+
 })

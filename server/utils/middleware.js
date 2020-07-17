@@ -1,6 +1,7 @@
 const { inProduction } = require('./common')
 const logger = require('@utils/logger')
 const db = require('../models/index')
+const sendNewUserEmail = require('./sendNewUserEmail')
 
 const parseUser = async (req, res, next) => {
   if (req.headers.employeenumber) {
@@ -20,7 +21,10 @@ const parseUser = async (req, res, next) => {
             !!(req.headers.employeenumber === 'admin' && !inProduction)
         }
       })
-      if (created) logger.info(`New user: ${user.name}, ${user.email}`)
+      if (created) {
+        logger.info(`New user: ${user.name}, ${user.email}`)
+        sendNewUserEmail(user)
+      }
       req.user = user
     } catch (error) {
       logger.error('Database error:', error)

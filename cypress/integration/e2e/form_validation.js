@@ -162,5 +162,31 @@ describe('Form validation', function() {
     it("(|) Vertical line", () => testSeparator("010000003|2|5|fi\n011000002||2,0\n011100009\n011110002|||fi"))
     it("(\\t) Tab ", () => testSeparator("010000003\t2\t5\tfi\n011000002\t\t2,0\n011100009\n011110002\t\t\tfi"))
   })
+
+  it('passes when uploaded csv contains dates', () => {
+    cy.get('[data-cy=sendButton]').should('be.disabled')
+    cy.get('[data-cy=dragdrop]').click()
+    cy.fixture('valid-with-dates.csv').then((content) => {
+      cy.get('[data-cy=dropzone]').upload(content, 'valid-with-dates.csv')
+    })
+    
+    cy.get('[data-cy=graderSelection]')
+      .click()
+      .children()
+      .contains('testimaikka')
+      .click()
+
+    cy.get('[data-cy=courseSelection]')
+      .click()
+      .children()
+      .contains('tkt:n kurssi (TKTTEST)')
+      .click()
+
+    cy.contains("1.3.2020")
+    cy.contains("1.4.2020")
+    cy.contains("2.5.2020")
+
+    cy.get('[data-cy=sendButton]').should('be.enabled')
+  }) 
   
 })

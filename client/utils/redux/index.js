@@ -8,6 +8,7 @@ import registrations from './registrationsReducer'
 import newReport from './newReportReducer'
 import message from './messageReducer'
 import users from './usersReducer'
+import jobs from './jobsReducer'
 
 export default combineReducers({
   user,
@@ -17,5 +18,6 @@ export default combineReducers({
   registrations,
   newReport,
   message,
-  users
+  users,
+  jobs
 })

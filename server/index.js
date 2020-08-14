@@ -27,6 +27,7 @@ const {
   processOhPe,
   processOhJa
 } = require('./scripts/moocScripts')
+const createCronJobs = require('./scripts/cronjobs')
 
 initializeDatabaseConnection()
   .then(() => {
@@ -122,6 +123,8 @@ initializeDatabaseConnection()
     if (process.argv[2] && process.argv[2] === 'ohja') {
       processOhJa()
     }
+
+    createCronJobs()
 
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {
       cron.schedule('0 4 * * 4', () => {

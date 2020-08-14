@@ -83,6 +83,16 @@ const isValidReport = (report) => {
   return true
 }
 
+const isValidJob = (job) => {
+  // TODO: implement
+  if (job) return true
+}
+
+const isValidSchedule = (schedule) => {
+  // TODO: implement
+  if (schedule) return true
+}
+
 module.exports = {
   isValidStudentId,
   isValidOodiDate,
@@ -94,5 +104,7 @@ module.exports = {
   isValidCourse,
   isValidHYCourseCode,
   isValidOpenCourseCode,
-  isValidCourseCode
+  isValidCourseCode,
+  isValidJob,
+  isValidSchedule
 }

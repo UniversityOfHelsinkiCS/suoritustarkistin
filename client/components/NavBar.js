@@ -73,6 +73,21 @@ export default () => {
     )
   }
 
+  const JobsButton = () => {
+    return (
+      <Menu.Item
+        data-cy="nav-jobs"
+        as={Link}
+        to={'/jobs'}
+        name="cronjobs"
+        active={activeItem === 'cronjobs'}
+        onClick={handleItemClick}
+      >
+        Cronjobs
+      </Menu.Item>
+    )
+  }
+
   const handleUnhijack = () => {
     window.localStorage.removeItem('adminLoggedInAs')
     window.location.reload()
@@ -125,6 +140,7 @@ export default () => {
       </Menu.Item>
       {user.adminMode ? <CoursesButton /> : null}
       {user.adminMode ? <UsersButton /> : null}
+      {user.adminMode ? <JobsButton /> : null}
       {user.isAdmin ? getAdminButton() : null}
 
       {window.localStorage.getItem('adminLoggedInAs') ? (

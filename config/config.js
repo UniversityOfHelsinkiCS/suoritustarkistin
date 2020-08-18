@@ -6,7 +6,7 @@ module.exports = {
   development: {
     username: process.env.PGUSERNAME,
     password: process.env.PGPASSWORD,
-    database: 'suoritustarkistin_dev',
+    database: 'postgres',
     host: process.env.PGHOST,
     dialect: 'postgres',
     port: process.env.PGPORT,

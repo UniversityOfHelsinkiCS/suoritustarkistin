@@ -4,11 +4,7 @@ const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
 const { isValidGrade } = require('../../utils/validators')
-
-const slugs = {
-  AY5823954: 'cyber-advanced-topics-2020',
-  AY5823953: 'cyber-course-project-i'
-}
+const hasOodiEntry = require('../services/oodikone')
 
 const languageCodes = {
   en: '6',
@@ -37,53 +33,10 @@ const processMoocCompletions = async (
   courseName,
   creditAmount,
   teacherCode,
-  language
+  language,
+  slug
 ) => {
   try {
-    /*     const rawRegistrations = await getRegistrations(courseCode)
-    const rawCompletions = await getCompletions(slugs[courseCode] || courseCode)
-
-    const registrations = rawRegistrations.filter((registration) => {
-      return !credits.find((credit) => credit.studentId === registration.onro)
-    })
-
-    const completions = rawCompletions.filter((completion) => {
-      return !credits.find(
-        (credit) =>
-          credit.completionId === completion.id ||
-          credit.moocId === completion.user_upstream_id
-      )
-    })
-
-    const matches = completions.reduce((matches, completion) => {
-      if (completion.grade && !isValidGrade(completion.grade)) {
-        logger.error(`Invalid grade: ${completion.grade}`)
-        return matches
-      }
-
-      const registration = registrations.find(
-        (registration) =>
-          registration.email.toLowerCase() === completion.email.toLowerCase() ||
-          registration.mooc.toLowerCase() === completion.email.toLowerCase()
-      )
-
-      if (registration && registration.onro) {
-        return matches.concat({
-          studentId: registration.onro,
-          courseId: courseCode,
-          moocId: completion.user_upstream_id,
-          completionId: completion.id,
-          isInOodikone: false,
-          completionLanguage: completion.completion_language,
-          grade: completion.grade || 'Hyv.'
-        })
-      } else {
-        return matches
-      }
-    }, [])
-
-     */
-
     const credits = await db.credits.findAll({
       where: {
         courseId: courseCode
@@ -92,56 +45,76 @@ const processMoocCompletions = async (
     })
 
     const registrations = await getRegistrations(courseCode)
-    const completions = await getCompletions(slugs[courseCode] || courseCode)
+    const completions = await getCompletions(slug || courseCode)
 
-    const matches = completions.reduce((matches, completion) => {
-      const previousGrades = credits
-        .filter(
-          (credit) =>
-            credit.completionId === completion.id ||
-            credit.moocId === completion.user_upstream_id
+    const matches = await completions.reduce(
+      async (matchesPromise, completion) => {
+        const matches = await matchesPromise
+        const previousGrades = credits
+          .filter(
+            (credit) =>
+              credit.completionId === completion.id ||
+              credit.moocId === completion.user_upstream_id
+          )
+          .map((credit) => credit.grade)
+
+        if (completion.grade) {
+          if (!isValidGrade(completion.grade)) {
+            logger.error(`Invalid grade: ${completion.grade}`)
+            return matches
+          }
+
+          if (
+            previousGrades.length > 0 &&
+            !isKorotus(previousGrades, completion.grade)
+          ) {
+            return matches
+          }
+        }
+
+        if (!completion.grade && previousGrades.length > 0) {
+          return matches
+        }
+
+        const registration = registrations.find(
+          (registration) =>
+            registration.email.toLowerCase() ===
+              completion.email.toLowerCase() ||
+            registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
-        .map((credit) => credit.grade)
 
-      if (completion.grade) {
-        if (!isValidGrade(completion.grade)) {
-          logger.error(`Invalid grade: ${completion.grade}`)
-          return matches
+        if (registration && registration.onro && slug === 'python-kesa-20') {
+          const hasJavaOhPe = await hasOodiEntry(registration.onro, 'TKT10002')
+          const hasOpenJavaOhPe = await hasOodiEntry(
+            registration.onro,
+            'AYTKT10002'
+          )
+
+          if (hasJavaOhPe || hasOpenJavaOhPe) {
+            // Implement beta testing credits here
+            // CURRETLY THIS BLOCKS GRADE IMPROVING FOR THIS COURSE!
+            logger.info(`Beta credit needed for: ${registration.onro}`)
+            return matches
+          }
         }
 
-        if (
-          previousGrades.length > 0 &&
-          !isKorotus(previousGrades, completion.grade)
-        ) {
+        if (registration && registration.onro) {
+          return matches.concat({
+            studentId: registration.onro,
+            courseId: courseCode,
+            moocId: completion.user_upstream_id,
+            completionId: completion.id,
+            isInOodikone: false,
+            completionLanguage: completion.completion_language,
+            grade: completion.grade || 'Hyv.',
+            completionDate: completion.completion_date
+          })
+        } else {
           return matches
         }
-      }
-
-      if (!completion.grade && previousGrades.length > 0) {
-        return matches
-      }
-
-      const registration = registrations.find(
-        (registration) =>
-          registration.email.toLowerCase() === completion.email.toLowerCase() ||
-          registration.mooc.toLowerCase() === completion.email.toLowerCase()
-      )
-
-      if (registration && registration.onro) {
-        return matches.concat({
-          studentId: registration.onro,
-          courseId: courseCode,
-          moocId: completion.user_upstream_id,
-          completionId: completion.id,
-          isInOodikone: false,
-          completionLanguage: completion.completion_language,
-          grade: completion.grade || 'Hyv.',
-          completionDate: completion.completion_date
-        })
-      } else {
-        return matches
-      }
-    }, [])
+      },
+      []
+    )
 
     logger.info(`${courseCode}: Found ${matches.length} new completions.`)
 

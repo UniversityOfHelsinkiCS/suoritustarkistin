@@ -47,7 +47,8 @@ const processCybsec3 = () => {
     'AY5823953',
     'Open uni: Cyber Security Base: Course Project I',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE
+    process.env.CYBSEC_TEACHERCODE,
+    'cyber-course-project-i'
   )
 }
 
@@ -60,7 +61,8 @@ const processCybsec4 = () => {
     'AY5823954',
     'Open uni: Cyber Security Base: Advanced Topics',
     '3,0',
-    process.env.CYBSEC_TEACHERCODE
+    process.env.CYBSEC_TEACHERCODE,
+    'cyber-advanced-topics-2020'
   )
 }
 
@@ -80,7 +82,7 @@ const processCybsec5 = () => {
 const processCybsec6 = () => {
   const timestamp = now()
   logger.info(
-    `${timestamp.toLocaleString()} Processing new cybsec5 completions.`
+    `${timestamp.toLocaleString()} Processing new cybsec6 completions.`
   )
   processMoocCompletions(
     'AY5823956',
@@ -99,6 +101,21 @@ const processOhPe = () => {
     '5,0',
     process.env.OHPE_TEACHERCODE,
     'fi'
+  )
+}
+
+const processOhPePython = () => {
+  const timestamp = now()
+  logger.info(
+    `${timestamp.toLocaleString()} Processing new OhPePython completions.`
+  )
+  processMoocCompletions(
+    'AYTKT10002',
+    'Avoin yo: Ohjelmoinnin perusteet',
+    '5,0',
+    process.env.OHPE_TEACHERCODE,
+    'fi',
+    'python-kesa-20'
   )
 }
 
@@ -123,5 +140,6 @@ module.exports = {
   processCybsec5,
   processCybsec6,
   processOhPe,
-  processOhJa
+  processOhJa,
+  processOhPePython
 }

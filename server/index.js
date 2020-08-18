@@ -26,7 +26,8 @@ const {
   processCybsec5,
   processCybsec6,
   processOhPe,
-  processOhJa
+  processOhJa,
+  processOhPePython
 } = require('./scripts/moocScripts')
 
 initializeDatabaseConnection()
@@ -123,6 +124,9 @@ initializeDatabaseConnection()
       processOhPe()
     }
 
+    if (process.argv[2] && process.argv[2] === 'ohpepython') {
+      processOhPePython()
+    }
     if (process.argv[2] && process.argv[2] === 'ohja') {
       processOhJa()
     }
@@ -162,6 +166,10 @@ initializeDatabaseConnection()
 
       cron.schedule('55 4 * * 4', () => {
         processCybsec6()
+      })
+
+      cron.schedule('0 5 * * 4', () => {
+        processOhPePython()
       })
 
       cron.schedule('0 3 * * 5', () => {

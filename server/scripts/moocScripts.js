@@ -131,6 +131,18 @@ const processOhJa = () => {
   )
 }
 
+const processTiTo = () => {
+  const timestamp = now()
+  logger.info(`${timestamp.toLocaleString()} Processing new TiTo completions.`)
+  processMoocCompletions(
+    'AYTKT100051',
+    'Avoin yo: Tietokoneen toiminnan perusteet',
+    '2,0',
+    process.env.TITO_TEACHERCODE,
+    'fi'
+  )
+}
+
 module.exports = {
   processEoai,
   processCybsec1,
@@ -141,5 +153,6 @@ module.exports = {
   processCybsec6,
   processOhPe,
   processOhJa,
-  processOhPePython
+  processOhPePython,
+  processTiTo
 }

@@ -106,28 +106,29 @@ const processManualEntry = async ({
       const { studentId, grade, credits, language, completionDate } = entry
 
       if (registrations && registrations.find((r) => r.onro === studentId)) {
-        return `${studentId}##${LANGUAGES[language] ||
-          LANGUAGES[course.language]}#AY${course.courseCode}#${
-          course.name
-        }#${completionDate || date}#0#${grade || 'Hyv.'}#106##${
-          grader.employeeId
-        }${orgParams(`AY${course.courseCode}`)}${commify(credits) ||
-          course.credits}`
+        return `${studentId}##${
+          LANGUAGES[language] || LANGUAGES[course.language]
+        }#AY${course.courseCode}#${course.name}#${completionDate || date}#0#${
+          grade || 'Hyv.'
+        }#106##${grader.employeeId}${orgParams(`AY${course.courseCode}`)}${
+          commify(credits) || course.credits
+        }`
       }
 
-      return `${studentId}##${LANGUAGES[language] ||
-        LANGUAGES[course.language]}#${course.courseCode}#${
-        course.name
-      }#${completionDate || date}#0#${grade || 'Hyv.'}#106##${
-        grader.employeeId
-      }${orgParams(course.courseCode)}${commify(credits) || course.credits}`
+      return `${studentId}##${
+        LANGUAGES[language] || LANGUAGES[course.language]
+      }#${course.courseCode}#${course.name}#${completionDate || date}#0#${
+        grade || 'Hyv.'
+      }#106##${grader.employeeId}${orgParams(course.courseCode)}${
+        commify(credits) || course.credits
+      }`
     })
     .join('\n')
 
   const savedReport = await db.reports.create({
     fileName: `${course.courseCode}%${moment().format(
       'DD.MM.YY-HHmmss'
-    )}-V1-S2019.dat`,
+    )}_MANUAL.dat`,
     data: report,
     graderId: grader.id,
     reporterId

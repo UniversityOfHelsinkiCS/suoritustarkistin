@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getEoAICompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
@@ -82,7 +84,9 @@ const processEoaiCompletions = async (courses) => {
 
     if (matches.length) {
       const dbReport = await db.reports.create({
-        fileName: `${courses[0]}%${getOodiDate(date)}-V1-S2019.dat`,
+        fileName: `${courses[0]}%${moment().format(
+          'DD.MM.YY-HHmmss'
+        )}-AUTOMATIC.dat`,
         data: report
       })
 

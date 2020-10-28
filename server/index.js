@@ -22,6 +22,9 @@ const {
   processCybsec1,
   processCybsec2,
   processCybsec3,
+  processCybsec1_2020,
+  processCybsec2_2020,
+  processCybsec3_2020,
   processCybsec4,
   processCybsec5,
   processCybsec6,
@@ -109,6 +112,18 @@ initializeDatabaseConnection()
       processCybsec3()
     }
 
+    if (process.argv[2] && process.argv[2] === 'cybsec1_2020') {
+      processCybsec1_2020()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'cybsec2_2020') {
+      processCybsec2_2020()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'cybsec3_2020') {
+      processCybsec3_2020()
+    }
+
     if (process.argv[2] && process.argv[2] === 'cybsec4') {
       processCybsec4()
     }
@@ -158,6 +173,18 @@ initializeDatabaseConnection()
 
       cron.schedule('40 4 * * 4', () => {
         processCybsec3()
+      })
+
+      cron.schedule('10 5 * * 4', () => {
+        processCybsec1_2020()
+      })
+
+      cron.schedule('15 5 * * 4', () => {
+        processCybsec2_2020()
+      })
+
+      cron.schedule('20 5 * * 4', () => {
+        processCybsec3_2020()
       })
 
       cron.schedule('45 4 * * 4', () => {

@@ -25,6 +25,20 @@ const processCybsec1 = () => {
   )
 }
 
+const processCybsec1_2020 = () => {
+  const timestamp = now()
+  logger.info(
+    `${timestamp.toLocaleString()} Processing new cybsec1_2020 completions.`
+  )
+  processMoocCompletions(
+    'AY5823951',
+    'Open uni: Cyber Security Base: Introduction to Cyber Security',
+    '1,0',
+    process.env.CYBSEC_TEACHERCODE,
+    'introduction-to-cyber-security-2020'
+  )
+}
+
 const processCybsec2 = () => {
   const timestamp = now()
   logger.info(
@@ -35,6 +49,20 @@ const processCybsec2 = () => {
     'Open uni: Cyber Security Base: Securing Software',
     '3,0',
     process.env.CYBSEC_TEACHERCODE
+  )
+}
+
+const processCybsec2_2020 = () => {
+  const timestamp = now()
+  logger.info(
+    `${timestamp.toLocaleString()} Processing new cybsec2_2020 completions.`
+  )
+  processMoocCompletions(
+    'AY5823952',
+    'Open uni: Cyber Security Base: Securing Software',
+    '3,0',
+    process.env.CYBSEC_TEACHERCODE,
+    'securing-software-2020'
   )
 }
 
@@ -49,6 +77,20 @@ const processCybsec3 = () => {
     '1,0',
     process.env.CYBSEC_TEACHERCODE,
     'cyber-course-project-i'
+  )
+}
+
+const processCybsec3_2020 = () => {
+  const timestamp = now()
+  logger.info(
+    `${timestamp.toLocaleString()} Processing new cybsec3_2020 completions.`
+  )
+  processMoocCompletions(
+    'AY5823953',
+    'Open uni: Cyber Security Base: Course Project I',
+    '1,0',
+    process.env.CYBSEC_TEACHERCODE,
+    'cyber-security-project-i-2020'
   )
 }
 
@@ -100,6 +142,7 @@ const processOhPe = () => {
     'Avoin yo: Ohjelmoinnin perusteet',
     '5,0',
     process.env.OHPE_TEACHERCODE,
+
     'fi'
   )
 }
@@ -148,6 +191,9 @@ module.exports = {
   processCybsec1,
   processCybsec2,
   processCybsec3,
+  processCybsec1_2020,
+  processCybsec2_2020,
+  processCybsec3_2020,
   processCybsec4,
   processCybsec5,
   processCybsec6,

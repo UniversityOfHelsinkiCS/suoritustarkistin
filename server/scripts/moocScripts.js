@@ -21,7 +21,8 @@ const processCybsec1 = () => {
     'AY5823951',
     'Open uni: Cyber Security Base: Introduction to Cyber Security',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE
+    process.env.CYBSEC_TEACHERCODE,
+    'en'
   )
 }
 
@@ -35,6 +36,7 @@ const processCybsec1_2020 = () => {
     'Open uni: Cyber Security Base: Introduction to Cyber Security',
     '1,0',
     process.env.CYBSEC_TEACHERCODE,
+    'en',
     'introduction-to-cyber-security-2020'
   )
 }
@@ -48,7 +50,8 @@ const processCybsec2 = () => {
     'AY5823952',
     'Open uni: Cyber Security Base: Securing Software',
     '3,0',
-    process.env.CYBSEC_TEACHERCODE
+    process.env.CYBSEC_TEACHERCODE,
+    'en'
   )
 }
 
@@ -62,6 +65,7 @@ const processCybsec2_2020 = () => {
     'Open uni: Cyber Security Base: Securing Software',
     '3,0',
     process.env.CYBSEC_TEACHERCODE,
+    'en',
     'securing-software-2020'
   )
 }
@@ -76,6 +80,7 @@ const processCybsec3 = () => {
     'Open uni: Cyber Security Base: Course Project I',
     '1,0',
     process.env.CYBSEC_TEACHERCODE,
+    'en',
     'cyber-course-project-i'
   )
 }
@@ -90,6 +95,7 @@ const processCybsec3_2020 = () => {
     'Open uni: Cyber Security Base: Course Project I',
     '1,0',
     process.env.CYBSEC_TEACHERCODE,
+    'en',
     'cyber-security-project-i-2020'
   )
 }
@@ -104,6 +110,7 @@ const processCybsec4 = () => {
     'Open uni: Cyber Security Base: Advanced Topics',
     '3,0',
     process.env.CYBSEC_TEACHERCODE,
+    'en',
     'cyber-advanced-topics-2020'
   )
 }
@@ -117,7 +124,8 @@ const processCybsec5 = () => {
     'AY5823955',
     'Open uni: Cyber Security Base: Course Project II',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE
+    process.env.CYBSEC_TEACHERCODE,
+    'en'
   )
 }
 
@@ -130,7 +138,8 @@ const processCybsec6 = () => {
     'AY5823956',
     'Open uni: Cyber Security Base: Capture The Flag',
     '1,0',
-    process.env.CYBSEC_TEACHERCODE
+    process.env.CYBSEC_TEACHERCODE,
+    'en'
   )
 }
 
@@ -142,7 +151,6 @@ const processOhPe = () => {
     'Avoin yo: Ohjelmoinnin perusteet',
     '5,0',
     process.env.OHPE_TEACHERCODE,
-
     'fi'
   )
 }

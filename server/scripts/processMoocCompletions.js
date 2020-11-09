@@ -95,7 +95,6 @@ const processMoocCompletions = async (
           if (hasJavaOhPe || hasOpenJavaOhPe) {
             // Implement beta testing credits here
             // CURRETLY THIS BLOCKS GRADE IMPROVING FOR THIS COURSE!
-            logger.info(`Beta credit needed for: ${registration.onro}`)
             return matches
           }
         }

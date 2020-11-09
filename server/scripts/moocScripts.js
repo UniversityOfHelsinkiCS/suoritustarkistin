@@ -170,6 +170,36 @@ const processOhPePython = () => {
   )
 }
 
+const processOhPePythonSyksy = () => {
+  const timestamp = now()
+  logger.info(
+    `${timestamp.toLocaleString()} Processing new OhPePython completions.`
+  )
+  processMoocCompletions(
+    'AYTKT10002',
+    'Avoin yo: Ohjelmoinnin perusteet',
+    '5,0',
+    process.env.OHPE_TEACHERCODE,
+    'fi',
+    'python-s20'
+  )
+}
+
+const processOhPeEnglish = () => {
+  const timestamp = now()
+  logger.info(
+    `${timestamp.toLocaleString()} Processing new OhPeEnglish completions.`
+  )
+  processMoocCompletions(
+    'AYBSCS1001en',
+    'Open uni: Introduction to Programming',
+    '5,0',
+    process.env.OHPE_TEACHERCODE,
+    'en',
+    'java-programming-i'
+  )
+}
+
 const processOhJa = () => {
   const timestamp = now()
   logger.info(`${timestamp.toLocaleString()} Processing new OhJa completions.`)
@@ -208,5 +238,7 @@ module.exports = {
   processOhPe,
   processOhJa,
   processOhPePython,
+  processOhPeEnglish,
+  processOhPePythonSyksy,
   processTiTo
 }

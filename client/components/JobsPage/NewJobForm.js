@@ -1,19 +1,11 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import {
-  Form,
-  Checkbox,
-  Input,
-  Button,
-  Popup,
-  Segment
-} from 'semantic-ui-react'
+import { Form, Checkbox, Input, Button, Segment } from 'semantic-ui-react'
 import { addJobAction } from 'Utilities/redux/jobsReducer'
 import { isValidJob, isValidSchedule } from 'Root/utils/validators'
 
 export default ({ close }) => {
   const dispatch = useDispatch()
-  const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
   const [data, setData] = useState({ active: false })
 
@@ -23,8 +15,6 @@ export default ({ close }) => {
     setData({ active: true })
     close()
   }
-
-  // IS GRADER EVEN NEEDED? COURSES ALREADY HAVE A GRADER!
 
   return (
     <Segment style={{ width: '50em' }}>
@@ -38,9 +28,8 @@ export default ({ close }) => {
           value={data.schedule || ''}
           onChange={(e) => setData({ ...data, schedule: e.target.value })}
           error={false}
-          icon={data.name ? 'check' : 'times'}
+          icon={isValidSchedule(data.schedule) ? 'check' : 'times'}
         />
-
         <Form.Dropdown
           data-cy="add-job-course"
           selection
@@ -49,38 +38,32 @@ export default ({ close }) => {
           options={courses.map((course) => ({
             key: course.id,
             value: course.id,
-            text: `${course.name} (${course.courseCode})`
+            text: `${course.name} (${course.courseCode})`,
           }))}
           value={data.courseId || ''}
           onChange={(e, d) => setData({ ...data, courseId: d.value })}
         />
-        <Popup
-          trigger={
-            <Form.Field
-              control={Checkbox}
-              label="Email identification"
-              checked={data.isMooc}
-              onChange={(e, d) => {
-                setData({ ...data, isMooc: d.checked })
-              }}
-            />
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content="Enables creating reports with student email addresses instead of student numbers. Requires MOOC-bit to be set in Open university systems."
+        <Form.Field
+          control={Input}
+          label="Grader"
+          value={data.course.grader || ''}
+          error={false}
         />
-        <Popup
-          trigger={
-            <Form.Field
-              control={Checkbox}
-              label="Combined (TKT + AYTKT) course"
-              checked={data.autoSeparate}
-              onChange={(e, d) => setData({ ...data, autoSeparate: d.checked })}
-            />
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content="Enables automatic detection of HY and Open university students when both courses are held simultaneously. Requires MOOC-bit to be set in Open university systems."
+        <Form.Field
+          data-cy="add-job-slug"
+          required={false}
+          control={Input}
+          label="Mooc API slug"
+          value={data.slug || ''}
+          onChange={(e) => setData({ ...data, slug: e.target.value })}
+          error={false}
+        />
+        <Form.Field
+          data-cy="add-job-active"
+          control={Checkbox}
+          label="Active"
+          checked={data.active}
+          onChange={(e, d) => setData({ ...data, active: d.checked })}
         />
         <Form.Group>
           <Form.Field
@@ -94,7 +77,7 @@ export default ({ close }) => {
             positive
             control={Button}
             content="Add Course"
-            disabled={!isValidCourse(data)}
+            disabled={!isValidJob(data)}
             onClick={handleSubmit}
           />
         </Form.Group>

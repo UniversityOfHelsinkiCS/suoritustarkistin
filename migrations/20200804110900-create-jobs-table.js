@@ -16,19 +16,14 @@ module.exports = {
         },
         onDelete: 'SET NULL',
       },
-      userId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'users',
-          key: 'id',
-        },
-        onDelete: 'SET NULL',
-      },
       schedule: {
         type: Sequelize.STRING,
       },
       active: {
         type: Sequelize.BOOLEAN,
+      },
+      slug: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

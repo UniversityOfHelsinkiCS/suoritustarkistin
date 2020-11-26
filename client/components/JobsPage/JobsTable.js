@@ -19,8 +19,11 @@ export default () => {
           <Grid.Column width={3}>
             <Header as="h4">Course name</Header>
           </Grid.Column>
-          <Grid.Column width={3}>
+          <Grid.Column width={2}>
             <Header as="h4">Grader</Header>
+          </Grid.Column>
+          <Grid.Column width={1}>
+            <Header as="h4">Slug</Header>
           </Grid.Column>
           <Grid.Column width={1}>
             <Header as="h4">Active</Header>

@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
       completionId: DataTypes.STRING,
       isInOodikone: DataTypes.BOOLEAN,
       reportId: DataTypes.INTEGER,
-      grade: DataTypes.STRING
+      grade: DataTypes.STRING,
+      tier: DataTypes.INTEGER
     },
     {}
   )

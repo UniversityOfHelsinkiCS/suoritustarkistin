@@ -5,8 +5,6 @@ const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
-const { isValidGrade } = require('../../utils/validators')
-const hasOodiEntry = require('../services/oodikone')
 
 const languageCodes = {
   en: '6',
@@ -14,16 +12,10 @@ const languageCodes = {
   sv: '2'
 }
 
-const isKorotus = (previousGrades, grade) => {
-  if (!isValidGrade(grade)) return false
-  const validGrades = ['Hyl.', 'Hyv.', '1', '2', '3', '4', '5']
-  const betterOrSame = previousGrades.filter(
-    (previousGrade) =>
-      (validGrades.indexOf(previousGrade) || 0) >=
-      (validGrades.indexOf(grade) || 0)
-  )
-
-  return betterOrSame.length === 0
+const isTierUpgrade = (previousTiers, completion) => {
+  if (!completion.tier || completion.tier === 1) return false
+  if (previousTiers.includes(completion.tier)) return false
+  return true
 }
 
 const getOodiDate = (date) => {
@@ -33,7 +25,7 @@ const getOodiDate = (date) => {
 const processMoocCompletions = async (
   courseCode,
   courseName,
-  creditAmount,
+  tierCreditAmount,
   teacherCode,
   language,
   slug
@@ -47,36 +39,20 @@ const processMoocCompletions = async (
     })
 
     const registrations = await getRegistrations(courseCode)
-    const completions = await getCompletions(slug || courseCode)
+    const completions = await getCompletions(slug)
 
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
-        const previousGrades = credits
+        const previousTiers = credits
           .filter(
             (credit) =>
               credit.completionId === completion.id ||
               credit.moocId === completion.user_upstream_id
           )
-          .map((credit) => credit.grade)
+          .map((credit) => credit.tier)
 
-        if (completion.grade) {
-          if (!isValidGrade(completion.grade)) {
-            logger.error(`Invalid grade: ${completion.grade}`)
-            return matches
-          }
-
-          if (
-            previousGrades.length > 0 &&
-            !isKorotus(previousGrades, completion.grade)
-          ) {
-            return matches
-          }
-        }
-
-        if (!completion.grade && previousGrades.length > 0) {
-          return matches
-        }
+        if (!isTierUpgrade(previousTiers, completion)) return matches
 
         const registration = registrations.find(
           (registration) =>
@@ -84,20 +60,6 @@ const processMoocCompletions = async (
               completion.email.toLowerCase() ||
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
-
-        if (registration && registration.onro && slug === 'python-kesa-20') {
-          const hasJavaOhPe = await hasOodiEntry(registration.onro, 'TKT10002')
-          const hasOpenJavaOhPe = await hasOodiEntry(
-            registration.onro,
-            'AYTKT10002'
-          )
-
-          if (hasJavaOhPe || hasOpenJavaOhPe) {
-            // Implement beta testing credits here
-            // CURRETLY THIS BLOCKS GRADE IMPROVING FOR THIS COURSE!
-            return matches
-          }
-        }
 
         if (registration && registration.onro) {
           return matches.concat({
@@ -108,7 +70,8 @@ const processMoocCompletions = async (
             isInOodikone: false,
             completionLanguage: completion.completion_language,
             grade: completion.grade || 'Hyv.',
-            completionDate: completion.completion_date
+            completionDate: completion.completion_date,
+            tier: completion.tier
           })
         } else {
           return matches
@@ -130,7 +93,9 @@ const processMoocCompletions = async (
           languageCodes[language] || '6'
         }#${courseCode}#${courseName}#${getOodiDate(completionDate)}#0#${
           match.grade
-        }#106##${teacherCode}#2#H930#11#93013#3##${creditAmount}`
+        }#106##${teacherCode}#2#H930#11#93013#3##${
+          tierCreditAmount[match.tier]
+        }`
       })
       .join('\n')
 

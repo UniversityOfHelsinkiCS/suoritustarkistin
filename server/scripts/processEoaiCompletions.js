@@ -1,8 +1,14 @@
+const moment = require('moment')
+
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getEoAICompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
+
+const getOodiDate = (date) => {
+  return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
+}
 
 const processEoaiCompletions = async (courses) => {
   try {
@@ -44,7 +50,8 @@ const processEoaiCompletions = async (courses) => {
           moocId: completion.user_upstream_id,
           completionId: completion.id,
           isInOodikone: false,
-          completionLanguage: completion.completion_language
+          completionLanguage: completion.completion_language,
+          completionDate: completion.completion_date
         })
       } else {
         return matches
@@ -54,8 +61,6 @@ const processEoaiCompletions = async (courses) => {
     logger.info(`${courses[0]}xx: Found ${matches.length} new completions.`)
 
     const date = new Date()
-    const dateString = `${date.getDate()}.${date.getMonth() +
-      1}.${date.getFullYear()}`
 
     const courseStrings = {
       en_US: '##6#AYTKT21018#The Elements of AI#',
@@ -66,9 +71,12 @@ const processEoaiCompletions = async (courses) => {
 
     const report = matches
       .map((match) => {
+        const completionDate = match.completionDate
+          ? new Date(match.completionDate)
+          : date
         return `${match.studentId}${
           courseStrings[match.completionLanguage]
-        }${dateString}#0#Hyv.#106##${
+        }${getOodiDate(completionDate)}#0#Hyv.#106##${
           process.env.TEACHERCODE
         }#2#H930#11#93013#3##2,0`
       })
@@ -76,7 +84,9 @@ const processEoaiCompletions = async (courses) => {
 
     if (matches.length) {
       const dbReport = await db.reports.create({
-        fileName: `${courses[0]}%${dateString}-V1-S2019.dat`,
+        fileName: `${courses[0]}%${moment().format(
+          'DD.MM.YY-HHmmss'
+        )}-AUTOMATIC.dat`,
         data: report
       })
 

@@ -18,14 +18,22 @@ const { initializeDatabaseConnection } = require('./database/connection')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
 const {
   processEoai,
+  processBuildingai,
   processCybsec1,
   processCybsec2,
   processCybsec3,
+  processCybsec1_2020,
+  processCybsec2_2020,
+  processCybsec3_2020,
   processCybsec4,
   processCybsec5,
   processCybsec6,
   processOhPe,
-  processOhJa
+  processOhJa,
+  processOhPePython,
+  processOhPePythonSyksy,
+  processOhPeEnglish,
+  processTiTo
 } = require('./scripts/moocScripts')
 const createCronJobs = require('./scripts/cronjobs')
 
@@ -84,6 +92,10 @@ initializeDatabaseConnection()
       processEoai()
     }
 
+    if (process.argv[2] && process.argv[2] === 'buildingai') {
+      processBuildingai()
+    }
+
     if (process.argv[2] && process.argv[2] === 'checkoodi') {
       const timestamp = now()
       logger.info(
@@ -104,6 +116,18 @@ initializeDatabaseConnection()
       processCybsec3()
     }
 
+    if (process.argv[2] && process.argv[2] === 'cybsec1_2020') {
+      processCybsec1_2020()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'cybsec2_2020') {
+      processCybsec2_2020()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'cybsec3_2020') {
+      processCybsec3_2020()
+    }
+
     if (process.argv[2] && process.argv[2] === 'cybsec4') {
       processCybsec4()
     }
@@ -120,8 +144,23 @@ initializeDatabaseConnection()
       processOhPe()
     }
 
+    if (process.argv[2] && process.argv[2] === 'ohpepython') {
+      processOhPePython()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'ohpepythonsyksy') {
+      processOhPePythonSyksy()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'ohpeenglish') {
+      processOhPeEnglish()
+    }
+
     if (process.argv[2] && process.argv[2] === 'ohja') {
       processOhJa()
+    }
+    if (process.argv[2] && process.argv[2] === 'tito') {
+      processTiTo()
     }
 
     createCronJobs()
@@ -151,6 +190,30 @@ initializeDatabaseConnection()
         processCybsec3()
       })
 
+      cron.schedule('10 5 * * 4', () => {
+        processCybsec1_2020()
+      })
+
+      cron.schedule('15 5 * * 4', () => {
+        processCybsec2_2020()
+      })
+
+      cron.schedule('20 5 * * 4', () => {
+        processCybsec3_2020()
+      })
+
+      cron.schedule('25 5 * * 4', () => {
+        processOhPePythonSyksy()
+      })
+
+      cron.schedule('30 5 * * 4', () => {
+        processOhPeEnglish()
+      })
+
+      cron.schedule('35 5 * * 4', () => {
+        processBuildingai()
+      })
+
       cron.schedule('45 4 * * 4', () => {
         processCybsec4()
       })
@@ -161,6 +224,14 @@ initializeDatabaseConnection()
 
       cron.schedule('55 4 * * 4', () => {
         processCybsec6()
+      })
+
+      cron.schedule('0 5 * * 4', () => {
+        processOhPePython()
+      })
+
+      cron.schedule('5 5 * * 4', () => {
+        processTiTo()
       })
 
       cron.schedule('0 3 * * 5', () => {

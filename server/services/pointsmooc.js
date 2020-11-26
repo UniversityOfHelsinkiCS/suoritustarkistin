@@ -43,6 +43,7 @@ const getCompletions = async (course) => {
       user_upstream_id
       grade
       completion_date
+      tier
     }
   }
   `

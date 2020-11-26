@@ -19,6 +19,7 @@ const { initializeDatabaseConnection } = require('./database/connection')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
 const {
   processEoai,
+  processBuildingai,
   processCybsec1,
   processCybsec2,
   processCybsec3,
@@ -92,6 +93,10 @@ initializeDatabaseConnection()
 
     if (process.argv[2] && process.argv[2] === 'eoai') {
       processEoai()
+    }
+
+    if (process.argv[2] && process.argv[2] === 'buildingai') {
+      processBuildingai()
     }
 
     if (process.argv[2] && process.argv[2] === 'checkoodi') {
@@ -204,6 +209,10 @@ initializeDatabaseConnection()
 
       cron.schedule('30 5 * * 4', () => {
         processOhPeEnglish()
+      })
+
+      cron.schedule('35 5 * * 4', () => {
+        processBuildingai()
       })
 
       cron.schedule('45 4 * * 4', () => {

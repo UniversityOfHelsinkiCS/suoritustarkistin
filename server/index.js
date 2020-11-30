@@ -35,7 +35,7 @@ const {
   processOhPeEnglish,
   processTiTo
 } = require('./scripts/moocScripts')
-const createCronJobs = require('./scripts/cronjobs')
+const { initializeCronJobs } = require('./scripts/cronjobs')
 
 initializeDatabaseConnection()
   .then(() => {
@@ -85,6 +85,8 @@ initializeDatabaseConnection()
       app.use(express.static(DIST_PATH))
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
     }
+
+    initializeCronJobs()
 
     const now = () => new Date(Date.now())
 
@@ -162,8 +164,6 @@ initializeDatabaseConnection()
     if (process.argv[2] && process.argv[2] === 'tito') {
       processTiTo()
     }
-
-    createCronJobs()
 
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {
       cron.schedule('0 4 * * 4', () => {

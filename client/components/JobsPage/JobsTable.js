@@ -22,13 +22,13 @@ export default () => {
           <Grid.Column width={2}>
             <Header as="h4">Grader</Header>
           </Grid.Column>
-          <Grid.Column width={1}>
+          <Grid.Column width={2}>
             <Header as="h4">Slug</Header>
           </Grid.Column>
           <Grid.Column width={1}>
             <Header as="h4">Active</Header>
           </Grid.Column>
-          <Grid.Column width={3}>
+          <Grid.Column width={4}>
             <Header as="h4">Actions</Header>
           </Grid.Column>
         </Grid.Row>

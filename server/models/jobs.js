@@ -7,12 +7,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         references: {
           model: 'courses',
-          key: 'id',
-        },
+          key: 'id'
+        }
       },
       schedule: DataTypes.STRING,
       active: DataTypes.BOOLEAN,
-      slug: DataTypes.STRING,
+      slug: DataTypes.STRING
     },
     {}
   )

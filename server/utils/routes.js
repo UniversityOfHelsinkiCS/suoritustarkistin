@@ -78,7 +78,7 @@ router.get('/reports', checkAdmin, getReports)
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)
 router.put('/jobs/:id', checkAdmin, editJob)
+router.post('/jobs/:id', checkAdmin, runJob)
 router.delete('/jobs/:id', checkAdmin, deleteJob)
-router.post('jobs/:id', checkAdmin, runJob)
 
 module.exports = router

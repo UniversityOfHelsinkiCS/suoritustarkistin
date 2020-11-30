@@ -27,6 +27,12 @@ export const deleteJobAction = (id) => {
   return callBuilder(route, prefix, 'delete')
 }
 
+export const runJobAction = (id) => {
+  const route = `/jobs/${id}`
+  const prefix = 'RUN_JOB'
+  return callBuilder(route, prefix, 'post')
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [] }, action) => {

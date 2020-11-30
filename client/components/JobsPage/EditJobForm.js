@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Form, Checkbox, Input, Button, Segment } from 'semantic-ui-react'
-import { addJobAction } from 'Utilities/redux/jobsReducer'
+import { editJobAction } from 'Utilities/redux/jobsReducer'
 import { isValidJob, isValidSchedule } from 'Root/utils/validators'
 
-export default ({ close }) => {
+export default ({ job, close }) => {
   const dispatch = useDispatch()
   const courses = useSelector((state) => state.courses.data)
   const graders = useSelector((state) => state.graders.data)
-  const [data, setData] = useState({ active: false })
+  const [data, setData] = useState(job || { active: false })
 
   const findGraderName = () => {
     if (!data.courseId) return null
@@ -19,16 +19,15 @@ export default ({ close }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    dispatch(addJobAction(data))
-    setData({ active: true })
+    dispatch(editJobAction(data))
     close()
   }
 
   return (
-    <Segment style={{ width: '50em' }}>
+    <Segment>
       <Form width={4}>
         <Form.Field
-          data-cy="add-job-schedule"
+          data-cy="edit-job-schedule"
           required={true}
           control={Input}
           label="Cron schedule"
@@ -39,7 +38,7 @@ export default ({ close }) => {
           icon={isValidSchedule(data.schedule) ? 'check' : 'times'}
         />
         <Form.Dropdown
-          data-cy="add-job-course"
+          data-cy="edit-job-course"
           selection
           required={true}
           label="Course"
@@ -52,13 +51,13 @@ export default ({ close }) => {
           onChange={(e, d) => setData({ ...data, courseId: d.value })}
         />
         <Form.Field
-          data-cy="add-job-grader"
+          data-cy="edit-job-grader"
           control={Input}
           label="Grader"
           value={findGraderName()}
         />
         <Form.Field
-          data-cy="add-job-slug"
+          data-cy="edit-job-slug"
           required={false}
           control={Input}
           label="Mooc API slug"
@@ -67,7 +66,7 @@ export default ({ close }) => {
           error={false}
         />
         <Form.Field
-          data-cy="add-job-active"
+          data-cy="edit-job-active"
           control={Checkbox}
           label="Active"
           checked={data.active}
@@ -81,10 +80,10 @@ export default ({ close }) => {
             onClick={() => close()}
           />
           <Form.Field
-            data-cy="add-job-confirm"
+            data-cy="edit-job-confirm"
             positive
             control={Button}
-            content="Add Cronjob"
+            content="Save"
             disabled={!isValidJob(data)}
             onClick={handleSubmit}
           />

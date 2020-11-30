@@ -1,14 +1,15 @@
-import React, { useState, useSelector } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Button, Grid, Icon } from 'semantic-ui-react'
-import { deleteJobAction } from 'Utilities/redux/jobsReducer'
-import EditCourse from 'Components/CoursesPage/EditCourse'
+import { deleteJobAction, runJobAction } from 'Utilities/redux/jobsReducer'
+import EditJob from 'Components/JobsPage/EditJob'
 
 export default ({ job }) => {
   const dispatch = useDispatch()
   const [really, setReally] = useState(false)
-  const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
+  const graders = useSelector((state) => state.graders.data)
+
   const course = courses ? courses.find((c) => c.id === job.courseId) : null
 
   const getCourseName = () => {
@@ -36,6 +37,14 @@ export default ({ job }) => {
     />
   )
 
+  const RunButton = () => (
+    <Button
+      onClick={() => dispatch(runJobAction(job.id))}
+      content="Run"
+      color="yellow"
+    />
+  )
+
   const Confirm = () => (
     <Button.Group>
       <Button
@@ -57,12 +66,17 @@ export default ({ job }) => {
       <Grid.Column width={2}>{getCourseCode()}</Grid.Column>
       <Grid.Column width={3}>{getCourseName()}</Grid.Column>
       <Grid.Column width={2}>{getGraderName()}</Grid.Column>
-      <Grid.Column width={1}>{job.slug}</Grid.Column>
+      <Grid.Column width={2}>{job.slug}</Grid.Column>
       <Grid.Column textAlign="center" width={1}>
-        {job.active ? <Icon name="check" color="green" size="large" /> : null}
+        {job.active ? (
+          <Icon name="check" color="green" size="large" />
+        ) : (
+          <Icon name="close" color="red" size="large" />
+        )}
       </Grid.Column>
-      <Grid.Column width={3}>
-        <EditCourse course={job} />
+      <Grid.Column width={4}>
+        <EditJob job={job} />
+        <RunButton />
         {really ? <Confirm /> : <DeleteButton />}
       </Grid.Column>
     </Grid.Row>

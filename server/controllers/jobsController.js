@@ -1,5 +1,6 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
+const { manualRun, activateJob, deactivateJob } = require('../scripts/cronjobs')
 const { isValidJob } = require('@root/utils/validators')
 
 const getJobs = async (req, res) => {
@@ -20,6 +21,7 @@ const addJob = async (req, res) => {
       return res.status(400).json({ error: 'Malformed cronjob data.' })
 
     const newJob = await db.jobs.create(job)
+    if (newJob.active) await activateJob(newJob.id)
     res.status(200).json(newJob)
   } catch (e) {
     logger.error(e.message)
@@ -38,7 +40,12 @@ const editJob = async (req, res) => {
       returning: true,
       where: { id: req.params.id }
     })
-    if (rows) return res.status(200).json(updatedJob)
+    if (rows) {
+      updatedJob.active
+        ? activateJob(updatedJob.id)
+        : deactivateJob(updatedJob.id)
+      return res.status(200).json(updatedJob)
+    }
     return res.status(400).json({ error: 'id not found.' })
   } catch (e) {
     logger.error(e.message)
@@ -48,8 +55,8 @@ const editJob = async (req, res) => {
 
 const runJob = async (req, res) => {
   try {
-    logger.info(`Manual trigger for course ${req.params.id}`)
-    res.status(200)
+    await manualRun(req.params.id)
+    return res.status(200).json({ id: req.params.id })
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
@@ -63,6 +70,7 @@ const deleteAllJobs = async (req, res) => {
 
 const deleteJob = async (req, res) => {
   await db.jobs.destroy({ where: { id: req.params.id } })
+  await deactivateJob(req.params.id)
   return res.status(200).json({ id: req.params.id })
 }
 

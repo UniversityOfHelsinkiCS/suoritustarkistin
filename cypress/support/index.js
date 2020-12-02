@@ -18,3 +18,8 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// Skip unwanted setHeaders-calls when running tests:
+beforeEach(() => {
+  localStorage.setItem("runningCypressTests","true")
+})

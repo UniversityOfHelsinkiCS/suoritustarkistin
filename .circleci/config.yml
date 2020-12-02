@@ -9,7 +9,10 @@ executors:
         environment:
           NODE_ENV: test
           SUOTAR_TOKEN: token
-      - image: 'circleci/postgres:10.6-ram'
+      - image: 'circleci/postgres:11-ram'
+        environment:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
 workflows:
   build-test-deploy:
     jobs:

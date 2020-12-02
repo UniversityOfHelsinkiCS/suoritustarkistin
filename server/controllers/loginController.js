@@ -7,7 +7,7 @@ const login = async (req, res) => {
   } else {
     res
       .status(401)
-      .json({ error: 'This service is for employees only.' })
+      .json({ error: 'This service is for employees only.', errorCode: 1})
       .end()
   }
 }

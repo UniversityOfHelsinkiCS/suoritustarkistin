@@ -1,0 +1,28 @@
+version: '3.5'
+
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: config/dev.Dockerfile
+    image: suotar_dev
+    volumes:
+      - ./:/usr/src/app
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - SUOTAR_TOKEN=token
+    ports:
+      - 8000:8000
+    container_name: suotar_dev
+  db:
+    image: postgres:11
+    container_name: suotar_db
+    environment:
+      - PGDATA=/data
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pg_data:/data
+    container_name: suotar_db
+
+volumes:
+  pg_data:

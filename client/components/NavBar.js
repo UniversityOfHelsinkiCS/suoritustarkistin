@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Menu, Header } from 'semantic-ui-react'
+import { Menu, Header, Label } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   logoutAction,
@@ -8,6 +8,7 @@ import {
 } from 'Utilities/redux/userReducer'
 import { images } from 'Utilities/common'
 import { Link } from 'react-router-dom'
+import FakeShibboMenu from './fakeShibboMenu'
 
 export default () => {
   const [activeItem, setActiveItem] = useState('newReport')
@@ -72,6 +73,36 @@ export default () => {
     )
   }
 
+  const JobsButton = () => {
+    return (
+      <Menu.Item
+        data-cy="nav-jobs"
+        as={Link}
+        to={'/jobs'}
+        name="cronjobs"
+        active={activeItem === 'cronjobs'}
+        onClick={handleItemClick}
+      >
+        Cronjobs
+      </Menu.Item>
+    )
+  }
+
+  const handleUnhijack = () => {
+    window.localStorage.removeItem('adminLoggedInAs')
+    window.location.reload()
+  }
+
+  const unHijackButton = () => {
+    return (
+      <Menu.Item data-cy="sign-in-as" onClick={handleUnhijack}>
+        <Label color="green" horizontal>
+          Unhijack
+        </Label>
+      </Menu.Item>
+    )
+  }
+
   if (!user) return null
   return (
     <Menu stackable size="huge" fluid>
@@ -85,6 +116,7 @@ export default () => {
       </Menu.Item>
 
       <Menu.Item
+        disabled={!user.isAdmin && !user.isGrader}
         position="right"
         as={Link}
         to={'/'}
@@ -96,6 +128,7 @@ export default () => {
       </Menu.Item>
 
       <Menu.Item
+        disabled={!user.isAdmin && !user.isGrader}
         data-cy="nav-reports"
         as={Link}
         to={'/reports'}
@@ -107,7 +140,14 @@ export default () => {
       </Menu.Item>
       {user.adminMode ? <CoursesButton /> : null}
       {user.adminMode ? <UsersButton /> : null}
+      {user.adminMode ? <JobsButton /> : null}
       {user.isAdmin ? getAdminButton() : null}
+
+      {window.localStorage.getItem('adminLoggedInAs') ? (
+        unHijackButton()
+      ) : (
+        <FakeShibboMenu />
+      )}
       <Menu.Item data-cy="nav-logout" name="log-out" onClick={handleLogout}>
         Log out
       </Menu.Item>

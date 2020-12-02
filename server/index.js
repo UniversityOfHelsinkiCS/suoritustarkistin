@@ -11,8 +11,7 @@ const {
   inDevelopment,
   SHIBBOLETH_HEADERS
 } = require('@utils/common')
-const { fakeShibbo } = require('./utils/fakeshibbo')
-const { requestLogger, parseUser } = require('./utils/middleware')
+const { requestLogger, parseUser, currentUser } = require('./utils/middleware')
 const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
@@ -36,6 +35,7 @@ const {
   processOhPeEnglish,
   processTiTo
 } = require('./scripts/moocScripts')
+const { initializeCronJobs } = require('./scripts/cronjobs')
 
 initializeDatabaseConnection()
   .then(() => {
@@ -59,11 +59,8 @@ initializeDatabaseConnection()
       app.use(devMiddleware)
       app.use(hotMiddleWare(compiler))
 
-      if (process.argv[2] && process.argv[2] === 'fakeshibbo') {
-        logger.info('Using fakeshibbo headers.')
-        app.use(fakeShibbo)
-      }
       app.use(parseUser)
+      app.use(currentUser)
       app.use(requestLogger)
       app.use('/api', routes)
 
@@ -88,6 +85,8 @@ initializeDatabaseConnection()
       app.use(express.static(DIST_PATH))
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
     }
+
+    initializeCronJobs()
 
     const now = () => new Date(Date.now())
 

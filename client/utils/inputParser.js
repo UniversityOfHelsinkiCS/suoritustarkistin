@@ -1,3 +1,4 @@
+import * as CSV from 'csv-string'
 import { isValidStudentId, isValidEmailAddress } from 'Root/utils/validators'
 
 const markDuplicates = (data) => {
@@ -27,13 +28,13 @@ export const parseCSV = (string) => {
 
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
-    const splitRow = row.split(';')
+    const splitRow = row.split(CSV.detect(row))
     return {
       studentId: addLeadingZero(splitRow[0]),
       grade: splitRow[1],
       credits: splitRow[2],
       language: splitRow[3],
-      completionDate: splitRow[4]
+      completionDate: splitRow[4] ? splitRow[4].trim() : undefined
     }
   })
   return markDuplicates(data)

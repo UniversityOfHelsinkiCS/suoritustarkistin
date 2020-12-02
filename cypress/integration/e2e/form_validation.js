@@ -1,4 +1,6 @@
-describe('Validation prevents submission of invalid data', function() {
+/// <reference types="Cypress" />
+
+describe('Form validation', function() {
   beforeEach(function() {
     cy.server({
       onAnyRequest: (route, proxy) => {
@@ -41,90 +43,133 @@ describe('Validation prevents submission of invalid data', function() {
     cy.visit('')
   })
 
-  it('when pasted data is invalid', () => {
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=pastefield]').type(
-      '010000002;7;2,2;se\n011000002;;2,0\n011100009\n011110002;;;fi',
-      { delay: 1 }
-    )
-    cy.get('[data-cy=dateField]')
-      .children()
-      .clear()
-      .type('5.7.2019')
-
-    cy.get('[data-cy=graderSelection]')
-      .click()
-      .children()
-      .contains('testimaikka')
-      .click()
-
-    cy.get('[data-cy=courseSelection]')
-      .click()
-      .children()
-      .contains('avoimen kurssi (AYTKTTEST)')
-      .click()
-
-    cy.get('[data-cy=sendButton]').should('be.disabled')
+  describe("Validation prevents submission of invalid data", () => {
+    it('when pasted data is invalid', () => {
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+      cy.get('[data-cy=pastefield]').type(
+        '010000002;7;2,2;se\n011000002;;2,0\n011100009\n011110002;;;fi',
+        { delay: 1 }
+      )
+      cy.get('[data-cy=dateField]')
+        .children()
+        .clear()
+        .type('5.7.2019')
+  
+      cy.get('[data-cy=graderSelection]')
+        .click()
+        .children()
+        .contains('testimaikka')
+        .click()
+  
+      cy.get('[data-cy=courseSelection]')
+        .click()
+        .children()
+        .contains('avoimen kurssi (AYTKTTEST)')
+        .click()
+  
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+    })
+  
+    it('when there are missing fields', () => {
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+  
+      // missing course
+      cy.get('[data-cy=pastefield]').type(
+        '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
+        { delay: 1 }
+      )
+      cy.get('[data-cy=dateField]')
+        .children()
+        .clear()
+        .type('5.7.2019')
+  
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+      cy.get('[data-cy=graderSelection]')
+        .click()
+        .children()
+        .contains('testimaikka')
+        .click()
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+      cy.get('[data-cy=courseSelection]')
+        .click()
+        .children()
+        .contains('tkt:n kurssi (TKTTEST)')
+        .click()
+      cy.get('[data-cy=sendButton]').should('not.be.disabled')
+  
+      // missing data
+      cy.get('[data-cy=pastefield]').clear()
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+      cy.get('[data-cy=pastefield]').type(
+        '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
+        { delay: 1 }
+      )
+      cy.get('[data-cy=sendButton]').should('not.be.disabled')
+  
+      // missing date
+      cy.get('[data-cy=dateField]')
+        .children()
+        .clear()
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+      cy.get('[data-cy=dateField]')
+        .children()
+        .clear()
+        .type('5.7.2019')
+      cy.get('[data-cy=sendButton]').should('not.be.disabled')
+    })
+  
+    it('when uploaded data is invalid', () => {
+      cy.get('[data-cy=sendButton]').should('be.disabled')
+      cy.get('[data-cy=dragdrop]').click()
+      cy.fixture('invalid.csv').then((content) => {
+        cy.get('[data-cy=dropzone]').upload(content, 'invalid.csv')
+      })
+      cy.get('[data-cy=dateField]')
+        .children()
+        .clear()
+        .type('5.7.2019')
+      cy.get('[data-cy=graderSelection]')
+        .click()
+        .children()
+        .contains('testimaikka')
+        .click()
+  
+      cy.get('[data-cy=courseSelection]')
+        .click()
+        .children()
+        .contains('tkt:n kurssi (TKTTEST)')
+        .click()
+    })
   })
 
-  it('when there are missing fields', () => {
-    cy.get('[data-cy=sendButton]').should('be.disabled')
+  describe("Separator is detected automatically", () => {
+    const testSeparator = (data) => {
+      cy.get('[data-cy=sendButton]').should("be.disabled")
+      cy.get('[data-cy=pastefield]').type(data, { delay: 1 })
+      cy.get('[data-cy=sendButton]').should("be.enabled")
+      cy.get('[data-cy=pastefield]').clear()
+    }
 
-    // missing course
-    cy.get('[data-cy=pastefield]').type(
-      '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
-      { delay: 1 }
-    )
-    cy.get('[data-cy=dateField]')
-      .children()
-      .clear()
-      .type('5.7.2019')
-
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=graderSelection]')
-      .click()
-      .children()
-      .contains('testimaikka')
-      .click()
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=courseSelection]')
+    beforeEach(() => {
+      cy.get('[data-cy=courseSelection]')
       .click()
       .children()
       .contains('tkt:n kurssi (TKTTEST)')
       .click()
-    cy.get('[data-cy=sendButton]').should('not.be.disabled')
+    })
 
-    // missing data
-    cy.get('[data-cy=pastefield]').clear()
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=pastefield]').type(
-      '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
-      { delay: 1 }
-    )
-    cy.get('[data-cy=sendButton]').should('not.be.disabled')
-
-    // missing date
-    cy.get('[data-cy=dateField]')
-      .children()
-      .clear()
-    cy.get('[data-cy=sendButton]').should('be.disabled')
-    cy.get('[data-cy=dateField]')
-      .children()
-      .clear()
-      .type('5.7.2019')
-    cy.get('[data-cy=sendButton]').should('not.be.disabled')
+    it("(;) Semicolon", () => testSeparator("010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi"))
+    it("(|) Vertical line", () => testSeparator("010000003|2|5|fi\n011000002||2,0\n011100009\n011110002|||fi"))
+    it("(\\t) Tab ", () => testSeparator("010000003\t2\t5\tfi\n011000002\t\t2,0\n011100009\n011110002\t\t\tfi"))
   })
 
-  it('when uploaded data is invalid', () => {
+  it('passes when uploaded csv contains dates', () => {
     cy.get('[data-cy=sendButton]').should('be.disabled')
     cy.get('[data-cy=dragdrop]').click()
-    cy.fixture('invalid.csv').then((content) => {
-      cy.get('[data-cy=dropzone]').upload(content, 'invalid.csv')
+    cy.fixture('valid-with-dates.csv').then((content) => {
+      cy.get('[data-cy=dropzone]').upload(content, 'valid-with-dates.csv')
     })
-    cy.get('[data-cy=dateField]')
-      .children()
-      .clear()
-      .type('5.7.2019')
+    
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()
@@ -136,5 +181,12 @@ describe('Validation prevents submission of invalid data', function() {
       .children()
       .contains('tkt:n kurssi (TKTTEST)')
       .click()
-  })
+
+    cy.contains("1.3.2020")
+    cy.contains("1.4.2020")
+    cy.contains("2.5.2020")
+
+    cy.get('[data-cy=sendButton]').should('be.enabled')
+  }) 
+  
 })

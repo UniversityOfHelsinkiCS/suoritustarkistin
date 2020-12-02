@@ -4,28 +4,18 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = {
   development: {
-    username: process.env.PGUSERNAME,
-    password: process.env.PGPASSWORD,
-    database: 'postgres',
-    host: process.env.PGHOST,
+    database_url: process.env.DATABASE_URL,
     dialect: 'postgres',
-    port: process.env.PGPORT,
     logging: false
   },
   test: {
+    database_url: 'postgres://postgres:postgres@localhost/circle_test',
     username: 'postgres',
-    password: '',
-    database: 'circle_test',
-    host: '127.0.0.1',
     dialect: 'postgres'
   },
   production: {
-    username: process.env.PGUSERNAME,
-    password: process.env.PGPASSWORD,
-    database: 'suoritustarkistin_production',
-    host: process.env.PGHOST,
+    database_url: process.env.DATABASE_URL,
     dialect: 'postgres',
-    port: process.env.PGPORT,
     logging: false
   }
 }

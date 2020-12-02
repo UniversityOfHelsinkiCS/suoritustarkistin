@@ -25,6 +25,14 @@ const {
   deleteAllReports
 } = require('@controllers/reportController')
 const {
+  addJob,
+  getJobs,
+  editJob,
+  runJob,
+  deleteJob,
+  deleteAllJobs
+} = require('@controllers/jobsController')
+const {
   getCourseRegistrations
 } = require('@controllers/registrationController')
 const { login, logout } = require('@controllers/loginController')
@@ -43,6 +51,7 @@ router.post('/users', notInProduction, addUser)
 router.delete('/users', notInProduction, deleteAllUsers)
 router.get('/reports/list', notInProduction, getReportList)
 router.delete('/reports', notInProduction, deleteAllReports)
+router.delete('/jobs', notInProduction, deleteAllJobs)
 
 // Production routes
 router.post('/login', login)
@@ -65,5 +74,11 @@ router.get('/reports/undownloaded', checkSuotarToken, getNewReportList)
 router.get('/reports/:id', checkSuotarToken, getSingleReport)
 router.post('/reports', addReport)
 router.get('/reports', checkAdmin, getReports)
+
+router.get('/jobs', checkAdmin, getJobs)
+router.post('/jobs', checkAdmin, addJob)
+router.put('/jobs/:id', checkAdmin, editJob)
+router.post('/jobs/:id', checkAdmin, runJob)
+router.delete('/jobs/:id', checkAdmin, deleteJob)
 
 module.exports = router

@@ -2,10 +2,24 @@ const { GraphQLClient } = require('graphql-request')
 const logger = require('@utils/logger')
 const axios = require('axios')
 
-const courseNames = {
-  AYTKT21018: 'elements-of-ai',
-  AYTKT21018fi: 'elements-of-ai',
-  AYTKT21018sv: 'elements-of-ai'
+const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
+  headers: {
+    Authorization: process.env.MOOC_TOKEN
+  }
+})
+
+const getCompletions = async (course) => {
+  if (course.includes('AYTKT21018')) return await getCompletionsFromRest() // Elements of AI completions list is too large for GraphQL
+  return await getCompletionsFromGraphQL(course)
+}
+
+const getCompletionsFromRest = async () => {
+  const { data } = await axios.get(process.env.EOAI_URL, {
+    headers: {
+      Authorization: process.env.MOOC_TOKEN
+    }
+  })
+  return data
 }
 
 const getEoAICompletions = async () => {
@@ -16,23 +30,8 @@ const getEoAICompletions = async () => {
   })
   return data
 }
-const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
-  headers: {
-    Authorization: process.env.MOOC_TOKEN
-  }
-})
 
-const getMultipleCourseCompletions = async (courses) => {
-  const uniqueCourseNames = [...new Set(courses.map((c) => courseNames[c]))]
-  let completionData = []
-  for (const n of uniqueCourseNames) {
-    completionData = await completionData.concat(await getCompletions(n))
-  }
-
-  return completionData
-}
-
-const getCompletions = async (course) => {
+const getCompletionsFromGraphQL = async (course) => {
   const completionsQuery = `
   {
     completions (course: "${course}") {
@@ -73,7 +72,6 @@ const postRegistrations = async (completionAndStudentIdList) => {
 }
 
 module.exports = {
-  getMultipleCourseCompletions,
   getCompletions,
   postRegistrations,
   getEoAICompletions

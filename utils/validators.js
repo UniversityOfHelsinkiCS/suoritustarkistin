@@ -1,3 +1,5 @@
+const cron = require('node-cron')
+
 const LANGUAGES = {
   fi: 1,
   sv: 2,
@@ -83,6 +85,16 @@ const isValidReport = (report) => {
   return true
 }
 
+const isValidJob = (job) => {
+  if (!isValidSchedule(job.schedule)) return false
+  if (!job.courseId) return false
+  return true
+}
+
+const isValidSchedule = (schedule) => {
+  return cron.validate(schedule)
+}
+
 module.exports = {
   isValidStudentId,
   isValidOodiDate,
@@ -94,5 +106,7 @@ module.exports = {
   isValidCourse,
   isValidHYCourseCode,
   isValidOpenCourseCode,
-  isValidCourseCode
+  isValidCourseCode,
+  isValidJob,
+  isValidSchedule
 }

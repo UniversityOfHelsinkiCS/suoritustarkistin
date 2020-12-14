@@ -24,7 +24,7 @@ export default () => {
       : dispatch(activateAdminModeAction())
   }
 
-  const handleItemClick = (e, { name }) => setActiveItem(name)
+  const handleItemClick = (e, { name }) => name === "logo" ? setActiveItem('') : setActiveItem(name)
 
   const getAdminButton = () => {
     return user.adminMode ? (
@@ -106,7 +106,13 @@ export default () => {
   if (!user) return null
   return (
     <Menu stackable size="huge" fluid>
-      <Menu.Item style={{ fontSize: 'xx-large', padding: '0.5em' }}>
+      <Menu.Item 
+        style={{ fontSize: 'xx-large', padding: '0.5em' }}
+        as={Link}
+        to={'/'}
+        name="logo"
+        onClick={handleItemClick}
+      >
         <img
           src={images.toska_color}
           style={{ marginRight: '1em' }}

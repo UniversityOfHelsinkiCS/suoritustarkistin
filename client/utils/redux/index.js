@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 
 import user from './userReducer'
 import reports from './reportsReducer'
+import sisReports from './sisReportsReducer'
 import courses from './coursesReducer'
 import graders from './gradersReducer'
 import registrations from './registrationsReducer'
@@ -13,6 +14,7 @@ import jobs from './jobsReducer'
 export default combineReducers({
   user,
   reports,
+  sisReports,
   courses,
   graders,
   registrations,

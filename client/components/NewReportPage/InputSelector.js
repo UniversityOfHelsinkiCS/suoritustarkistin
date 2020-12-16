@@ -3,6 +3,7 @@ import { Tab, Menu, Icon } from 'semantic-ui-react'
 import { useSelector } from 'react-redux'
 import Dropzone from 'Components/NewReportPage/Dropzone'
 import InputOptions from 'Components/NewReportPage/InputOptions'
+import SisInputOptions from 'Components/NewReportPage/SisInputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
 import SisTextInput from 'Components/NewReportPage/SisTextInput'
 
@@ -49,6 +50,7 @@ export default () => {
       render: () => (
         <Tab.Pane>
           <SisTextInput />
+          <SisInputOptions />
         </Tab.Pane>
       )
     }

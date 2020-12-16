@@ -17,7 +17,7 @@ export const sisSetNewReportAction = (report) => {
 
 export const sisSendNewReportAction = (report) => {
   const route = `/sis_reports`
-  const prefix = 'POST_REPORT'
+  const prefix = 'SIS_POST_REPORT'
   return callBuilder(route, prefix, 'post', {
     ...report,
     rawData: undefined,

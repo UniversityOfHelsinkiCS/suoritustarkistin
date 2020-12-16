@@ -8,7 +8,7 @@ const initialState = {
   rawData: '',
   data: null, 
   courseId: null,
-  date: moment().format('D.M.YYYY')
+  date: new Date()
 }
 
 export const setNewRawEntriesAction = (rawEntries) => {

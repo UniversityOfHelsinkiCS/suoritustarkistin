@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Select, Input } from 'semantic-ui-react'
+import { Select } from 'semantic-ui-react'
+import DatePicker from 'react-datepicker'
 import SisSendButton from 'Components/NewReportPage/SisSendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import {
@@ -30,6 +31,7 @@ const formatCoursesForSelection = (data) =>
 
 export default () => {
   const dispatch = useDispatch()
+  const [showingDate, setShowingDate] = useState(new Date())
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
@@ -45,12 +47,13 @@ export default () => {
     }
   }, [user])
 
-  const handleDateChange = (event) => {
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, date: event.target.value }))
-  }
-
   const handleGraderSelection = (e, data) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, graderEmployeeId: data.value }))
+  }
+
+  const handleDateSelection = (date) => {
+    setShowingDate(date)
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, date }))
   }
 
   const handleCourseSelection = (e, data) => {
@@ -83,12 +86,12 @@ export default () => {
         value={newRawEntries.courseId}
         options={formatCoursesForSelection(courses)}
       />
-      <Input
-        data-cy="dateField"
-        type="text"
-        onChange={handleDateChange}
-        value={newRawEntries.date}
-        placeholder="dd.mm.yyyy"
+      <DatePicker
+        style={{ height: "10px"}}
+        dateFormat="dd.MM.yyyy"
+        placeholderText="Set date for completions"
+        selected={showingDate}
+        onChange={(date) => handleDateSelection(date)}
       />
       <SisSendButton />
     </div>

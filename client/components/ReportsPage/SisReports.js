@@ -2,8 +2,8 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Accordion, Table } from 'semantic-ui-react'
 
-const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
-const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
+const SentToSis = () => <div style={{ color: 'green' }}>SENT TO SIS</div>
+const NotSentToSis = () => <div style={{ color: 'red' }}>NOT SENT TO SIS</div>
 
 const reportTable = (report) => {
   const TableBody = () => {
@@ -77,7 +77,7 @@ const title = (report) => {
         0,
         2
       )}:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
-      {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
+      {report.lastDownloaded ? <SentToSis /> : <NotSentToSis />}
     </Accordion.Title>
   )
 }

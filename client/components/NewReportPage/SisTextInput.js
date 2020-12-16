@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import { TextArea, Form } from 'semantic-ui-react'
-import { parseCSV } from 'Utilities/inputParser'
+import { parseCSV } from 'Utilities/sisInputParser'
 
 const textAreaStyle = {
   padding: '20px'
@@ -11,6 +11,7 @@ const textAreaStyle = {
 export default () => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
+  const courses = useSelector((state) => state.courses.data)
 
   const handleDataChange = (event) => {
     const rawData = event.target.value
@@ -23,7 +24,7 @@ export default () => {
         })
       )
     } else {
-      const data = parseCSV(rawData.trim())
+      const data = parseCSV(rawData.trim(), newRawEntries, courses)
       dispatch(
         setNewRawEntriesAction({
           ...newRawEntries,

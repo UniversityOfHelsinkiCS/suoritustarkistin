@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { sendNewRawEntries } from 'Utilities/redux/sisNewRawEntriesReducer'
-import { isValidReport } from 'Root/utils/validators'
+import { sisAreValidNewRawEntries } from 'Root/utils/validators'
 
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
@@ -41,14 +41,14 @@ export default () => {
             data-cy="sendButton"
             onClick={sendRawEntries}
             disabled={
-              newRawEntries.sending || !isValidReport(parseRawEntries(newRawEntries))
+              newRawEntries.sending || !sisAreValidNewRawEntries(parseRawEntries(newRawEntries))
             }
             content="Send report"
           />
         </span>
       }
       content="Report contains validation errors, see table below."
-      disabled={!newRawEntries.data || isValidReport(parseRawEntries(newRawEntries))}
+      disabled={!newRawEntries.data || sisAreValidNewRawEntries(parseRawEntries(newRawEntries))}
       style={{ color: 'red' }}
     />
   )

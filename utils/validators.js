@@ -85,6 +85,32 @@ const isValidReport = (report) => {
   return true
 }
 
+const sisIsValidRow = (row) => {
+  if (row.duplicate) return false
+  if (!isValidStudentId(row.studentId)) return false
+  if (row.grade && !isValidGrade(row.grade)) return false
+  if (row.credits && !isValidCreditAmount(row.credits)) return false
+  if (row.language && !isValidLanguage(row.language)) return false
+  if (row.completionDate && !isValidOodiDate(row.completionDate)) return false
+  return true
+}
+
+const sisAreValidNewRawEntries = (rawEntries) => {
+  if (!rawEntries) return false
+  if (!rawEntries.graderEmployeeId || !rawEntries.courseId) return false
+  if (!rawEntries.data) return false
+
+  let allRowsValid = true
+  rawEntries.data.forEach((row) => {
+    if (!sisIsValidRow(row)) {
+      allRowsValid = false
+    }
+  })
+  if (!allRowsValid) return false
+  return true
+}
+
+
 const isValidJob = (job) => {
   if (!isValidSchedule(job.schedule)) return false
   if (!job.courseId) return false
@@ -103,6 +129,7 @@ module.exports = {
   isValidLanguage,
   isValidEmailAddress,
   isValidReport,
+  sisAreValidNewRawEntries,
   isValidCourse,
   isValidHYCourseCode,
   isValidOpenCourseCode,

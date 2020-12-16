@@ -20,7 +20,7 @@ const fakeReport = [
     graderId:25,
     reporterId:25,
     createdAt:"2020-12-12T09:12:05.356Z",
-    updatedAt:"2020-12-12T09:12:05.356Z",
+    updatedAt:"2020-12-12T09:12:05.356Z"
   }
 ]
 

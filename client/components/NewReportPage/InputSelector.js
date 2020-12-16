@@ -2,7 +2,9 @@ import React from 'react'
 import { Tab, Menu, Icon } from 'semantic-ui-react'
 import { useSelector } from 'react-redux'
 import Dropzone from 'Components/NewReportPage/Dropzone'
+import InputOptions from 'Components/NewReportPage/InputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
+import SisTextInput from 'Components/NewReportPage/SisTextInput'
 
 export default () => {
   const user = useSelector((state) => state.user.data)
@@ -18,6 +20,7 @@ export default () => {
       render: () => (
         <Tab.Pane>
           <TextInput />
+          <InputOptions />
         </Tab.Pane>
       )
     },
@@ -31,6 +34,7 @@ export default () => {
       render: () => (
         <Tab.Pane>
           <Dropzone />
+          <InputOptions />
         </Tab.Pane>
       )
     },
@@ -44,7 +48,7 @@ export default () => {
       ),
       render: () => (
         <Tab.Pane>
-          <TextInput />
+          <SisTextInput />
         </Tab.Pane>
       )
     }

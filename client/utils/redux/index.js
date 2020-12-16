@@ -7,6 +7,7 @@ import courses from './coursesReducer'
 import graders from './gradersReducer'
 import registrations from './registrationsReducer'
 import newReport from './newReportReducer'
+import sisNewReport from './sisNewReportReducer'
 import message from './messageReducer'
 import users from './usersReducer'
 import jobs from './jobsReducer'
@@ -19,6 +20,7 @@ export default combineReducers({
   graders,
   registrations,
   newReport,
+  sisNewReport,
   message,
   users,
   jobs

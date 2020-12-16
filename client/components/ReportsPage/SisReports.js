@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Accordion, Table } from 'semantic-ui-react'
+import SendToSisButton from './SendToSisButton'
 
 const SentToSis = () => <div style={{ color: 'green' }}>SENT TO SIS</div>
 const NotSentToSis = () => <div style={{ color: 'red' }}>NOT SENT TO SIS</div>
@@ -32,6 +33,7 @@ const reportTable = (report) => {
 
   return (
     <Accordion.Content>
+      <SendToSisButton />
       <Table celled striped structured>
         <Table.Header>
           <Table.Row>

@@ -1,12 +1,9 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-
 import { Accordion, Table } from 'semantic-ui-react'
 
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
 const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
-
-const LANGUAGES = { 1: 'fi', 2: 'sv', 6: 'en' }
 
 const reportTable = (report) => {
   const TableBody = () => {
@@ -16,13 +13,16 @@ const reportTable = (report) => {
           const line = rawLine.split('#')
           return (
             <Table.Row key={`row-${index}`}>
-              <Table.Cell>{line[3]}</Table.Cell>
-              <Table.Cell>{line[4]}</Table.Cell>
               <Table.Cell>{line[0]}</Table.Cell>
-              <Table.Cell>{line[7]}</Table.Cell>
-              <Table.Cell>{line[17]}</Table.Cell>
-              <Table.Cell>{LANGUAGES[line[2]]}</Table.Cell>
+              <Table.Cell>{line[1]}</Table.Cell>
+              <Table.Cell>{line[2]}</Table.Cell>
+              <Table.Cell style={{ borderLeft: "2px solid gray" }}>{line[3]}</Table.Cell>
+              <Table.Cell>{line[4]}</Table.Cell>
               <Table.Cell>{line[5]}</Table.Cell>
+              <Table.Cell>{line[6]}</Table.Cell>
+              <Table.Cell>{line[7]}</Table.Cell>
+              <Table.Cell>{line[8]}</Table.Cell>
+              <Table.Cell>{line[9]}</Table.Cell>
             </Table.Row>
           )
         })}
@@ -32,16 +32,34 @@ const reportTable = (report) => {
 
   return (
     <Accordion.Content>
-      <Table celled striped>
+      <Table celled striped structured>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell colSpan='3'>Basics</Table.HeaderCell>
+            <Table.HeaderCell 
+              colSpan='7'
+              style={{ borderLeft: "2px solid gray" }}
+            >
+              Going to SIS
+            </Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Course code</Table.HeaderCell>
             <Table.HeaderCell>Course name</Table.HeaderCell>
             <Table.HeaderCell>Student number</Table.HeaderCell>
-            <Table.HeaderCell>Grade</Table.HeaderCell>
-            <Table.HeaderCell>Credits</Table.HeaderCell>
-            <Table.HeaderCell>Language</Table.HeaderCell>
+            <Table.HeaderCell
+              style={{ borderLeft: "2px solid gray" }}
+            >
+              Student ID
+            </Table.HeaderCell>
+            <Table.HeaderCell>Empoyee ID</Table.HeaderCell>
+            <Table.HeaderCell>Course ID</Table.HeaderCell>
+            <Table.HeaderCell>Course instance ID</Table.HeaderCell>
             <Table.HeaderCell>Completion date</Table.HeaderCell>
+            <Table.HeaderCell>Language</Table.HeaderCell>
+            <Table.HeaderCell>Grade</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <TableBody />

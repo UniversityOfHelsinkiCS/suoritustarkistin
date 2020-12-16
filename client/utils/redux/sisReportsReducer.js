@@ -4,18 +4,19 @@ import callBuilder from '../apiConnection'
  */
 
 export const sisGetAllReportsAction = () => {
-  const route = '/sisReports'
+  const route = '/sis_reports'
   const prefix = 'SIS_GET_ALL_REPORTS'
   return callBuilder(route, prefix, 'get')
 }
 
-const fakeData = '010000003##1#SISTEST#SIS:iin lähtevä kurssi#14.12.2020#0#2#106##321#2#H523#####5,0'
+const fakeAdditional ='TKT12345#SIS-kurssin nimi#014000000'
+const fakeSisData = '#hy-hlo-12345678#hy-hlo-9876543#hy-CUR-123456789#hy-AI-1234567#2020-12-02#fi#5,0'
 
 const fakeReport = [
   {
     id:1,
     fileName:"SISTEST%14.12.20-103241_MANUAL.dat",
-    data:fakeData,
+    data: fakeAdditional + fakeSisData,
     lastDownloaded:null,
     graderId:25,
     reporterId:25,

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Select, Input } from 'semantic-ui-react'
 import SisSendButton from 'Components/NewReportPage/SisSendButton.js'
-import { sisSetNewReportAction } from 'Utilities/redux/sisNewReportReducer'
+import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import {
   getCoursesRegistrationsAction,
   clearRegistrationsAction
@@ -30,7 +30,7 @@ const formatCoursesForSelection = (data) =>
 
 export default () => {
   const dispatch = useDispatch()
-  const sisNewReport = useSelector((state) => state.sisNewReport)
+  const newRawEntries = useSelector((state) => state.newRawEntries)
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
@@ -46,21 +46,21 @@ export default () => {
   }, [user])
 
   const handleDateChange = (event) => {
-    dispatch(sisSetNewReportAction({ ...sisNewReport, date: event.target.value }))
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, date: event.target.value }))
   }
 
   const handleGraderSelection = (e, data) => {
-    dispatch(sisSetNewReportAction({ ...sisNewReport, graderEmployeeId: data.value }))
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, graderEmployeeId: data.value }))
   }
 
   const handleCourseSelection = (e, data) => {
     const courseId = data.value
     const course = courses.find((course) => course.id === courseId)
     if (course.isMooc || course.autoSeparate) {
-      dispatch(sisSetNewReportAction({ ...sisNewReport, courseId }))
+      dispatch(setNewRawEntriesAction({ ...newRawEntries, courseId }))
       dispatch(getCoursesRegistrationsAction(courseId))
     } else {
-      dispatch(sisSetNewReportAction({ ...sisNewReport, courseId }))
+      dispatch(setNewRawEntriesAction({ ...newRawEntries, courseId }))
       dispatch(clearRegistrationsAction())
     }
   }
@@ -72,7 +72,7 @@ export default () => {
         data-cy="graderSelection"
         placeholder="Choose grader"
         onChange={handleGraderSelection}
-        value={sisNewReport.graderEmployeeId}
+        value={newRawEntries.graderEmployeeId}
         options={findGradersForSelection(graders)}
       />
       <Select
@@ -80,14 +80,14 @@ export default () => {
         data-cy="courseSelection"
         onChange={handleCourseSelection}
         placeholder="Choose course"
-        value={sisNewReport.courseId}
+        value={newRawEntries.courseId}
         options={formatCoursesForSelection(courses)}
       />
       <Input
         data-cy="dateField"
         type="text"
         onChange={handleDateChange}
-        value={sisNewReport.date}
+        value={newRawEntries.date}
         placeholder="dd.mm.yyyy"
       />
       <SisSendButton />

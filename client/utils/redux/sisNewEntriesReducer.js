@@ -11,15 +11,15 @@ const initialState = {
   date: moment().format('D.M.YYYY')
 }
 
-export const sisSetNewReportAction = (report) => {
-  return { type: 'SIS_SET_NEW_REPORT', payload: report }
+export const setNewEntriesAction = (entries) => {
+  return { type: 'SIS_SET_NEW_ENTRIES', payload: entries }
 }
 
-export const sisSendNewReportAction = (report) => {
-  const route = `/sis_reports`
-  const prefix = 'SIS_POST_REPORT'
+export const sendNewEntriesAction = (entries) => {
+  const route = `/sis_entries`
+  const prefix = 'POST_ENTRIES'
   return callBuilder(route, prefix, 'post', {
-    ...report,
+    ...entries,
     rawData: undefined,
     sending: undefined
   })
@@ -29,14 +29,14 @@ export const sisSendNewReportAction = (report) => {
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'SIS_SET_NEW_REPORT':
+    case 'SIS_SET_NEW_ENTRIES':
       return action.payload
-    case 'SIS_POST_REPORT_ATTEMPT':
+    case 'SIS_POST_ENTRIES_ATTEMPT':
       return {
         ...state,
         sending: true
       }
-    case 'SIS_POST_REPORT_SUCCESS':
+    case 'SIS_POST_ENTRIES_SUCCESS':
       return {
         ...state,
         data: null,
@@ -45,7 +45,7 @@ export default (state = initialState, action) => {
         sending: false,
         rawData: ''
       }
-    case 'SIS_POST_REPORT_FAILURE':
+    case 'SIS_POST_ENTRIES_FAILURE':
       return {
         ...state,
         sending: false

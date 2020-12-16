@@ -1,15 +1,15 @@
 import React from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { sisSendNewReportAction } from 'Utilities/redux/sisNewReportReducer'
+import { sendNewRawEntries } from 'Utilities/redux/sisNewRawEntriesReducer'
 import { isValidReport } from 'Root/utils/validators'
 
-const parseReport = (report) => {
-  if (!report.data) return report
+const parseRawEntries = (rawEntries) => {
+  if (!rawEntries.data) return rawEntries
 
   return {
-    ...report,
-    data: report.data.map((row) => {
+    ...rawEntries,
+    data: rawEntries.data.map((row) => {
       if (row.registration) {
         return {
           ...row,
@@ -26,10 +26,10 @@ const parseReport = (report) => {
 
 export default () => {
   const dispatch = useDispatch()
-  const sisNewReport = useSelector((state) => state.sisNewReport)
+  const newRawEntries = useSelector((state) => state.newRawEntries)
 
-  const sendReport = () => {
-    dispatch(sisSendNewReportAction(parseReport(sisNewReport)))
+  const sendRawEntries = () => {
+    dispatch(sendNewRawEntries(parseRawEntries(newRawEntries)))
   }
 
   return (
@@ -39,16 +39,16 @@ export default () => {
           <Button
             positive
             data-cy="sendButton"
-            onClick={sendReport}
+            onClick={sendRawEntries}
             disabled={
-              sisNewReport.sending || !isValidReport(parseReport(sisNewReport))
+              newRawEntries.sending || !isValidReport(parseRawEntries(newRawEntries))
             }
             content="Send report"
           />
         </span>
       }
       content="Report contains validation errors, see table below."
-      disabled={!sisNewReport.data || isValidReport(parseReport(sisNewReport))}
+      disabled={!newRawEntries.data || isValidReport(parseRawEntries(newRawEntries))}
       style={{ color: 'red' }}
     />
   )

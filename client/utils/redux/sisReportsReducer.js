@@ -9,14 +9,14 @@ export const sisGetAllReportsAction = () => {
   return callBuilder(route, prefix, 'get')
 }
 
-const fakeAdditional ='TKT12345#SIS-kurssin nimi#014000000'
-const fakeSisData = '#hy-hlo-12345678#hy-hlo-9876543#hy-CUR-123456789#hy-AI-1234567#2020-12-02#fi#5,0'
+const fakeRawEntryData ='TKT12345#SIS-kurssin nimi#014000000'
+const fakeAcualEntryData = '#hy-hlo-12345678#hy-hlo-9876543#hy-CUR-123456789#hy-AI-1234567#2020-12-02#fi#5,0'
 
 const fakeReport = [
   {
     id:1,
     fileName:"SISTEST%14.12.20-103241_MANUAL.dat",
-    data: fakeAdditional + fakeSisData,
+    data: fakeRawEntryData + fakeAcualEntryData,
     lastDownloaded:null,
     graderId:25,
     reporterId:25,

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { sisSetNewReportAction } from 'Utilities/redux/sisNewReportReducer'
+import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import { TextArea, Form } from 'semantic-ui-react'
 import { parseCSV } from 'Utilities/inputParser'
 
@@ -10,14 +10,14 @@ const textAreaStyle = {
 
 export default () => {
   const dispatch = useDispatch()
-  const sisNewReport = useSelector((state) => state.sisNewReport)
+  const newRawEntries = useSelector((state) => state.newRawEntries)
 
   const handleDataChange = (event) => {
     const rawData = event.target.value
     if (rawData === '') {
       dispatch(
-        sisSetNewReportAction({
-          ...sisNewReport,
+        setNewRawEntriesAction({
+          ...newRawEntries,
           data: null,
           rawData
         })
@@ -25,8 +25,8 @@ export default () => {
     } else {
       const data = parseCSV(rawData.trim())
       dispatch(
-        sisSetNewReportAction({
-          ...sisNewReport,
+        setNewRawEntriesAction({
+          ...newRawEntries,
           data,
           rawData
         })
@@ -39,9 +39,9 @@ export default () => {
       <TextArea
         data-cy="pastefield"
         onChange={handleDataChange}
-        placeholder="Liitä suoritustiedot tähän ylläolevan ohjeen mukaan formatoituna."
+        placeholder="Add the course completion information, formatted as in the instructions above."
         rows={10}
-        value={sisNewReport.rawData}
+        value={newRawEntries.rawData}
         style={textAreaStyle}
       />
     </Form>

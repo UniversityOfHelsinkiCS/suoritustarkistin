@@ -26,10 +26,7 @@ const {
 } = require('@controllers/reportController')
 const {
   addRawEntries,
-  getAllRawEntries,
-  getUsersRawEntries,
-  getSingleRawEntry,
-  deleteRawEntry
+  getAllRawEntries
 } = require('@controllers/sisRawEntryController')
 const {
   addJob,
@@ -75,7 +72,6 @@ router.get('/users/graders', checkAdmin, getGraders)
 router.put('/users/:id', checkAdmin, editUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
 router.get('/users/:id/reports', checkIdMatch, getUsersReports)
-router.get('/users/:id/raw_entries', checkIdMatch, getUsersRawEntries)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
 router.get('/reports/undownloaded', checkSuotarToken, getNewReportList)
@@ -83,10 +79,8 @@ router.get('/reports/:id', checkSuotarToken, getSingleReport)
 router.post('/reports', addReport)
 router.get('/reports', checkAdmin, getReports)
 
-router.get('/sis_raw_entries', checkSuotarToken, getAllRawEntries)
-router.get('/sis_raw_entries/:id', checkSuotarToken, getSingleRawEntry)
-router.post('/sis_raw_entries', addRawEntries)
-router.delete('/sis_raw_entries/:id', deleteRawEntry )
+router.get('/sis_raw_entries', checkAdmin, getAllRawEntries)
+router.post('/sis_raw_entries', checkAdmin, addRawEntries)
 
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)

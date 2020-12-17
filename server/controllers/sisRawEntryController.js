@@ -51,6 +51,7 @@ const getAllRawEntries = async (req, res) => {
   }
 }
 
+/* TO BE TESTED AND WORKED ON
 const getUsersRawEntries = async (req, res) => {
   try {
     const rawEntries = await db.raw_entries.findAll({
@@ -100,11 +101,8 @@ const deleteRawEntry = async (req, res) => {
     handleDatabaseError(res, error)
   }
 }
-
+*/
 module.exports = {
   addRawEntries,
-  getAllRawEntries,
-  getUsersRawEntries,
-  getSingleRawEntry,
-  deleteRawEntry
+  getAllRawEntries
 }

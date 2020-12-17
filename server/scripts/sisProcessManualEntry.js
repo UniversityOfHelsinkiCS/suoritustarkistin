@@ -58,13 +58,15 @@ const processManualEntry = async ({
 
   if (!grader) throw new Error('Grader employee id does not exist.')
 
+  const batchId = `${course.courseCode}%${moment().format(
+    'DD.MM.YY-HHmmss'
+  )}`
+
   for (const entry of data) {
     validateEntry(entry)
     const entryObject = {
       studentNumber: entry.studentId,
-      batchId: `${course.courseCode}%${moment().format(
-        'DD.MM.YY-HHmmss'
-      )}`,
+      batchId: batchId,
       grade: entry.grade ? entry.grade : 'Hyv.',
       credits: entry.credits ? entry.credits : course.credits,
       language: entry.language ? entry.language : course.language,

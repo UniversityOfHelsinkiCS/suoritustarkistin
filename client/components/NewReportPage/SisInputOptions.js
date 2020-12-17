@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Select } from 'semantic-ui-react'
 import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import SisSendButton from 'Components/NewReportPage/SisSendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import {

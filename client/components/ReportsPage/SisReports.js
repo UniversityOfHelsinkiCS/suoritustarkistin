@@ -1,4 +1,5 @@
 import React from 'react'
+import * as _ from 'lodash'
 import { useSelector } from 'react-redux'
 import { Accordion, Table } from 'semantic-ui-react'
 import SendToSisButton from './SendToSisButton'
@@ -6,24 +7,25 @@ import SendToSisButton from './SendToSisButton'
 const SentToSis = () => <div style={{ color: 'green' }}>SENT TO SIS</div>
 const NotSentToSis = () => <div style={{ color: 'red' }}>NOT SENT TO SIS</div>
 
-const reportTable = (report) => {
+const reportTable = (report, course) => {
   const TableBody = () => {
     return (
       <Table.Body>
-        {report.data.split('\n').map((rawLine, index) => {
-          const line = rawLine.split('#')
+        {report.map((entry, index) => {
           return (
             <Table.Row key={`row-${index}`}>
-              <Table.Cell>{line[0]}</Table.Cell>
-              <Table.Cell>{line[1]}</Table.Cell>
-              <Table.Cell>{line[2]}</Table.Cell>
-              <Table.Cell style={{ borderLeft: "2px solid gray" }}>{line[3]}</Table.Cell>
-              <Table.Cell>{line[4]}</Table.Cell>
-              <Table.Cell>{line[5]}</Table.Cell>
-              <Table.Cell>{line[6]}</Table.Cell>
-              <Table.Cell>{line[7]}</Table.Cell>
-              <Table.Cell>{line[8]}</Table.Cell>
-              <Table.Cell>{line[9]}</Table.Cell>
+              <Table.Cell>{course.name}</Table.Cell>
+              <Table.Cell>{course.courseCode}</Table.Cell>
+              <Table.Cell>{entry.studentNumber}</Table.Cell>
+              <Table.Cell style={{ borderLeft: "2px solid gray" }}>
+                To be filled with SIS-data
+              </Table.Cell>
+              <Table.Cell>To be filled with SIS-data</Table.Cell>
+              <Table.Cell>To be filled with SIS-data</Table.Cell>
+              <Table.Cell>To be filled with SIS-data</Table.Cell>
+              <Table.Cell>To be filled with SIS-data</Table.Cell>
+              <Table.Cell>To be filled with SIS-data</Table.Cell>
+              <Table.Cell>To be filled with SIS-data</Table.Cell>
             </Table.Row>
           )
         })}
@@ -70,34 +72,40 @@ const reportTable = (report) => {
   )
 }
 
-const title = (report) => {
-  const fileName = report.fileName.split('%')
-  const timestamp = fileName[1].split('-')
+const title = (batch) => {
+  const reportName = batch[0].batchId.split('%')
+  const timestamp = reportName[1].split('-')
+  const indicationWhetherSentToSis = false
   return (
     <Accordion.Title>
-      {`${fileName[0]} - ${timestamp[0]} - ${timestamp[1].substring(
+      {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(
         0,
         2
       )}:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
-      {report.lastDownloaded ? <SentToSis /> : <NotSentToSis />}
+    {indicationWhetherSentToSis ? <SentToSis /> : <NotSentToSis />}
     </Accordion.Title>
   )
 }
 
 export default () => {
   const reports = useSelector((state) => state.sisReports)
+  const courses = useSelector((state) => state.courses.data)
 
+  
   if (reports.pending) return <div>LOADING!</div>
 
   const manualReports = reports.data.filter((report) => report.reporterId) // filter out EoAI reports.
-
   if (manualReports.length === 0) return <div>NO REPORTS FOUND.</div>
 
-  const panels = manualReports.map((r, i) => {
+  const course = courses.find((c) => manualReports[0].course === c.id)
+
+  const batchedReports = Object.values(_.groupBy(manualReports, 'batchId'))
+
+  const panels = batchedReports.map((r, i) => {
     return {
       key: `panel-${i}`,
       title: title(r),
-      content: reportTable(r)
+      content: reportTable(r, course)
     }
   })
 

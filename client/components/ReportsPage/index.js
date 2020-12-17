@@ -9,6 +9,7 @@ import {
 } from 'Utilities/redux/reportsReducer'
 import { sisGetAllReportsAction } from 'Utilities/redux/sisReportsReducer'
 import { Menu, Icon, Tab } from 'semantic-ui-react'
+import { getAllCoursesAction } from '../../utils/redux/coursesReducer'
 
 export default () => {
   const dispatch = useDispatch()
@@ -20,6 +21,7 @@ export default () => {
     if (user.adminMode) {
       dispatch(getAllReportsAction())
       dispatch(sisGetAllReportsAction())
+      dispatch(getAllCoursesAction())
     } else {
       dispatch(getUsersReportsAction(user.id))
     }
@@ -90,7 +92,7 @@ export default () => {
           <SisReports
             reports={{
               ...sisReports,
-              data: sisReports.data.filter((report) => !report.reporterId)
+              data: sisReports.data.filter((report) => report.reporterId)
             }}
           />
         </Tab.Pane>

@@ -20,9 +20,15 @@ const markDuplicates = (data) => {
   )
 }
 
-export const parseCSV = (string, newRawEntries, courses) => {
-  const { courseId, graderEmployeeId, date } = newRawEntries
-  const course = courses.find((c) => c.id === courseId)
+const formatDate = (date) => {
+  if (!date) return undefined
+  if (typeof(date) === Date) return date
+  const parts = date.split('.')
+  const newDay = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
+  return newDay
+}
+
+export const parseCSV = (string) => {
 
   const addLeadingZero = (studentnumber) => {
     if (isValidStudentId(`0${studentnumber}`)) return `0${studentnumber}`
@@ -32,15 +38,15 @@ export const parseCSV = (string, newRawEntries, courses) => {
   const data = rows.map((row) => {
     const splitRow = row.split(CSV.detect(row))
     return {
-      studentNumber: addLeadingZero(splitRow[0]),
-      batchId: courseId + date,
-      grade: splitRow[1] ? splitRow[1] : 'Hyv.',
-      credits: splitRow[2] ? splitRow[2] : course.credits,
-      language: splitRow[3] ? splitRow[3] : course.language,
-      attainmentDate: date,
-      graderId: course.graderId,
-      reporterId: graderEmployeeId,
-      course: courseId
+      studentId: addLeadingZero(splitRow[0]),
+      batchId: '',
+      grade: splitRow[1],
+      credits: splitRow[2],
+      language: splitRow[3],
+      attainmentDate: formatDate(splitRow[4]),
+      graderId: '',
+      reporterId: '',
+      course: ''
     }
   })
   return markDuplicates(data)

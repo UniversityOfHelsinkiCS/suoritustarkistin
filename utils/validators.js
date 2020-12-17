@@ -91,7 +91,7 @@ const sisIsValidRow = (row) => {
   if (row.grade && !isValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
   if (row.language && !isValidLanguage(row.language)) return false
-  if (row.completionDate && !isValidOodiDate(row.completionDate)) return false
+  if (row.attainmentDate && !isValidOodiDate(row.completionDate)) return false
   return true
 }
 

@@ -1,6 +1,4 @@
 import { attachRegistrations, stripRegistrations } from 'Utilities/inputParser'
-const moment = require('moment')
-
 import callBuilder from '../apiConnection'
 
 
@@ -41,7 +39,6 @@ export default (state = initialState, action) => {
         ...state,
         data: null,
         courseId: null,
-        date: moment().format('D.M.YYYY'),
         sending: false,
         rawData: ''
       }
@@ -63,9 +60,8 @@ export default (state = initialState, action) => {
     case 'SIS_LOGIN_SUCCESS':
       return {
         courseId: null,
-        graderEmployeeId: action.response.employeeId,
+        graderId: action.response.employeeId,
         data: null,
-        date: moment().format('D.M.YYYY'),
         sending: false,
         rawData: ''
       }

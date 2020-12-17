@@ -48,7 +48,7 @@ export default () => {
   }, [user])
 
   const handleGraderSelection = (e, data) => {
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, graderEmployeeId: data.value }))
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, graderId: data.value }))
   }
 
   const handleDateSelection = (date) => {
@@ -75,7 +75,7 @@ export default () => {
         data-cy="graderSelection"
         placeholder="Choose grader"
         onChange={handleGraderSelection}
-        value={newRawEntries.graderEmployeeId}
+        value={newRawEntries.graderId}
         options={findGradersForSelection(graders)}
       />
       <Select

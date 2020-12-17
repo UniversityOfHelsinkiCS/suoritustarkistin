@@ -44,6 +44,26 @@ module.exports = {
             key: 'id'
         }
       },
+      rawEntryId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'raw_entries',
+          key: 'id'
+        },
+        onDelete: 'SET NULL'
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      errors: {
+        type: Sequelize.JSONB
+      }
     })
   },
   down: (queryInterface, Sequelize) => {

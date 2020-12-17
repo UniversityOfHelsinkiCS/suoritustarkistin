@@ -6,6 +6,8 @@ import InputOptions from 'Components/NewReportPage/InputOptions'
 import SisInputOptions from 'Components/NewReportPage/SisInputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
 import SisTextInput from 'Components/NewReportPage/SisTextInput'
+import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
+import SisReportDisplay from 'Components/NewReportPage/SisReportDisplay'
 
 export default () => {
   const user = useSelector((state) => state.user.data)
@@ -22,6 +24,7 @@ export default () => {
         <Tab.Pane>
           <TextInput />
           <InputOptions />
+          <ReportDisplay />
         </Tab.Pane>
       )
     },
@@ -36,6 +39,7 @@ export default () => {
         <Tab.Pane>
           <Dropzone />
           <InputOptions />
+          <ReportDisplay />
         </Tab.Pane>
       )
     },
@@ -51,6 +55,7 @@ export default () => {
         <Tab.Pane>
           <SisTextInput />
           <SisInputOptions />
+          <SisReportDisplay />
         </Tab.Pane>
       )
     }

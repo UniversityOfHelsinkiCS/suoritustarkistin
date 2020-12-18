@@ -47,7 +47,7 @@ module.exports = {
           key: 'id'
         }
       },
-      course: {
+      courseId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {

@@ -5,6 +5,7 @@ const {
   isValidGrade,
   isValidCreditAmount
 } = require('../../utils/validators')
+const { processEntries } = require('./processEntry')
 // const { getRegistrations } = require('../services/eduweb')
 
 const LANGUAGES = ["fi", "sv", "en"]
@@ -62,21 +63,23 @@ const processManualEntry = async ({
     'DD.MM.YY-HHmmss'
   )}`
 
-  for (const entry of data) {
-    validateEntry(entry)
-    const entryObject = {
-      studentNumber: entry.studentId,
+  const rawEntries = data.map((rawEntry) => {
+    validateEntry(rawEntry)
+    return {
+      studentNumber: rawEntry.studentId,
       batchId: batchId,
-      grade: entry.grade ? entry.grade : 'Hyv.',
-      credits: entry.credits ? entry.credits : course.credits,
-      language: entry.language ? entry.language : course.language,
-      attainmentDate: entry.attainmentDate ? entry.attainmentDate : date,
+      grade: rawEntry.grade ? rawEntry.grade : 'Hyv.',
+      credits: rawEntry.credits ? rawEntry.credits : course.credits,
+      language: rawEntry.language ? rawEntry.language : course.language,
+      attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,
       reporterId: reporterId,
-      course: course.id
+      courseId: course.id
     }
-    await db.raw_entries.create(entryObject)
-  }
+  })
+
+  const rawEntryIds = await db.raw_entries.bulkCreate(rawEntries, {returning: true})
+  await processEntries(rawEntryIds)
   return true
 }
 

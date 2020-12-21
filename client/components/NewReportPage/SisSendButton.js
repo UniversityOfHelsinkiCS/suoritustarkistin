@@ -1,9 +1,10 @@
 import React from 'react'
-import { Button } from 'semantic-ui-react'
+import { Button, Popup } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { sendNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
+import { sisAreValidNewRawEntries } from 'Root/utils/validators'
 
-/* const parseRawEntries = (rawEntries) => {
+const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
 
   return {
@@ -21,7 +22,7 @@ import { sendNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer
     sending: undefined,
     rawData: undefined
   }
-} */
+} 
 
 export default () => {
   const dispatch = useDispatch()
@@ -32,14 +33,24 @@ export default () => {
   }
 
   return (
-    <Button
-      positive
-      data-cy="sendButton"
-      onClick={sendRawEntries}
-      disabled={
-        newRawEntries.sending  //|| !sisAreValidNewRawEntries(parseRawEntries(newRawEntries))
-      }
-      content="Send report"
-    />
+    <Popup
+    trigger={
+      <span style={{ float: 'right' }}>
+        <Button
+          positive
+          data-cy="sendButton"
+          onClick={sendRawEntries}
+          disabled={
+            newRawEntries.sending || !sisAreValidNewRawEntries(parseRawEntries(newRawEntries))
+          }
+          content="Send report"
+        />
+      </span>
+    }
+    content="Report contains validation errors, see table below."
+    disabled={!newRawEntries.data || sisAreValidNewRawEntries(parseRawEntries(newRawEntries))}
+    style={{ color: 'red' }}
+  />
+
   )
 }

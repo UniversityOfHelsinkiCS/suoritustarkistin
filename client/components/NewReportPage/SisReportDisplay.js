@@ -10,7 +10,7 @@ const {
   isValidCreditAmount,
   isValidLanguage,
   sisIsValidDate,
-  sisIsDateObject,
+  sisIsDateObject
 } = require('Root/utils/validators')
 
 const validStyle = {

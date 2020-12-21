@@ -79,7 +79,7 @@ const processManualEntry = async ({
   })
 
   const rawEntryIds = await db.raw_entries.bulkCreate(rawEntries, {returning: true})
-  await processEntries(rawEntryIds)
+  await processEntries(rawEntryIds, reporterId)
   return true
 }
 

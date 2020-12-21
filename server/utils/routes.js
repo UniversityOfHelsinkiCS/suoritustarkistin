@@ -29,6 +29,10 @@ const {
   getAllRawEntries
 } = require('@controllers/sisRawEntryController')
 const {
+  sisGetAllReports,
+  sisGetUsersReports
+} = require('@controllers/sisReportController')
+const {
   addJob,
   getJobs,
   editJob,
@@ -72,12 +76,15 @@ router.get('/users/graders', checkAdmin, getGraders)
 router.put('/users/:id', checkAdmin, editUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
 router.get('/users/:id/reports', checkIdMatch, getUsersReports)
+router.get('/users/:id/sis_reports', checkIdMatch, sisGetUsersReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
 router.get('/reports/undownloaded', checkSuotarToken, getNewReportList)
 router.get('/reports/:id', checkSuotarToken, getSingleReport)
 router.post('/reports', addReport)
 router.get('/reports', checkAdmin, getReports)
+
+router.get('/sis_reports', checkAdmin, sisGetAllReports)
 
 router.get('/sis_raw_entries', checkAdmin, getAllRawEntries)
 router.post('/sis_raw_entries', checkAdmin, addRawEntries)

@@ -91,7 +91,6 @@ export default () => {
   const reports = useSelector((state) => state.sisReports)
   const courses = useSelector((state) => state.courses.data)
 
-  
   if (reports.pending) return <div>LOADING!</div>
 
   const manualReports = reports.data.filter((report) => report.reporterId) // filter out EoAI reports.

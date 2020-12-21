@@ -51,19 +51,8 @@ const getAllRawEntries = async (req, res) => {
   }
 }
 
-/* TO BE TESTED AND WORKED ON
-const getUsersRawEntries = async (req, res) => {
-  try {
-    const rawEntries = await db.raw_entries.findAll({
-      where: { graderId: req.user.id },
-      order: [['createdAt', 'DESC']]
-    })
-    return res.status(200).send(rawEntries)
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
 
+/*
 const getSingleRawEntry = async (req, res) => {
   try {
     const rawEntry = await db.raw_entries.findOne({

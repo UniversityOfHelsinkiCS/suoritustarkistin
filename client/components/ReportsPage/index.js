@@ -7,7 +7,10 @@ import {
   getAllReportsAction,
   getUsersReportsAction
 } from 'Utilities/redux/reportsReducer'
-import { sisGetAllReportsAction } from 'Utilities/redux/sisReportsReducer'
+import {
+  sisGetAllReportsAction,
+  sisGetUsersReportsAction
+} from 'Utilities/redux/sisReportsReducer'
 import { Menu, Icon, Tab } from 'semantic-ui-react'
 import { getAllCoursesAction } from '../../utils/redux/coursesReducer'
 
@@ -20,10 +23,11 @@ export default () => {
   useEffect(() => {
     if (user.adminMode) {
       dispatch(getAllReportsAction())
-      dispatch(sisGetAllReportsAction())
       dispatch(getAllCoursesAction())
+      dispatch(sisGetAllReportsAction())
     } else {
       dispatch(getUsersReportsAction(user.id))
+      dispatch(sisGetUsersReportsAction(user.id))
     }
   }, [user])
 

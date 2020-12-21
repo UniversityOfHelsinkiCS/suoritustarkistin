@@ -9,7 +9,7 @@ const LANGUAGES = {
 const SIS_LANGUAGES = [
   "fi",
   "sv",
-  "en",
+  "en"
 ]
 
 const isValidStudentId = (id) => {
@@ -32,9 +32,7 @@ const isValidOodiDate = (date) =>
 const sisIsValidDate = (date) => {
   if (!date) return false
   if (sisIsDateObject(date)) {
-    if (date.getFullYear() > 1999 && date.getFullYear() < 2099) {
-      return true
-    }
+    if (date.getFullYear() > 1999 && date.getFullYear() < 2099) return true
   }
   return false
 }

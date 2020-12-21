@@ -12,7 +12,7 @@ import SisReportDisplay from 'Components/NewReportPage/SisReportDisplay'
 export default () => {
   const user = useSelector((state) => state.user.data)
 
-  const panes = [
+  let panes = [
     {
       menuItem: (
         <Menu.Item key="copypaste" data-cy="copypaste">
@@ -43,8 +43,9 @@ export default () => {
         </Tab.Pane>
       )
     },
-    user.adminMode &&
-    {
+  ]
+  if (user.adminMode) {
+    panes = [...panes, {
       menuItem: (
         <Menu.Item key="sis-copypaste" data-cy="sis-copypaste">
           <Icon name="file alternate outline" />
@@ -58,7 +59,8 @@ export default () => {
           <SisReportDisplay />
         </Tab.Pane>
       )
-    }
-  ]
+    }]
+  }
+
   return <Tab panes={panes} />
 }

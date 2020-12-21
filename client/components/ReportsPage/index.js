@@ -62,7 +62,7 @@ export default () => {
   ]
 
   if (user.adminMode) {
-    panes.push({
+    panes = [...panes, {
       menuItem: (
         <Menu.Item key="mooc" data-cy="mooc-reports-tab">
           <Icon name="file alternate outline" />
@@ -97,7 +97,7 @@ export default () => {
           />
         </Tab.Pane>
       )
-    })
+    }]
   }
 
   return <Tab panes={panes} />

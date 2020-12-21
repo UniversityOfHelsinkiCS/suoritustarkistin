@@ -8,7 +8,9 @@ const {
   isValidStudentId,
   isValidGrade,
   isValidCreditAmount,
-  isValidLanguage
+  isValidLanguage,
+  sisIsValidDate,
+  sisIsDateObject,
 } = require('Root/utils/validators')
 
 const validStyle = {
@@ -138,7 +140,26 @@ const getLanguageCell = (language, course) => {
 }
 
 const getDateCell = (date) => {
-  return <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
+  if (date) {
+    if (sisIsValidDate(date)) {
+      return <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
+    }
+    if (sisIsDateObject(date)) {
+      return (
+        <Table.Cell style={invalidStyle}>
+          <Icon name="ban" />
+          {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
+        </Table.Cell>
+      )
+    }
+    return (
+      <Table.Cell style={invalidStyle}>
+        <Icon name="ban" />
+        {date}
+      </Table.Cell>
+    )
+  }
+  return <Table.Cell />
 }
 
 export default () => {

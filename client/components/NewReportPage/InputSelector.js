@@ -42,7 +42,7 @@ export default () => {
           <ReportDisplay />
         </Tab.Pane>
       )
-    },
+    }
   ]
   if (user.adminMode) {
     panes = [...panes, {

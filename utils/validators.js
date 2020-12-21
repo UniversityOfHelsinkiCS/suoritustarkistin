@@ -22,6 +22,19 @@ const isValidStudentId = (id) => {
 const isValidOodiDate = (date) =>
   /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.5.2019
 
+
+const sisIsValidDate = (date) => {
+  if (!date) return false
+  if (sisIsDateObject(date)) {
+    if (date.getFullYear() > 1999 && date.getFullYear() < 2099) return true
+  }
+  return false
+}
+
+const sisIsDateObject = (date) => {
+  return Object.prototype.toString.call(date) === "[object Date]"
+}
+
 const isValidGrade = (grade) => /^([0-5]|Hyv\.|Hyl\.)$/.test(grade) // 0 to 5, Hyv. or Hyl.
 
 const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
@@ -124,6 +137,8 @@ const isValidSchedule = (schedule) => {
 module.exports = {
   isValidStudentId,
   isValidOodiDate,
+  sisIsValidDate,
+  sisIsDateObject,
   isValidGrade,
   isValidCreditAmount,
   isValidLanguage,

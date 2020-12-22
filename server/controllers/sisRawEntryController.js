@@ -7,8 +7,8 @@ const handleDatabaseError = (res, error) => {
 }
 
 const addRawEntries = async (req, res) => {
-  
   try {
+    const transaction = await db.sequelize.transaction()
     if (!req.user.isGrader && !req.user.isAdmin) {
       throw new Error('User is not authorized to report credits.')
     }
@@ -19,19 +19,22 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'invalid form values' })
     }
 
+
     processManualEntry({
       graderId,
       reporterId: req.user.id,
       courseId,
       date,
       data
-    })
-      .then(() => {
+    }, transaction)
+      .then(async () => {
+        await transaction.commit()
         logger.info('Successful CSV insert.')
         return res.status(200).json({ message: 'report created successfully' })
       })
-      .catch((error) => {
+      .catch(async (error) => {
         logger.error('Unsuccessful CSV insert:', error)
+        await transaction.rollback()
         return res.status(400).json({ error: error.toString() })
       })
   } catch (error) {

@@ -36,7 +36,7 @@ const processManualEntry = async ({
   courseId,
   date,
   data
-}) => {
+}, transaction) => {
 
   const course = await db.courses.findOne({
     where: {
@@ -78,8 +78,8 @@ const processManualEntry = async ({
     }
   })
 
-  const rawEntryIds = await db.raw_entries.bulkCreate(rawEntries, {returning: true})
-  await processEntries(rawEntryIds, reporterId)
+  const rawEntryIds = await db.raw_entries.bulkCreate(rawEntries, {returning: true, transaction})
+  await processEntries(rawEntryIds, reporterId, transaction)
   return true
 }
 

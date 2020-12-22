@@ -13,45 +13,36 @@ const api = axios.create({
     baseURL: process.env.IMPORTER_DB_API_URL
 })
 
-const processEntries = async (createdEntries, senderId) => {
-    const rawEntries = await db.raw_entries.findAll({
-        where: {
-            id: {
-                [Op.in]: createdEntries.map(({id}) => id)
-            }
-        },
-        include: ["course", "reporter", "grader"]
-    })
-
-    const studentNumbers = rawEntries.map((rawEntry) => rawEntry.studentNumber)
-    const graderIds = new Set(rawEntries.map((rawEntry) => rawEntry.graderId))
+/**
+ * Mankel raw entries to sis entries.
+ *
+ * Some extra mayhem with grader and course relations as createdEntries contains only
+ * raw entries and related foreign keys. We can't query raw entries with include as we
+ * are inside a transaction and relations needs to be fetched separately.
+ */
+const processEntries = async (createdEntries, senderId, transaction) => {
+    const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
     const graders = await db.users.findAll({
         where: {
             id: {[Op.in]: Array.from(graderIds)}
         }
     })
-    const employeeIds = graders.map((grader) => grader.employeeId)
 
+    const studentNumbers = createdEntries.map((rawEntry) => rawEntry.studentNumber)
     const students = await api.post('students/', studentNumbers)
+    const employeeIds = graders.map((grader) => grader.employeeId)
     const employees = await getEmployees(employeeIds)
+    const courseRealisations = await getCourseUnitRealisations(createdEntries)
 
-    const courseRealisations = {}
-    for (const rawEntry of rawEntries) {
-        const {course, attainmentDate} = rawEntry
-        const {id, assessmentItemIds} = await resolveCourseUnitRealisation(course.courseCode, attainmentDate)
-        courseRealisations[course.courseCode] = {
-            courseUnitRealisationId: id,
-            assessmentItemId: assessmentItemIds[0]
-        }
-    }
-
-    const data = rawEntries.map((rawEntry) => {
+    const data = createdEntries.map((rawEntry) => {
         const student = students.data.find(({studentNumber}) => studentNumber === rawEntry.studentNumber)
-        const verifier = employees.find(({employeeNumber}) => employeeNumber === rawEntry.grader.employeeId)
-        const courseUnitRealisation = courseRealisations[rawEntry.course.courseCode]
+        const grader = graders.find((g) => g.id === rawEntry.graderId)
+        const verifier = employees.find(({employeeNumber}) => employeeNumber === grader.employeeId)
+        const courseUnitRealisation = courseRealisations[rawEntry.courseId]
         if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
         if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
         if (!courseUnitRealisation) throw new Error(`No active or past course unit realisation found with course code ${rawEntry.course.courseCode}`)
+
         return {
             personId: student.id,
             verifierPersonId: verifier.id,
@@ -64,7 +55,7 @@ const processEntries = async (createdEntries, senderId) => {
         }
     })
 
-    await db.entries.bulkCreate(data)
+    await db.entries.bulkCreate(data, {transaction})
     return true
 }
 
@@ -74,6 +65,26 @@ async function getEmployees(employeeIds) {
         await api.get(`employees/${employeeId}`)
     ))
     return _.flatten(responses.map((resp) => resp.data))
+}
+
+/**
+ * Map course unit realisation id and assessment item id to course id in Suotar db.
+ * Note: mapping is not done with course code, as course coude is not accessible form raw entry
+ */
+async function getCourseUnitRealisations(rawEntries) {
+    const courses = await getCourses(rawEntries)
+
+    const courseRealisations = {}
+    for (const rawEntry of rawEntries) {
+        const {courseId, attainmentDate} = rawEntry
+        const course = courses.find((c) => c.id === courseId)
+        const {id, assessmentItemIds} = await resolveCourseUnitRealisation(course.courseCode, attainmentDate)
+        courseRealisations[courseId] = {
+            courseUnitRealisationId: id,
+            assessmentItemId: assessmentItemIds[0]
+        }
+    }
+    return courseRealisations
 }
 
 /**
@@ -92,6 +103,18 @@ async function resolveCourseUnitRealisation(courseCode, date) {
     return resp.data
         .filter(({activityPeriod}) => moment(activityPeriod.endDate).isBefore(momentDate))
         .sort((a, b) => moment(b.activityPeriod.endDate).diff(moment(a.activityPeriod.endDate)))[0]
+}
+
+/**
+ * Get all course instances related to raw entries
+ */
+async function getCourses(rawEntries) {
+    const courseIds = new Set(rawEntries.map(({courseId}) => courseId))
+    return await db.courses.findAll({
+        where: {
+            id: {[Op.in]: Array.from(courseIds)}
+        }
+    })
 }
 
 module.exports = {

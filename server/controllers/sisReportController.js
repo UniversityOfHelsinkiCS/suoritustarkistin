@@ -8,12 +8,11 @@ const handleDatabaseError = (res, error) => {
 
 const sisGetAllReports = async (req, res) => {
   try {
-    const rawEntriesBatchInfo = await db.raw_entries.findAll({
+    const allRawEntries = await db.raw_entries.findAll({
+      include:['entry'],
       order: [['createdAt', 'DESC']]
-      // include: ['entries'] (Once the relation between entries 
-      // and raw entries exists, this should bring the entries as well it)
     })
-    return res.status(200).send(rawEntriesBatchInfo)
+    return res.status(200).send(allRawEntries)
   } catch (error) {
     handleDatabaseError(res, error)
   }
@@ -21,13 +20,12 @@ const sisGetAllReports = async (req, res) => {
 
 const sisGetUsersReports = async (req, res) => {
   try {
-    const rawEntries = await db.raw_entries.findAll({
+    const usersRawEntries = await db.raw_entries.findAll({
       where: { graderId: req.user.id },
-      order: [['createdAt', 'DESC']]
-      // include: ['entries'] (Once the relation between entries 
-      // and raw entries exists, this should bring the entries as well it)
+      order: [['createdAt', 'DESC']],
+      include: ['entries']
     })
-    return res.status(200).send(rawEntries)
+    return res.status(200).send(usersRawEntries)
   } catch (error) {
     handleDatabaseError(res, error)
   }

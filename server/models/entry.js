@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
             errors: DataTypes.JSONB
     }, {})
     Entry.associate = (models) => {
-        Entry.belongsTo(models.raw_entries)
+        Entry.belongsTo(models.raw_entries, {foreignKey: 'rawEntryId', as: 'rawEntry'})
     }
     return Entry
 }

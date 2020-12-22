@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         }, {})
         RawEntry.associate = (models) => {
-            RawEntry.hasOne(models.entries)
+            RawEntry.hasOne(models.entries, {foreignKey: 'rawEntryId', as: 'entry'})
             RawEntry.belongsTo(models.users, {foreignKey: 'reporterId', as: "reporter"})
             RawEntry.belongsTo(models.users, {foreignKey: 'graderId', as: 'grader'})
             RawEntry.belongsTo(models.courses, {foreignKey: 'courseId', as: 'course'})

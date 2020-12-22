@@ -51,7 +51,7 @@ module.exports = {
           model: 'raw_entries',
           key: 'id'
         },
-        onDelete: 'SET NULL'
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,

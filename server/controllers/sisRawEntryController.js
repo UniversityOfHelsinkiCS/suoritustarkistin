@@ -1,5 +1,4 @@
 const logger = require('@utils/logger')
-const db = require('../models/index')
 const { processManualEntry } = require('../scripts/sisProcessManualEntry')
 
 const handleDatabaseError = (res, error) => {
@@ -40,19 +39,8 @@ const addRawEntries = async (req, res) => {
   }
 }
 
-const getAllRawEntries = async (req, res) => {
-  try {
-    const rawEntriesBatchInfo = await db.raw_entries.findAll({
-      order: [['createdAt', 'DESC']]
-    })
-    return res.status(200).send(rawEntriesBatchInfo)
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
-
 /*
+TO BE TESTED AND WORKED ON
 const getSingleRawEntry = async (req, res) => {
   try {
     const rawEntry = await db.raw_entries.findOne({
@@ -78,20 +66,7 @@ const getSingleRawEntry = async (req, res) => {
   }
 }
 
-const deleteRawEntry = async (req, res) => {
-  try {
-    db.raw_entries.destroy({ 
-      where: {
-        id: req.params.id
-      } 
-    })
-    return res.status(204).end()
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
 */
 module.exports = {
-  addRawEntries,
-  getAllRawEntries
+  addRawEntries
 }

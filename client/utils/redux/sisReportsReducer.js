@@ -15,6 +15,13 @@ export const sisGetUsersReportsAction = (id) => {
   return callBuilder(route, prefix, 'get')
 }
 
+
+export const sisHandleEntryDeletionAction = (id) => {
+  const route = `/sis_reports/${id}`
+  const prefix = 'SIS_DELETE_SINGLE_ENTRY'
+  return callBuilder(route, prefix, 'delete')
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [] }, action) => {
@@ -59,6 +66,25 @@ export default (state = { data: [] }, action) => {
         pending: false,
         error: true
       }
+    case 'SIS_DELETE_SINGLE_ENTRY_SUCCESS':
+      return {
+        ...state,
+        data: state.data.filter((e) => e.id != action.response.id),
+        pending: false,
+        error: false
+      }
+    case 'SIS_DELETE_SINGLE_ENTRY_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'SIS_DELETE_SINGLE_ENTRY_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }  
     default:
       return state
   }

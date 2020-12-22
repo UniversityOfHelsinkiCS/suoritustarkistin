@@ -31,8 +31,21 @@ const sisGetUsersReports = async (req, res) => {
   }
 }
 
+const sisDeleteSingleEntry = async (req, res) => {
+  try {
+    db.raw_entries.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+    return res.status(200).json({ id: req.params.id })
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
 
 module.exports = {
   sisGetAllReports,
-  sisGetUsersReports
+  sisGetUsersReports,
+  sisDeleteSingleEntry
 }

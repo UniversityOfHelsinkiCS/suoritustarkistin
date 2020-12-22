@@ -1,31 +1,40 @@
 import React from 'react'
 import * as _ from 'lodash'
-import { useSelector } from 'react-redux'
-import { Accordion, Table } from 'semantic-ui-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Accordion, Button, Table } from 'semantic-ui-react'
 import SendToSisButton from './SendToSisButton'
+import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 
 const SentToSis = () => <div style={{ color: 'green' }}>SENT TO SIS</div>
 const NotSentToSis = () => <div style={{ color: 'red' }}>NOT SENT TO SIS</div>
+
+const DeleteButton = ({ id }) => {
+  const dispatch = useDispatch()
+  return (
+    <Button color="red" onClick={() => dispatch(sisHandleEntryDeletionAction(id))}>Delete</Button>
+  )
+}
 
 const reportTable = (report, course) => {
   const TableBody = () => {
     return (
       <Table.Body>
-        {report.map((entry, index) => {
+        {report.map((rawEntry, index) => {
           return (
             <Table.Row key={`row-${index}`}>
               <Table.Cell>{course.name}</Table.Cell>
               <Table.Cell>{course.courseCode}</Table.Cell>
-              <Table.Cell>{entry.studentNumber}</Table.Cell>
+              <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
               <Table.Cell style={{ borderLeft: "2px solid gray" }}>
-                To be filled with SIS-data
+                {rawEntry.entry.personId}
               </Table.Cell>
-              <Table.Cell>To be filled with SIS-data</Table.Cell>
-              <Table.Cell>To be filled with SIS-data</Table.Cell>
-              <Table.Cell>To be filled with SIS-data</Table.Cell>
-              <Table.Cell>To be filled with SIS-data</Table.Cell>
-              <Table.Cell>To be filled with SIS-data</Table.Cell>
-              <Table.Cell>To be filled with SIS-data</Table.Cell>
+              <Table.Cell>{rawEntry.entry.verifierPersonId}</Table.Cell>
+              <Table.Cell>{rawEntry.entry.courseUnitRealisationId}</Table.Cell>
+              <Table.Cell>{rawEntry.entry.assessmentItemId}</Table.Cell>
+              <Table.Cell>{rawEntry.entry.completionDate}</Table.Cell>
+              <Table.Cell>{rawEntry.entry.completionLanguage}</Table.Cell>
+              <Table.Cell>{rawEntry.grade}</Table.Cell>
+              <Table.Cell><DeleteButton id={rawEntry.id}/></Table.Cell>
             </Table.Row>
           )
         })}
@@ -64,6 +73,7 @@ const reportTable = (report, course) => {
             <Table.HeaderCell>Completion date</Table.HeaderCell>
             <Table.HeaderCell>Language</Table.HeaderCell>
             <Table.HeaderCell>Grade</Table.HeaderCell>
+            <Table.HeaderCell>Delete</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <TableBody />
@@ -78,10 +88,9 @@ const title = (batch) => {
   const indicationWhetherSentToSis = false
   return (
     <Accordion.Title>
-      {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(
-        0,
-        2
-      )}:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
+      {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0,2)
+      }:${
+        timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
     {indicationWhetherSentToSis ? <SentToSis /> : <NotSentToSis />}
     </Accordion.Title>
   )

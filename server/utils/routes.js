@@ -25,12 +25,12 @@ const {
   deleteAllReports
 } = require('@controllers/reportController')
 const {
-  addRawEntries,
-  getAllRawEntries
+  addRawEntries
 } = require('@controllers/sisRawEntryController')
 const {
   sisGetAllReports,
-  sisGetUsersReports
+  sisGetUsersReports,
+  sisDeleteSingleEntry
 } = require('@controllers/sisReportController')
 const {
   addJob,
@@ -85,8 +85,8 @@ router.post('/reports', addReport)
 router.get('/reports', checkAdmin, getReports)
 
 router.get('/sis_reports', checkAdmin, sisGetAllReports)
+router.delete('/sis_reports/:id', checkAdmin, sisDeleteSingleEntry)
 
-router.get('/sis_raw_entries', checkAdmin, getAllRawEntries)
 router.post('/sis_raw_entries', checkAdmin, addRawEntries)
 
 router.get('/jobs', checkAdmin, getJobs)

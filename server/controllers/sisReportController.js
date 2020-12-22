@@ -22,8 +22,8 @@ const sisGetUsersReports = async (req, res) => {
   try {
     const usersRawEntries = await db.raw_entries.findAll({
       where: { graderId: req.user.id },
-      order: [['createdAt', 'DESC']],
-      include: ['entries']
+      include: ['entry'],
+      order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(usersRawEntries)
   } catch (error) {

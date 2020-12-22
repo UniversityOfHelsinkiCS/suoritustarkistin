@@ -45,17 +45,24 @@ const processEntries = async (createdEntries, senderId) => {
         }
     }
 
-    // TODO: Throw errors if personId or verifierPersonId not found from fetched data
-    const data = rawEntries.map((rawEntry) => ({
-        personId: students.data.find(({studentNumber}) => studentNumber === rawEntry.studentNumber).id,
-        verifierPersonId: employees.find(({employeeNumber}) => employeeNumber === rawEntry.grader.employeeId).id,
-        completionDate: rawEntry.attainmentDate,
-        completionLanguage: rawEntry.language,
-        hasSent: false,
-        rawEntryId: rawEntry.id,
-        senderId,
-        ...courseRealisations[rawEntry.course.courseCode]
-    }))
+    const data = rawEntries.map((rawEntry) => {
+        const student = students.data.find(({studentNumber}) => studentNumber === rawEntry.studentNumber)
+        const verifier = employees.find(({employeeNumber}) => employeeNumber === rawEntry.grader.employeeId)
+        const courseUnitRealisation = courseRealisations[rawEntry.course.courseCode]
+        if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
+        if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
+        if (!courseUnitRealisation) throw new Error(`No active or past course unit realisation found with course code ${rawEntry.course.courseCode}`)
+        return {
+            personId: student.id,
+            verifierPersonId: verifier.id,
+            completionDate: rawEntry.attainmentDate,
+            completionLanguage: rawEntry.language,
+            hasSent: false,
+            rawEntryId: rawEntry.id,
+            senderId,
+            ...courseUnitRealisation
+        }
+    })
 
     await db.entries.bulkCreate(data)
     return true

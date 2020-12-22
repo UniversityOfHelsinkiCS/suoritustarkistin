@@ -33,7 +33,7 @@ const addRawEntries = async (req, res) => {
       })
       .catch((error) => {
         logger.error('Unsuccessful CSV insert:', error)
-        return res.status(400).json({ error: error })
+        return res.status(400).json({ error: error.toString() })
       })
   } catch (error) {
     handleDatabaseError(res, error)

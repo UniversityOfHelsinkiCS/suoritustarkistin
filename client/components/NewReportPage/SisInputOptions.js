@@ -19,8 +19,12 @@ import {
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
 
-const findGradersForSelection = (data) =>
-  data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
+const formatGradersForSelection = (data) => {
+  const graders = data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
+  if (graders) return _.sortBy(graders, ['text'])
+  return []
+
+}
 
 const formatCoursesForSelection = (data) => {
   const courses = data.map((c) => ({
@@ -81,7 +85,7 @@ export default () => {
         placeholder="Choose grader"
         onChange={handleGraderSelection}
         value={newRawEntries.graderId}
-        options={findGradersForSelection(graders)}
+        options={formatGradersForSelection(graders)}
       />
       <Select
         className="input"

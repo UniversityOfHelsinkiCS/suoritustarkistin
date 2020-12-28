@@ -78,7 +78,7 @@ export default () => {
   }
 
   return (
-    <div style={{ marginBlock: '10px', marginBottom: '50px' }}>
+    <div style={{ marginBlock: '10px', marginBottom: '20px' }}>
       <Select
         className="input"
         data-cy="graderSelection"

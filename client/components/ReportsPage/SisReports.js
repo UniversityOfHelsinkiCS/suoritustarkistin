@@ -15,6 +15,34 @@ const DeleteButton = ({ id }) => {
   )
 }
 
+const CellsIfEntry = ({ entry }) => {
+  const { personId, verifierPersonId, courseUnitRealisationId, assessmentItemId, completionDate, completionLanguage } = entry
+  
+  return (
+    <>
+      <Table.Cell style={{ borderLeft: "2px solid gray" }}>
+        {personId ? personId : <span style={{ color: 'red'}}>null</span>}
+      </Table.Cell>
+      <Table.Cell>{verifierPersonId ? personId : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
+      <Table.Cell>{courseUnitRealisationId ? courseUnitRealisationId : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
+      <Table.Cell>{assessmentItemId ? assessmentItemId : <span style={{ color: 'red' }}>null</span> }</Table.Cell>
+      <Table.Cell>{completionDate ? completionDate : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
+      <Table.Cell>{completionLanguage ? completionLanguage : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
+    </>
+  )
+}
+
+const CellsIfNoEntry = () => (
+    <>
+      <Table.Cell style={{ borderLeft: "2px solid gray", color: "red" }}>null</Table.Cell>
+      <Table.Cell style={{ color: "red" }}>null</Table.Cell>
+      <Table.Cell style={{ color: "red" }}>null</Table.Cell>
+      <Table.Cell style={{ color: "red" }}>null</Table.Cell>
+      <Table.Cell style={{ color: "red" }}>null</Table.Cell>
+      <Table.Cell style={{ color: "red" }}>null</Table.Cell>
+  </>
+)
+
 const reportTable = (report, course) => {
   const TableBody = () => {
     return (
@@ -25,14 +53,7 @@ const reportTable = (report, course) => {
               <Table.Cell>{course.name}</Table.Cell>
               <Table.Cell>{course.courseCode}</Table.Cell>
               <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
-              <Table.Cell style={{ borderLeft: "2px solid gray" }}>
-                {rawEntry.entry.personId}
-              </Table.Cell>
-              <Table.Cell>{rawEntry.entry.verifierPersonId}</Table.Cell>
-              <Table.Cell>{rawEntry.entry.courseUnitRealisationId}</Table.Cell>
-              <Table.Cell>{rawEntry.entry.assessmentItemId}</Table.Cell>
-              <Table.Cell>{rawEntry.entry.completionDate}</Table.Cell>
-              <Table.Cell>{rawEntry.entry.completionLanguage}</Table.Cell>
+              {rawEntry.entry ? <CellsIfEntry entry={rawEntry.entry} /> : <CellsIfNoEntry />}
               <Table.Cell>{rawEntry.grade}</Table.Cell>
               <Table.Cell><DeleteButton id={rawEntry.id}/></Table.Cell>
             </Table.Row>
@@ -50,7 +71,7 @@ const reportTable = (report, course) => {
           <Table.Row>
             <Table.HeaderCell colSpan='3'>Basics</Table.HeaderCell>
             <Table.HeaderCell 
-              colSpan='7'
+              colSpan='8'
               style={{ borderLeft: "2px solid gray" }}
             >
               Going to SIS

@@ -20,7 +20,7 @@ export default () => {
             disabled={
               newEntries.sending
             }
-            content="Send report to SIS"
+            content="Send completions to SIS"
           />
         }
         content={

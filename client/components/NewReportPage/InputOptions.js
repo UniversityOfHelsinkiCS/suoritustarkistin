@@ -70,6 +70,7 @@ export default () => {
       <Select
         className="input"
         data-cy="graderSelection"
+        placeholder="Choose grader"
         onChange={handleGraderSelection}
         value={newReport.graderEmployeeId}
         options={findGradersForSelection(graders)}
@@ -78,7 +79,7 @@ export default () => {
         className="input"
         data-cy="courseSelection"
         onChange={handleCourseSelection}
-        placeholder="Valitse kurssi"
+        placeholder="Choose course"
         value={newReport.courseId}
         options={formatCoursesForSelection(courses)}
       />

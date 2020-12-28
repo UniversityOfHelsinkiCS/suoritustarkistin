@@ -162,7 +162,7 @@ export default () => {
     (g) => g.employeeId === newReport.graderEmployeeId
   )
   const course = courses.find((c) => c.id === newReport.courseId)
-  const date = newReport.date ? newReport.date : 'Merkitse suorituspäivämäärä'
+  const date = newReport.date ? newReport.date : 'Add completion date'
 
   const reportRows = newReport.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
@@ -187,13 +187,13 @@ export default () => {
     <Table celled>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>Kurssi</Table.HeaderCell>
-          <Table.HeaderCell>Opiskelijanumero</Table.HeaderCell>
-          <Table.HeaderCell>Arvosana</Table.HeaderCell>
-          <Table.HeaderCell>Laajuus (op)</Table.HeaderCell>
-          <Table.HeaderCell>Kieli</Table.HeaderCell>
-          <Table.HeaderCell>Arvostelija</Table.HeaderCell>
-          <Table.HeaderCell>Suorituspäivämäärä</Table.HeaderCell>
+          <Table.HeaderCell>Course</Table.HeaderCell>
+          <Table.HeaderCell>Student number</Table.HeaderCell>
+          <Table.HeaderCell>Grade</Table.HeaderCell>
+          <Table.HeaderCell>Credits (op)</Table.HeaderCell>
+          <Table.HeaderCell>Language</Table.HeaderCell>
+          <Table.HeaderCell>Grader</Table.HeaderCell>
+          <Table.HeaderCell>Completion date</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>{reportRows}</Table.Body>

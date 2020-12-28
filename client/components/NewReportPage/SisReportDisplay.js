@@ -174,7 +174,7 @@ export default () => {
     (g) => g.employeeId === newRawEntries.graderId
   )
   const course = courses.find((c) => c.id === newRawEntries.courseId)
-  const date = newRawEntries.date ? newRawEntries.date : 'Merkitse suorituspäivämäärä'
+  const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
 
   const reportRows = newRawEntries.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Select } from 'semantic-ui-react'
+import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import SisSendButton from 'Components/NewReportPage/SisSendButton.js'
@@ -21,14 +22,17 @@ import {
 const findGradersForSelection = (data) =>
   data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
 
-const formatCoursesForSelection = (data) =>
-  data.map((c) => ({
+const formatCoursesForSelection = (data) => {
+  const courses = data.map((c) => ({
     key: c.id,
     text: c.autoSeparate
       ? `${c.name} (${c.courseCode} + AY${c.courseCode})`
       : `${c.name} (${c.courseCode})`,
     value: c.id
   }))
+  if (courses) return _.sortBy(courses, ['text'])
+  return []
+}
 
 export default () => {
   const dispatch = useDispatch()

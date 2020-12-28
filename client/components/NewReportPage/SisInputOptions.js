@@ -96,6 +96,7 @@ export default () => {
         options={formatCoursesForSelection(courses)}
       />
       <DatePicker
+        className="date-picker"
         style={{ height: "10px"}}
         dateFormat="dd.MM.yyyy"
         placeholderText="Set date for completions"

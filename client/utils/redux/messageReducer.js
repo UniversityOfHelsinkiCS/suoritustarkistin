@@ -58,6 +58,19 @@ export default (state = null, action) => {
         content: 'The course has been deleted and no new completions can be added.',
         type: 'positive'
       }
+    case 'SIS_POST_RAW_ENTRIES_FAILURE':
+      return {
+        header: `Sending the report failed!`,
+        content: 'Sending the course completions failed. If the error persists, please contact grp-toska@cs.helsinki.fi.',
+        type: 'negative'
+      }
+    case 'SIS_POST_RAW_ENTRIES_SUCCESS':
+      return {
+        header: 'Report sent!',
+        content:
+          'Course completions have now been sent for reporting. You can see the created report on the "View reports" -page',
+        type: 'positive'
+      }
     default:
       return state
   }

@@ -1,4 +1,6 @@
 import React from 'react'
+import { Loader } from 'semantic-ui-react'
+
 import { useSelector, useDispatch } from 'react-redux'
 import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import { TextArea, Form } from 'semantic-ui-react'
@@ -37,6 +39,7 @@ export default () => {
 
   return (
     <Form>
+      <Loader size='big' active={newRawEntries.sending} />
       <TextArea
         data-cy="pastefield"
         onChange={handleDataChange}

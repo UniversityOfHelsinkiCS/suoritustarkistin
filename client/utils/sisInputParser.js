@@ -29,24 +29,24 @@ const formatDate = (date) => {
     const newDay = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
     return newDay
   }
-  return date
+  return date.trim()
 }
 
 export const parseCSV = (string) => {
 
   const addLeadingZero = (studentnumber) => {
-    if (isValidStudentId(`0${studentnumber}`)) return `0${studentnumber}`
+    if (isValidStudentId(`0${studentnumber.trim()}`)) return `0${studentnumber}`
     return studentnumber
   }
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
     const splitRow = row.split(CSV.detect(row))
     return {
-      studentId: addLeadingZero(splitRow[0]),
+      studentId: addLeadingZero(splitRow[0]).trim(),
       batchId: '',
-      grade: splitRow[1],
-      credits: splitRow[2],
-      language: splitRow[3],
+      grade: splitRow[1] && splitRow[1].trim(),
+      credits: splitRow[2] && splitRow[2].trim(),
+      language: splitRow[3] && splitRow[3].trim(),
       attainmentDate: formatDate(splitRow[4]),
       graderId: '',
       reporterId: '',

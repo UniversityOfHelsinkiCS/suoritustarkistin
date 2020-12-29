@@ -1,4 +1,5 @@
 const logger = require('@utils/logger')
+const db = require('../models/index')
 const { processManualEntry } = require('../scripts/sisProcessManualEntry')
 
 const handleDatabaseError = (res, error) => {

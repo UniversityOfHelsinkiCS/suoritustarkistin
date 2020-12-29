@@ -38,7 +38,7 @@ export default () => {
       <span style={{ float: 'right' }}>
         <Button
           positive
-          data-cy="sendButton"
+          data-cy="sisSendButton"
           onClick={sendRawEntries}
           disabled={
             newRawEntries.sending || !sisAreValidNewRawEntries(parseRawEntries(newRawEntries))

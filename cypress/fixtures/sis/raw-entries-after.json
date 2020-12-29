@@ -1,0 +1,68 @@
+[
+  {
+    "id":1,
+    "studentNumber":"11111",
+    "batchId":"TKT10001%30.12.20-085844",
+    "grade":"valid grade 1",
+    "credits":"1,0",
+    "language":"fi",
+    "attainmentDate":"2020-12-30T08:58:20.900Z",
+    "graderId":1,
+    "reporterId":1,
+    "courseId":1,
+    "createdAt":"2020-12-30T08:58:44.465Z",
+    "updatedAt":"2020-12-30T08:58:44.465Z",
+    "entry":
+      {
+        "id":1,
+        "personId":"Student's id 1",
+        "verifierPersonId":"Grader's id 1",
+        "courseUnitRealisationId":"Course unit realisation ID 1",
+        "assessmentItemId":"Assessment ID 1",
+        "completionDate":"2020-12-30T08:58:20.900Z",
+        "completionLanguage":"fi",
+        "courseUnitId":"Course unit id 1",
+        "gradeScaleId":"sis-0-5",
+        "gradeId":"1",
+        "hasSent":false,
+        "senderId":1,
+        "errors":null,
+        "createdAt":"2020-12-30T08:58:48.612Z",
+        "updatedAt":"2020-12-30T08:58:48.612Z",
+        "rawEntryId":1
+        }
+  },
+  {
+    "id":2,
+    "studentNumber":"22222",
+    "batchId":"TKT10001%30.12.20-085844",
+    "grade":"valid grade 2",
+    "credits":"2,0",
+    "language":"fi",
+    "attainmentDate":"2020-12-30T08:58:20.900Z",
+    "graderId":2,
+    "reporterId":2,
+    "courseId":2,
+    "createdAt":"2020-12-30T08:58:44.465Z",
+    "updatedAt":"2020-12-30T08:58:44.465Z",
+    "entry":
+      {
+        "id":2,
+        "personId":"Student's id 2",
+        "verifierPersonId":"Grader's id 2",
+        "courseUnitRealisationId":"Course unit realisation ID 2",
+        "assessmentItemId":"Assessment ID 2",
+        "completionDate":"2020-12-30T08:58:20.900Z",
+        "completionLanguage":"fi",
+        "courseUnitId":"Course unit id 2",
+        "gradeScaleId":"sis-0-5",
+        "gradeId":"2",
+        "hasSent":false,
+        "senderId":2,
+        "errors":null,
+        "createdAt":"2020-12-30T08:58:48.612Z",
+        "updatedAt":"2020-12-30T08:58:48.612Z",
+        "rawEntryId":2
+        }
+  }
+]

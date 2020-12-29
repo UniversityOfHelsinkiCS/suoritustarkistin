@@ -21,14 +21,29 @@ const CellsIfEntry = ({ entry }) => {
 
   return (
     <>
-      <Table.Cell style={{ borderLeft: "2px solid gray" }}>
-        {personId ? personId : <span style={{ color: 'red' }}>null</span>}
+      <Table.Cell
+        data-cy={`sis-report-personId-${entry.id}`}
+        style={{ borderLeft: "2px solid gray" }}
+      >
+        {personId ? personId : <span style={{ color: 'red'}}>null</span>}
       </Table.Cell>
-      <Table.Cell>{verifierPersonId ? personId : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
-      <Table.Cell>{courseUnitRealisationId ? courseUnitRealisationId : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
-      <Table.Cell>{assessmentItemId ? assessmentItemId : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
-      <Table.Cell>{completionDate ? completionDate : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
-      <Table.Cell>{completionLanguage ? completionLanguage : <span style={{ color: 'red' }}>null</span>}</Table.Cell>
+      <Table.Cell
+        data-cy={`sis-report-verifierPersonId-${entry.id}`}
+      >
+        {verifierPersonId ? verifierPersonId : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-courseUnitRealisationId-${entry.id}`}>
+        {courseUnitRealisationId ? courseUnitRealisationId : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-assessmentItemId-${entry.id}`}>
+        {assessmentItemId ? assessmentItemId : <span style={{ color: 'red' }}>null</span> }
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-completionDate-${entry.id}`}>
+        {completionDate ? completionDate : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-completionLanguage-${entry.id}`}>
+        {completionLanguage ? completionLanguage : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
     </>
   )
 }
@@ -143,7 +158,7 @@ const title = (batch) => {
   const indicationWhetherSentToSis = batch.every(({ entry }) => entry.hasSent)
   const includesErrors = batch.filter(({ entry }) => entry.errors).length
   return (
-    <Accordion.Title>
+    <Accordion.Title data-cy={`sis-report-${reportName[0]}`}>
       {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)
         }:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
       <div>
@@ -161,7 +176,7 @@ export default () => {
   if (reports.pending) return <div>LOADING!</div>
 
   const manualReports = reports.data.filter((report) => report.reporterId) // filter out EoAI reports.
-  if (manualReports.length === 0) return <div>NO REPORTS FOUND.</div>
+  if (manualReports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
   const course = courses.find((c) => manualReports[0].courseId === c.id)
 

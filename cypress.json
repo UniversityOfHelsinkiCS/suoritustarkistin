@@ -1,6 +1,8 @@
 {
   "baseUrl": "http://localhost:8000",
   "env": {
-    "SUOTAR_TOKEN": "token"
+    "SUOTAR_TOKEN": "token",
+    "ADMIN_EMPLOYEE_NUMBER": "987654321",
+    "VALID_STUDENT_NUMBER": "012345678"
   }
 }

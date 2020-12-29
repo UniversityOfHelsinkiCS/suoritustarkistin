@@ -13,6 +13,7 @@ export default () => {
   if (message.type === 'positive') {
     return (
       <Message
+        data-cy="positive-message"
         positive
         onDismiss={() => dispatch(clearMessageAction())}
         header={message.header}
@@ -24,6 +25,7 @@ export default () => {
   if (message.type === 'negative') {
     return (
       <Message
+        data-cy="negative-message"
         negative
         onDismiss={() => dispatch(clearMessageAction())}
         header={message.header}

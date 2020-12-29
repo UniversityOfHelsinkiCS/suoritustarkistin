@@ -81,7 +81,7 @@ export default () => {
     <div style={{ marginBlock: '10px', marginBottom: '20px' }}>
       <Select
         className="input"
-        data-cy="graderSelection"
+        data-cy="sisGraderSelection"
         placeholder="Choose grader"
         onChange={handleGraderSelection}
         value={newRawEntries.graderId}
@@ -89,13 +89,14 @@ export default () => {
       />
       <Select
         className="input"
-        data-cy="courseSelection"
+        data-cy="sisCourseSelection"
         onChange={handleCourseSelection}
         placeholder="Choose course"
         value={newRawEntries.courseId}
         options={formatCoursesForSelection(courses)}
       />
       <DatePicker
+        id="sisDatePicker"
         className="date-picker"
         style={{ height: "10px"}}
         dateFormat="dd.MM.yyyy"

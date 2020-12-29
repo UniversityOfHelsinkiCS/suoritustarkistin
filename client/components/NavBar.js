@@ -123,6 +123,7 @@ export default () => {
 
       <Menu.Item
         disabled={!user.isAdmin && !user.isGrader}
+        data-cy="nav-new-report"
         position="right"
         as={Link}
         to={'/'}

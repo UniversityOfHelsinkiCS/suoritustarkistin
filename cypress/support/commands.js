@@ -54,3 +54,11 @@ Cypress.Commands.add('asUser', () => {
     }
   })
 })
+
+Cypress.Commands.add('sisAsAdmin', () => {
+  cy.server({
+    onAnyRequest: (route, proxy) => {
+      proxy.xhr.setRequestHeader('employeenumber', '987654321')
+    }
+  })
+})

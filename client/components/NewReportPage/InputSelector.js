@@ -47,7 +47,7 @@ export default () => {
   if (user.adminMode) {
     panes = [...panes, {
       menuItem: (
-        <Menu.Item key="sis-copypaste" data-cy="sis-copypaste">
+        <Menu.Item key="sis-copypaste" data-cy="sisCopypaste">
           <Icon name="file alternate outline" />
           SIS - Copy & Paste
         </Menu.Item>

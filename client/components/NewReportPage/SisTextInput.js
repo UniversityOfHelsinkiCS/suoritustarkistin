@@ -41,7 +41,7 @@ export default () => {
     <Form>
       <Loader size='big' active={newRawEntries.sending} />
       <TextArea
-        data-cy="pastefield"
+        data-cy="sisPastefield"
         onChange={handleDataChange}
         placeholder="Add the course completion information here, formatted as in the instructions above."
         rows={10}

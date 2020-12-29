@@ -92,17 +92,22 @@ async function getCourseUnitRealisations(rawEntries) {
  * If no active found, return closest already ended realisation.
  */
 async function resolveCourseUnitRealisation(courseCode, date) {
-    const momentDate = moment(date)
-    const resp = await api.get(`course_unit_realisations/?code=${courseCode}`)
-    const active = resp.data.find((realisation) => {
-        const { startDate, endDate } = realisation.activityPeriod
-        return momentDate.isBetween(moment(startDate), moment(endDate))
-    })
-    if (active) return active[0]
+    try {
+        const momentDate = moment(date)
+        const resp = await api.get(`course_unit_realisations/?code=${courseCode}`)
+        const active = resp.data.find((realisation) => {
+            const { startDate, endDate } = realisation.activityPeriod
+            return momentDate.isBetween(moment(startDate), moment(endDate))
+        })
+        if (active) return active[0]
 
-    return resp.data
-        .filter(({activityPeriod}) => moment(activityPeriod.endDate).isBefore(momentDate))
-        .sort((a, b) => moment(b.activityPeriod.endDate).diff(moment(a.activityPeriod.endDate)))[0]
+        return resp.data
+            .filter(({activityPeriod}) => moment(activityPeriod.endDate).isBefore(momentDate))
+            .sort((a, b) => moment(b.activityPeriod.endDate).diff(moment(a.activityPeriod.endDate)))[0]
+    } catch (e) {
+        if (e.response.data.status === 404) throw new Error(e.response.data.message)
+        throw new Error(e.toString())
+    }
 }
 
 /**

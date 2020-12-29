@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
             assessmentItemId: DataTypes.STRING,
             completionDate: DataTypes.DATE,
             completionLanguage: DataTypes.STRING,
+            courseUnitId: DataTypes.STRING,
+            gradeScaleId: DataTypes.STRING,
+            gradeId: DataTypes.STRING,
             hasSent: DataTypes.BOOLEAN,
             senderId: {
                 type: DataTypes.INTEGER,

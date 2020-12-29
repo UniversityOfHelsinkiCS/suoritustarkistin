@@ -1,17 +1,11 @@
 
 const db = require('../models/index')
 const Sequelize = require('sequelize')
-const axios = require('axios')
 const Op = Sequelize.Op
 const _ = require('lodash')
 const moment = require('moment')
+const { api } = require('../config/importerApi')
 
-const api = axios.create({
-    headers: {
-        token: process.env.IMPORTER_DB_API_TOKEN || ''
-    },
-    baseURL: process.env.IMPORTER_DB_API_URL
-})
 
 /**
  * Mankel raw entries to sis entries.
@@ -33,12 +27,15 @@ const processEntries = async (createdEntries, senderId, transaction) => {
     const employeeIds = graders.map((grader) => grader.employeeId)
     const employees = await getEmployees(employeeIds)
     const courseRealisations = await getCourseUnitRealisations(createdEntries)
+    const courseUnits = await getCourseUnits(createdEntries)
 
+    // TODO: Map grade to grade scale
     const data = createdEntries.map((rawEntry) => {
         const student = students.data.find(({studentNumber}) => studentNumber === rawEntry.studentNumber)
         const grader = graders.find((g) => g.id === rawEntry.graderId)
         const verifier = employees.find(({employeeNumber}) => employeeNumber === grader.employeeId)
-        const courseUnitRealisation = courseRealisations[rawEntry.courseId]
+        const courseUnitRealisation = courseRealisations[rawEntry.id]
+        const courseUnit = courseUnits[rawEntry.id]
         if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
         if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
         if (!courseUnitRealisation) throw new Error(`No active or past course unit realisation found with course code ${rawEntry.course.courseCode}`)
@@ -51,7 +48,9 @@ const processEntries = async (createdEntries, senderId, transaction) => {
             hasSent: false,
             rawEntryId: rawEntry.id,
             senderId,
-            ...courseUnitRealisation
+            gradeId: '5',
+            ...courseUnitRealisation,
+            ...courseUnit
         }
     })
 
@@ -68,42 +67,89 @@ async function getEmployees(employeeIds) {
 }
 
 /**
- * Map course unit realisation id and assessment item id to course id in Suotar db.
- * Note: mapping is not done with course code, as course coude is not accessible form raw entry
+ * Resolve an active object based on given date. Objects needs to have activity
+ * property with startDate and endDate. By default the property is activityPeriod, but
+ * it can be changed with key argument.
+ */
+function resolveActiveObject(objects, date, key = 'activityPeriod') {
+    const momentDate = moment(date)
+    const active = objects.find((obj) => {
+        const { startDate, endDate } = obj[key]
+        return momentDate.isBetween(moment(startDate), moment(endDate))
+    })
+    if (active) return active
+
+    const sorted = objects
+        .filter((obj) => moment(obj[key].endDate).isBefore(momentDate))
+        .sort((a, b) => moment(b[key].endDate).diff(moment(a[key].endDate)))
+
+    return sorted[0]
+}
+
+/**
+ * Map correct course unit realisation id and assessment item id by raw entry id.
  */
 async function getCourseUnitRealisations(rawEntries) {
     const courses = await getCourses(rawEntries)
+    const courseUnitRealisations = {}
+    for (const course of courses) {
+        const { courseCode } = course
+        courseUnitRealisations[courseCode] = await fetchCourseUnitRealisation(courseCode)
+    }
 
     const courseRealisations = {}
     for (const rawEntry of rawEntries) {
-        const {courseId, attainmentDate} = rawEntry
-        const course = courses.find((c) => c.id === courseId)
-        const {id, assessmentItemIds} = await resolveCourseUnitRealisation(course.courseCode, attainmentDate)
-        courseRealisations[courseId] = {
-            courseUnitRealisationId: id,
+        const {courseId, attainmentDate, id} = rawEntry
+        const {courseCode} = courses.find((c) => c.id === courseId)
+        const {assessmentItemIds, id: courseUnitRealisationId} = resolveActiveObject(courseUnitRealisations[courseCode], attainmentDate)
+        courseRealisations[id] = {
+            courseUnitRealisationId: courseUnitRealisationId,
             assessmentItemId: assessmentItemIds[0]
         }
     }
     return courseRealisations
 }
 
+async function getCourseUnits(rawEntries) {
+    const courses = await getCourses(rawEntries)
+    const courseUnitData = {}
+    for (const course of courses) {
+        const { courseCode } = course
+        courseUnitData[courseCode] = await fetchCourseUnit(courseCode)
+    }
+
+    const courseUnits = {}
+    for (const rawEntry of rawEntries) {
+        const {courseId, attainmentDate, id} = rawEntry
+        const {courseCode} = courses.find((c) => c.id === courseId)
+        const {id: courseUnitId, gradeScaleId} = resolveActiveObject(courseUnitData[courseCode], attainmentDate, 'validityPeriod')
+        courseUnits[id] = { courseUnitId, gradeScaleId }
+    }
+    return courseUnits
+}
+
 /**
  * Get active course unit realisation by course code and date.
  * If no active found, return closest already ended realisation.
  */
-async function resolveCourseUnitRealisation(courseCode, date) {
+async function fetchCourseUnitRealisation(courseCode) {
     try {
-        const momentDate = moment(date)
         const resp = await api.get(`course_unit_realisations/?code=${courseCode}`)
-        const active = resp.data.find((realisation) => {
-            const { startDate, endDate } = realisation.activityPeriod
-            return momentDate.isBetween(moment(startDate), moment(endDate))
-        })
-        if (active) return active[0]
-
         return resp.data
-            .filter(({activityPeriod}) => moment(activityPeriod.endDate).isBefore(momentDate))
-            .sort((a, b) => moment(b.activityPeriod.endDate).diff(moment(a.activityPeriod.endDate)))[0]
+    } catch (e) {
+        if (e.response.data.status === 404) throw new Error(e.response.data.message)
+        throw new Error(e.toString())
+    }
+}
+
+/**
+ * Get active course unit object by course code and date.
+ * If no active found, return closest already ended course unit.
+ */
+async function fetchCourseUnit(courseCode) {
+    try {
+        const resp = await api.get(`course_units/?codes=${courseCode}`)
+        return resp.data
     } catch (e) {
         if (e.response.data.status === 404) throw new Error(e.response.data.message)
         throw new Error(e.toString())

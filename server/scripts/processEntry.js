@@ -4,7 +4,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const _ = require('lodash')
 const moment = require('moment')
-const { api } = require('../config/importerApi')
+const api = require('../config/importerApi')
 
 
 /**

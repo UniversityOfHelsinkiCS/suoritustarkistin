@@ -30,7 +30,8 @@ const {
 const {
   sisGetAllReports,
   sisGetUsersReports,
-  sisDeleteSingleEntry
+  sisDeleteSingleEntry,
+  sendToSis
 } = require('@controllers/sisReportController')
 const {
   addJob,
@@ -88,6 +89,7 @@ router.get('/sis_reports', checkAdmin, sisGetAllReports)
 router.delete('/sis_reports/:id', checkAdmin, sisDeleteSingleEntry)
 
 router.post('/sis_raw_entries', checkAdmin, addRawEntries)
+router.post('/entries_to_sis', checkAdmin, sendToSis)
 
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)

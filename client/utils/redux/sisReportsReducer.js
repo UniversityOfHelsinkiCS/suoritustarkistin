@@ -22,6 +22,12 @@ export const sisHandleEntryDeletionAction = (id) => {
   return callBuilder(route, prefix, 'delete')
 }
 
+export const sendEntriesToSisAction = (entryIds) => {
+  const route = `/entries_to_sis`
+  const prefix = 'SIS_POST_ENTRIES_TO_SIS'
+  return callBuilder(route, prefix, 'post', entryIds)
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [] }, action) => {
@@ -84,7 +90,30 @@ export default (state = { data: [] }, action) => {
         ...state,
         pending: false,
         error: true
-      }  
+      }
+    case 'SIS_POST_ENTRIES_TO_SIS_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'SIS_POST_ENTRIES_TO_SIS_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
+    case 'SIS_POST_ENTRIES_TO_SIS_SUCCESS': {
+      const updatedIds = action.response.map(({ id }) => id)
+      const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
+      const data = action.response.concat(oldEntries)
+      return {
+        ...state,
+        data,
+        pending: false,
+        error: false
+      }
+    }
     default:
       return state
   }

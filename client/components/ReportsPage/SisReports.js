@@ -1,7 +1,7 @@
 import React from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
-import { Accordion, Button, Table } from 'semantic-ui-react'
+import { Accordion, Button, Table, Message } from 'semantic-ui-react'
 import SendToSisButton from './SendToSisButton'
 import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 
@@ -44,66 +44,95 @@ const CellsIfNoEntry = () => (
   </>
 )
 
-const reportTable = (report, course) => {
-  const TableBody = () => {
-    return (
-      <Table.Body>
-        {report.map((rawEntry, index) => {
-          return (
-            <Table.Row key={`row-${index}`}>
-              <Table.Cell>{course.name}</Table.Cell>
-              <Table.Cell>{course.courseCode}</Table.Cell>
-              <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
-              {rawEntry.entry ? <CellsIfEntry entry={rawEntry.entry} /> : <CellsIfNoEntry />}
-              <Table.Cell>{rawEntry.grade}</Table.Cell>
-              <Table.Cell><DeleteButton id={rawEntry.id} /></Table.Cell>
-            </Table.Row>
-          )
-        })}
-      </Table.Body>
-    )
-  }
+const ReportTable = ({ rows, course }) => {
+  const TableBody = ({ rawEntries, course }) => <Table.Body>
+    {rawEntries.map((rawEntry) => {
+      return <>
+        <Table.Row key={`row-${rawEntry.id}`}>
+          <Table.Cell>{course.name}</Table.Cell>
+          <Table.Cell>{course.courseCode}</Table.Cell>
+          <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
+          {rawEntry.entry ? <CellsIfEntry entry={rawEntry.entry} /> : <CellsIfNoEntry />}
+          <Table.Cell>{rawEntry.grade}</Table.Cell>
+          <Table.Cell><DeleteButton id={rawEntry.id} /></Table.Cell>
+        </Table.Row>
+        {rawEntry.entry.errors ? <Table.Row key={`row-${rawEntry.id}-2`}>
+          <Table.Cell colSpan='11' error>{`Error: ${rawEntry.entry.errors.message}`}</Table.Cell>
+        </Table.Row> : null}
+      </>
+    })}
+  </Table.Body>
+  const TableColumns = () => <>
+    <Table.Header>
+      <Table.Row>
+        <Table.HeaderCell colSpan='3'>Basics</Table.HeaderCell>
+        <Table.HeaderCell
+          colSpan='8'
+          style={{ borderLeft: "2px solid gray" }}
+        >
+          Going to SIS
+            </Table.HeaderCell>
+      </Table.Row>
+    </Table.Header><Table.Header>
+      <Table.Row>
+        <Table.HeaderCell>Course code</Table.HeaderCell>
+        <Table.HeaderCell>Course name</Table.HeaderCell>
+        <Table.HeaderCell>Student number</Table.HeaderCell>
+        <Table.HeaderCell
+          style={{ borderLeft: "2px solid gray" }}
+        >
+          Student ID
+    </Table.HeaderCell>
+        <Table.HeaderCell>Employee ID</Table.HeaderCell>
+        <Table.HeaderCell>Course ID</Table.HeaderCell>
+        <Table.HeaderCell>Course instance ID</Table.HeaderCell>
+        <Table.HeaderCell>Completion date</Table.HeaderCell>
+        <Table.HeaderCell>Language</Table.HeaderCell>
+        <Table.HeaderCell>Grade</Table.HeaderCell>
+        <Table.HeaderCell>Delete</Table.HeaderCell>
+      </Table.Row>
+    </Table.Header></>
+  return rows.length ? <Table celled structured>
+    <TableColumns />
+    <TableBody rawEntries={rows} course={course} />
+  </Table> : null
 
+}
+
+const reportContents = (report, course) => {
+  const allEntriesSent = report.every(({ entry }) => entry.hasSent)
+  const reportContainsErrors = report.some(({ entry }) => entry.errors)
+  const panels = [{
+    key: 'entries-without-errors',
+    title: allEntriesSent ? 'Successfully sent entries' : 'Entries to Sisu',
+    content: <Accordion.Content>
+      <ReportTable
+        rows={report.filter(({ entry }) => !entry.errors)}
+        course={course} />
+    </Accordion.Content>
+  }]
+  if (allEntriesSent && reportContainsErrors)
+    panels.unshift({
+      active: true,
+      key: 'entries-with-errors',
+      title: 'Entries with errors',
+      content: <Accordion.Content><ReportTable rows={report.filter(({ entry }) => entry.errors || !entry.hasSent)} course={course} /></Accordion.Content>
+    })
   return (
     <Accordion.Content>
       <SendToSisButton
         entries={report
-          .filter(({entry}) => !entry.hasSent)
-          .map(({id}) => id)
+          .filter(({ entry }) => !entry.hasSent || entry.errors)
+          .map(({ entry }) => entry.id)
         } />
-      <Table celled striped structured>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell colSpan='3'>Basics</Table.HeaderCell>
-            <Table.HeaderCell
-              colSpan='8'
-              style={{ borderLeft: "2px solid gray" }}
-            >
-              Going to SIS
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Course code</Table.HeaderCell>
-            <Table.HeaderCell>Course name</Table.HeaderCell>
-            <Table.HeaderCell>Student number</Table.HeaderCell>
-            <Table.HeaderCell
-              style={{ borderLeft: "2px solid gray" }}
-            >
-              Student ID
-            </Table.HeaderCell>
-            <Table.HeaderCell>Empoyee ID</Table.HeaderCell>
-            <Table.HeaderCell>Course ID</Table.HeaderCell>
-            <Table.HeaderCell>Course instance ID</Table.HeaderCell>
-            <Table.HeaderCell>Completion date</Table.HeaderCell>
-            <Table.HeaderCell>Language</Table.HeaderCell>
-            <Table.HeaderCell>Grade</Table.HeaderCell>
-            <Table.HeaderCell>Delete</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <TableBody />
-      </Table>
+      {reportContainsErrors ? <Message error>
+        <Message.Header>This report contains errors from Sisu</Message.Header>
+        <p>See failed rows bellow. Failed entries can be resent to Sisu by clicking send completions to Sisu button.</p>
+      </Message> : null}
+      {!reportContainsErrors && allEntriesSent ? <Message success>
+        <Message.Header>All entries sent successfully to Sisu</Message.Header>
+      </Message> : null}
+      <Accordion.Accordion panels={panels} exclusive={false} />
     </Accordion.Content>
   )
 }
@@ -142,7 +171,7 @@ export default () => {
     return {
       key: `panel-${i}`,
       title: title(r),
-      content: reportTable(r, course)
+      content: reportContents(r, course)
     }
   })
 

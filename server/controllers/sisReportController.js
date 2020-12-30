@@ -105,7 +105,7 @@ const sendToSis = async (req, res) => {
   )
   const updatedWithRawEntries = await db.raw_entries.findAll({
     where: {
-      id: { [Op.in]: updatedEntries[1].map(({id}) => id) }
+      '$entry.id$': { [Op.in]: updatedEntries[1].map(({id}) => id) }
     },
     include: ['entry']
   })

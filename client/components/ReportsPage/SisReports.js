@@ -18,18 +18,13 @@ const DeleteButton = ({ id }) => {
 
 const CellsIfEntry = ({ entry }) => {
   const { personId, verifierPersonId, courseUnitRealisationId, assessmentItemId, completionDate, completionLanguage } = entry
-
+  
   return (
     <>
-      <Table.Cell
-        data-cy={`sis-report-personId-${entry.id}`}
-        style={{ borderLeft: "2px solid gray" }}
-      >
+      <Table.Cell data-cy={`sis-report-personId-${entry.id}`} style={{ borderLeft: "2px solid gray" }}>
         {personId ? personId : <span style={{ color: 'red'}}>null</span>}
       </Table.Cell>
-      <Table.Cell
-        data-cy={`sis-report-verifierPersonId-${entry.id}`}
-      >
+      <Table.Cell data-cy={`sis-report-verifierPersonId-${entry.id}`}>
         {verifierPersonId ? verifierPersonId : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-courseUnitRealisationId-${entry.id}`}>
@@ -60,15 +55,15 @@ const CellsIfNoEntry = () => (
 )
 
 const ReportTable = ({ rows, course }) => {
-  const TableBody = ({ rawEntries, course }) => <Table.Body>
+  const TableBody = ({ rawEntries, course }) => <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => {
       return <>
         <Table.Row key={`row-${rawEntry.id}`}>
-          <Table.Cell>{course.name}</Table.Cell>
-          <Table.Cell>{course.courseCode}</Table.Cell>
-          <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{course.courseCode}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{course.name}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
           {rawEntry.entry ? <CellsIfEntry entry={rawEntry.entry} /> : <CellsIfNoEntry />}
-          <Table.Cell>{rawEntry.grade}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-grade-${rawEntry.id}`}>{rawEntry.grade}</Table.Cell>
           <Table.Cell><DeleteButton id={rawEntry.id} /></Table.Cell>
         </Table.Row>
         {rawEntry.entry.errors ? <Table.Row key={`row-${rawEntry.id}-2`}>
@@ -88,7 +83,8 @@ const ReportTable = ({ rows, course }) => {
           Going to SIS
             </Table.HeaderCell>
       </Table.Row>
-    </Table.Header><Table.Header>
+    </Table.Header>
+    <Table.Header>
       <Table.Row>
         <Table.HeaderCell>Course code</Table.HeaderCell>
         <Table.HeaderCell>Course name</Table.HeaderCell>
@@ -97,7 +93,7 @@ const ReportTable = ({ rows, course }) => {
           style={{ borderLeft: "2px solid gray" }}
         >
           Student ID
-    </Table.HeaderCell>
+        </Table.HeaderCell>
         <Table.HeaderCell>Employee ID</Table.HeaderCell>
         <Table.HeaderCell>Course ID</Table.HeaderCell>
         <Table.HeaderCell>Course instance ID</Table.HeaderCell>
@@ -111,10 +107,10 @@ const ReportTable = ({ rows, course }) => {
     <TableColumns />
     <TableBody rawEntries={rows} course={course} />
   </Table> : null
-
 }
 
-const reportContents = (report, course) => {
+const reportContents = (report, courses) => {
+  const course = courses.find((c) => report[0].courseId === c.id)
   const allEntriesSent = report.every(({ entry }) => entry.hasSent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
   const panels = [{
@@ -147,7 +143,7 @@ const reportContents = (report, course) => {
       {!reportContainsErrors && allEntriesSent ? <Message success>
         <Message.Header>All entries sent successfully to Sisu</Message.Header>
       </Message> : null}
-      <Accordion.Accordion panels={panels} exclusive={false} />
+      <Accordion.Accordion data-cy={`sis-entries-panel-${course.courseCode}`} panels={panels} exclusive={false} />
     </Accordion.Content>
   )
 }
@@ -184,7 +180,7 @@ export default () => {
     return {
       key: `panel-${i}`,
       title: title(r),
-      content: reportContents(r, course)
+      content: reportContents(r, courses)
     }
   })
 

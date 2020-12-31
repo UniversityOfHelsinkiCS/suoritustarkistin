@@ -13,6 +13,8 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
+    cy.get('[data-cy=sis-entries-panel-TKT10001]').click()
+
     cy.get('[data-cy=sis-report-grade-1]').should('contain', 'valid grade 1')
 
     cy.get('[data-cy=sis-report-table]').its('length').should('eq', 1)
@@ -43,12 +45,17 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
+    cy.get('[data-cy=sis-entries-panel-TKT10001]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-1]').should('be.visible').click()
 
     cy.get('[data-cy=sis-report-TKT10002]').click()
+    cy.get('[data-cy=sis-entries-panel-TKT10002]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-2]').should('be.visible').click()
+
     cy.get('[data-cy=sis-report-TKT10002]').click()
+    cy.get('[data-cy=sis-entries-panel-TKT10002]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-3]').should('be.visible').click()
+
     cy.get('[data-cy=sis-no-reports]')
   })
 })

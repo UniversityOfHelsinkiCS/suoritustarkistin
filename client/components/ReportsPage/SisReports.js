@@ -178,8 +178,6 @@ export default () => {
   const manualReports = reports.data.filter((report) => report.reporterId) // filter out EoAI reports.
   if (manualReports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
-  const course = courses.find((c) => manualReports[0].courseId === c.id)
-
   const batchedReports = Object.values(_.groupBy(manualReports, 'batchId'))
 
   const panels = batchedReports.map((r, i) => {

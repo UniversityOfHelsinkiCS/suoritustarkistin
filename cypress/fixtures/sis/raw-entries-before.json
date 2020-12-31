@@ -1,7 +1,7 @@
 [
   {
     "id":1,
-    "studentNumber":"11111",
+    "studentNumber":"011111111",
     "batchId":"TKT10001%30.12.20-085844",
     "grade":"valid grade 1",
     "credits":"1,0",
@@ -15,11 +15,11 @@
     "entry":
       {
         "id":1,
-        "personId":"Student's id 1",
-        "verifierPersonId":"Grader's id 1",
+        "personId":"Student's ID 1",
+        "verifierPersonId":"Grader's ID 1",
         "courseUnitRealisationId":"Course unit realisation ID 1",
         "assessmentItemId":"Assessment ID 1",
-        "completionDate":"2020-12-30T08:58:20.900Z",
+        "completionDate":"2020-12-30T08:00:00.900Z",
         "completionLanguage":"fi",
         "courseUnitId":"Course unit id 1",
         "gradeScaleId":"sis-0-5",

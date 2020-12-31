@@ -1,33 +1,28 @@
 {
-  "id":2,
-  "studentNumber":"22222",
-  "batchId":"TKT10001%30.12.20-085844",
-  "grade":"valid grade 2",
-  "credits":"2,0",
-  "language":"fi",
-  "attainmentDate":"2020-12-30T08:58:20.900Z",
-  "graderId":2,
-  "reporterId":2,
-  "courseId":2,
-  "createdAt":"2020-12-30T08:58:44.465Z",
-  "updatedAt":"2020-12-30T08:58:44.465Z",
-  "entry":
+  "data":[
     {
-      "id":2,
-      "personId":"Student's id 2",
-      "verifierPersonId":"Grader's id 2",
-      "courseUnitRealisationId":"Course unit realisation ID 2",
-      "assessmentItemId":"Assessment ID 2",
-      "completionDate":"2020-12-30T08:58:20.900Z",
-      "completionLanguage":"fi",
-      "courseUnitId":"Course unit id 2",
-      "gradeScaleId":"sis-0-5",
-      "gradeId":"2",
-      "hasSent":false,
-      "senderId":2,
-      "errors":null,
-      "createdAt":"2020-12-30T08:58:48.612Z",
-      "updatedAt":"2020-12-30T08:58:48.612Z",
-      "rawEntryId":2
-      }
+      "studentId":"011000002",
+      "batchId":"",
+      "grade":"2",
+      "credits":"2",
+      "language":"en",
+      "graderId":"",
+      "reporterId":"",
+      "course":"",
+      "duplicate":false
+    },{
+      "studentId":"010000003",
+      "batchId":"",
+      "grade":"3",
+      "credits":"3",
+      "language":"sv",
+      "graderId":"",
+      "reporterId":"",
+      "course":"",
+      "duplicate":false
+    }
+  ],
+  "courseId":2,
+  "date":"2020-12-30T09:00:00.900Z",
+  "graderId":"321"
 }

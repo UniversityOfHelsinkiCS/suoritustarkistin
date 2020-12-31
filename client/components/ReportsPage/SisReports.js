@@ -12,7 +12,7 @@ const ContainsErrors = ({ amount }) => <span style={{ color: 'orange', marginLef
 const DeleteButton = ({ id }) => {
   const dispatch = useDispatch()
   return (
-    <Button color="red" onClick={() => dispatch(sisHandleEntryDeletionAction(id))}>Delete</Button>
+    <Button data-cy={`sis-report-entry-delete-button-${id}`} color="red" onClick={() => dispatch(sisHandleEntryDeletionAction(id))}>Delete</Button>
   )
 }
 

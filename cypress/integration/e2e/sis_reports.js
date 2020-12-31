@@ -63,7 +63,7 @@ describe('SIS Reports -page shows data correctly', function () {
     })
   })
 
-  it('Entries are shown correctly on the reports page', () => {
+  it('Entry data is shown correctly on the reports page', () => {
     cy.visit('')
     cy.get('[data-cy=adminmode-enable]').click()
 
@@ -72,7 +72,7 @@ describe('SIS Reports -page shows data correctly', function () {
 
     cy.get('[data-cy=nav-reports]').click()
     cy.wait('@getInitialEntries')
-    cy.wait(2000)
+    cy.wait(1000)
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
@@ -90,6 +90,29 @@ describe('SIS Reports -page shows data correctly', function () {
     cy.get('[data-cy="sis-report-assessmentItemId-1').should('contain', "Assessment ID 1")
     cy.get('[data-cy="sis-report-completionDate-1').should('contain', "2020-12-30T08:00:00.900Z")
     cy.get('[data-cy="sis-report-completionLanguage-1').should('contain', "fi")
+  })
+
+  it('Single entries can be deleted from the reports page', () => {
+    cy.visit('')
+    cy.get('[data-cy=adminmode-enable]').click()
+    cy.server()
+    cy.route('GET', 'http://localhost:8000/api/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
+    cy.wait(1000)
+    cy.get('[data-cy=nav-reports]').click()
+    cy.get('[data-cy=nav-reports]').click()
+    cy.wait('@getUpdatedEntries')
+    cy.wait(1000)
+
+    cy.get('[data-cy=sis-reports-tab]').click()
+    cy.get('[data-cy=sis-report-TKT10001]').click()
+    cy.get('[data-cy=sis-report-entry-delete-button-1]').should('be.visible').click()
+
+    cy.get('[data-cy=sis-report-TKT10002]').click()
+    cy.get('[data-cy=sis-report-entry-delete-button-2]').should('be.visible').click()
+    cy.get('[data-cy=sis-report-TKT10002]').click()
+    cy.get('[data-cy=sis-report-entry-delete-button-3]').should('be.visible').click()
+    cy.get('[data-cy=sis-no-reports]')
+
   })
 
 })

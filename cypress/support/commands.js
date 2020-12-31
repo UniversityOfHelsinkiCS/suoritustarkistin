@@ -72,7 +72,6 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
   })
   cy.request('DELETE', '/api/courses')
   cy.request('DELETE', '/api/users')
-  cy.request('DELETE', '/api/sis_reports')
 
   cy.fixture('sis/raw-entries-before.json').as('initialRawEntriesJSON');
   cy.fixture('sis/raw-entries-add.json').as('addRawEntriesJSON');

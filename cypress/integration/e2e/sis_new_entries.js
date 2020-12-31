@@ -74,7 +74,6 @@ describe('New sis-entries can be added correctly', function () {
     cy.asAdmin().visit('')
     cy.get('[data-cy=adminmode-enable]').click()
     cy.get('[data-cy=sis-copypaste]').should('be.visible').click()
-    cy.get('[data-cy=sisSendButton]').should('be.disabled')
     cy.get('[data-cy=sisPastefield]').type(
       '011111111;2;5;fi',
       {
@@ -97,7 +96,6 @@ describe('New sis-entries can be added correctly', function () {
     cy.get('[data-cy=sisSendButton]')
       .should('not.be.disabled')
       .click()
-      .should('be.disabled')
 
     cy.wait(20000)
 

@@ -1,70 +1,7 @@
-describe('SIS Reports -page shows data correctly', function () {
-  beforeEach(function () {
-    cy.server({
-      onAnyRequest: (route, proxy) => {
-        proxy.xhr.setRequestHeader('employeenumber', Cypress.env('ADMIN_EMPLOYEE_NUMBER'))
-      },
-    })
-    cy.request('DELETE', '/api/courses')
-    cy.request('DELETE', '/api/users')
-    cy.request('DELETE', '/api/sis_reports')
-
-    cy.fixture('sis/raw-entries-before.json').as('initialRawEntriesJSON');
-    cy.fixture('sis/raw-entries-add.json').as('addRawEntriesJSON');
-    cy.fixture('sis/raw-entries-after.json').as('updatedRawEntriesJSON');
-
-    cy.request('POST', '/api/users', {
-      name: 'sis_test_teacher',
-      employeeId: '123',
-      isAdmin: false,
-      isGrader: false,
-    })
-
-    cy.request('POST', '/api/users', {
-      name: 'sis_test_grader',
-      employeeId: '321',
-      isAdmin: false,
-      isGrader: true,
-    })
-    .then((response) => {
-      cy.request('POST', '/api/courses', {
-        id: 1,
-        name: 'Valid course 1',
-        courseCode: 'TKT10001',
-        language: 'fi',
-        credits: '1,0',
-        graderId: response.body.id,
-      })
-
-    cy.request('POST', '/api/users', {
-      name: 'sis_test_admin',
-      employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
-      isAdmin: true,
-      isGrader: true,
-    })
-      .then((response) => {
-        cy.request('POST', '/api/courses', {
-          id: 2,
-          name: 'Valid course 2',
-          courseCode: 'TKT10002',
-          language: 'en',
-          credits: '2,0',
-          graderId: response.body.id,
-        })
-        cy.request('POST', '/api/courses', {
-          id: 3,
-          name: 'Valid course 3',
-          courseCode: 'TKT10003',
-          language: 'sv',
-          credits: '3,0',
-          graderId: response.body.id,
-        })
-      })
-    })
-  })
-
+describe('SIS Reports -page shows data correctly', () => {
   it('Entry data is shown correctly on the reports page', () => {
-    cy.visit('')
+    cy.initializeUsersAndCourses()
+    cy.asAdmin().visit('')
     cy.get('[data-cy=adminmode-enable]').click()
 
     cy.server()
@@ -93,7 +30,8 @@ describe('SIS Reports -page shows data correctly', function () {
   })
 
   it('Single entries can be deleted from the reports page', () => {
-    cy.visit('')
+    cy.initializeUsersAndCourses()
+    cy.asAdmin().visit('')
     cy.get('[data-cy=adminmode-enable]').click()
     cy.server()
     cy.route('GET', 'http://localhost:8000/api/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
@@ -112,7 +50,5 @@ describe('SIS Reports -page shows data correctly', function () {
     cy.get('[data-cy=sis-report-TKT10002]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-3]').should('be.visible').click()
     cy.get('[data-cy=sis-no-reports]')
-
   })
-
 })

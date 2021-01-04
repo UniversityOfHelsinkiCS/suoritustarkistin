@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { Loader } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import { useDropzone } from 'react-dropzone'
@@ -90,6 +91,7 @@ export default () => {
         <p>
           One .csv, .txt, or .dat -ended file, under 5MB is accepted
         </p>
+        <Loader size='big' inline active={newRawEntries.sending} />
       </div>
     </div>
   )

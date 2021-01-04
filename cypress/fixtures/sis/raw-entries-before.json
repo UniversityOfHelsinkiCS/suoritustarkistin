@@ -24,7 +24,6 @@
         "courseUnitId":"Course unit id 1",
         "gradeScaleId":"sis-0-5",
         "gradeId":"1",
-        "hasSent":false,
         "senderId":1,
         "errors":null,
         "createdAt":"2020-12-30T08:58:48.612Z",

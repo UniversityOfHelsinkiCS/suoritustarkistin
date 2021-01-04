@@ -7,8 +7,10 @@ import { parseCSV } from 'Utilities/inputParser'
 const baseStyle = {
   flex: 1,
   display: 'flex',
+  minHeight: '218px',
   flexDirection: 'column',
   alignItems: 'center',
+  verticalAlign: 'center',
   padding: '20px',
   borderWidth: 2,
   borderRadius: 2,
@@ -79,14 +81,14 @@ export default () => {
   })
 
   return (
-    <div className="container">
+    <div className="container" style={{ cursor: 'pointer' }}>
       <div data-cy="dropzone" {...getRootProps({ style })}>
         <input {...getInputProps()} />
         <p>
-          Lisää tiedosto raahaamalla se tähän, tai etsi se klikkaamalla tästä.
-          <br />
-          <br />
-          Yksi .csv, .txt, tai .dat -päätteinen, alle 5MB tiedosto hyväksytään.
+          Drag a file here, or find it by clicking this box.
+        </p>
+        <p>
+          One .csv, .txt, or .dat -ended file, under 5MB is accepted
         </p>
       </div>
     </div>

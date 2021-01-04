@@ -30,7 +30,7 @@ workflows:
           extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin/'
           filters:
             branches:
-              only: trunk
+              only: sis
       - dockerhub/publish:
           requires:
             - cypress/run

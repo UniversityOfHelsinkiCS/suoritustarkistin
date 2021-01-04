@@ -2,21 +2,33 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import RawReports from 'Components/ReportsPage/RawReports'
 import Reports from 'Components/ReportsPage/Reports'
+import SisReports from 'Components/ReportsPage/SisReports'
 import {
   getAllReportsAction,
   getUsersReportsAction
 } from 'Utilities/redux/reportsReducer'
+import {
+  sisGetAllReportsAction,
+  sisGetUsersReportsAction
+} from 'Utilities/redux/sisReportsReducer'
 import { Menu, Icon, Tab } from 'semantic-ui-react'
+import { getAllCoursesAction } from '../../utils/redux/coursesReducer'
 
 export default () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
   const reports = useSelector((state) => state.reports)
+  const sisReports = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    user.adminMode
-      ? dispatch(getAllReportsAction())
-      : dispatch(getUsersReportsAction(user.id))
+    if (user.adminMode) {
+      dispatch(getAllReportsAction())
+      dispatch(getAllCoursesAction())
+      dispatch(sisGetAllReportsAction())
+    } else {
+      dispatch(getUsersReportsAction(user.id))
+      dispatch(sisGetUsersReportsAction(user.id))
+    }
   }, [user])
 
   let panes = [
@@ -54,7 +66,7 @@ export default () => {
   ]
 
   if (user.adminMode) {
-    panes.push({
+    panes = [...panes, {
       menuItem: (
         <Menu.Item key="mooc" data-cy="mooc-reports-tab">
           <Icon name="file alternate outline" />
@@ -71,7 +83,25 @@ export default () => {
           />
         </Tab.Pane>
       )
-    })
+    },
+    {
+      menuItem: (
+        <Menu.Item key="sis" data-cy="sis-reports-tab">
+          <Icon name="file alternate outline" />
+          SIS Reports
+        </Menu.Item>
+      ),
+      render: () => (
+        <Tab.Pane>
+          <SisReports
+            reports={{
+              ...sisReports,
+              data: sisReports.data.filter((report) => report.reporterId)
+            }}
+          />
+        </Tab.Pane>
+      )
+    }]
   }
 
   return <Tab panes={panes} />

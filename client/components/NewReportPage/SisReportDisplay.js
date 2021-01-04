@@ -6,10 +6,11 @@ const { commify } = require('Root/utils/commify')
 
 const {
   isValidStudentId,
-  isValidOodiDate,
   isValidGrade,
   isValidCreditAmount,
-  isValidLanguage
+  isValidLanguage,
+  sisIsValidDate,
+  sisIsDateObject
 } = require('Root/utils/validators')
 
 const validStyle = {
@@ -139,32 +140,43 @@ const getLanguageCell = (language, course) => {
 }
 
 const getDateCell = (date) => {
-  if (isValidOodiDate(date)) {
-    return <Table.Cell style={validStyle}>{date}</Table.Cell>
+  if (date) {
+    if (sisIsValidDate(date)) {
+      return <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
+    }
+    if (sisIsDateObject(date)) {
+      return (
+        <Table.Cell style={invalidStyle}>
+          <Icon name="ban" />
+          {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
+        </Table.Cell>
+      )
+    }
+    return (
+      <Table.Cell style={invalidStyle}>
+        <Icon name="ban" />
+        {date}
+      </Table.Cell>
+    )
   }
-  return (
-    <Table.Cell style={invalidStyle}>
-      <Icon name="ban" />
-      {date}
-    </Table.Cell>
-  )
+  return <Table.Cell />
 }
 
 export default () => {
-  const newReport = useSelector((state) => state.newReport)
+  const newRawEntries = useSelector((state) => state.newRawEntries)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
   const registrations = useSelector((state) => state.registrations.data)
 
-  if (!newReport.data) return null
+  if (!newRawEntries.data) return null
 
   const grader = graders.find(
-    (g) => g.employeeId === newReport.graderEmployeeId
+    (g) => g.employeeId === newRawEntries.graderId
   )
-  const course = courses.find((c) => c.id === newReport.courseId)
-  const date = newReport.date ? newReport.date : 'Add completion date'
+  const course = courses.find((c) => c.id === newRawEntries.courseId)
+  const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
 
-  const reportRows = newReport.data.map((row, index) => (
+  const reportRows = newRawEntries.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
       {row.registration ||
       hasOpenUniRegistration(course, row.studentId, registrations)
@@ -179,7 +191,7 @@ export default () => {
       ) : (
         <Table.Cell />
       )}
-      {getDateCell(row.completionDate || date)}
+      {getDateCell(row.attainmentDate || date)}
     </Table.Row>
   ))
 

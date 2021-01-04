@@ -50,7 +50,7 @@ export default () => {
       <TextArea
         data-cy="pastefield"
         onChange={handleDataChange}
-        placeholder="Liitä suoritustiedot tähän ylläolevan ohjeen mukaan formatoituna."
+        placeholder="Add the course completion information here, formatted as in the instructions above."
         rows={10}
         value={newReport.rawData}
         style={textAreaStyle}

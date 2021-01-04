@@ -54,3 +54,75 @@ Cypress.Commands.add('asUser', () => {
     }
   })
 })
+
+Cypress.Commands.add('asGrader', () => {
+  cy.server({
+    onAnyRequest: (route, proxy) => {
+      proxy.xhr.setRequestHeader('employeenumber', '111')
+    }
+  })
+})
+
+
+Cypress.Commands.add('initializeUsersAndCourses', () => {
+  cy.server({
+    onAnyRequest: (route, proxy) => {
+      proxy.xhr.setRequestHeader('employeenumber', Cypress.env('ADMIN_EMPLOYEE_NUMBER'))
+    },
+  })
+  cy.request('DELETE', '/api/courses')
+  cy.request('DELETE', '/api/users')
+
+  cy.fixture('sis/raw-entries-before.json').as('initialRawEntriesJSON');
+  cy.fixture('sis/raw-entries-add.json').as('addRawEntriesJSON');
+  cy.fixture('sis/raw-entries-after.json').as('updatedRawEntriesJSON');
+
+  cy.request('POST', '/api/users', {
+    name: 'user',
+    employeeId: 321,
+    isAdmin: false,
+    isGrader: false,
+  })
+
+  cy.request('POST', '/api/users', {
+    name: 'grader',
+    employeeId: 111,
+    isAdmin: false,
+    isGrader: true,
+  })
+  .then((response) => {
+    cy.request('POST', '/api/courses', {
+      id: 1,
+      name: 'Valid course 1',
+      courseCode: 'TKT10001',
+      language: 'fi',
+      credits: '3,0',
+      graderId: response.body.id,
+    })
+
+  cy.request('POST', '/api/users', {
+    name: 'admin',
+    employeeId: 123,
+    isAdmin: true,
+    isGrader: false,
+  })
+  .then((response) => {
+    cy.request('POST', '/api/courses', {
+      id: 2,
+      name: 'Valid course 2',
+      courseCode: 'TKT10002',
+      language: 'en',
+      credits: '2,0',
+      graderId: response.body.id,
+    })
+    cy.request('POST', '/api/courses', {
+      id: 3,
+      name: 'Valid course 3',
+      courseCode: 'TKT10003',
+      language: 'sv',
+      credits: '3,0',
+      graderId: response.body.id,
+    })
+    })
+  })
+})

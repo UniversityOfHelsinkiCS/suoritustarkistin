@@ -44,7 +44,7 @@ export default ({ close }) => {
           required={true}
           control={Input}
           label="Course name"
-          placeholder="Kurssin luomisen perusteet"
+          placeholder="Basics of creating a course"
           value={data.name || ''}
           onChange={(e) => setData({ ...data, name: e.target.value })}
           error={false}

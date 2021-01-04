@@ -14,48 +14,61 @@ export default (state = null, action) => {
       return null
     case 'POST_REPORT_SUCCESS':
       return {
-        header: 'Raportti lähetetty!',
+        header: 'Report sent!',
         content:
-          'Kurssisuoritukset on lähetetty eteenpäin kirjattavaksi. Näet luodun raportin View reports-sivulta.',
+          'Course completions have now been sent for reporting. You can see the created report on the "View reports" -page',
         type: 'positive'
       }
     case 'POST_REPORT_FAILURE':
       return {
-        header: 'Raportin lähetys epäonnistui!',
+        header: 'Sending the report failed!',
         content:
-          'Kurssisuoritusten lähettäminen epäonnistui. Jos vika jatkuu, ota yhteyttä grp-toska@cs.helsinki.fi.',
+          'Sending the course completions failed. If the error persists, please contact grp-toska@cs.helsinki.fi.',
         type: 'negative'
       }
     case 'ADD_COURSE_SUCCESS':
       return {
-        header: `Kurssi ${action.response.name} luotu.`,
-        content: 'Kurssille voi nyt kirjata uusia suorituksia.',
+        header: `Course ${action.response.name} has been created.`,
+        content: 'You can now add new completions for the course.',
         type: 'positive'
       }
     case 'ADD_COURSE_FAILURE':
       return {
-        header: 'Kurssin luonti epäonnistui!',
+        header: 'Creating the course failed!',
         content:
-          'Kurssin luonti epäonnistui. Jos vika jatkuu, ota yhteyttä grp-toska@cs.helsinki.fi.',
+          'Course creation failed. If the error persists, please contact grp-toska@cs.helsinki.fi.',
         type: 'negative'
       }
     case 'EDIT_COURSE_SUCCESS':
       return {
-        header: `Kurssin ${action.response.name} muokkaus onnistui.`,
-        content: 'Kurssin tulevat suoritukset kirjataan uusilla tiedoilla.',
+        header: `${action.response.name} has been successfully modified!`,
+        content: 'New completions will be added with the modified course information.',
         type: 'positive'
       }
     case 'EDIT_COURSE_FAILURE':
       return {
-        header: 'Kurssin muokkaus epäonnistui.',
+        header: 'Modifying the course failed.',
         content:
-          'Kurssin muokkaus epäonnistui. Jos vika jatkuu, ota yhteyttä grp-toska@cs.helsinki.fi.',
+          'Course modification has failed. If the error persists, please contact grp-toska@cs.helsinki.fi.',
         type: 'negative'
       }
     case 'DELETE_COURSE_SUCCESS':
       return {
-        header: `Kurssin poisto onnistui.`,
-        content: 'Kurssi on poistettu eikä sille voi enää merkitä suorituksia.',
+        header: `Course has been successfully deleted.`,
+        content: 'The course has been deleted and no new completions can be added.',
+        type: 'positive'
+      }
+    case 'SIS_POST_RAW_ENTRIES_FAILURE':
+      return {
+        header: `Sending the report failed!`,
+        content: `Sending the course completions failed. ${action.error || 'If the error persists, please contact grp-toska@cs.helsinki.fi'}.`,
+        type: 'negative'
+      }
+    case 'SIS_POST_RAW_ENTRIES_SUCCESS':
+      return {
+        header: 'Report sent!',
+        content:
+          'Course completions have now been sent for reporting. You can see the created report on the "View reports" -page',
         type: 'positive'
       }
     default:

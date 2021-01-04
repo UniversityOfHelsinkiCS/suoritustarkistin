@@ -1,6 +1,5 @@
 import React from 'react'
 import { Message } from 'semantic-ui-react'
-
 import { useSelector, useDispatch } from 'react-redux'
 import { clearMessageAction } from 'Utilities/redux/messageReducer'
 

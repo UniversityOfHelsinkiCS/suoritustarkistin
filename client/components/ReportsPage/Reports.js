@@ -1,6 +1,5 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-
 import { Accordion, Table } from 'semantic-ui-react'
 
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>

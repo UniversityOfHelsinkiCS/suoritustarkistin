@@ -45,8 +45,8 @@ const processManualEntry = async ({
   })
 
   if (!course) throw new Error('Course id does not exist.')
-  
-  // TODO: Define how registrations are checked for MOOC-courses 
+
+  // TODO: Define how registrations are checked for MOOC-courses
   /* const registrations = course.autoSeparate
     ? await getRegistrations([`AY${course.courseCode}`])
     : undefined
@@ -79,7 +79,7 @@ const processManualEntry = async ({
   })
 
   const rawEntryIds = await db.raw_entries.bulkCreate(rawEntries, {returning: true, transaction})
-  await processEntries(rawEntryIds, reporterId, transaction)
+  await processEntries(rawEntryIds, transaction)
   return true
 }
 

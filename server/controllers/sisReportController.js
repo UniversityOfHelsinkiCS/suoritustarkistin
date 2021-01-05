@@ -12,7 +12,7 @@ const handleDatabaseError = (res, error) => {
 const sisGetAllReports = async (req, res) => {
   try {
     const allRawEntries = await db.raw_entries.findAll({
-      include: ['entry'],
+      include: [{model: db.entries, as: 'entry', include: ['sender']}],
       order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(allRawEntries)
@@ -25,7 +25,7 @@ const sisGetUsersReports = async (req, res) => {
   try {
     const usersRawEntries = await db.raw_entries.findAll({
       where: { graderId: req.user.id },
-      include: ['entry'],
+      include: [{model: db.entries, as: 'entry', include: ['sender']}],
       order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(usersRawEntries)
@@ -52,6 +52,10 @@ const sisDeleteSingleEntry = async (req, res) => {
  * Request body should contain a list of entry ids to be sent to Sisu.
  */
 const sendToSis = async (req, res) => {
+  if (!req.user.isGrader && !req.user.isAdmin) {
+    throw new Error('User is not authorized to report credits.')
+  }
+
   const entryIds = req.body
   const entries = await db.entries.findAll({
     where: {
@@ -61,6 +65,7 @@ const sendToSis = async (req, res) => {
     raw: true,
     nest: true
   })
+  const senderId = req.user.id
 
   const data = entries.map((entry) => {
     const {
@@ -99,15 +104,20 @@ const sendToSis = async (req, res) => {
 
   // In updated entries The first element is always the number of affected rows,
   // while the second element is the actual affected rows.
-  const updatedEntries = await db.entries.update(
-    { hasSent: true },
-    { where: { id: { [Op.in]: entryIds } }, returning: true}
-  )
+  const updatedEntries = await db.entries.update({
+    sent: new Date(),
+    senderId
+  }, {
+    where: {
+      id: { [Op.in]: entryIds }
+    },
+    returning: true
+  })
   const updatedWithRawEntries = await db.raw_entries.findAll({
     where: {
       '$entry.id$': { [Op.in]: updatedEntries[1].map(({id}) => id) }
     },
-    include: ['entry']
+    include: [{model: db.entries, as: 'entry', include: ['sender']}]
   })
 
 

@@ -16,7 +16,6 @@ describe('New sis-entries can be added correctly', function () {
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
-    cy.get('[data-cy=sis-entries-panel-TKT10001]').click()
     cy.get('[data-cy=sis-report-course-code-1]').should('contain', 'TKT10001')
     cy.get('[data-cy=sis-report-student-number-1]').should('contain', '011111111')
 
@@ -59,9 +58,8 @@ describe('New sis-entries can be added correctly', function () {
 
     // Check that both entries of the same batch are shown and no more entries in the same list
     cy.get('[data-cy=sis-reports-tab]').click()
-    cy.get('[data-cy=sis-report-table]').its('length').should('eq', 2)
     cy.get('[data-cy=sis-report-TKT10002]').click()
-    cy.get('[data-cy=sis-entries-panel-TKT10002]').click()
+    cy.get('[data-cy=sis-report-table]').its('length').should('eq', 2)
     cy.get('[data-cy=sis-report-course-code-2]').should('contain', 'TKT10002')
     cy.get('[data-cy=sis-report-student-number-2]').should('contain', '011000002')
     cy.get('[data-cy=sis-report-course-code-3]').should('contain', 'TKT10002')

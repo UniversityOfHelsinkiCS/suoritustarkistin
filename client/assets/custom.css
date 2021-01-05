@@ -19,6 +19,10 @@
   margin-right: 0px;
 }
 
+.ui.selection.dropdown .menu {
+  max-height: 35em;
+}
+
 .date-picker {
   cursor: pointer;
   word-wrap: break-word;

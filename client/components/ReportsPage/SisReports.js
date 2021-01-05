@@ -4,10 +4,23 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Accordion, Button, Table, Message } from 'semantic-ui-react'
 import SendToSisButton from './SendToSisButton'
 import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
+import moment from 'moment'
 
-const SentToSis = () => <span style={{ color: 'green' }}>SENT TO SIS</span>
+
+const SentToSis = ({ senderNames, formattedDate }) => <span>
+  <span style={{ color: 'green' }}>SENT TO SIS </span>
+  <span style={{ color: 'gray' }}>{formattedDate}, by: {senderNames.join(",")}</span>
+</span>
 const NotSentToSis = () => <span style={{ color: 'red' }}>NOT SENT TO SIS</span>
-const ContainsErrors = ({ amount }) => <span style={{ color: 'orange', marginLeft: '0.5rem' }}>{`CONTAINS ${amount} ERROR(S)`}</span>
+const ContainsErrors = ({ amount }) => <div style={{ color: 'orange' }}>{`CONTAINS ${amount} ERROR(S)`}</div>
+
+const SisErrorsMessage = () => <Message error>
+  <Message.Header>This report contains errors from Sisu</Message.Header>
+  <p>See failed rows bellow. Failed entries can be resent to Sisu by clicking send completions to Sisu button.</p>
+</Message>
+const SisSuccessMessage = () => <Message success>
+  <Message.Header>All entries sent successfully to Sisu</Message.Header>
+</Message>
 
 const DeleteButton = ({ id }) => {
   const dispatch = useDispatch()
@@ -18,11 +31,11 @@ const DeleteButton = ({ id }) => {
 
 const CellsIfEntry = ({ entry }) => {
   const { personId, verifierPersonId, courseUnitRealisationId, assessmentItemId, completionDate, completionLanguage } = entry
-  
+
   return (
     <>
       <Table.Cell data-cy={`sis-report-personId-${entry.id}`} style={{ borderLeft: "2px solid gray" }}>
-        {personId ? personId : <span style={{ color: 'red'}}>null</span>}
+        {personId ? personId : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-verifierPersonId-${entry.id}`}>
         {verifierPersonId ? verifierPersonId : <span style={{ color: 'red' }}>null</span>}
@@ -31,7 +44,7 @@ const CellsIfEntry = ({ entry }) => {
         {courseUnitRealisationId ? courseUnitRealisationId : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-assessmentItemId-${entry.id}`}>
-        {assessmentItemId ? assessmentItemId : <span style={{ color: 'red' }}>null</span> }
+        {assessmentItemId ? assessmentItemId : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionDate-${entry.id}`}>
         {completionDate ? completionDate : <span style={{ color: 'red' }}>null</span>}
@@ -111,39 +124,43 @@ const ReportTable = ({ rows, course }) => {
 
 const reportContents = (report, courses) => {
   const course = courses.find((c) => report[0].courseId === c.id)
-  const allEntriesSent = report.every(({ entry }) => entry.hasSent)
+  const batchNotSent = report.every(({ entry }) => !entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
   const panels = [{
     key: 'entries-without-errors',
-    title: allEntriesSent ? 'Successfully sent entries' : 'Entries to Sisu',
+    title: 'Successfully sent entries',
     content: <Accordion.Content>
       <ReportTable
         rows={report.filter(({ entry }) => !entry.errors)}
         course={course} />
     </Accordion.Content>
   }]
-  if (allEntriesSent && reportContainsErrors)
+  if (reportContainsErrors)
     panels.unshift({
       active: true,
       key: 'entries-with-errors',
       title: 'Entries with errors',
-      content: <Accordion.Content><ReportTable rows={report.filter(({ entry }) => entry.errors || !entry.hasSent)} course={course} /></Accordion.Content>
+      content: <Accordion.Content><ReportTable rows={report.filter(({ entry }) => entry.errors || !entry.sent)} course={course} /></Accordion.Content>
     })
+
   return (
     <Accordion.Content>
       <SendToSisButton
         entries={report
-          .filter(({ entry }) => !entry.hasSent || entry.errors)
+          .filter(({ entry }) => !entry.sent || entry.errors)
           .map(({ entry }) => entry.id)
         } />
-      {reportContainsErrors ? <Message error>
-        <Message.Header>This report contains errors from Sisu</Message.Header>
-        <p>See failed rows bellow. Failed entries can be resent to Sisu by clicking send completions to Sisu button.</p>
-      </Message> : null}
-      {!reportContainsErrors && allEntriesSent ? <Message success>
-        <Message.Header>All entries sent successfully to Sisu</Message.Header>
-      </Message> : null}
-      <Accordion.Accordion data-cy={`sis-entries-panel-${course.courseCode}`} panels={panels} exclusive={false} />
+
+      {reportContainsErrors ? <SisErrorsMessage /> : null}
+      {!batchNotSent ? <SisSuccessMessage /> : null}
+
+      { // Display accordion only when batch contains sent entries or entries with errors
+        batchNotSent && !reportContainsErrors
+          ? <ReportTable
+            rows={report}
+            course={course} />
+          : <Accordion.Accordion data-cy={`sis-entries-panel-${course.courseCode}`} panels={panels} exclusive={false} />
+      }
     </Accordion.Content>
   )
 }
@@ -151,14 +168,15 @@ const reportContents = (report, courses) => {
 const title = (batch) => {
   const reportName = batch[0].batchId.split('%')
   const timestamp = reportName[1].split('-')
-  const indicationWhetherSentToSis = batch.every(({ entry }) => entry.hasSent)
+  const batchSenders = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
+  const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
   const includesErrors = batch.filter(({ entry }) => entry.errors).length
   return (
     <Accordion.Title data-cy={`sis-report-${reportName[0]}`}>
       {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)
         }:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
       <div>
-        {indicationWhetherSentToSis ? <SentToSis /> : <NotSentToSis />}
+        {batchSenders.length && sentDate ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("DD.MM.YYYY")} /> : <NotSentToSis />}
         {includesErrors ? <ContainsErrors amount={includesErrors} /> : null}
       </div>
     </Accordion.Title>

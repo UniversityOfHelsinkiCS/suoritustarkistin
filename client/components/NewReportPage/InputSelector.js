@@ -2,6 +2,7 @@ import React from 'react'
 import { Tab, Menu, Icon } from 'semantic-ui-react'
 import { useSelector } from 'react-redux'
 import Dropzone from 'Components/NewReportPage/Dropzone'
+import SisDropzone from 'Components/NewReportPage/SisDropzone'
 import InputOptions from 'Components/NewReportPage/InputOptions'
 import SisInputOptions from 'Components/NewReportPage/SisInputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
@@ -55,6 +56,21 @@ export default () => {
       render: () => (
         <Tab.Pane>
           <SisTextInput />
+          <SisInputOptions />
+          <SisReportDisplay />
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: (
+        <Menu.Item key="sis-dragdrop" data-cy="sis-dragdrop">
+          <Icon name="folder open" />
+          SIS - Drag & Drop
+        </Menu.Item>
+      ),
+      render: () => (
+        <Tab.Pane>
+          <SisDropzone />
           <SisInputOptions />
           <SisReportDisplay />
         </Tab.Pane>

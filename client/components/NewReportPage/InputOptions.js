@@ -2,6 +2,7 @@ import SendButton from 'Components/NewReportPage/SendButton.js'
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Select, Input } from 'semantic-ui-react'
+import * as _ from 'lodash'
 import { setNewReportAction } from 'Utilities/redux/newReportReducer'
 import {
   getCoursesRegistrationsAction,
@@ -16,17 +17,23 @@ import {
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
 
-const findGradersForSelection = (data) =>
-  data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
+const findGradersForSelection = (data) => {
+  const graders = data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
+  if (graders) return _.sortBy(graders, ['text'])
+  return []
+}
 
-const formatCoursesForSelection = (data) =>
-  data.map((c) => ({
+const formatCoursesForSelection = (data) => {
+  const courses = data.map((c) => ({
     key: c.id,
     text: c.autoSeparate
       ? `${c.name} (${c.courseCode} + AY${c.courseCode})`
       : `${c.name} (${c.courseCode})`,
     value: c.id
   }))
+  if (courses) return _.sortBy(courses, ['text'])
+  return []
+}
 
 export default () => {
   const dispatch = useDispatch()

@@ -13,7 +13,6 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
-    cy.get('[data-cy=sis-entries-panel-TKT10001]').click()
 
     cy.get('[data-cy=sis-report-grade-1]').should('contain', 'valid grade 1')
 
@@ -34,6 +33,9 @@ describe('SIS Reports -page shows data correctly', () => {
   it('Single entries can be deleted from the reports page', () => {
     cy.initializeUsersAndCourses()
     cy.asAdmin().visit('')
+    // TODO: Structure the table better, so that everything (including delete-buttons) is shown also for smaller screens
+    cy.viewport(1800, 1800)
+
     cy.get('[data-cy=adminmode-enable]').click()
     cy.server()
     cy.route('GET', 'http://localhost:8000/api/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
@@ -45,15 +47,12 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
-    cy.get('[data-cy=sis-entries-panel-TKT10001]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-1]').should('be.visible').click()
 
     cy.get('[data-cy=sis-report-TKT10002]').click()
-    cy.get('[data-cy=sis-entries-panel-TKT10002]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-2]').should('be.visible').click()
 
     cy.get('[data-cy=sis-report-TKT10002]').click()
-    cy.get('[data-cy=sis-entries-panel-TKT10002]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-3]').should('be.visible').click()
 
     cy.get('[data-cy=sis-no-reports]')

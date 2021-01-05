@@ -10,6 +10,9 @@ export default () => {
   if (!message) return null
 
   if (message.type === 'positive') {
+    setTimeout(() => {
+      dispatch(clearMessageAction())
+    }, 8000)
     return (
       <Message
         data-cy="positive-message"
@@ -33,6 +36,9 @@ export default () => {
     )
   }
 
+  setTimeout(() => {
+    dispatch(clearMessageAction())
+  }, 8000)
   return (
     <Message
       info

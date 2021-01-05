@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
             courseUnitId: DataTypes.STRING,
             gradeScaleId: DataTypes.STRING,
             gradeId: DataTypes.STRING,
-            hasSent: DataTypes.BOOLEAN,
+            sent: DataTypes.DATE,
             senderId: {
                 type: DataTypes.INTEGER,
                 references: {
@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     }, {})
     Entry.associate = (models) => {
         Entry.belongsTo(models.raw_entries, {foreignKey: 'rawEntryId', as: 'rawEntry'})
+        Entry.belongsTo(models.users, {foreignKey: 'senderId', as: 'sender', allowNull: true})
     }
     return Entry
 }

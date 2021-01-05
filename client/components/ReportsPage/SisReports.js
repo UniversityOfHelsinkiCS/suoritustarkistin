@@ -176,7 +176,7 @@ const title = (batch) => {
       {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)
         }:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
       <div>
-        {batchSenders.length && sentDate ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("MM.DD.YYYY")} /> : <NotSentToSis />}
+        {batchSenders.length && sentDate ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("DD.MM.YYYY")} /> : <NotSentToSis />}
         {includesErrors ? <ContainsErrors amount={includesErrors} /> : null}
       </div>
     </Accordion.Title>

@@ -83,7 +83,8 @@ const ReportTable = ({ rows, course }) => {
     {rawEntries.map((rawEntry) => {
       return <>
         <Table.Row key={`row-${rawEntry.id}`}>
-          <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{course.courseCode}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>
+            {rawEntry.isOpenUni ? `AY${course.courseCode}` : course.courseCode}</Table.Cell>
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{course.name}</Table.Cell>
           <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
           <Table.Cell data-cy={`sis-report-grade-${rawEntry.id}`}>{rawEntry.grade}</Table.Cell>

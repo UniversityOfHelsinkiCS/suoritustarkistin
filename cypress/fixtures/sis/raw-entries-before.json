@@ -28,7 +28,9 @@
         "errors":null,
         "createdAt":"2020-12-30T08:58:48.612Z",
         "updatedAt":"2020-12-30T08:58:48.612Z",
-        "rawEntryId":1
+        "rawEntryId":1,
+        "sender": {"name": "Sisu master"},
+        "sent":"2020-12-30T08:58:48.612Z"
         }
   }
 ]

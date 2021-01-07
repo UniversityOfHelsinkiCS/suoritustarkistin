@@ -12,7 +12,7 @@
     "courseId":1,
     "createdAt":"2020-12-30T08:00:00.000Z",
     "updatedAt":"2020-12-30T08:00:00.000Z",
-    "sender": {"name": "Best reporter"},
+    "reporter": {"name": "Best reporter"},
     "entry":
       {
         "id":1,
@@ -25,9 +25,8 @@
         "courseUnitId":"Course unit id 1",
         "gradeScaleId":"sis-0-5",
         "gradeId":"1",
-        "sent":"2020-12-30T08:58:48.612Z",
+        "sent":null,
         "senderId":1,
-        "sender": {"name": "Sisu master"},
         "errors":null,
         "createdAt":"2020-12-30T08:58:48.612Z",
         "updatedAt":"2020-12-30T08:58:48.612Z",
@@ -47,6 +46,7 @@
     "courseId":2,
     "createdAt":"2020-12-30T08:58:44.465Z",
     "updatedAt":"2020-12-30T08:58:44.465Z",
+    "reporter": {"name": "Best reporter"},
     "entry":
       {
         "id":2,
@@ -80,6 +80,7 @@
     "courseId":2,
     "createdAt":"2020-12-30T08:58:44.465Z",
     "updatedAt":"2020-12-30T08:58:44.465Z",
+    "reporter": {"name": "Best reporter"},
     "entry":
       {
         "id":3,

@@ -31,8 +31,8 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy="sis-report-completionDate-1').should('contain', "30.12.2020")
     cy.get('[data-cy="sis-report-completionLanguage-1').should('contain', "fi")
     cy.get('[data-cy="sis-report-gradeAndScale-1').should('contain', "1, sis-0-5")
-    cy.get('[data-cy="sis-report-sent-1').should('contain', "30.12.2020")
-    cy.get('[data-cy="sis-report-senderName-1').should('contain', "Sisu master")
+    cy.get('[data-cy="sis-report-sent-1').should('contain', "")
+    cy.get('[data-cy="sis-report-senderName-1').should('contain', "")
   })
 
   it('Single entries can be deleted from the reports page', () => {

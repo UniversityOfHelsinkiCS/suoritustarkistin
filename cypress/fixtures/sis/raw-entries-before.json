@@ -12,6 +12,7 @@
     "courseId":1,
     "createdAt":"2020-12-30T08:58:44.465Z",
     "updatedAt":"2020-12-30T08:58:44.465Z",
+    "reporter": {"name": "Best reporter"},
     "entry":
       {
         "id":1,
@@ -21,7 +22,7 @@
         "assessmentItemId":"Assessment ID 1",
         "completionDate":"2020-12-30T08:00:00.900Z",
         "completionLanguage":"fi",
-        "courseUnitId":"Course unit id 1",
+        "courseUnitId":"Course unit ID 1",
         "gradeScaleId":"sis-0-5",
         "gradeId":"1",
         "senderId":1,
@@ -29,8 +30,8 @@
         "createdAt":"2020-12-30T08:58:48.612Z",
         "updatedAt":"2020-12-30T08:58:48.612Z",
         "rawEntryId":1,
-        "sender": {"name": "Sisu master"},
-        "sent":"2020-12-30T08:58:48.612Z"
+        "sender": null,
+        "sent":null
         }
   }
 ]

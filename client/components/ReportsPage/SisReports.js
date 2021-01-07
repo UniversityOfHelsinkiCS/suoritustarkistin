@@ -5,7 +5,7 @@ import { Accordion, Button, Table, Message } from 'semantic-ui-react'
 import SendToSisButton from './SendToSisButton'
 import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 import moment from 'moment'
-
+import Notification from 'Components/Message'
 
 const SentToSis = ({ senderNames, formattedDate }) => <span>
   <span style={{ color: 'green' }}>SENT TO SIS </span>
@@ -152,7 +152,7 @@ const reportContents = (report, courses) => {
         } />
 
       {reportContainsErrors ? <SisErrorsMessage /> : null}
-      {!batchNotSent ? <SisSuccessMessage /> : null}
+      {!batchNotSent && !reportContainsErrors ? <SisSuccessMessage /> : null}
 
       { // Display accordion only when batch contains sent entries or entries with errors
         batchNotSent && !reportContainsErrors
@@ -168,6 +168,7 @@ const reportContents = (report, courses) => {
 const title = (batch) => {
   const reportName = batch[0].batchId.split('%')
   const timestamp = reportName[1].split('-')
+  const hasSuccessfullySentEntries = batch.some(({entry}) => !entry.errors && entry.sent)
   const batchSenders = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
   const includesErrors = batch.filter(({ entry }) => entry.errors).length
@@ -176,7 +177,7 @@ const title = (batch) => {
       {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)
         }:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
       <div>
-        {batchSenders.length && sentDate ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("DD.MM.YYYY")} /> : <NotSentToSis />}
+        {hasSuccessfullySentEntries ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("DD.MM.YYYY")} /> : <NotSentToSis />}
         {includesErrors ? <ContainsErrors amount={includesErrors} /> : null}
       </div>
     </Accordion.Title>
@@ -202,5 +203,8 @@ export default () => {
     }
   })
 
-  return <Accordion panels={panels} exclusive={false} fluid styled />
+  return <>
+    <Notification />
+    <Accordion panels={panels} exclusive={false} fluid styled />
+  </>
 }

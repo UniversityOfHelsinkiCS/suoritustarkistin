@@ -24,7 +24,10 @@ const handleDatabaseError = (res, error) => {
 const sisGetAllReports = async (req, res) => {
   try {
     const allRawEntries = await db.raw_entries.findAll({
-      include: [{ model: db.entries, as: 'entry', include: ['sender'] }],
+      include: [
+        { model: db.entries, as: 'entry', include: ['sender'] },
+        { model: db.users, as: 'reporter'}
+      ],
       order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(allRawEntries)
@@ -37,7 +40,10 @@ const sisGetUsersReports = async (req, res) => {
   try {
     const usersRawEntries = await db.raw_entries.findAll({
       where: { graderId: req.user.id },
-      include: [{ model: db.entries, as: 'entry', include: ['sender'] }],
+      include: [
+        { model: db.entries, as: 'entry', include: ['sender'] },
+        { model: db.users, as: 'reporter'}
+      ],
       order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(usersRawEntries)
@@ -126,7 +132,10 @@ const sendToSis = async (req, res) => {
     where: {
       '$entry.id$': { [Op.in]: entryIds }
     },
-    include: [{ model: db.entries, as: 'entry', include: ['sender'] }]
+    include: [
+      { model: db.entries, as: 'entry', include: ['sender'] },
+      { model: db.users, as: 'reporter'}
+    ]
   })
 
   return res.status(status).json(updatedWithRawEntries)

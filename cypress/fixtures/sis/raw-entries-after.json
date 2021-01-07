@@ -12,6 +12,7 @@
     "courseId":1,
     "createdAt":"2020-12-30T08:00:00.000Z",
     "updatedAt":"2020-12-30T08:00:00.000Z",
+    "sender": {"name": "Best reporter"},
     "entry":
       {
         "id":1,
@@ -24,8 +25,9 @@
         "courseUnitId":"Course unit id 1",
         "gradeScaleId":"sis-0-5",
         "gradeId":"1",
-        "sent":null,
+        "sent":"2020-12-30T08:58:48.612Z",
         "senderId":1,
+        "sender": {"name": "Sisu master"},
         "errors":null,
         "createdAt":"2020-12-30T08:58:48.612Z",
         "updatedAt":"2020-12-30T08:58:48.612Z",

@@ -30,8 +30,7 @@ const DeleteButton = ({ id }) => {
 }
 
 const CellsIfEntry = ({ entry }) => {
-  const { personId, verifierPersonId, courseUnitRealisationId, assessmentItemId, completionDate, completionLanguage } = entry
-
+  const { personId, verifierPersonId, courseUnitId, courseUnitRealisationId, assessmentItemId, completionDate, completionLanguage, sent, sender, gradeScaleId, gradeId  } = entry
   return (
     <>
       <Table.Cell data-cy={`sis-report-personId-${entry.id}`} style={{ borderLeft: "2px solid gray" }}>
@@ -40,6 +39,9 @@ const CellsIfEntry = ({ entry }) => {
       <Table.Cell data-cy={`sis-report-verifierPersonId-${entry.id}`}>
         {verifierPersonId ? verifierPersonId : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
+      <Table.Cell data-cy={`sis-report-courseUnitId-${entry.id}`}>
+        {courseUnitId ? courseUnitId : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
       <Table.Cell data-cy={`sis-report-courseUnitRealisationId-${entry.id}`}>
         {courseUnitRealisationId ? courseUnitRealisationId : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
@@ -47,10 +49,19 @@ const CellsIfEntry = ({ entry }) => {
         {assessmentItemId ? assessmentItemId : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionDate-${entry.id}`}>
-        {completionDate ? completionDate : <span style={{ color: 'red' }}>null</span>}
+        {completionDate ? moment(completionDate).format("DD.MM.YYYY") : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionLanguage-${entry.id}`}>
         {completionLanguage ? completionLanguage : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-gradeAndScale-${entry.id}`}>
+        {gradeId && gradeScaleId ? `${gradeId}, ${gradeScaleId}` : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-sent-${entry.id}`}>
+        {sent ? moment(sent).format("DD.MM.YYYY") : <span style={{ color: 'red' }}>null</span>}
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-senderName-${entry.id}`}>
+        {sender ? sender.name : <span style={{ color: 'red' }}>null</span>}
       </Table.Cell>
     </>
   )
@@ -74,9 +85,10 @@ const ReportTable = ({ rows, course }) => {
         <Table.Row key={`row-${rawEntry.id}`}>
           <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{course.courseCode}</Table.Cell>
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{course.name}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-grade-${rawEntry.id}`}>{rawEntry.grade}</Table.Cell>
           <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
           {rawEntry.entry ? <CellsIfEntry entry={rawEntry.entry} /> : <CellsIfNoEntry />}
-          <Table.Cell data-cy={`sis-report-grade-${rawEntry.id}`}>{rawEntry.grade}</Table.Cell>
           <Table.Cell><DeleteButton id={rawEntry.id} /></Table.Cell>
         </Table.Row>
         {rawEntry.entry.errors ? <Table.Row key={`row-${rawEntry.id}-2`}>
@@ -88,9 +100,9 @@ const ReportTable = ({ rows, course }) => {
   const TableColumns = () => <>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell colSpan='3'>Basics</Table.HeaderCell>
+        <Table.HeaderCell colSpan='5'>Basics</Table.HeaderCell>
         <Table.HeaderCell
-          colSpan='8'
+          colSpan='11'
           style={{ borderLeft: "2px solid gray" }}
         >
           Going to SIS
@@ -101,6 +113,8 @@ const ReportTable = ({ rows, course }) => {
       <Table.Row>
         <Table.HeaderCell>Course code</Table.HeaderCell>
         <Table.HeaderCell>Course name</Table.HeaderCell>
+        <Table.HeaderCell>Credits</Table.HeaderCell>
+        <Table.HeaderCell>Grade</Table.HeaderCell>
         <Table.HeaderCell>Student number</Table.HeaderCell>
         <Table.HeaderCell
           style={{ borderLeft: "2px solid gray" }}
@@ -108,11 +122,14 @@ const ReportTable = ({ rows, course }) => {
           Student ID
         </Table.HeaderCell>
         <Table.HeaderCell>Employee ID</Table.HeaderCell>
-        <Table.HeaderCell>Course ID</Table.HeaderCell>
-        <Table.HeaderCell>Course instance ID</Table.HeaderCell>
+        <Table.HeaderCell>Course unit</Table.HeaderCell>
+        <Table.HeaderCell>Course unit realisation</Table.HeaderCell>
+        <Table.HeaderCell>Assessment item</Table.HeaderCell>
         <Table.HeaderCell>Completion date</Table.HeaderCell>
         <Table.HeaderCell>Language</Table.HeaderCell>
-        <Table.HeaderCell>Grade</Table.HeaderCell>
+        <Table.HeaderCell>Grade and scale</Table.HeaderCell>
+        <Table.HeaderCell>Date sent</Table.HeaderCell>
+        <Table.HeaderCell>Sender name</Table.HeaderCell>
         <Table.HeaderCell>Delete</Table.HeaderCell>
       </Table.Row>
     </Table.Header></>
@@ -145,6 +162,7 @@ const reportContents = (report, courses) => {
 
   return (
     <Accordion.Content>
+      <p>Batch reported by {report[0].reporter.name}</p>
       <SendToSisButton
         entries={report
           .filter(({ entry }) => !entry.sent || entry.errors)

@@ -6,7 +6,6 @@ const {
   isValidCreditAmount
 } = require('../../utils/validators')
 const { processEntries } = require('./processEntry')
-// const { getRegistrations } = require('../services/eduweb')
 
 const LANGUAGES = ["fi", "sv", "en"]
 
@@ -30,6 +29,18 @@ const validateEntry = ({
   }
 }
 
+const validateCourse = (courseCode) => {
+  if (
+    courseCode.substring(0, 2) !== 'AY'
+    && courseCode.substring(0, 3) !== 'TKT'
+    && courseCode.substring(0, 3) !== 'CSM'
+    && courseCode.substring(0, 4) !== 'BSCS'
+    && courseCode.substring(0, 3) !== 'MAT'
+  ) {
+    throw new Error(`Unknown course organization ${courseCode}`)
+  }
+}
+
 const processManualEntry = async ({
   graderId,
   reporterId,
@@ -46,11 +57,6 @@ const processManualEntry = async ({
 
   if (!course) throw new Error('Course id does not exist.')
 
-  // TODO: Define how registrations are checked for MOOC-courses
-  /* const registrations = course.autoSeparate
-    ? await getRegistrations([`AY${course.courseCode}`])
-    : undefined
-  */
   const grader = await db.users.findOne({
     where: {
       employeeId: graderId
@@ -65,6 +71,7 @@ const processManualEntry = async ({
 
   const rawEntries = data.map((rawEntry) => {
     validateEntry(rawEntry)
+    validateCourse(course.courseCode)
     return {
       studentNumber: rawEntry.studentId,
       batchId: batchId,

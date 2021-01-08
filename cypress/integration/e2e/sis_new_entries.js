@@ -67,7 +67,7 @@ describe('New sis-entries can be added correctly', function () {
 
   })
 
-  it('When pasting (typing) completions with a non-existing employee number, error message is shown and no entries are created', () => {
+  it('When pasting (typing) completions with a non-existing employee number, no entries are created', () => {
     cy.initializeUsersAndCourses()
     cy.asAdmin().visit('')
     cy.get('[data-cy=adminmode-enable]').click()
@@ -97,7 +97,6 @@ describe('New sis-entries can be added correctly', function () {
 
     cy.wait(20000)
 
-    cy.get('[data-cy=negative-message]')
     cy.get('[data-cy=nav-reports]').click()
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-no-reports]')

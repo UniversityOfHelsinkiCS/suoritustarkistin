@@ -2,7 +2,7 @@ describe('Submitting data creates a valid report into database', function () {
   beforeEach(function () {
     cy.server({
       onAnyRequest: (route, proxy) => {
-        proxy.xhr.setRequestHeader('employeenumber', '321')
+        proxy.xhr.setRequestHeader('employeenumber', Cypress.env('ADMIN_EMPLOYEE_NUMBER'))
       },
     })
     cy.request('DELETE', '/api/courses')
@@ -11,13 +11,13 @@ describe('Submitting data creates a valid report into database', function () {
 
     cy.request('POST', '/api/users', {
       name: 'testiope',
-      employeeId: '123',
+      employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: false,
     })
     cy.request('POST', '/api/users', {
       name: 'testimaikka',
-      employeeId: '321',
+      employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
       isAdmin: false,
       isGrader: true,
     }).then((response) => {

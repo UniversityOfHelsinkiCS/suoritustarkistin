@@ -13,13 +13,13 @@ describe('Form validation', function() {
     cy.request('DELETE', '/api/reports')
 
     cy.request('POST', '/api/users', {
-      name: 'testiope',
+      name: 'admin',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: true
     })
     cy.request('POST', '/api/users', {
-      name: 'testimaikka',
+      name: 'grader',
       employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
       isAdmin: false,
       isGrader: true
@@ -58,7 +58,7 @@ describe('Form validation', function() {
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
-        .contains('testimaikka')
+        .contains('grader')
         .click()
   
       cy.get('[data-cy=courseSelection]')
@@ -87,7 +87,7 @@ describe('Form validation', function() {
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
-        .contains('testimaikka')
+        .contains('grader')
         .click()
       cy.get('[data-cy=sendButton]').should('be.disabled')
       cy.get('[data-cy=courseSelection]')
@@ -131,7 +131,7 @@ describe('Form validation', function() {
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
-        .contains('testimaikka')
+        .contains('grader')
         .click()
   
       cy.get('[data-cy=courseSelection]')
@@ -173,7 +173,7 @@ describe('Form validation', function() {
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()
-      .contains('testimaikka')
+      .contains('grader')
       .click()
 
     cy.get('[data-cy=courseSelection]')

@@ -97,12 +97,21 @@ export default (state = { data: [] }, action) => {
         pending: true,
         error: false
       }
-    case 'SIS_POST_ENTRIES_TO_SIS_FAILURE':
+    case 'SIS_POST_ENTRIES_TO_SIS_FAILURE': {
+      const { error } = action
+      // When generic error occurs, no need to update entries in state
+      if (error.genericError)
+        return { ...state, pending: false, error: true}
+      const updatedIds = error.map(({ id }) => id)
+      const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
+      const data = error.concat(oldEntries)
       return {
         ...state,
+        data,
         pending: false,
         error: true
       }
+    }
     case 'SIS_POST_ENTRIES_TO_SIS_SUCCESS': {
       const updatedIds = action.response.map(({ id }) => id)
       const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))

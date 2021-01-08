@@ -6,7 +6,7 @@ const {
   isValidCreditAmount
 } = require('../../utils/validators')
 const { processEntries } = require('./processEntry')
-// const { getRegistrations } = require('../services/eduweb')
+const { getRegistrations } = require('../services/eduweb')
 
 const LANGUAGES = ["fi", "sv", "en"]
 
@@ -30,6 +30,18 @@ const validateEntry = ({
   }
 }
 
+const validateCourse = (courseCode) => {
+  if (
+    courseCode.substring(0, 2) !== 'AY'
+    && courseCode.substring(0, 3) !== 'TKT'
+    && courseCode.substring(0, 3) !== 'CSM'
+    && courseCode.substring(0, 4) !== 'BSCS'
+    && courseCode.substring(0, 3) !== 'MAT'
+  ) {
+    throw new Error(`Unknown course organization ${courseCode}`)
+  }
+}
+
 const processManualEntry = async ({
   graderId,
   reporterId,
@@ -46,11 +58,6 @@ const processManualEntry = async ({
 
   if (!course) throw new Error('Course id does not exist.')
 
-  // TODO: Define how registrations are checked for MOOC-courses
-  /* const registrations = course.autoSeparate
-    ? await getRegistrations([`AY${course.courseCode}`])
-    : undefined
-  */
   const grader = await db.users.findOne({
     where: {
       employeeId: graderId
@@ -63,8 +70,33 @@ const processManualEntry = async ({
     'DD.MM.YY-HHmmss'
   )}`
 
+  const registrations = course.autoSeparate
+    ? await getRegistrations([`AY${course.courseCode}`])
+    : undefined
+
   const rawEntries = data.map((rawEntry) => {
     validateEntry(rawEntry)
+    validateCourse(course.courseCode)
+
+    // Separation for combo-courses
+    // If the student has a registration to the Open uni -course,
+    // they will be given a completion with an open university completion with AYXXXXXX -course code
+    if (registrations && registrations.find((r) => r.onro === rawEntry.studentId)) {
+      return {
+        studentNumber: rawEntry.studentId,
+        batchId: batchId,
+        grade: rawEntry.grade ? rawEntry.grade : 'Hyv.',
+        credits: rawEntry.credits ? rawEntry.credits : course.credits,
+        language: rawEntry.language ? rawEntry.language : course.language,
+        attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
+        graderId: grader.id,
+        reporterId: reporterId,
+        courseId: course.id,
+        isOpenUni: true
+      }
+    }
+
+    // If there is no registration, a regular completion with TKTXXXXX -course code is given
     return {
       studentNumber: rawEntry.studentId,
       batchId: batchId,
@@ -74,7 +106,8 @@ const processManualEntry = async ({
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,
       reporterId: reporterId,
-      courseId: course.id
+      courseId: course.id,
+      isOpenUni: false
     }
   })
 

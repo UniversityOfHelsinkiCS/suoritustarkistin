@@ -4,7 +4,7 @@ describe('Form validation', function() {
   beforeEach(function() {
     cy.server({
       onAnyRequest: (route, proxy) => {
-        proxy.xhr.setRequestHeader('employeenumber', '321')
+        proxy.xhr.setRequestHeader('employeenumber', Cypress.env('ADMIN_EMPLOYEE_NUMBER'))
       }
     })
 
@@ -13,14 +13,14 @@ describe('Form validation', function() {
     cy.request('DELETE', '/api/reports')
 
     cy.request('POST', '/api/users', {
-      name: 'testiope',
-      employeeId: '123',
+      name: 'admin',
+      employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: true
     })
     cy.request('POST', '/api/users', {
-      name: 'testimaikka',
-      employeeId: '321',
+      name: 'grader',
+      employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
       isAdmin: false,
       isGrader: true
     }).then((response) => {
@@ -40,7 +40,7 @@ describe('Form validation', function() {
       })
     })
 
-    cy.visit('')
+    cy.asGrader().visit('')
   })
 
   describe("Validation prevents submission of invalid data", () => {
@@ -58,7 +58,7 @@ describe('Form validation', function() {
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
-        .contains('testimaikka')
+        .contains('grader')
         .click()
   
       cy.get('[data-cy=courseSelection]')
@@ -87,7 +87,7 @@ describe('Form validation', function() {
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
-        .contains('testimaikka')
+        .contains('grader')
         .click()
       cy.get('[data-cy=sendButton]').should('be.disabled')
       cy.get('[data-cy=courseSelection]')
@@ -131,7 +131,7 @@ describe('Form validation', function() {
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
-        .contains('testimaikka')
+        .contains('grader')
         .click()
   
       cy.get('[data-cy=courseSelection]')
@@ -173,7 +173,7 @@ describe('Form validation', function() {
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()
-      .contains('testimaikka')
+      .contains('grader')
       .click()
 
     cy.get('[data-cy=courseSelection]')

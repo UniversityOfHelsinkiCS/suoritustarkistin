@@ -42,7 +42,7 @@ Cypress.Commands.add(
 Cypress.Commands.add('asAdmin', () => {
   cy.server({
     onAnyRequest: (route, proxy) => {
-      proxy.xhr.setRequestHeader('employeenumber', '123')
+      proxy.xhr.setRequestHeader('employeenumber', Cypress.env('ADMIN_EMPLOYEE_NUMBER'))
     }
   })
 })
@@ -50,7 +50,7 @@ Cypress.Commands.add('asAdmin', () => {
 Cypress.Commands.add('asUser', () => {
   cy.server({
     onAnyRequest: (route, proxy) => {
-      proxy.xhr.setRequestHeader('employeenumber', '321')
+      proxy.xhr.setRequestHeader('employeenumber', Cypress.env('USER_EMPLOYEE_NUMBER'))
     }
   })
 })
@@ -58,18 +58,14 @@ Cypress.Commands.add('asUser', () => {
 Cypress.Commands.add('asGrader', () => {
   cy.server({
     onAnyRequest: (route, proxy) => {
-      proxy.xhr.setRequestHeader('employeenumber', '111')
+      proxy.xhr.setRequestHeader('employeenumber', Cypress.env('GRADER_EMPLOYEE_NUMBER'))
     }
   })
 })
 
 
 Cypress.Commands.add('initializeUsersAndCourses', () => {
-  cy.server({
-    onAnyRequest: (route, proxy) => {
-      proxy.xhr.setRequestHeader('employeenumber', Cypress.env('ADMIN_EMPLOYEE_NUMBER'))
-    },
-  })
+
   cy.request('DELETE', '/api/courses')
   cy.request('DELETE', '/api/users')
 

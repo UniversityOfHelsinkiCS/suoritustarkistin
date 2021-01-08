@@ -12,6 +12,7 @@
     "courseId":1,
     "createdAt":"2020-12-30T08:00:00.000Z",
     "updatedAt":"2020-12-30T08:00:00.000Z",
+    "reporter": {"name": "Best reporter"},
     "entry":
       {
         "id":1,
@@ -45,6 +46,7 @@
     "courseId":2,
     "createdAt":"2020-12-30T08:58:44.465Z",
     "updatedAt":"2020-12-30T08:58:44.465Z",
+    "reporter": {"name": "Best reporter"},
     "entry":
       {
         "id":2,
@@ -78,6 +80,7 @@
     "courseId":2,
     "createdAt":"2020-12-30T08:58:44.465Z",
     "updatedAt":"2020-12-30T08:58:44.465Z",
+    "reporter": {"name": "Best reporter"},
     "entry":
       {
         "id":3,

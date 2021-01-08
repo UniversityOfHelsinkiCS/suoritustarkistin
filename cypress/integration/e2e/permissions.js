@@ -1,25 +1,24 @@
 /// <reference types="Cypress" />
 
 describe("Permissions", () => {
-
   before(() => {
     cy.request('DELETE', '/api/users')
 
     cy.request('POST', '/api/users', {
       name: 'admin',
-      employeeId: '123',
+      employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: false
     })
     cy.request('POST', '/api/users', {
       name: 'grader',
-      employeeId: '111',
+      employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
       isAdmin: false,
       isGrader: true
     })
     cy.request('POST', '/api/users', {
       name: 'user',
-      employeeId: '321',
+      employeeId: Cypress.env('USER_EMPLOYEE_NUMBER'),
       isAdmin: false,
       isGrader: false
     })
@@ -100,7 +99,7 @@ describe("Permissions", () => {
         ],
         courseId:2,
         date:"2020-12-30T09:00:00.900Z",
-        graderId:"321",
+        graderId:Cypress.env('GRADER_EMPLOYEE_NUMBER'),
       },
       failOnStatusCode: false
     }).then((response) => {
@@ -142,7 +141,7 @@ describe("Permissions", () => {
         ],
         courseId:2,
         date:"2020-12-30T09:00:00.900Z",
-        graderId:"321",
+        graderId:Cypress.env('GRADER_EMPLOYEE_NUMBER'),
       },
       failOnStatusCode: false
     }).then((response) => {

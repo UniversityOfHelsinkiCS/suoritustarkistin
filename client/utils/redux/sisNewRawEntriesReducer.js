@@ -47,17 +47,17 @@ export default (state = initialState, action) => {
         ...state,
         sending: false
       }
-    case 'SIS_GET_REGISTRATIONS_SUCCESS':
+    case 'GET_REGISTRATIONS_SUCCESS':
       return {
         ...state,
         data: attachRegistrations(state.data, action.response)
       }
-    case 'SIS_CLEAR_REGISTRATIONS':
+    case 'CLEAR_REGISTRATIONS':
       return {
         ...state,
         data: stripRegistrations(state.data)
       }
-    case 'SIS_LOGIN_SUCCESS':
+    case 'LOGIN_SUCCESS':
       return {
         courseId: null,
         graderId: action.response.employeeId,

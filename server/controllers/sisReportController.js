@@ -2,7 +2,19 @@ const logger = require('@utils/logger')
 const db = require('../models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-const api = require('../config/importerApi')
+const axios = require('axios')
+
+
+// Create an api instance if a different url for posting entries to Sisu is defined,
+// otherwise use common api instance.
+const api = process.env.POST_IMPORTER_DB_API_URL
+  ? axios.create({
+    headers: {
+      token: process.env.IMPORTER_DB_API_TOKEN || ''
+    },
+    baseURL: process.env.POST_IMPORTER_DB_API_URL
+  })
+  : require('../config/importerApi')
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
@@ -12,7 +24,10 @@ const handleDatabaseError = (res, error) => {
 const sisGetAllReports = async (req, res) => {
   try {
     const allRawEntries = await db.raw_entries.findAll({
-      include: [{model: db.entries, as: 'entry', include: ['sender']}],
+      include: [
+        { model: db.entries, as: 'entry', include: ['sender'] },
+        { model: db.users, as: 'reporter'}
+      ],
       order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(allRawEntries)
@@ -25,7 +40,10 @@ const sisGetUsersReports = async (req, res) => {
   try {
     const usersRawEntries = await db.raw_entries.findAll({
       where: { graderId: req.user.id },
-      include: [{model: db.entries, as: 'entry', include: ['sender']}],
+      include: [
+        { model: db.entries, as: 'entry', include: ['sender'] },
+        { model: db.users, as: 'reporter'}
+      ],
       order: [['createdAt', 'DESC']]
     })
     return res.status(200).send(usersRawEntries)
@@ -95,34 +113,88 @@ const sendToSis = async (req, res) => {
     }
   })
 
-  // TODO: Handle possible error from api and save errors to entries
+  let status = 200
   try {
     await api.post('suotar/', data)
+    await updateSuccess(entryIds, senderId)
   } catch (e) {
-    throw new Error(e.toString())
+    status = 400
+    if (!isValidSisuError(e.response))
+      return res.status(400).send({ message: e.response.data, genericError: true })
+    const failedEntries = await writerErrorsToEntries(e.response, data, entries, senderId)
+
+    // Entries without an error, is probably(?) sent successfully to Sisu
+    const successEntryIds = entries.filter(({ id }) => !failedEntries.includes(id))
+    await updateSuccess(successEntryIds, senderId)
   }
 
-  // In updated entries The first element is always the number of affected rows,
-  // while the second element is the actual affected rows.
-  const updatedEntries = await db.entries.update({
+  const updatedWithRawEntries = await db.raw_entries.findAll({
+    where: {
+      '$entry.id$': { [Op.in]: entryIds }
+    },
+    include: [
+      { model: db.entries, as: 'entry', include: ['sender'] },
+      { model: db.users, as: 'reporter'}
+    ]
+  })
+
+  return res.status(status).json(updatedWithRawEntries)
+}
+
+// If the error is coming from Sisu
+// it contains keys failingIds and violations
+const isValidSisuError = (response) => {
+  if (!response) return false
+  const { failingIds, violations } = response.data
+  return !!failingIds && !!violations
+}
+
+const parseSisuErrors = ({ failingIds, violations }) => {
+  if (!failingIds || !violations) return null
+  const errors = Array(failingIds.length).fill(undefined)
+  failingIds
+    .filter((id) => id !== "non-identifiable")
+    .forEach((id) => {
+      // path is like importActiveAttainments.attainments[1].personId
+      // where we want to obtain the index (attainments[index]) so we can
+      // specify which entry the violation is related to
+      const index = violations[id][0].path.split(".")[1].substr(-2, 1)
+      errors[index] = violations[id].map((violation) => violation.message)
+    })
+  return errors
+}
+
+const writerErrorsToEntries = async (response, sentEntries, entries, senderId) => {
+  const errors = parseSisuErrors(response.data) || response.data
+  const failedEntries = []
+  for (const index in errors) {
+    const { personId, courseUnitRealisationId } = sentEntries[index]
+    const entry = entries.find((e) => e.personId === personId && e.courseUnitRealisationId === courseUnitRealisationId)
+    failedEntries.push(entry.id)
+    await db.entries.update({
+      errors: { message: errors[index].join(", ") },
+      sent: new Date(),
+      senderId
+    }, {
+      where: {
+        id: entry.id
+      }
+    })
+  }
+  return failedEntries
+}
+
+const updateSuccess = async (entryIds, senderId) =>
+  await db.entries.update({
     sent: new Date(),
-    senderId
+    senderId,
+    errors: null
   }, {
     where: {
       id: { [Op.in]: entryIds }
-    },
-    returning: true
-  })
-  const updatedWithRawEntries = await db.raw_entries.findAll({
-    where: {
-      '$entry.id$': { [Op.in]: updatedEntries[1].map(({id}) => id) }
-    },
-    include: [{model: db.entries, as: 'entry', include: ['sender']}]
+    }
   })
 
-
-  return res.status(200).json(updatedWithRawEntries)
-}
 
 module.exports = {
   sisGetAllReports,

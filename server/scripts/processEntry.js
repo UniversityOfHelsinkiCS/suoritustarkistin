@@ -86,20 +86,32 @@ function resolveActiveObject(objects, date, key = 'activityPeriod') {
 
 /**
  * Map correct course unit realisation id and assessment item id by raw entry id.
+ * If the course has also an Open uni -version, map the ids for that too
  */
 async function getCourseUnitRealisations(rawEntries) {
     const courses = await getCourses(rawEntries)
+
     const courseUnitRealisations = {}
     for (const course of courses) {
-        const { courseCode } = course
+        let { courseCode } = course
+        if (course.autoSeparate) {
+            courseUnitRealisations[`AY${courseCode}`] = await fetchCourseUnitRealisation(`AY${courseCode}`)
+        } 
         courseUnitRealisations[courseCode] = await fetchCourseUnitRealisation(courseCode)
     }
 
     const courseRealisations = {}
     for (const rawEntry of rawEntries) {
-        const {courseId, attainmentDate, id} = rawEntry
-        const {courseCode} = courses.find((c) => c.id === courseId)
-        const {assessmentItemIds, id: courseUnitRealisationId} = resolveActiveObject(courseUnitRealisations[courseCode], attainmentDate)
+        const { courseId, attainmentDate, id, isOpenUni } = rawEntry
+        let { courseCode } = courses.find((c) => c.id === courseId)
+        courseCode = isOpenUni ?
+            `AY${courseCode}` :
+            courseCode
+
+        const activeObject = resolveActiveObject(courseUnitRealisations[courseCode], attainmentDate)
+        if (!activeObject) throw new Error('No course instance in Sisu with that course code')
+
+        const { assessmentItemIds, id: courseUnitRealisationId } = activeObject
         courseRealisations[id] = {
             courseUnitRealisationId: courseUnitRealisationId,
             assessmentItemId: assessmentItemIds[0]
@@ -113,14 +125,22 @@ async function getCourseUnits(rawEntries) {
     const courseUnitData = {}
     for (const course of courses) {
         const { courseCode } = course
+        if (course.autoSeparate) {
+            courseUnitData[`AY${courseCode}`] = await fetchCourseUnit(`AY${courseCode}`)
+        }
         courseUnitData[courseCode] = await fetchCourseUnit(courseCode)
     }
 
     const courseUnits = {}
     for (const rawEntry of rawEntries) {
-        const {courseId, attainmentDate, id} = rawEntry
-        const {courseCode} = courses.find((c) => c.id === courseId)
-        const {id: courseUnitId, gradeScaleId} = resolveActiveObject(courseUnitData[courseCode], attainmentDate, 'validityPeriod')
+        const { courseId, attainmentDate, id, isOpenUni } = rawEntry
+        let { courseCode } = courses.find((c) => c.id === courseId)
+        courseCode = isOpenUni ?
+            `AY${courseCode}` :
+            courseCode
+        const activeObject = resolveActiveObject(courseUnitData[courseCode], attainmentDate, 'validityPeriod')
+        if (!activeObject) throw new Error('No course in Sisu with that course code')
+        const { id: courseUnitId, gradeScaleId } = activeObject
         courseUnits[id] = { courseUnitId, gradeScaleId }
     }
     return courseUnits

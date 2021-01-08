@@ -57,7 +57,8 @@ export const handleRequest = (store) => (next) => async (action) => {
       // errorCode can be used to show the user what actually went wrong
 
       const errorCode = err.response && err.response.data && err.response.data.errorCode
-      const error = err.response.data ? err.response.data.error : {}
+      const data = err.response ? err.response.data : {}
+      const error = data.error || data
       store.dispatch({ type: `${prefix}_FAILURE`, response: err, query, errorCode, error })
     }
   }

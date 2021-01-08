@@ -71,6 +71,20 @@ export default (state = null, action) => {
           'Course completions have now been sent for reporting. You can see the created report on the "View reports" -page',
         type: 'positive'
       }
+    case 'SIS_POST_ENTRIES_TO_SIS_FAILURE':
+      if (action.error && action.error.genericError) {
+        const content = action.error.message.message || action.error.message
+        return {
+          header: 'Sending entires to Sisu failed',
+          type: 'negative',
+          content
+        }
+      }
+      return {
+        header: 'Some entries failed validation in Sisu',
+        type: 'negative',
+        content: 'See batch for Sisu error messages'
+      }
     default:
       return state
   }

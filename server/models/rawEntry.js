@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
             credits: DataTypes.STRING, // Credits as String??
             language: DataTypes.STRING,
             attainmentDate: DataTypes.DATE,
+            isOpenUni: DataTypes.BOOLEAN,
             graderId: {
                 type: DataTypes.INTEGER,
                 references: {
@@ -33,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         }, {})
         RawEntry.associate = (models) => {
             RawEntry.hasOne(models.entries, {foreignKey: 'rawEntryId', as: 'entry', onDelete:'CASCADE', onUpdate:'CASCADE'})
-            RawEntry.belongsTo(models.users, {foreignKey: 'reporterId', as: "reporter"})
+            RawEntry.belongsTo(models.users, {foreignKey: 'reporterId', as: 'reporter'})
             RawEntry.belongsTo(models.users, {foreignKey: 'graderId', as: 'grader'})
             RawEntry.belongsTo(models.courses, {foreignKey: 'courseId', as: 'course'})
         }

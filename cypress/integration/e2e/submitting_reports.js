@@ -84,14 +84,14 @@ describe('Submitting data creates a valid report into database', function () {
         expect(fileName).to.contain('AYTKTTEST%')
         expect(fileName).to.contain('_MANUAL.dat')
         expect(data).to.equal(
-          '010000003##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#2#106##321#2#H930#11#93013#3##5,0\n011000002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##321#2#H930#11#93013#3##2,0\n011100009##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##321#2#H930#11#93013#3##8,0\n011110002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##321#2#H930#11#93013#3##8,0'
+          '010000003##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#2#106##111#2#H930#11#93013#3##5,0\n011000002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##111#2#H930#11#93013#3##2,0\n011100009##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##111#2#H930#11#93013#3##8,0\n011110002##1#AYTKTTEST#avoimen kurssi#5.7.2019#0#Hyv.#106##111#2#H930#11#93013#3##8,0'
         )
       })
     })
   })
 
   it('When pasting (typing) English tkt course by grader into text field', () => {
-    cy.visit('')
+    cy.asGrader().visit('')
     cy.get('[data-cy=sendButton]').should('be.disabled')
     cy.get('[data-cy=pastefield]').type(
       '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
@@ -136,14 +136,14 @@ describe('Submitting data creates a valid report into database', function () {
         expect(fileName).to.contain('TKTTEST%')
         expect(fileName).to.contain('_MANUAL.dat')
         expect(data).to.equal(
-          '010000003##1#TKTTEST#tkt:n kurssi#5.7.2019#0#2#106##321#2#H523#####5,0\n011000002##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##321#2#H523#####2,0\n011100009##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##321#2#H523#####8,0\n011110002##1#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##321#2#H523#####8,0'
+          '010000003##1#TKTTEST#tkt:n kurssi#5.7.2019#0#2#106##111#2#H523#####5,0\n011000002##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##111#2#H523#####2,0\n011100009##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##111#2#H523#####8,0\n011110002##1#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##111#2#H523#####8,0'
         )
       })
     })
   })
 
   it('When dragging (choosing) a file into dropzone', () => {
-    cy.visit('')
+    cy.asGrader().visit('')
     cy.get('[data-cy=sendButton]').should('be.disabled')
     cy.get('[data-cy=dragdrop]').click()
     cy.wait(1000)
@@ -186,7 +186,7 @@ describe('Submitting data creates a valid report into database', function () {
         expect(fileName).to.contain('TKTTEST%')
         expect(fileName).to.contain('_MANUAL.dat')
         expect(data).to.equal(
-          '010000003##1#TKTTEST#tkt:n kurssi#5.7.2019#0#2#106##321#2#H523#####5,0\n011000002##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##321#2#H523#####2,0\n011100009##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##321#2#H523#####8,0\n011110002##1#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##321#2#H523#####8,0'
+          '010000003##1#TKTTEST#tkt:n kurssi#5.7.2019#0#2#106##111#2#H523#####5,0\n011000002##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##111#2#H523#####2,0\n011100009##6#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##111#2#H523#####8,0\n011110002##1#TKTTEST#tkt:n kurssi#5.7.2019#0#Hyv.#106##111#2#H523#####8,0'
         )
       })
     })

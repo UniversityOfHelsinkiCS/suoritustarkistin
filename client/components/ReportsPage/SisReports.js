@@ -90,8 +90,8 @@ const CellsIfNoEntry = () => (
   </>
 )
 
-const ReportTable = ({ rows, course }) => {
-  const TableBody = ({ rawEntries, course }) => <Table.Body data-cy="sis-report-table">
+const TableBody = ({ rawEntries, course }) => (
+  <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => {
       return <>
         <Table.Row key={`row-${rawEntry.id}`}>
@@ -105,12 +105,15 @@ const ReportTable = ({ rows, course }) => {
           <Table.Cell><DeleteButton id={rawEntry.id} /></Table.Cell>
         </Table.Row>
         {rawEntry.entry.errors ? <Table.Row key={`row-${rawEntry.id}-2`}>
-          <Table.Cell colSpan='11' error>{`Error: ${rawEntry.entry.errors.message}`}</Table.Cell>
+          <Table.Cell key={`row-${rawEntry.id}-3`} colSpan='11' error>{`Error: ${rawEntry.entry.errors.message}`}</Table.Cell>
         </Table.Row> : null}
       </>
     })}
   </Table.Body>
-  const TableColumns = () => <>
+)
+
+const TableColumns = () => (
+  <>
     <Table.Header>
       <Table.Row>
         <Table.HeaderCell colSpan='5'>Basics</Table.HeaderCell>
@@ -145,14 +148,18 @@ const ReportTable = ({ rows, course }) => {
         <Table.HeaderCell>Sender name</Table.HeaderCell>
         <Table.HeaderCell>Delete</Table.HeaderCell>
       </Table.Row>
-    </Table.Header></>
-  return rows.length && (
-    <Table size="small" celled structured>
+    </Table.Header>
+  </>
+)
+
+const ReportTable = ({ rows, course }) => (
+  rows.length && (
+    <Table celled structured>
       <TableColumns />
-      <TableBody rawEntries={rows} course={course} />
+      <TableBody key={course.id} rawEntries={rows} course={course} />
     </Table>
   )
-}
+)
 
 const reportContents = (report, courses) => {
   const course = courses.find((c) => report[0].courseId === c.id)
@@ -205,6 +212,7 @@ const title = (batch) => {
   const batchSenders = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
   const includesErrors = batch.filter(({ entry }) => entry.errors).length
+
   return (
     <Accordion.Title data-cy={`sis-report-${reportName[0]}`}>
       {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)

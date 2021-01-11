@@ -30,7 +30,19 @@ const DeleteButton = ({ id }) => {
 }
 
 const CellsIfEntry = ({ entry }) => {
-  const { personId, verifierPersonId, courseUnitId, courseUnitRealisationId, assessmentItemId, completionDate, completionLanguage, sent, sender, gradeScaleId, gradeId  } = entry
+  const {
+    personId,
+    verifierPersonId,
+    courseUnitId,
+    courseUnitRealisationId,
+    assessmentItemId,
+    completionDate,
+    completionLanguage,
+    sent,
+    sender,
+    gradeScaleId,
+    gradeId
+  } = entry
   return (
     <>
       <Table.Cell data-cy={`sis-report-personId-${entry.id}`} style={{ borderLeft: "2px solid gray" }}>
@@ -134,10 +146,12 @@ const ReportTable = ({ rows, course }) => {
         <Table.HeaderCell>Delete</Table.HeaderCell>
       </Table.Row>
     </Table.Header></>
-  return rows.length ? <Table celled structured>
-    <TableColumns />
-    <TableBody rawEntries={rows} course={course} />
-  </Table> : null
+  return rows.length && (
+    <Table size="small" celled structured>
+      <TableColumns />
+      <TableBody rawEntries={rows} course={course} />
+    </Table>
+  )
 }
 
 const reportContents = (report, courses) => {

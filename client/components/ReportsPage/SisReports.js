@@ -1,23 +1,26 @@
 import React from 'react'
+import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { Accordion, Button, Table, Message } from 'semantic-ui-react'
 import SendToSisButton from './SendToSisButton'
 import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
-import moment from 'moment'
 import Notification from 'Components/Message'
 
 const SentToSis = ({ senderNames, formattedDate }) => <span>
   <span style={{ color: 'green' }}>SENT TO SIS </span>
   <span style={{ color: 'gray' }}>{formattedDate}, by: {senderNames.join(",")}</span>
 </span>
+
 const NotSentToSis = () => <span style={{ color: 'red' }}>NOT SENT TO SIS</span>
+
 const ContainsErrors = ({ amount }) => <div style={{ color: 'orange' }}>{`CONTAINS ${amount} ERROR(S)`}</div>
 
 const SisErrorsMessage = () => <Message error>
   <Message.Header>This report contains errors from Sisu</Message.Header>
   <p>See failed rows bellow. Failed entries can be resent to Sisu by clicking send completions to Sisu button.</p>
 </Message>
+
 const SisSuccessMessage = () => <Message success>
   <Message.Header>All entries sent successfully to Sisu</Message.Header>
 </Message>
@@ -25,7 +28,13 @@ const SisSuccessMessage = () => <Message success>
 const DeleteButton = ({ id }) => {
   const dispatch = useDispatch()
   return (
-    <Button data-cy={`sis-report-entry-delete-button-${id}`} color="red" onClick={() => dispatch(sisHandleEntryDeletionAction(id))}>Delete</Button>
+    <Button
+      data-cy={`sis-report-entry-delete-button-${id}`}
+      color="red"
+      onClick={() => dispatch(sisHandleEntryDeletionAction(id))}
+    >
+      Delete
+    </Button>
   )
 }
 
@@ -93,8 +102,8 @@ const CellsIfNoEntry = () => (
 const TableBody = ({ rawEntries, course }) => (
   <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => {
-      return <>
-        <Table.Row key={`row-${rawEntry.id}`}>
+      return <React.Fragment key={`row-${rawEntry.id}`}>
+        <Table.Row>
           <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>
             {rawEntry.isOpenUni ? `AY${course.courseCode}` : course.courseCode}</Table.Cell>
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{course.name}</Table.Cell>
@@ -104,10 +113,10 @@ const TableBody = ({ rawEntries, course }) => (
           {rawEntry.entry ? <CellsIfEntry entry={rawEntry.entry} /> : <CellsIfNoEntry />}
           <Table.Cell><DeleteButton id={rawEntry.id} /></Table.Cell>
         </Table.Row>
-        {rawEntry.entry.errors ? <Table.Row key={`row-${rawEntry.id}-2`}>
+        {rawEntry.entry.errors ? <Table.Row>
           <Table.Cell key={`row-${rawEntry.id}-3`} colSpan='11' error>{`Error: ${rawEntry.entry.errors.message}`}</Table.Cell>
         </Table.Row> : null}
-      </>
+      </React.Fragment>
     })}
   </Table.Body>
 )
@@ -225,16 +234,13 @@ const title = (batch) => {
   )
 }
 
-export default () => {
-  const reports = useSelector((state) => state.sisReports)
+export default ({ reports }) => {
   const courses = useSelector((state) => state.courses.data)
 
   if (reports.pending) return <div>LOADING!</div>
+  if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
-  const manualReports = reports.data.filter((report) => report.reporterId) // filter out EoAI reports.
-  if (manualReports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
-
-  const batchedReports = Object.values(_.groupBy(manualReports, 'batchId'))
+  const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
 
   const panels = batchedReports.map((r, i) => {
     return {

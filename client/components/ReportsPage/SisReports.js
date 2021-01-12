@@ -193,7 +193,7 @@ const reportContents = (report, courses) => {
 
   return (
     <Accordion.Content>
-      <p>Batch reported by {report[0].reporter.name}</p>
+      <p>Batch reported by {report[0].reporter && report[0].reporter.name}</p>
       <SendToSisButton
         entries={report
           .filter(({ entry }) => !entry.sent || entry.errors)

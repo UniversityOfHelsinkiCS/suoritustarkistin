@@ -61,7 +61,7 @@ const addMoocRawEntries = async (req, res) => {
       graderId,
       reportedId: req.user.id,
       courseId,
-      date,
+      date
     }, transaction)
       .then(async () => {
         await transaction.commit()

@@ -5,7 +5,7 @@ const {
   isValidGrade,
   isValidCreditAmount
 } = require('../../utils/validators')
-const { processEntries } = require('./processEntry')
+const { processEntries } = require('./sisProcessEntry')
 const { getRegistrations } = require('../services/eduweb')
 
 const LANGUAGES = ["fi", "sv", "en"]

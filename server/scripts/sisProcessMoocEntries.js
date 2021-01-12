@@ -3,7 +3,7 @@ const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const logger = require('@utils/logger')
-const { processEntries } = require('./processEntry')
+const { processEntries } = require('./sisProcessEntry')
 const { isValidGrade } = require('../../utils/validators')
 
 const LANGUAGES = ["fi", "sv", "en"]
@@ -20,14 +20,9 @@ const isImprovement = (previousGrades, grade) => {
   return betterOrSame.length === 0
 }
 
-const sisProcessMoocEntries = async ({
-  graderId,
-  reporterId,
-  courseId,
-  slug }, transaction) => {
+const sisProcessMoocEntries = async ({ graderId, courseId, slug }, transaction) => {
 
   try {
-  
     const course = await db.courses.findOne({
       where: {
         id: courseId
@@ -48,11 +43,11 @@ const sisProcessMoocEntries = async ({
     const registrations = await getRegistrations(course.courseCode)
     const completions = await getCompletions(slug || course.courseCode)
 
-    const date = new Date()
-
     const batchId = `${course.courseCode}%${moment().format(
       'DD.MM.YY-HHmmss'
-    )}`    
+    )}`
+    
+    const date = new Date()
 
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
@@ -71,8 +66,8 @@ const sisProcessMoocEntries = async ({
             return matches
           }
 
-          if (completion.completion_language && completion.completion_language !== "unknown"  && !LANGUAGES.includes(completion.completion_language)) {
-            logger.error(`Invalid language: ${completion.language}`)
+          if (completion.completion_language && !LANGUAGES.includes(completion.completion_language)) {
+            logger.error(`Invalid language: ${completion.completion_language}`)
           }
           
           // TODO: Find a better way to check if there are already completions 
@@ -95,7 +90,6 @@ const sisProcessMoocEntries = async ({
               completion.email.toLowerCase() ||
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
-        const date = new Date()
 
         if (registration && registration.onro) {
           return matches.concat({
@@ -103,14 +97,14 @@ const sisProcessMoocEntries = async ({
             batchId: batchId,
             grade: completion.grade || 'Hyv.',
             credits: course.credits,
-            language: course.language,
+            language: completion.completion_language || course.language,
             attainmentDate: completion.completion_date || date,
             graderId: grader.id,
-            reporterId: reporterId,
+            reporterId: null,
             courseId: course.id,
-            isOpenUni: false,
+            isOpenUni: true,
             moocUserId: completion.user_upstream_id,
-            moocCompletionId: completion.id,
+            moocCompletionId: completion.id
           })
         } else {
           return matches
@@ -126,7 +120,7 @@ const sisProcessMoocEntries = async ({
     return true
 
   } catch (error) {
-    logger.error('Error processing new sis-mooc-completions:', error)
+    logger.error('Error processing new Mooc-completions to SIS:', error)
   }
 }
 

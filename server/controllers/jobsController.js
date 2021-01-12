@@ -1,7 +1,7 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { manualRun, activateJob, deactivateJob } = require('../scripts/cronjobs')
-const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
   return res.status(500).json({ error: 'Server went BOOM!' })
@@ -88,7 +88,7 @@ const sisRunJob = async (req, res) => {
         course.courseCode
       }) completions`
     )
-  
+
     sisProcessMoocEntries({
       graderId: grader.employeeId,
       courseId: course.id,

@@ -34,7 +34,6 @@ export const runJobAction = (id) => {
 }
 
 export const sisRunJobAction = (id) => {
-  console.log("here")
   const route = `/sis_jobs/${id}`
   const prefix = 'SIS_RUN_JOB'
   return callBuilder(route, prefix, 'post')

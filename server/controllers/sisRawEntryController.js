@@ -59,9 +59,8 @@ const addMoocRawEntries = async (req, res) => {
 
     sisProcessMoocEntries({
       graderId,
-      reportedId: req.user.id,
-      courseId,
-      date
+      courseId
+      // course-slug
     }, transaction)
       .then(async () => {
         await transaction.commit()

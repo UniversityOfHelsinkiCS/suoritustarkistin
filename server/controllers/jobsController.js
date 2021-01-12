@@ -1,6 +1,12 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { manualRun, activateJob, deactivateJob } = require('../scripts/cronjobs')
+const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const handleDatabaseError = (res, error) => {
+  logger.error(error.message)
+  return res.status(500).json({ error: 'Server went BOOM!' })
+}
+
 const { isValidJob } = require('@root/utils/validators')
 
 const getJobs = async (req, res) => {
@@ -63,6 +69,46 @@ const runJob = async (req, res) => {
   }
 }
 
+const sisRunJob = async (req, res) => {
+  try {
+    const transaction = await db.sequelize.transaction()
+    if (!req.user.isAdmin) {
+      throw new Error('User is not authorized to create SIS-reports.')
+    }
+
+    const jobId = req.params.id
+    const job = await db.jobs.findOne({ where: { id: jobId }})
+    const course = await db.courses.findOne({ where: { id: job.courseId }})
+    const grader = await db.users.findOne({ where: { id: course.graderId } })
+
+    const timeStamp = new Date(Date.now())
+
+    logger.info(
+      `${timeStamp.toLocaleString()} Manual sis-job run: Processing new ${course.name} (${
+        course.courseCode
+      }) completions`
+    )
+  
+    sisProcessMoocEntries({
+      graderId: grader.employeeId,
+      courseId: course.id,
+      slug: job.slug
+    }, transaction)
+      .then(async () => {
+        await transaction.commit()
+        logger.info('Successful job run, report created successfully.')
+        return res.status(200).json({ message: 'report created successfully' })
+      })
+      .catch(async (error) => {
+        logger.error('Unsuccessful job run: ', error)
+        await transaction.rollback()
+        return res.status(400).json({ error: error.toString() })
+      })
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
 const deleteAllJobs = async (req, res) => {
   await db.jobs.destroy({ where: {} })
   res.status(204).end()
@@ -80,5 +126,6 @@ module.exports = {
   editJob,
   deleteJob,
   deleteAllJobs,
-  runJob
+  runJob,
+  sisRunJob
 }

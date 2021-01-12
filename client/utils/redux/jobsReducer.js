@@ -33,6 +33,13 @@ export const runJobAction = (id) => {
   return callBuilder(route, prefix, 'post')
 }
 
+export const sisRunJobAction = (id) => {
+  console.log("here")
+  const route = `/sis_jobs/${id}`
+  const prefix = 'SIS_RUN_JOB'
+  return callBuilder(route, prefix, 'post')
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [] }, action) => {

@@ -2,7 +2,6 @@ const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const processMoocCompletions = require('./processMoocCompletions')
-
 let cronjobs = {}
 
 const initializeCronJobs = async () => {
@@ -40,10 +39,9 @@ const manualRun = async (id) => {
   const job = await db.jobs.findOne({ where: { id } })
   const course = await db.courses.findOne({ where: { id: job.courseId } })
   const grader = await db.users.findOne({ where: { id: course.graderId } })
-
-  const timestamp = new Date(Date.now())
+  const timestamp = new Date()
   logger.info(
-    `${timestamp.toLocaleString()} Manual run: Processing new ${course.name} (${
+    `${timestamp} Manual run: Processing new ${course.name} (${
       course.courseCode
     }) completions.`
   )

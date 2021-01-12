@@ -6,7 +6,6 @@ const _ = require('lodash')
 const moment = require('moment')
 const api = require('../config/importerApi')
 
-
 /**
  * Mankel raw entries to sis entries.
  *
@@ -24,10 +23,15 @@ const processEntries = async (createdEntries, transaction) => {
 
     const studentNumbers = createdEntries.map((rawEntry) => rawEntry.studentNumber)
     const students = await api.post('students/', studentNumbers)
+    if (!students.data) throw new Error('Persons with some of the student numbers not found from Sisu')
     const employeeIds = graders.map((grader) => grader.employeeId)
     const employees = await getEmployees(employeeIds)
+    if (!employees) throw new Error('Persons with any of the employee numbers not found from Sisu' )
     const courseRealisations = await getCourseUnitRealisations(createdEntries)
+    if (!courseRealisations) throw new Error('No active or past course unit realisation found with the course code' )
     const courseUnits = await getCourseUnits(createdEntries)
+    if (!courseUnits) throw new Error('Course with the course code not found from Sisu' )
+    if (!graders) throw new Error('No graders') 
 
     // TODO: Map grade to grade scale
     const data = createdEntries.map((rawEntry) => {
@@ -108,8 +112,9 @@ async function getCourseUnitRealisations(rawEntries) {
             `AY${courseCode}` :
             courseCode
 
+        if (!courseUnitRealisations[courseCode]) throw new Error(`No course unit realisations with the course code ${courseCode}`)
         const activeObject = resolveActiveObject(courseUnitRealisations[courseCode], attainmentDate)
-        if (!activeObject) throw new Error('No course instance in Sisu with that course code')
+        if (!activeObject) throw new Error(`No active course unit realisations with the course code ${courseCode}`)
 
         const { assessmentItemIds, id: courseUnitRealisationId } = activeObject
         courseRealisations[id] = {
@@ -130,6 +135,7 @@ async function getCourseUnits(rawEntries) {
         }
         courseUnitData[courseCode] = await fetchCourseUnit(courseCode)
     }
+    if (!courseUnitData) throw new Error(`No course units in Sisu for the course`)
 
     const courseUnits = {}
     for (const rawEntry of rawEntries) {
@@ -138,8 +144,9 @@ async function getCourseUnits(rawEntries) {
         courseCode = isOpenUni ?
             `AY${courseCode}` :
             courseCode
+
+        if (!courseUnitData[courseCode]) throw new Error(`No course units in Sisu with the course code ${courseCode}`)
         const activeObject = resolveActiveObject(courseUnitData[courseCode], attainmentDate, 'validityPeriod')
-        if (!activeObject) throw new Error('No course in Sisu with that course code')
         const { id: courseUnitId, gradeScaleId } = activeObject
         courseUnits[id] = { courseUnitId, gradeScaleId }
     }

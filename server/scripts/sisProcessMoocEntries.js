@@ -47,6 +47,13 @@ const sisProcessMoocEntries = async ({
 
   if (!course) throw new Error('Course id does not exist.')
 
+  const credits = await db.credits.findAll({
+    where: {
+      courseId: course.courseCode
+    },
+    raw: true
+  })
+
   const grader = await db.users.findOne({
     where: {
       employeeId: graderId
@@ -67,13 +74,24 @@ const sisProcessMoocEntries = async ({
       const matches = await matchesPromise
       // TODO: Find a better way to check if there are already completions 
       // for the same course by the same student
-      const previousGrades = rawEntries
+      const previousGradesAfterSis = rawEntries
         .filter(
           (entry) =>
             entry.moocCompletionId === completion.id ||
             entry.moocUserId === completion.user_upstream_id
         )
         .map((entry) => entry.grade)
+      
+      const previousGradesBeforeSis = credits
+        .filter(
+          (credit) =>
+            credit.completionId === completion.id ||
+            credit.moocId === completion.user_upstream_id
+        )
+        .map((credit) => credit.grade)
+
+      const previousGrades = [...previousGradesAfterSis, ...previousGradesBeforeSis ]
+
       if (completion.grade) {
         if (!isValidGrade(completion.grade)) {
           logger.error(`Invalid grade: ${completion.grade}`)
@@ -119,8 +137,6 @@ const sisProcessMoocEntries = async ({
     []
   )
   logger.info(`${course.courseCode}: Found ${matches.length} new completions.`)
-  // const sliced = matches.slice(6,8)
-  // const newRawEntries = await db.raw_entries.bulkCreate(sliced, {returning: true, transaction})
   const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
   await processEntries(newRawEntries, transaction)
   return true

@@ -1,4 +1,3 @@
-
 const db = require('../models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
@@ -105,8 +104,7 @@ async function getCourseUnitRealisations(rawEntries) {
         } 
         courseUnitRealisations[courseCode] = await fetchCourseUnitRealisation(courseCode)
     }
-    if (!courseUnitRealisations) throw new Error(`No course unit realisations in Sisu with the course code ${courseCode}`)
-
+    if (!courseUnitRealisations) throw new Error(`No course unit realisations in Sisu for that course`)
 
     const courseRealisations = {}
     for (const rawEntry of rawEntries) {
@@ -116,14 +114,14 @@ async function getCourseUnitRealisations(rawEntries) {
             `AY${courseCode}` :
             courseCode
         if (!courseUnitRealisations[courseCode]) throw new Error(`No course unit realisations in Sisu with the course code ${courseCode}`)
-        
         const activeObject = resolveActiveObject(courseUnitRealisations[courseCode], attainmentDate)
-        if (!activeObject) throw new Error(`No active course unit realisation in Sisu with the course code ${courseCode} for ${attainmentDate}`)
+        if (!activeObject) throw new Error(`No active course unit realisation in Sisu with the course code ${courseCode} for ${attainmentDate.toLocaleString()}`)
 
-        const { assessmentItemIds, id: courseUnitRealisationId } = activeObject
+        const { assessmentItemIds, id: courseUnitRealisationId, name } = activeObject
         courseRealisations[id] = {
             courseUnitRealisationId: courseUnitRealisationId,
-            assessmentItemId: assessmentItemIds[0]
+            assessmentItemId: assessmentItemIds[0],
+            courseUnitRealisationName: name
         }
     }
     return courseRealisations
@@ -140,7 +138,7 @@ async function getCourseUnits(rawEntries) {
         }
         courseUnitData[courseCode] = await fetchCourseUnit(courseCode)
     }
-    if (!courseUnitData) throw new Error(`No course units in Sisu for the course ${courseCode}`)
+    if (!courseUnitData) throw new Error(`No course units in Sisu for that course`)
 
     const courseUnits = {}
     for (const rawEntry of rawEntries) {

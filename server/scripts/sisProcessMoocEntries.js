@@ -118,10 +118,11 @@ const sisProcessMoocEntries = async ({
     },
     []
   )
-  logger.info(`${course.courseCode}: Found ${matches.length} new completions.`)
+  logger.info({message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true})
   // const sliced = matches.slice(6,8)
   // const newRawEntries = await db.raw_entries.bulkCreate(sliced, {returning: true, transaction})
   const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
+  logger.info({message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true})
   await processEntries(newRawEntries, transaction)
   return true
 

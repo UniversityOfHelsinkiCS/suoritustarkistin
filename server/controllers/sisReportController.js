@@ -115,17 +115,21 @@ const sendToSis = async (req, res) => {
 
   let status = 200
   try {
+    logger.info({message: 'Sending entries to Sisu', amount: data.length, sis: true, user: req.user.name})
     await api.post('suotar/', data)
     await updateSuccess(entryIds, senderId)
   } catch (e) {
     status = 400
-    if (!isValidSisuError(e.response))
+    if (!isValidSisuError(e.response)) {
+      logger.error({message: 'Sending entries to Sisu failed, got not an error from Sisu', error: e.response.data})
       return res.status(400).send({ message: e.response.data, genericError: true })
-    const failedEntries = await writerErrorsToEntries(e.response, data, entries, senderId)
+    }
+    const failedEntries = await writeErrorsToEntries(e.response, data, entries, senderId)
 
     // Entries without an error, is probably(?) sent successfully to Sisu
     const successEntryIds = entries.filter(({ id }) => !failedEntries.includes(id))
     await updateSuccess(successEntryIds, senderId)
+    logger.error({message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data})
   }
 
   const updatedWithRawEntries = await db.raw_entries.findAll({
@@ -164,7 +168,7 @@ const parseSisuErrors = ({ failingIds, violations }) => {
   return errors
 }
 
-const writerErrorsToEntries = async (response, sentEntries, entries, senderId) => {
+const writeErrorsToEntries = async (response, sentEntries, entries, senderId) => {
   const errors = parseSisuErrors(response.data) || response.data
   const failedEntries = []
   for (const index in errors) {

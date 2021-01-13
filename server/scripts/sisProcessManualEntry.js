@@ -7,6 +7,7 @@ const {
 } = require('../../utils/validators')
 const { processEntries } = require('./sisProcessEntry')
 const { getRegistrations } = require('../services/eduweb')
+const logger = require('@utils/logger')
 
 const LANGUAGES = ["fi", "sv", "en"]
 
@@ -112,6 +113,7 @@ const processManualEntry = async ({
   })
 
   const rawEntryIds = await db.raw_entries.bulkCreate(rawEntries, {returning: true, transaction})
+  logger.info({message: 'Raw entries success', amount: rawEntryIds.length, course: course.courseCode, batchId, sis: true})
   await processEntries(rawEntryIds, transaction)
   return true
 }

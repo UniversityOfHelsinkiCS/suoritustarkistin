@@ -5,6 +5,7 @@ const _ = require('lodash')
 const moment = require('moment')
 const api = require('../config/importerApi')
 const qs = require('querystring')
+const logger = require('@utils/logger')
 
 /**
  * Mankel raw entries to sis entries.
@@ -71,6 +72,7 @@ const processEntries = async (createdEntries, transaction) => {
     })
 
     await db.entries.bulkCreate(data, {transaction})
+    logger.info({message: 'Entries success', amount: data.length, sis: true})
     return true
 }
 
@@ -135,7 +137,7 @@ async function getCourseUnitRealisations(rawEntries) {
         const { assessmentItemIds, id: courseUnitRealisationId } = activeObject
         courseRealisations[id] = {
             courseUnitRealisationId: courseUnitRealisationId,
-            assessmentItemId: assessmentItemIds[0],
+            assessmentItemId: assessmentItemIds[0]
         }
     }
     return courseRealisations

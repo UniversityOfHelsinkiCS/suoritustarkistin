@@ -19,6 +19,12 @@
         "personId":"Student's ID 1",
         "verifierPersonId":"Grader's ID 1",
         "courseUnitRealisationId":"Course unit realisation ID 1",
+        "courseUnitRealisationName":
+        {
+          "fi": "Sis Valid course 1 - fi",
+          "en": "Sis Valid course 1 - en",
+          "sv": "Sis Valid course 1 - sv"
+        },
         "assessmentItemId":"Assessment ID 1",
         "completionDate":"2020-12-30T08:00:00.900Z",
         "completionLanguage":"fi",

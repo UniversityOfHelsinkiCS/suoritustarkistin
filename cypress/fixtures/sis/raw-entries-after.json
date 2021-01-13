@@ -19,6 +19,12 @@
         "personId":"Student's id 1",
         "verifierPersonId":"Grader's id 1",
         "courseUnitRealisationId":"Course unit realisation ID 1",
+        "courseUnitRealisationName":
+          {
+            "fi": "Sis Valid course 1 - fi",
+            "en": "Sis Valid course 1 - en",
+            "sv": "Sis Valid course 1 - sv"
+          },
         "assessmentItemId":"Assessment ID 1",
         "completionDate":"2020-12-30T08:00:00.900Z",
         "completionLanguage":"fi",
@@ -53,6 +59,12 @@
         "personId":"Student's id 2",
         "verifierPersonId":"Grader's id 2",
         "courseUnitRealisationId":"Course unit realisation ID 2",
+        "courseUnitRealisationName":
+        {
+          "fi": "Sis Valid course 2 - fi",
+          "en": "Sis Valid course 2 - en",
+          "sv": "Sis Valid course 2 - sv"
+        },
         "assessmentItemId":"Assessment ID 2",
         "completionDate":"2020-12-30T09:00:00.900Z",
         "completionLanguage":"fi",
@@ -87,6 +99,12 @@
         "personId":"Student's id 3",
         "verifierPersonId":"Grader's id 2",
         "courseUnitRealisationId":"Course unit realisation ID 2",
+        "courseUnitRealisationName":
+        {
+          "fi": "Sis Valid course 3 - fi",
+          "en": "Sis Valid course 3 - en",
+          "sv": "Sis Valid course 3 - sv"
+        },
         "assessmentItemId":"Assessment ID 2",
         "completionDate":"2020-12-30T09:00:00.900Z",
         "completionLanguage":"fi",

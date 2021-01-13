@@ -61,12 +61,16 @@ const EntryCells = ({ entry }) => {
         style={{ borderLeft: "2px solid gray" }}
       >
         <Accordion.Accordion style={{ marginTop: "0px"}}>
-          <Accordion.Title active onClick={() => setOpen(!open)}>
-          <Icon name={`caret ${open ? 'down' : 'right'}`}/>
+          <Accordion.Title
+            active
+            onClick={() => setOpen(!open)}
+            data-cy={`sis-report-entry-course-${entry.id}`}
+          >
+            <Icon name={`caret ${open ? 'down' : 'right'}`}/>
             {courseUnitRealisationName ? courseUnitRealisationName[completionLanguage] : <NullCell />}
           </Accordion.Title>
           <Accordion.Content
-            data-cy={`sis-report-courseUnit-${entry.id}`}
+            data-cy={`sis-report-course-content-${entry.id}`}
             active={open}
             style={{ padding: "0.75em 1em"}}
           >
@@ -93,7 +97,7 @@ const EntryCells = ({ entry }) => {
       <Table.Cell data-cy={`sis-report-completionLanguage-${entry.id}`}>
         {completionLanguage ? completionLanguage : <NullCell />}
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-gradeAndScale-${entry.id}`}>
+      <Table.Cell data-cy={`sis-report-entry-grade-${entry.id}`}>
         {gradeId ? gradeId : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-sent-${entry.id}`}>

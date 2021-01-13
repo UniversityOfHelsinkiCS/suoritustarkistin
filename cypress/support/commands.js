@@ -95,6 +95,22 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       credits: '3,0',
       graderId: response.body.id,
     })
+    cy.request('POST', '/api/courses', {
+      id: 2,
+      name: 'Valid course 2',
+      courseCode: 'TKT10002',
+      language: 'en',
+      credits: '8,0',
+      graderId: response.body.id,
+    })
+    cy.request('POST', '/api/courses', {
+      id: 3,
+      name: 'Valid course 3',
+      courseCode: 'TKT10003',
+      language: 'sv',
+      credits: '5,0',
+      graderId: response.body.id,
+    })
 
   cy.request('POST', '/api/users', {
     name: 'admin',
@@ -104,19 +120,27 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
   })
   .then((response) => {
     cy.request('POST', '/api/courses', {
-      id: 2,
-      name: 'Valid course 2',
-      courseCode: 'TKT10002',
-      language: 'en',
-      credits: '2,0',
+      id: 4,
+      name: 'Valid AY-course',
+      courseCode: 'AYTKT10004',
+      language: 'fi',
+      credits: '4,0',
       graderId: response.body.id,
     })
     cy.request('POST', '/api/courses', {
-      id: 3,
-      name: 'Valid course 3',
-      courseCode: 'TKT10003',
-      language: 'sv',
-      credits: '3,0',
+      id: 5,
+      name: 'Valid CSM-course',
+      courseCode: 'CSM12106',
+      language: 'en',
+      credits: '5,0',
+      graderId: response.body.id,
+    })
+    cy.request('POST', '/api/courses', {
+      id: 6,
+      name: 'Valid DATA-course',
+      courseCode: 'DATA12001',
+      language: 'en',
+      credits: '5,0',
       graderId: response.body.id,
     })
     })

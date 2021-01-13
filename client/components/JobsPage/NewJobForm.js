@@ -17,6 +17,12 @@ export default ({ close }) => {
     return grader.name
   }
 
+  const filterAYCourses = (courses) => {
+    if (!courses) return []
+    return courses.filter((c) => c.courseCode.substring(0, 2) === 'AY')
+  }
+
+
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(addJobAction(data))
@@ -43,7 +49,7 @@ export default ({ close }) => {
           selection
           required={true}
           label="Course"
-          options={courses.map((course) => ({
+          options={filterAYCourses(courses).map((course) => ({
             key: course.id,
             value: course.id,
             text: `${course.name} (${course.courseCode})`

@@ -132,11 +132,10 @@ async function getCourseUnitRealisations(rawEntries) {
         const activeObject = resolveActiveObject(courseUnitRealisations[courseCode], attainmentDate)
         if (!activeObject) throw new Error(`No active course unit realisation in Sisu with the course code ${courseCode} for ${attainmentDate.toLocaleString()}`)
 
-        const { assessmentItemIds, id: courseUnitRealisationId, name } = activeObject
+        const { assessmentItemIds, id: courseUnitRealisationId } = activeObject
         courseRealisations[id] = {
             courseUnitRealisationId: courseUnitRealisationId,
             assessmentItemId: assessmentItemIds[0],
-            courseUnitRealisationName: name
         }
     }
     return courseRealisations

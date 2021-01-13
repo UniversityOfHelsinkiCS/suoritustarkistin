@@ -136,7 +136,7 @@ async function getCourseUnitRealisations(rawEntries) {
         courseRealisations[id] = {
             courseUnitRealisationId: courseUnitRealisationId,
             assessmentItemId: assessmentItemIds[0],
-            courseUnitRealisationName: name,
+            courseUnitRealisationName: name
         }
     }
     return courseRealisations

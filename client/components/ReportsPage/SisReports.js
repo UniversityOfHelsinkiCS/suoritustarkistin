@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
-import { Accordion, Button, Table, Message } from 'semantic-ui-react'
+import { Accordion, Button, Icon, Message, Table } from 'semantic-ui-react'
 import SendToSisButton from './SendToSisButton'
 import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
+import './reportStyles.css'
 
 const SentToSis = ({ senderNames, formattedDate }) => <span>
   <span style={{ color: 'green' }}>SENT TO SIS </span>
@@ -15,11 +16,6 @@ const SentToSis = ({ senderNames, formattedDate }) => <span>
 const NotSentToSis = () => <span style={{ color: 'red' }}>NOT SENT TO SIS</span>
 
 const ContainsErrors = ({ amount }) => <div style={{ color: 'orange' }}>{`CONTAINS ${amount} ERROR(S)`}</div>
-
-const SisErrorsMessage = () => <Message error>
-  <Message.Header>This report contains errors from Sisu</Message.Header>
-  <p>See failed rows bellow. Failed entries can be resent to Sisu by clicking send completions to Sisu button.</p>
-</Message>
 
 const SisSuccessMessage = () => <Message success>
   <Message.Header>All entries sent successfully to Sisu</Message.Header>
@@ -38,10 +34,14 @@ const DeleteButton = ({ id }) => {
   )
 }
 
-const CellsIfEntry = ({ entry }) => {
+const NullCell = ({ text }) => <span style={{ color: 'red'}}>{text || 'null'}</span>
+
+const EntryCells = ({ entry }) => {
+  const [open, setOpen] = useState(false)
   const {
     personId,
     verifierPersonId,
+    courseUnitRealisationName,
     courseUnitId,
     courseUnitRealisationId,
     assessmentItemId,
@@ -52,72 +52,84 @@ const CellsIfEntry = ({ entry }) => {
     gradeScaleId,
     gradeId
   } = entry
+
   return (
     <>
-      <Table.Cell data-cy={`sis-report-personId-${entry.id}`} style={{ borderLeft: "2px solid gray" }}>
-        {personId ? personId : <span style={{ color: 'red' }}>null</span>}
+      <Table.Cell
+        data-cy={`sis-report-courseUnitRealisationName-${entry.id}`}
+        colSpan='2'
+        style={{ borderLeft: "2px solid gray" }}
+      >
+        <Accordion.Accordion style={{ marginTop: "0px"}}>
+          <Accordion.Title active onClick={() => setOpen(!open)}>
+          <Icon name={`caret ${open ? 'down' : 'right'}`}/>
+            {courseUnitRealisationName ? courseUnitRealisationName[completionLanguage] : <NullCell />}
+          </Accordion.Title>
+          <Accordion.Content
+            data-cy={`sis-report-courseUnit-${entry.id}`}
+            active={open}
+            style={{ padding: "0.75em 1em"}}
+          >
+            <strong>Course unit ID</strong>
+            <p>{courseUnitId || <NullCell />}</p>
+            <strong>Course unit realisation ID</strong>
+            <p>{courseUnitRealisationId || <NullCell />}</p>
+            <strong>Assessment item ID</strong>
+            <p>{assessmentItemId || <NullCell />}</p>
+            <strong>Grade scale of the course</strong>
+            <p>{gradeScaleId || <NullCell />}</p>
+          </Accordion.Content>
+        </Accordion.Accordion>
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-personId-${entry.id}`}>
+        {personId ? personId : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-verifierPersonId-${entry.id}`}>
-        {verifierPersonId ? verifierPersonId : <span style={{ color: 'red' }}>null</span>}
-      </Table.Cell>
-      <Table.Cell data-cy={`sis-report-courseUnitId-${entry.id}`}>
-        {courseUnitId ? courseUnitId : <span style={{ color: 'red' }}>null</span>}
-      </Table.Cell>
-      <Table.Cell data-cy={`sis-report-courseUnitRealisationId-${entry.id}`}>
-        {courseUnitRealisationId ? courseUnitRealisationId : <span style={{ color: 'red' }}>null</span>}
-      </Table.Cell>
-      <Table.Cell data-cy={`sis-report-assessmentItemId-${entry.id}`}>
-        {assessmentItemId ? assessmentItemId : <span style={{ color: 'red' }}>null</span>}
+        {verifierPersonId ? verifierPersonId : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionDate-${entry.id}`}>
-        {completionDate ? moment(completionDate).format("DD.MM.YYYY") : <span style={{ color: 'red' }}>null</span>}
+        {completionDate ? moment(completionDate).format("DD.MM.YYYY") : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionLanguage-${entry.id}`}>
-        {completionLanguage ? completionLanguage : <span style={{ color: 'red' }}>null</span>}
+        {completionLanguage ? completionLanguage : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-gradeAndScale-${entry.id}`}>
-        {gradeId && gradeScaleId ? `${gradeId}, ${gradeScaleId}` : <span style={{ color: 'red' }}>null</span>}
+        {gradeId ? gradeId : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-sent-${entry.id}`}>
-        {sent ? moment(sent).format("DD.MM.YYYY") : <span style={{ color: 'red' }}>null</span>}
+        {sent ? moment(sent).format("DD.MM.YYYY") : <NullCell text="Not sent yet"/>}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-senderName-${entry.id}`}>
-        {sender ? sender.name : <span style={{ color: 'red' }}>null</span>}
+        {sender ? sender.name : <NullCell text="Not sent yet"/>}
       </Table.Cell>
     </>
   )
 }
 
-const CellsIfNoEntry = () => (
-  <>
-    <Table.Cell style={{ borderLeft: "2px solid gray", color: "red" }}>null</Table.Cell>
-    <Table.Cell style={{ color: "red" }}>null</Table.Cell>
-    <Table.Cell style={{ color: "red" }}>null</Table.Cell>
-    <Table.Cell style={{ color: "red" }}>null</Table.Cell>
-    <Table.Cell style={{ color: "red" }}>null</Table.Cell>
-    <Table.Cell style={{ color: "red" }}>null</Table.Cell>
-  </>
-)
-
 const TableBody = ({ rawEntries, course }) => (
   <Table.Body data-cy="sis-report-table">
-    {rawEntries.map((rawEntry) => {
-      return <React.Fragment key={`row-${rawEntry.id}`}>
+    {rawEntries.map((rawEntry) => (
+      <React.Fragment key={`row-${rawEntry.id}`}>
         <Table.Row>
           <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>
             {rawEntry.isOpenUni ? `AY${course.courseCode}` : course.courseCode}</Table.Cell>
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{course.name}</Table.Cell>
-          <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
-          <Table.Cell data-cy={`sis-report-grade-${rawEntry.id}`}>{rawEntry.grade}</Table.Cell>
           <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
-          {rawEntry.entry ? <CellsIfEntry entry={rawEntry.entry} /> : <CellsIfNoEntry />}
-          <Table.Cell><DeleteButton id={rawEntry.id} /></Table.Cell>
+          <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
+          <EntryCells entry={rawEntry.entry} />
+          <Table.Cell>
+            <DeleteButton id={rawEntry.id} />
+          </Table.Cell>
         </Table.Row>
-        {rawEntry.entry.errors ? <Table.Row>
-          <Table.Cell key={`row-${rawEntry.id}-3`} colSpan='11' error>{`Error: ${rawEntry.entry.errors.message}`}</Table.Cell>
-        </Table.Row> : null}
+        {rawEntry.entry.errors &&
+          <Table.Row>
+            <Table.Cell
+              colSpan='15'
+              error>{`Errors from SIS: ${rawEntry.entry.errors.message}`}
+            </Table.Cell>
+          </Table.Row>}
       </React.Fragment>
-    })}
+    ))}
   </Table.Body>
 )
 
@@ -125,7 +137,7 @@ const TableColumns = () => (
   <>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell colSpan='5'>Basics</Table.HeaderCell>
+        <Table.HeaderCell colSpan='4'>Manually inserted</Table.HeaderCell>
         <Table.HeaderCell
           colSpan='11'
           style={{ borderLeft: "2px solid gray" }}
@@ -138,21 +150,19 @@ const TableColumns = () => (
       <Table.Row>
         <Table.HeaderCell>Course code</Table.HeaderCell>
         <Table.HeaderCell>Course name</Table.HeaderCell>
-        <Table.HeaderCell>Credits</Table.HeaderCell>
-        <Table.HeaderCell>Grade</Table.HeaderCell>
         <Table.HeaderCell>Student number</Table.HeaderCell>
+        <Table.HeaderCell>Credits</Table.HeaderCell>
         <Table.HeaderCell
           style={{ borderLeft: "2px solid gray" }}
+          colSpan='2'
         >
-          Student ID
+          Course Unit
         </Table.HeaderCell>
-        <Table.HeaderCell>Employee ID</Table.HeaderCell>
-        <Table.HeaderCell>Course unit</Table.HeaderCell>
-        <Table.HeaderCell>Course unit realisation</Table.HeaderCell>
-        <Table.HeaderCell>Assessment item</Table.HeaderCell>
+        <Table.HeaderCell>Student ID</Table.HeaderCell>
+        <Table.HeaderCell>Grader ID</Table.HeaderCell>
         <Table.HeaderCell>Completion date</Table.HeaderCell>
         <Table.HeaderCell>Language</Table.HeaderCell>
-        <Table.HeaderCell>Grade and scale</Table.HeaderCell>
+        <Table.HeaderCell>Grade</Table.HeaderCell>
         <Table.HeaderCell>Date sent</Table.HeaderCell>
         <Table.HeaderCell>Sender name</Table.HeaderCell>
         <Table.HeaderCell>Delete</Table.HeaderCell>
@@ -163,7 +173,7 @@ const TableColumns = () => (
 
 const ReportTable = ({ rows, course }) => (
   rows.length && (
-    <Table celled structured>
+    <Table className="sis-report-table" style={{ padding: "0.em .78em"}}>
       <TableColumns />
       <TableBody key={course.id} rawEntries={rows} course={course} />
     </Table>
@@ -188,27 +198,38 @@ const reportContents = (report, courses) => {
       active: true,
       key: 'entries-with-errors',
       title: 'Entries with errors',
-      content: <Accordion.Content><ReportTable rows={report.filter(({ entry }) => entry.errors || !entry.sent)} course={course} /></Accordion.Content>
+      content: (
+        <Accordion.Content>
+          <ReportTable
+            rows={report.filter(({ entry }) => entry.errors || !entry.sent)}
+            course={course}
+          />
+        </Accordion.Content>
+      )
     })
 
   return (
     <Accordion.Content>
-      <p>Batch reported by {report[0].reporter && report[0].reporter.name}</p>
+      <p>Batch reported by <strong>{report[0].reporter ? report[0].reporter.name : "Suotar-bot"}</strong></p>
       <SendToSisButton
         entries={report
           .filter(({ entry }) => !entry.sent || entry.errors)
           .map(({ entry }) => entry.id)
         } />
 
-      {reportContainsErrors ? <SisErrorsMessage /> : null}
-      {!batchNotSent && !reportContainsErrors ? <SisSuccessMessage /> : null}
+      {!batchNotSent && !reportContainsErrors && <SisSuccessMessage />}
 
       { // Display accordion only when batch contains sent entries or entries with errors
         batchNotSent && !reportContainsErrors
           ? <ReportTable
-            rows={report}
-            course={course} />
-          : <Accordion.Accordion data-cy={`sis-entries-panel-${course.courseCode}`} panels={panels} exclusive={false} />
+              rows={report}
+              course={course}
+            />
+          : <Accordion.Accordion
+              data-cy={`sis-entries-panel-${course.courseCode}`}
+              panels={panels}
+              exclusive={false}
+            />
       }
     </Accordion.Content>
   )

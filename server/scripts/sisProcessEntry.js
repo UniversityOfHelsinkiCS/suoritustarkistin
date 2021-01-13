@@ -4,6 +4,7 @@ const Op = Sequelize.Op
 const _ = require('lodash')
 const moment = require('moment')
 const api = require('../config/importerApi')
+const qs = require('querystring')
 
 /**
  * Mankel raw entries to sis entries.
@@ -34,7 +35,9 @@ const processEntries = async (createdEntries, transaction) => {
     const courseUnits = await getCourseUnits(createdEntries)
     if (!courseUnits) throw new Error('Course with the course code not found from Sisu' )
     
-    // TODO: Map grade to grade scale
+    const gradeScaleIds = Object.keys(courseUnits).map((key) => courseUnits[key].gradeScaleId)
+    const gradeScales = await getGrades(gradeScaleIds)
+
     const data = createdEntries.map((rawEntry) => {
         const student = students.data.find(({studentNumber}) => studentNumber === rawEntry.studentNumber)
         const grader = graders.find((g) => g.id === rawEntry.graderId)
@@ -43,15 +46,25 @@ const processEntries = async (createdEntries, transaction) => {
         const courseUnit = courseUnits[rawEntry.id]
         if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
         if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
+        if (!courseUnit) throw new Error(`No course unit found with course code ${rawEntry.course.courseCode}`)
         if (!courseUnitRealisation) throw new Error(`No active or past course unit realisation found with course code ${rawEntry.course.courseCode}`)
+        const grade = gradeScales[courseUnit.gradeScaleId]
+            .find(({numericCorrespondence}) => String(numericCorrespondence) === rawEntry.grade)
+        if (!grade) {
+            throw new Error(`
+                Invalid grade "${rawEntry.grade}". Available grades for course are:
+                ${gradeScales[courseUnit.gradeScaleId].map(({numericCorrespondence}) => numericCorrespondence)}
+            `)
+        }
 
+        const completionDate = moment(rawEntry.attainmentDate).format('YYYY-MM-DD')
         return {
             personId: student.id,
             verifierPersonId: verifier.id,
-            completionDate: rawEntry.attainmentDate,
             completionLanguage: rawEntry.language,
             rawEntryId: rawEntry.id,
-            gradeId: '5',
+            gradeId: grade.localId,
+            completionDate,
             ...courseUnitRealisation,
             ...courseUnit
         }
@@ -104,7 +117,9 @@ async function getCourseUnitRealisations(rawEntries) {
         } 
         courseUnitRealisations[courseCode] = await fetchCourseUnitRealisation(courseCode)
     }
-    if (!courseUnitRealisations) throw new Error(`No course unit realisations in Sisu for that course`)
+    // TODO: We probably want to check if some course code is missing, not all...
+    if (_.isEmpty(courseUnitRealisations)) throw new Error(`No course unit realisations found`)
+
 
     const courseRealisations = {}
     for (const rawEntry of rawEntries) {
@@ -138,7 +153,8 @@ async function getCourseUnits(rawEntries) {
         }
         courseUnitData[courseCode] = await fetchCourseUnit(courseCode)
     }
-    if (!courseUnitData) throw new Error(`No course units in Sisu for that course`)
+    // TODO: We probably want to check if some course code is missing, not all...
+    if (_.isEmpty(courseUnitData)) throw new Error(`No course units found`)
 
     const courseUnits = {}
     for (const rawEntry of rawEntries) {
@@ -196,6 +212,17 @@ async function getCourses(rawEntries) {
             id: {[Op.in]: Array.from(courseIds)}
         }
     })
+}
+
+async function getGrades(codes) {
+    try {
+        const params = qs.stringify({codes})
+        const resp = await api.get(`grades?${params}`)
+        return resp.data
+    } catch (e) {
+        if (e.response.data.status === 404) throw new Error(e.response.data.message)
+        throw new Error(e.toString())
+    }
 }
 
 module.exports = {

@@ -81,7 +81,7 @@ const processMoocCompletions = async (
       []
     )
 
-    logger.info(`${courseCode}: Found ${matches.length} new completions.`)
+    logger.info({message: `${courseCode}: Found ${matches.length} new completions.`, courseCode, amount: matches.length, oodi: true})
 
     const date = new Date()
 

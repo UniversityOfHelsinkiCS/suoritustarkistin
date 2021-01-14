@@ -60,7 +60,7 @@ const processEoaiCompletions = async (courses) => {
       }
     }, [])
 
-    logger.info(`${courses[0]}xx: Found ${matches.length} new completions.`)
+    logger.info({message: `${courses[0]}xx: Found ${matches.length} new completions.`, courseCode: courses[0], amount: matches.length, oodi: true})
 
     const date = new Date()
 

@@ -64,7 +64,7 @@ const addMoocRawEntries = async (req, res) => {
     }, transaction)
       .then(async () => {
         await transaction.commit()
-        logger.info('Successful CSV insert.')
+        logger.info({message: 'Successful CSV insert.', sis: true})
         return res.status(200).json({ message: 'report created successfully' })
       })
       .catch(async (error) => {

@@ -27,7 +27,7 @@ const selectLanguage = (completion, course) => {
     return courseLanguage
   }
   if (completionLanguage && !LANGUAGES.includes(completionLanguage)) {
-    logger.error(`Invalid language: ${completionLanguage}`)
+    logger.error({message: `Invalid language: ${completionLanguage}`, sis: true})
     return courseLanguage
   }
   return completionLanguage
@@ -94,7 +94,7 @@ const sisProcessMoocEntries = async ({
 
       if (completion.grade) {
         if (!isValidGrade(completion.grade)) {
-          logger.error(`Invalid grade: ${completion.grade}`)
+          logger.error({message: `Invalid grade: ${completion.grade}`, sis: true})
           return matches
         }
 

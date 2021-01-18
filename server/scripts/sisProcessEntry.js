@@ -5,6 +5,8 @@ const _ = require('lodash')
 const moment = require('moment')
 const api = require('../config/importerApi')
 const qs = require('querystring')
+const logger = require('@utils/logger')
+const { checkCompletions } = require('@utils/sisCompletions')
 
 /**
  * Mankel raw entries to sis entries.
@@ -17,7 +19,7 @@ const processEntries = async (createdEntries, transaction) => {
     const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
     const graders = await db.users.findAll({
         where: {
-            id: {[Op.in]: Array.from(graderIds)}
+            id: { [Op.in]: Array.from(graderIds) }
         }
     })
 
@@ -27,21 +29,22 @@ const processEntries = async (createdEntries, transaction) => {
 
     const employeeIds = graders.map((grader) => grader.employeeId)
     const employees = await getEmployees(employeeIds)
-    if (!employees) throw new Error('Persons with any of the employee numbers not found from Sisu' )
-    
+    if (!employees) throw new Error('Persons with any of the employee numbers not found from Sisu')
+
     const courseRealisations = await getCourseUnitRealisations(createdEntries)
-    if (!courseRealisations) throw new Error('No active or past course unit realisation found with the course code' )
-    
+    if (!courseRealisations) throw new Error('No active or past course unit realisation found with the course code')
+
     const courseUnits = await getCourseUnits(createdEntries)
-    if (!courseUnits) throw new Error('Course with the course code not found from Sisu' )
-    
+    if (!courseUnits) throw new Error('Course with the course code not found from Sisu')
+
+    const courses = await getCourses(createdEntries)
     const gradeScaleIds = Object.keys(courseUnits).map((key) => courseUnits[key].gradeScaleId)
     const gradeScales = await getGrades(gradeScaleIds)
 
-    const data = createdEntries.map((rawEntry) => {
-        const student = students.data.find(({studentNumber}) => studentNumber === rawEntry.studentNumber)
+    const data = await Promise.all(createdEntries.map(async (rawEntry) => {
+        const student = students.data.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)
         const grader = graders.find((g) => g.id === rawEntry.graderId)
-        const verifier = employees.find(({employeeNumber}) => employeeNumber === grader.employeeId)
+        const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
         const courseUnitRealisation = courseRealisations[rawEntry.id]
         const courseUnit = courseUnits[rawEntry.id]
         if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
@@ -49,16 +52,20 @@ const processEntries = async (createdEntries, transaction) => {
         if (!courseUnit) throw new Error(`No course unit found with course code ${rawEntry.course.courseCode}`)
         if (!courseUnitRealisation) throw new Error(`No active or past course unit realisation found with course code ${rawEntry.course.courseCode}`)
         const grade = gradeScales[courseUnit.gradeScaleId]
-            .find(({numericCorrespondence}) => String(numericCorrespondence) === rawEntry.grade)
+            .find(({ numericCorrespondence }) => String(numericCorrespondence) === rawEntry.grade)
         if (!grade) {
             throw new Error(`
-                Invalid grade "${rawEntry.grade}". Available grades for course are:
-                ${gradeScales[courseUnit.gradeScaleId].map(({numericCorrespondence}) => numericCorrespondence)}
-            `)
+                    Invalid grade "${rawEntry.grade}". Available grades for course are:
+                    ${gradeScales[courseUnit.gradeScaleId].map(({ numericCorrespondence }) => numericCorrespondence)}
+                `)
         }
+        const course = courses.find((c) => c.id === rawEntry.courseId)
+
+        if (!await checkCompletions(course.courseCode, rawEntry.studentNumber, grade.numericCorrespondence))
+            throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
 
         const completionDate = moment(rawEntry.attainmentDate).format('YYYY-MM-DD')
-        return {
+        return Promise.resolve({
             personId: student.id,
             verifierPersonId: verifier.id,
             completionLanguage: rawEntry.language,
@@ -67,18 +74,22 @@ const processEntries = async (createdEntries, transaction) => {
             completionDate,
             ...courseUnitRealisation,
             ...courseUnit
-        }
-    })
+        })
+    }))
 
-    await db.entries.bulkCreate(data, {transaction})
+    await db.entries.bulkCreate(data, { transaction })
+    logger.info({ message: 'Entries success', amount: data.length, sis: true })
     return true
 }
 
 // TODO: Create endpoint to db.api for batch converting employee ids
 async function getEmployees(employeeIds) {
-    const responses = await Promise.all(employeeIds.map(async (employeeId) =>
-        await api.get(`employees/${employeeId}`)
-    ))
+    const responses = await Promise.all(employeeIds.map(async (employeeId) => {
+        const resp = await api.get(`employees/${employeeId}`)
+        if (!resp.data.length)
+            throw new Error(`No person found from Sisu with employee number ${employeeId}`)
+        return resp
+    }))
     return _.flatten(responses.map((resp) => resp.data))
 }
 
@@ -114,7 +125,7 @@ async function getCourseUnitRealisations(rawEntries) {
         let { courseCode } = course
         if (course.autoSeparate) {
             courseUnitRealisations[`AY${courseCode}`] = await fetchCourseUnitRealisation(`AY${courseCode}`)
-        } 
+        }
         courseUnitRealisations[courseCode] = await fetchCourseUnitRealisation(courseCode)
     }
     // TODO: We probably want to check if some course code is missing, not all...
@@ -206,17 +217,17 @@ async function fetchCourseUnit(courseCode) {
  * Get all course instances related to raw entries
  */
 async function getCourses(rawEntries) {
-    const courseIds = new Set(rawEntries.map(({courseId}) => courseId))
+    const courseIds = new Set(rawEntries.map(({ courseId }) => courseId))
     return await db.courses.findAll({
         where: {
-            id: {[Op.in]: Array.from(courseIds)}
+            id: { [Op.in]: Array.from(courseIds) }
         }
     })
 }
 
 async function getGrades(codes) {
     try {
-        const params = qs.stringify({codes})
+        const params = qs.stringify({ codes })
         const resp = await api.get(`grades?${params}`)
         return resp.data
     } catch (e) {

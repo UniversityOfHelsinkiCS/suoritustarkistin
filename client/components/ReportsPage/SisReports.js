@@ -36,6 +36,12 @@ const DeleteButton = ({ id }) => {
 
 const NullCell = ({ text }) => <span style={{ color: 'red'}}>{text || 'null'}</span>
 
+const getUnitName = (name, language) => {
+  if (!name) return <NullCell />
+  if (!name[language]) return name['fi']
+  return name[language]
+}
+
 const EntryCells = ({ entry }) => {
   const [open, setOpen] = useState(false)
   const {
@@ -67,7 +73,7 @@ const EntryCells = ({ entry }) => {
             data-cy={`sis-report-entry-course-${entry.id}`}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`}/>
-            {courseUnitRealisationName ? courseUnitRealisationName[completionLanguage] : <NullCell />}
+            {getUnitName(courseUnitRealisationName, completionLanguage)}
           </Accordion.Title>
           <Accordion.Content
             data-cy={`sis-report-course-content-${entry.id}`}

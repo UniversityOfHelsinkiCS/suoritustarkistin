@@ -47,18 +47,15 @@ const processEntries = async (createdEntries, transaction) => {
         const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
         const courseUnitRealisation = courseRealisations[rawEntry.id]
         const courseUnit = courseUnits[rawEntry.id]
+        const grade = mapGrades(gradeScales, courseUnit.gradeScaleId, rawEntry)
         if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
         if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
         if (!courseUnit) throw new Error(`No course unit found with course code ${rawEntry.course.courseCode}`)
         if (!courseUnitRealisation) throw new Error(`No active or past course unit realisation found with course code ${rawEntry.course.courseCode}`)
-        const grade = gradeScales[courseUnit.gradeScaleId]
-            .find(({ numericCorrespondence }) => String(numericCorrespondence) === rawEntry.grade)
-        if (!grade) {
-            throw new Error(`
-                    Invalid grade "${rawEntry.grade}". Available grades for course are:
-                    ${gradeScales[courseUnit.gradeScaleId].map(({ numericCorrespondence }) => numericCorrespondence)}
-                `)
-        }
+        if (!grade) throw new Error(`
+            Invalid grade "${rawEntry.grade}". Available grades for this course are:
+            ${gradeScales[courseUnit.gradeScaleId].map(({abbreviation}) => abbreviation['fi'])}
+        `)
         const course = courses.find((c) => c.id === rawEntry.courseId)
 
         if (!await checkCompletions(course.courseCode, rawEntry.studentNumber, grade.numericCorrespondence))
@@ -80,6 +77,14 @@ const processEntries = async (createdEntries, transaction) => {
     await db.entries.bulkCreate(data, { transaction })
     logger.info({ message: 'Entries success', amount: data.length, sis: true })
     return true
+}
+
+const mapGrades = (gradeScales, id, rawEntry) => {
+    if (id === "sis-0-5") {
+        return gradeScales[id].find(({numericCorrespondence}) => String(numericCorrespondence) === rawEntry.grade)
+    } else if (id === "sis-hyl-hyv") {
+        return gradeScales[id].find(({ abbreviation }) => abbreviation['fi'] === rawEntry.grade)
+    }
 }
 
 // TODO: Create endpoint to db.api for batch converting employee ids

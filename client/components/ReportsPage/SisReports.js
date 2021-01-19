@@ -42,6 +42,22 @@ const getUnitName = (name, language) => {
   return name[language]
 }
 
+const getGrade = (gradeScaleId, gradeId, language) => {
+  if (!gradeId || !gradeScaleId || !language) return <NullCell />
+  if (gradeScaleId === "sis-0-5") return gradeId
+  if (gradeScaleId === "sis-hyl-hyv") {
+    const gradeMap = [
+      { en: 'Fail', fi: 'Hyl.', sv: 'F' },
+      { en: 'Pass', fi: 'Hyv.', sv: 'G' }
+    ]
+    const grade = gradeMap[gradeId]
+    if (!grade) return <NullCell />
+    return grade[language]
+  }
+
+  return <NullCell />
+}
+
 const EntryCells = ({ entry }) => {
   const [open, setOpen] = useState(false)
   const {
@@ -104,7 +120,7 @@ const EntryCells = ({ entry }) => {
         {completionLanguage ? completionLanguage : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-entry-grade-${entry.id}`}>
-        {gradeId ? gradeId : <NullCell />}
+        {getGrade(gradeScaleId, gradeId, completionLanguage)}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-sent-${entry.id}`}>
         {sent ? moment(sent).format("DD.MM.YYYY") : <NullCell text="Not sent yet"/>}

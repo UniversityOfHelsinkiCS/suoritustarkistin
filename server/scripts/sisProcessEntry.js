@@ -58,7 +58,7 @@ const processEntries = async (createdEntries, transaction) => {
         `)
         const course = courses.find((c) => c.id === rawEntry.courseId)
 
-        if (!await checkCompletions(course.courseCode, rawEntry.studentNumber, grade.numericCorrespondence))
+        if (!await checkCompletions(course.courseCode, rawEntry.studentNumber, grade))
             throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
 
         const completionDate = moment(rawEntry.attainmentDate).format('YYYY-MM-DD')

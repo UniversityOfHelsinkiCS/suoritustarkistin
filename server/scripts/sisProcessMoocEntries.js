@@ -5,6 +5,7 @@ const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isValidGrade } = require('../../utils/validators')
+const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 
 const LANGUAGES = ["fi", "sv", "en"]
 
@@ -104,6 +105,11 @@ const sisProcessMoocEntries = async ({
           return matches
         } 
       }
+
+      if (await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
+        return matches
+      }
+
       if (!completion.grade && previousGrades.length > 0) {
         return matches
       }

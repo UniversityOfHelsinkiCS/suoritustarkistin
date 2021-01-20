@@ -6,7 +6,7 @@ const moment = require('moment')
 const api = require('../config/importerApi')
 const qs = require('querystring')
 const logger = require('@utils/logger')
-const { checkCompletions } = require('@utils/sisCompletions')
+const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
 
 /**
  * Mankel raw entries to sis entries.
@@ -15,7 +15,7 @@ const { checkCompletions } = require('@utils/sisCompletions')
  * raw entries and related foreign keys. We can't query raw entries with include as we
  * are inside a transaction and relations needs to be fetched separately.
  */
-const processEntries = async (createdEntries, transaction) => {
+const processEntries = async (createdEntries, transaction, sourceOfData) => {
     const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
     const graders = await db.users.findAll({
         where: {
@@ -41,7 +41,7 @@ const processEntries = async (createdEntries, transaction) => {
     const gradeScaleIds = Object.keys(courseUnits).map((key) => courseUnits[key].gradeScaleId)
     const gradeScales = await getGrades(gradeScaleIds)
 
-    const data = await (createdEntries.map(async (rawEntry) => {
+    const data = await Promise.all(createdEntries.map(async (rawEntry) => {
         const student = students.data.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)
         const grader = graders.find((g) => g.id === rawEntry.graderId)
         const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
@@ -60,23 +60,23 @@ const processEntries = async (createdEntries, transaction) => {
             ${gradeScales[courseUnit.gradeScaleId].map(({abbreviation}) => abbreviation['fi'])}
         `)
 
-        if (!await checkCompletions(course.courseCode, rawEntry.studentNumber, grade.numericCorrespondence)) {
-            return ({
-                personId: student.id,
-                verifierPersonId: verifier.id,
-                completionLanguage: rawEntry.language,
-                rawEntryId: rawEntry.id,
-                gradeId: grade.localId,
-                completionDate,
-                ...courseUnitRealisation,
-                ...courseUnit
-            })
+        if (!await isImprovedGrade(course.courseCode, rawEntry.studentNumber, Number(rawEntry.grade))) {
+            throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
         }
+
+        return Promise.resolve({
+            personId: student.id,
+            verifierPersonId: verifier.id,
+            completionLanguage: rawEntry.language,
+            rawEntryId: rawEntry.id,
+            gradeId: grade.localId,
+            completionDate,
+            ...courseUnitRealisation,
+            ...courseUnit
+        })
     }))
 
-    const newEntries = data.filter((entry) => entry.personId)
-    if (!newEntries || !newEntries.length) throw new Error('All the students already have a better grade for this or a comparative course')
-    await db.entries.bulkCreate(newEntries, { transaction })
+    await db.entries.bulkCreate(data, { transaction })
     logger.info({ message: 'Entries success', amount: data.length, sis: true })
     return true
 }

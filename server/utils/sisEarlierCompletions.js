@@ -12,8 +12,8 @@ const isImprovedGrade = async (courseCode, studentNumber, grade) => {
         const earlierCompletions = resp.data
         if (!earlierCompletions) return true
         
-        if ([0,1,2,3,4,5].includes(grade)) {
-            const existingBetterGrade = earlierCompletions.some((attainment) => attainment.grade.numericCorrespondence >= grade)
+        if ([0,1,2,3,4,5].includes(Number(grade))) {
+            const existingBetterGrade = earlierCompletions.some((attainment) => attainment.grade.numericCorrespondence >= Number(grade))
             if (existingBetterGrade) return false
         }
         if (['Hyl.', 'Hyv.'].includes(grade)) {

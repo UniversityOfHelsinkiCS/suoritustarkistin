@@ -63,7 +63,7 @@ const sisProcessEoaiEntries = async ({graderId}, transaction) => {
       )
       const earlierEntry = rawEntries.find(
         (entry) =>
-          entry.moocCompletionId === completionId ||
+          entry.moocCompletionId === completion.id ||
           entry.moocUserId === completion.user_upstream_id
       )
       return (!earlierCredit && !earlierEntry)
@@ -119,6 +119,6 @@ const sisProcessEoaiEntries = async ({graderId}, transaction) => {
   }
 }
 
-module.exports = { 
+module.exports = {
   sisProcessEoaiEntries
 }

@@ -83,7 +83,7 @@ const sisManualRun = async (job, course, grader, transaction) => {
     })
 }
 
-const sisManualEaoiRun = async (job, course, grader, transaction) => {
+const sisManualEaoiRun = async (course, grader, transaction) => {
   const timeStamp = new Date(Date.now())
   logger.info(
     `${timeStamp.toLocaleString()} Manual eaoi-sis-job run: Processing new ${course.name} (${

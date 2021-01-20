@@ -73,7 +73,7 @@ const sisProcessMoocEntries = async ({
           return matches.concat({
             studentNumber: registration.onro,
             batchId: batchId,
-            grade: completion.grade || 'Hyv.',
+            grade: 5,
             credits: course.credits,
             language: language,
             attainmentDate: completion.completion_date || date,
@@ -92,10 +92,11 @@ const sisProcessMoocEntries = async ({
     []
   )
   logger.info(`${course.courseCode}: Found ${matches.length} new completions.`)
-  const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
-  await processEntries(newRawEntries, transaction)
+  if (matches && matches.length > 0) {
+    const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
+    await processEntries(newRawEntries, transaction)
+  }
   return true
-
 }
 
 module.exports = { 

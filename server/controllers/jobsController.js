@@ -84,7 +84,7 @@ const sisRunJob = async (req, res) => {
     const grader = await db.users.findOne({ where: { id: course.graderId } })
 
     if (EAOI_CODES.includes(course.courseCode)) {
-      await sisManualEaoiRun(job, course, grader, transaction)
+      await sisManualEaoiRun(course, grader, transaction)
     } else {
       await sisManualRun(job, course, grader, transaction)
     }

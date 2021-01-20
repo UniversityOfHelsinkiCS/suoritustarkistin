@@ -41,13 +41,16 @@ const processEntries = async (createdEntries, transaction) => {
     const gradeScaleIds = Object.keys(courseUnits).map((key) => courseUnits[key].gradeScaleId)
     const gradeScales = await getGrades(gradeScaleIds)
 
-    const data = await Promise.all(createdEntries.map(async (rawEntry) => {
+    const data = await (createdEntries.map(async (rawEntry) => {
         const student = students.data.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)
         const grader = graders.find((g) => g.id === rawEntry.graderId)
         const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
+        const course = courses.find((c) => c.id === rawEntry.courseId)
         const courseUnitRealisation = courseRealisations[rawEntry.id]
         const courseUnit = courseUnits[rawEntry.id]
         const grade = mapGrades(gradeScales, courseUnit.gradeScaleId, rawEntry)
+        const completionDate = moment(rawEntry.attainmentDate).format('YYYY-MM-DD')
+
         if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
         if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
         if (!courseUnit) throw new Error(`No course unit found with course code ${rawEntry.course.courseCode}`)
@@ -56,25 +59,24 @@ const processEntries = async (createdEntries, transaction) => {
             Invalid grade "${rawEntry.grade}". Available grades for this course are:
             ${gradeScales[courseUnit.gradeScaleId].map(({abbreviation}) => abbreviation['fi'])}
         `)
-        const course = courses.find((c) => c.id === rawEntry.courseId)
 
-        if (!await checkCompletions(course.courseCode, rawEntry.studentNumber, grade.numericCorrespondence))
-            throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
-
-        const completionDate = moment(rawEntry.attainmentDate).format('YYYY-MM-DD')
-        return Promise.resolve({
-            personId: student.id,
-            verifierPersonId: verifier.id,
-            completionLanguage: rawEntry.language,
-            rawEntryId: rawEntry.id,
-            gradeId: grade.localId,
-            completionDate,
-            ...courseUnitRealisation,
-            ...courseUnit
-        })
+        if (!await checkCompletions(course.courseCode, rawEntry.studentNumber, grade.numericCorrespondence)) {
+            return ({
+                personId: student.id,
+                verifierPersonId: verifier.id,
+                completionLanguage: rawEntry.language,
+                rawEntryId: rawEntry.id,
+                gradeId: grade.localId,
+                completionDate,
+                ...courseUnitRealisation,
+                ...courseUnit
+            })
+        }
     }))
 
-    await db.entries.bulkCreate(data, { transaction })
+    const newEntries = data.filter((entry) => entry.personId)
+    if (!newEntries || !newEntries.length) throw new Error('All the students already have a better grade for this or a comparative course')
+    await db.entries.bulkCreate(newEntries, { transaction })
     logger.info({ message: 'Entries success', amount: data.length, sis: true })
     return true
 }

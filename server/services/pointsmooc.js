@@ -9,6 +9,7 @@ const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
 })
 
 const getCompletions = async (course) => {
+  logger.info(`Fetching completions for course ${course}`)
   if (course.includes('AYTKT21018')) return await getCompletionsFromRest() // Elements of AI completions list is too large for GraphQL
   return await getCompletionsFromGraphQL(course)
 }
@@ -23,11 +24,13 @@ const getCompletionsFromRest = async () => {
 }
 
 const getEoAICompletions = async () => {
+  logger.info("Fetching Elements of AI -completions")
   const { data } = await axios.get(process.env.EOAI_URL, {
     headers: {
       Authorization: process.env.MOOC_TOKEN
     }
   })
+  logger.info(`Found ${data.length} completions`)
   return data
 }
 

@@ -27,7 +27,6 @@ const selectLanguage = (completion, course) => {
     return courseLanguage
   }
   if (completionLanguage && !LANGUAGES.includes(completionLanguage)) {
-    logger.error({message: `Invalid language: ${completionLanguage}`, sis: true})
     return courseLanguage
   }
   return completionLanguage
@@ -45,7 +44,7 @@ const sisProcessMoocEntries = async ({
     }
   })
 
-  if (!course) throw new Error('Course id does not exist.')
+  if (!course) logger.error({ message: 'Course id does not exist.', sis: true })
 
   const credits = await db.credits.findAll({
     where: {
@@ -60,8 +59,9 @@ const sisProcessMoocEntries = async ({
     }
   })
 
-  if (!grader) throw new Error('Grader employee id does not exist.')
-  const rawEntries = await db.raw_entries.findAll({})
+  if (!grader) logger.error({ message: 'Grader employee id does not exist.', sis: true })
+
+  const rawEntries = await db.raw_entries.findAll({ where: { courseId: course.id }})
   const registrations = await getRegistrations(course.courseCode)
   const completions = await getCompletions(slug || course.courseCode)
   const batchId = `${course.courseCode}%${moment().format(
@@ -72,8 +72,7 @@ const sisProcessMoocEntries = async ({
   const matches = await completions.reduce(
     async (matchesPromise, completion) => {
       const matches = await matchesPromise
-      // TODO: Find a better way to check if there are already completions 
-      // for the same course by the same student
+
       const previousGradesAfterSis = rawEntries
         .filter(
           (entry) =>
@@ -94,7 +93,7 @@ const sisProcessMoocEntries = async ({
 
       if (completion.grade) {
         if (!isValidGrade(completion.grade)) {
-          logger.error({message: `Invalid grade: ${completion.grade}`, sis: true})
+          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
           return matches
         }
 

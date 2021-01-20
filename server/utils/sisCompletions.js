@@ -9,7 +9,9 @@ const logger = require('@utils/logger')
 const checkCompletions = async (courseCode, studentNumber, grade) => {
     try {
         const resp = await api.get(`suotar/attainments/${courseCode}/${studentNumber}`)
-        return resp.data.some((attainment) => attainment.grade.numericCorrespondence <= grade)
+        const betterGrade = resp.data.some((attainment) => Number(attainment.gradeId) <= Number(grade))
+        if (betterGrade) return true
+        return false
     } catch(e) {
         logger.error({message: `Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`, sis: true, error: e.toString()})
         throw new Error(`Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`)

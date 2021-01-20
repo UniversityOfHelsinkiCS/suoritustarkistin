@@ -1,15 +1,15 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
-const { manualRun, activateJob, deactivateJob } = require('../scripts/cronjobs')
-const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
-const { sisProcessEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
-// const { sisProcessBaiEntries } = require('../scripts/sisProcessBaiEntries')
-const handleDatabaseError = (res, error) => {
-  logger.error(error.message)
-  return res.status(500).json({ error: 'Server went BOOM!' })
-}
+const {
+  manualRun,
+  activateJob,
+  deactivateJob,
+  sisManualEaoiRun,
+  sisManualRun
+} = require('../scripts/cronjobs')
 
 const { isValidJob } = require('@root/utils/validators')
+const { EAOI_CODES } = require('../../utils/validators')
 
 const getJobs = async (req, res) => {
   try {
@@ -73,79 +73,26 @@ const runJob = async (req, res) => {
 
 const sisRunJob = async (req, res) => {
   try {
-    const transaction = await db.sequelize.transaction()
     if (!req.user.isAdmin) {
       throw new Error('User is not authorized to create SIS-reports.')
     }
 
+    const transaction = await db.sequelize.transaction()
     const jobId = req.params.id
     const job = await db.jobs.findOne({ where: { id: jobId }})
     const course = await db.courses.findOne({ where: { id: job.courseId }})
     const grader = await db.users.findOne({ where: { id: course.graderId } })
 
-    const timeStamp = new Date(Date.now())
-
-    logger.info(
-      `${timeStamp.toLocaleString()} Manual sis-job run: Processing new ${course.name} (${
-        course.courseCode
-      }) completions`
-    )
-
-    sisProcessMoocEntries({
-      graderId: grader.employeeId,
-      courseId: course.id,
-      slug: job.slug
-    }, transaction)
-      .then(async () => {
-        await transaction.commit()
-        logger.info('Successful job run, report created successfully.')
-        return res.status(200).json({ message: 'report created successfully' })
-      })
-      .catch(async (error) => {
-        logger.error('Unsuccessful job run: ', error)
-        await transaction.rollback()
-        return res.status(400).json({ error: error.toString() })
-      })
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
-
-const sisRunEaoiJob = async (req, res) => {
-  try {
-    const transaction = await db.sequelize.transaction()
-    if (!req.user.isAdmin) {
-      throw new Error('User is not authorized to create SIS-reports.')
+    if (EAOI_CODES.includes(course.courseCode)) {
+      await sisManualEaoiRun(job, course, grader, transaction)
+    } else {
+      await sisManualRun(job, course, grader, transaction)
     }
 
-    const jobId = req.params.id
-    const job = await db.jobs.findOne({ where: { id: jobId }})
-    const course = await db.courses.findOne({ where: { id: job.courseId }})
-    const grader = await db.users.findOne({ where: { id: course.graderId } })
-
-    const timeStamp = new Date(Date.now())
-
-    logger.info(
-      `${timeStamp.toLocaleString()} Manual sis-job run: Processing new ${course.name} (${
-        course.courseCode
-      }) completions`
-    )
-    sisProcessEoaiEntries({
-      graderId: grader.employeeId
-    }, transaction)
-      .then(async () => {
-        await transaction.commit()
-        logger.info('Successful job run, report created successfully.')
-        return res.status(200).json({ message: 'report created successfully' })
-      })
-      .catch(async (error) => {
-        logger.error('Unsuccessful job run: ', error)
-        await transaction.rollback()
-        return res.status(400).json({ error: error.toString() })
-      })
-  } catch (error) {
-    handleDatabaseError(res, error)
+    return res.status(200).json({ id: req.params.id })
+  } catch (e) {
+    logger.error(e.message)
+    res.status(500).json({ error: 'server went BOOM!' })
   }
 }
 
@@ -167,6 +114,5 @@ module.exports = {
   deleteJob,
   deleteAllJobs,
   runJob,
-  sisRunJob,
-  sisRunEaoiJob
+  sisRunJob
 }

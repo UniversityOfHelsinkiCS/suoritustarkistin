@@ -39,7 +39,6 @@ const {
   editJob,
   runJob,
   sisRunJob,
-  sisRunEaoiJob,
   deleteJob,
   deleteAllJobs
 } = require('@controllers/jobsController')
@@ -98,7 +97,6 @@ router.post('/jobs', checkAdmin, addJob)
 router.put('/jobs/:id', checkAdmin, editJob)
 router.post('/jobs/:id', checkAdmin, runJob)
 router.post('/sis_jobs/:id', checkAdmin, sisRunJob)
-router.post('/sis_eaoi_job/:id', checkAdmin, sisRunEaoiJob)
 router.delete('/jobs/:id', checkAdmin, deleteJob)
 
 module.exports = router

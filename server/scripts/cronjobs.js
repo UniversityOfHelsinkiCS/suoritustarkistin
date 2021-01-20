@@ -2,6 +2,9 @@ const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const processMoocCompletions = require('./processMoocCompletions')
+const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const { sisProcessEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
+// const { sisProcessBaiEntries } = require('../scripts/sisProcessBaiEntries')
 
 let cronjobs = {}
 
@@ -57,6 +60,49 @@ const manualRun = async (id) => {
   )
 }
 
+const sisManualRun = async (job, course, grader, transaction) => {
+  const timeStamp = new Date(Date.now())
+  logger.info(
+    `${timeStamp.toLocaleString()} Manual sis-job run: Processing new ${course.name} (${
+      course.courseCode
+    }) completions`
+  )
+
+  sisProcessMoocEntries({
+    graderId: grader.employeeId,
+    courseId: course.id,
+    slug: job.slug
+  }, transaction)
+    .then(async () => {
+      await transaction.commit()
+      logger.info('Successful job run, report created successfully.')
+    })
+    .catch(async (error) => {
+      logger.error('Unsuccessful job run: ', error)
+      await transaction.rollback()
+    })
+}
+
+const sisManualEaoiRun = async (job, course, grader, transaction) => {
+  const timeStamp = new Date(Date.now())
+  logger.info(
+    `${timeStamp.toLocaleString()} Manual eaoi-sis-job run: Processing new ${course.name} (${
+      course.courseCode
+    }) completions`
+  )
+  sisProcessEoaiEntries({
+    graderId: grader.employeeId
+  }, transaction)
+    .then(async () => {
+      await transaction.commit()
+      logger.info('Successful job run, report created successfully.')
+    })
+    .catch(async (error) => {
+      logger.error('Unsuccessful job run: ', error)
+      await transaction.rollback()
+    })
+}
+
 const activateJob = async (id) => {
   const job = await db.jobs.findOne({ where: { id } })
   const course = await db.courses.findOne({ where: { id: job.courseId } })
@@ -90,6 +136,8 @@ const deactivateJob = async (id) => {
 module.exports = {
   initializeCronJobs,
   manualRun,
+  sisManualRun,
+  sisManualEaoiRun,
   activateJob,
   deactivateJob
 }

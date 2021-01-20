@@ -4,22 +4,8 @@ const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
-const { isValidGrade } = require('../../utils/validators')
+const { isValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
-
-const LANGUAGES = ["fi", "sv", "en"]
-
-const isImprovement = (previousGrades, grade) => {
-  if (!isValidGrade(grade)) return false
-  const validGrades = ['Hyl.', 'Hyv.', '1', '2', '3', '4', '5']
-  const betterOrSame = previousGrades.filter(
-    (previousGrade) =>
-      (validGrades.indexOf(previousGrade) || 0) >=
-      (validGrades.indexOf(grade) || 0)
-  )
-
-  return betterOrSame.length === 0
-}
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
@@ -27,7 +13,7 @@ const selectLanguage = (completion, course) => {
   if (!completionLanguage) {
     return courseLanguage
   }
-  if (completionLanguage && !LANGUAGES.includes(completionLanguage)) {
+  if (completionLanguage && !SIS_LANGUAGES.includes(completionLanguage)) {
     return courseLanguage
   }
   return completionLanguage
@@ -47,13 +33,6 @@ const sisProcessMoocEntries = async ({
 
   if (!course) logger.error({ message: 'Course id does not exist.', sis: true })
 
-  const credits = await db.credits.findAll({
-    where: {
-      courseId: course.courseCode
-    },
-    raw: true
-  })
-
   const grader = await db.users.findOne({
     where: {
       employeeId: graderId
@@ -62,7 +41,6 @@ const sisProcessMoocEntries = async ({
 
   if (!grader) logger.error({ message: 'Grader employee id does not exist.', sis: true })
 
-  const rawEntries = await db.raw_entries.findAll({ where: { courseId: course.id }})
   const registrations = await getRegistrations(course.courseCode)
   const completions = await getCompletions(slug || course.courseCode)
   const batchId = `${course.courseCode}%${moment().format(
@@ -74,45 +52,13 @@ const sisProcessMoocEntries = async ({
     async (matchesPromise, completion) => {
       const matches = await matchesPromise
 
-      const previousGradesAfterSis = rawEntries
-        .filter(
-          (entry) =>
-            entry.moocCompletionId === completion.id ||
-            entry.moocUserId === completion.user_upstream_id
-        )
-        .map((entry) => entry.grade)
-      
-      const previousGradesBeforeSis = credits
-        .filter(
-          (credit) =>
-            credit.completionId === completion.id ||
-            credit.moocId === completion.user_upstream_id
-        )
-        .map((credit) => credit.grade)
-
-      const previousGrades = [...previousGradesAfterSis, ...previousGradesBeforeSis ]
-
       if (completion.grade) {
         if (!isValidGrade(completion.grade)) {
           logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
           return matches
         }
-
-        if (
-          previousGrades.length > 0 &&
-          !isImprovement(previousGrades, completion.grade)
-        ) {
-          return matches
-        } 
       }
 
-      if (await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
-        return matches
-      }
-
-      if (!completion.grade && previousGrades.length > 0) {
-        return matches
-      }
       const language = selectLanguage(completion, course)
       const registration = registrations.find(
         (registration) =>
@@ -121,20 +67,24 @@ const sisProcessMoocEntries = async ({
           registration.mooc.toLowerCase() === completion.email.toLowerCase()
       )
       if (registration && registration.onro) {
-        return matches.concat({
-          studentNumber: registration.onro,
-          batchId: batchId,
-          grade: completion.grade || 'Hyv.',
-          credits: course.credits,
-          language: language,
-          attainmentDate: completion.completion_date || date,
-          graderId: grader.id,
-          reporterId: null,
-          courseId: course.id,
-          isOpenUni: false,
-          moocUserId: completion.user_upstream_id,
-          moocCompletionId: completion.id
-        })
+        if (!await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
+          return matches
+        } else {
+          return matches.concat({
+            studentNumber: registration.onro,
+            batchId: batchId,
+            grade: completion.grade || 'Hyv.',
+            credits: course.credits,
+            language: language,
+            attainmentDate: completion.completion_date || date,
+            graderId: grader.id,
+            reporterId: null,
+            courseId: course.id,
+            isOpenUni: false,
+            moocUserId: completion.user_upstream_id,
+            moocCompletionId: completion.id
+          })
+        }
       } else {
         return matches
       }

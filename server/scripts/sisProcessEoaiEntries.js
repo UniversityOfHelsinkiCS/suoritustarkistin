@@ -1,9 +1,10 @@
 const moment = require('moment')
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getEoAICompletions } = require('../services/pointsmooc')
-const db = require('../models/index')
+const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
+const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 
 const languageMap = {
   "fi_FI" : "fi",
@@ -74,39 +75,48 @@ const sisProcessEoaiEntries = async ({graderId}, transaction) => {
     )}`
     const date = new Date()
 
-    const matches = completions.reduce((matches, completion) => {
-      if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language))
-        return matches
+    const matches = await completions.reduce(
+      async (matchesPromise, completion) => {
+        const matches = await matchesPromise
 
-      const language = languageMap[completion.completion_language]
-      const courseVersion = courses.find((c) => c.language === language)
+        if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language))
+          return matches
 
-      const registration = registrations.find(
-        (registration) =>
-          registration.email.toLowerCase() === completion.email.toLowerCase() ||
-          registration.mooc.toLowerCase() === completion.email.toLowerCase()
-      )
-      // Once the gradeScale has been fixed, remember to change the grade to "Hyv."
-      if (registration && registration.onro) {
-        return matches.concat({
-          studentNumber: registration.onro,
-          batchId: batchId,
-          grade: 5,
-          credits: courses[0].credits,
-          language: language,
-          attainmentDate: completion.completion_date || date,
-          graderId: grader.id,
-          reporterId: null,
-          courseId: courseVersion.id,
-          completionId: completion.id,
-          isOpenUni: false,
-          moocUserId: completion.user_upstream_id,
-          moocCompletionId: completion.id
-        })
-      } else {
-        return matches
-      }
-    }, [])
+        const language = languageMap[completion.completion_language]
+        const courseVersion = courses.find((c) => c.language === language)
+
+        const registration = registrations.find(
+          (registration) =>
+            registration.email.toLowerCase() === completion.email.toLowerCase() ||
+            registration.mooc.toLowerCase() === completion.email.toLowerCase()
+        )
+        // Once the gradeScale has been fixed, remember to change the grade to "Hyv."
+
+        if (registration && registration.onro) {
+          if (!await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
+            return matches
+          } else {
+            return matches.concat({
+              studentNumber: registration.onro,
+              batchId: batchId,
+              grade: 5,
+              credits: course[0].credits,
+              language: language,
+              attainmentDate: completion.completion_date || date,
+              graderId: grader.id,
+              reporterId: null,
+              courseId: courseVersion.id,
+              isOpenUni: false,
+              moocUserId: completion.user_upstream_id,
+              moocCompletionId: completion.id
+            })
+          }
+        } else {
+          return matches
+        }
+      },
+      []
+    )
 
     logger.info(`${courseCodes[0].code}: Found ${matches.length} new completions.`)
 

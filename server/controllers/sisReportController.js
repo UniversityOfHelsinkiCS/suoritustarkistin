@@ -122,14 +122,14 @@ const sendToSis = async (req, res) => {
     status = 400
     if (!isValidSisuError(e.response)) {
       logger.error({message: 'Sending entries to Sisu failed, got an error not from Sisu', error: e.response.data})
-      return res.status(400).send({ message: e.response.data, genericError: true })
+      return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, sis: true, user: req.user.name })
     }
     const failedEntries = await writeErrorsToEntries(e.response, data, entries, senderId)
 
     // Entries without an error, is probably(?) sent successfully to Sisu
     const successEntryIds = entries.filter(({ id }) => !failedEntries.includes(id))
     await updateSuccess(successEntryIds, senderId)
-    logger.error({message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data})
+    logger.error({message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data, sis: true})
   }
 
   const updatedWithRawEntries = await db.raw_entries.findAll({

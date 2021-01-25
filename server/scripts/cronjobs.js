@@ -4,7 +4,7 @@ const logger = require('@utils/logger')
 const processMoocCompletions = require('./processMoocCompletions')
 const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
 const { sisProcessEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
-// const { sisProcessBaiEntries } = require('../scripts/sisProcessBaiEntries')
+const { sisProcessBaiEntries } = require('../scripts/sisProcessBaiEntries')
 
 let cronjobs = {}
 
@@ -69,13 +69,13 @@ const sisManualRun = async (job, course, grader, transaction) => {
   )
 
   sisProcessMoocEntries({
-    graderId: grader.employeeId,
-    courseId: course.id,
-    slug: job.slug
+    job,
+    course,
+    grader
   }, transaction)
     .then(async () => {
       await transaction.commit()
-      logger.info('Successful job run, report created successfully.')
+      logger.info('Job run finished successfully.')
     })
     .catch(async (error) => {
       logger.error('Unsuccessful job run: ', error)
@@ -91,11 +91,33 @@ const sisManualEaoiRun = async (course, grader, transaction) => {
     }) completions`
   )
   sisProcessEoaiEntries({
-    graderId: grader.employeeId
+    grader
   }, transaction)
     .then(async () => {
       await transaction.commit()
-      logger.info('Successful job run, report created successfully.')
+      logger.info('Job run finished successfully.')
+    })
+    .catch(async (error) => {
+      logger.error('Unsuccessful job run: ', error)
+      await transaction.rollback()
+    })
+}
+
+const sisManualBaiRun = async (job, course, grader, transaction) => {
+  const timeStamp = new Date(Date.now())
+  logger.info(
+    `${timeStamp.toLocaleString()} Manual bai-sis-job run: Processing new ${course.name} (${
+      course.courseCode
+    }) completions`
+  )
+  sisProcessBaiEntries({
+    job,
+    course,
+    grader
+  }, transaction)
+    .then(async () => {
+      await transaction.commit()
+      logger.info('Job run finished successfully.')
     })
     .catch(async (error) => {
       logger.error('Unsuccessful job run: ', error)
@@ -137,6 +159,7 @@ module.exports = {
   initializeCronJobs,
   manualRun,
   sisManualRun,
+  sisManualBaiRun,
   sisManualEaoiRun,
   activateJob,
   deactivateJob

@@ -15,7 +15,7 @@ const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
  * raw entries and related foreign keys. We can't query raw entries with include as we
  * are inside a transaction and relations needs to be fetched separately.
  */
-const processEntries = async (createdEntries, transaction) => {
+const processEntries = async (createdEntries, transaction, checkImprovements) => {
     const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
     const graders = await db.users.findAll({
         where: {
@@ -60,7 +60,7 @@ const processEntries = async (createdEntries, transaction) => {
             ${gradeScales[courseUnit.gradeScaleId].map(({abbreviation}) => abbreviation['fi'])}
         `)
 
-        if (!await isImprovedGrade(course.courseCode, rawEntry.studentNumber, rawEntry.grade)) {
+        if (checkImprovements === true && !await isImprovedGrade(course.courseCode, rawEntry.studentNumber, rawEntry.grade)) {
             throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
         }
 

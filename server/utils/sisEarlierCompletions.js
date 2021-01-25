@@ -13,7 +13,7 @@ const isImprovedGrade = async (courseCode, studentNumber, grade) => {
         if (!earlierCompletions) return true
         
         if ([0,1,2,3,4,5].includes(Number(grade))) {
-            const existingBetterGrade = earlierCompletions.some((attainment) => Number(attainment.grade.numericCorrespondence) >= Number(grade))
+            const existingBetterGrade = earlierCompletions.some((attainment) => attainment.grade.numericCorrespondence >= Number(grade))
             if (existingBetterGrade) return false
         }
         if (['Hyl.', 'Hyv.'].includes(grade)) {
@@ -27,4 +27,21 @@ const isImprovedGrade = async (courseCode, studentNumber, grade) => {
     }
 }
 
-module.exports = { isImprovedGrade }
+const isImprovedTier = async (courseCode, studentNumber, credits) => {
+    try {
+        const resp = await api.get(`suotar/attainments/${courseCode}/${studentNumber}`)
+        const earlierCompletions = resp.data
+        if (!earlierCompletions) return true
+
+        const existingHigherTier = earlierCompletions.some((attainment) => attainment.credits >= Number(credits))
+        if (existingHigherTier) return false
+
+        return true
+    } catch(e) {
+        logger.error({message: `Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`, sis: true, error: e.toString()})
+        throw new Error(`Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`)
+    }
+}
+
+
+module.exports = { isImprovedGrade, isImprovedTier }

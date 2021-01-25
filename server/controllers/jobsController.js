@@ -4,12 +4,13 @@ const {
   manualRun,
   activateJob,
   deactivateJob,
+  sisManualBaiRun,
   sisManualEaoiRun,
   sisManualRun
 } = require('../scripts/cronjobs')
 
 const { isValidJob } = require('@root/utils/validators')
-const { EAOI_CODES } = require('../../utils/validators')
+const { EAOI_CODES, BAI_CODES } = require('../../utils/validators')
 
 const getJobs = async (req, res) => {
   try {
@@ -79,12 +80,41 @@ const sisRunJob = async (req, res) => {
 
     const transaction = await db.sequelize.transaction()
     const jobId = req.params.id
-    const job = await db.jobs.findOne({ where: { id: jobId }})
-    const course = await db.courses.findOne({ where: { id: job.courseId }})
-    const grader = await db.users.findOne({ where: { id: course.graderId } })
+
+    const job = await db.jobs.findOne({
+      where: {
+        id: jobId
+      }
+    })
+
+    if (!job) {
+      throw new Error({ message: `No cronjob with id: ${jobId}`})
+    }
+
+    const course = await db.courses.findOne({
+      where: {
+        id: job.courseId
+      }
+    })
+
+    if (!job) {
+      throw new Error({ message: `No course with id: ${job.courseId} found`})
+    }
+
+    const grader = await db.users.findOne({
+      where: {
+        id: course.graderId
+      }
+    })
+
+    if (!grader) {
+      throw new Error({ message: `No grader-employee found`})
+    }
 
     if (EAOI_CODES.includes(course.courseCode)) {
       await sisManualEaoiRun(course, grader, transaction)
+    } else if (BAI_CODES.includes(course.courseCode)) {
+      await sisManualBaiRun(job, course, grader, transaction)
     } else {
       await sisManualRun(job, course, grader, transaction)
     }

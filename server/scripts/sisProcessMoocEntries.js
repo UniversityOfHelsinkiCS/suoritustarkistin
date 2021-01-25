@@ -20,29 +20,13 @@ const selectLanguage = (completion, course) => {
 }
 
 const sisProcessMoocEntries = async ({
-  graderId,
-  courseId,
-  slug
+  job,
+  course,
+  grader
 }, transaction) => {
 
-  const course = await db.courses.findOne({
-    where: {
-      id: courseId
-    }
-  })
-
-  if (!course) logger.error({ message: 'Course id does not exist.', sis: true })
-
-  const grader = await db.users.findOne({
-    where: {
-      employeeId: graderId
-    }
-  })
-
-  if (!grader) logger.error({ message: 'Grader employee id does not exist.', sis: true })
-
   const registrations = await getRegistrations(course.courseCode)
-  const completions = await getCompletions(slug || course.courseCode)
+  const completions = await getCompletions(job.slug || course.courseCode)
   const batchId = `${course.courseCode}%${moment().format(
     'DD.MM.YY-HHmmss'
   )}`
@@ -66,6 +50,8 @@ const sisProcessMoocEntries = async ({
             completion.email.toLowerCase() ||
           registration.mooc.toLowerCase() === completion.email.toLowerCase()
       )
+
+      // Remember to change the grade, once the gradeScale-issue has been solved
       if (registration && registration.onro) {
         if (!await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
           return matches
@@ -93,8 +79,9 @@ const sisProcessMoocEntries = async ({
   )
   logger.info(`${course.courseCode}: Found ${matches.length} new completions.`)
   if (matches && matches.length > 0) {
-    const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
-    await processEntries(newRawEntries, transaction)
+    const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true, transaction })
+    const checkImprovements = false
+    await processEntries(newRawEntries, transaction, checkImprovements)
   }
   return true
 }

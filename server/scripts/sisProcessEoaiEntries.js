@@ -5,7 +5,7 @@ const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
-const { EAOI, EAOI_CODES } = require('@root/utils/validators')
+const { EAOI_CODES } = require('@root/utils/validators')
 
 const languageMap = {
   "fi_FI" : "fi",
@@ -13,7 +13,7 @@ const languageMap = {
   "sv_SE" : "sv"
 } 
 
-const sisProcessEoaiEntries = async ({graderId}, transaction) => {
+const sisProcessEoaiEntries = async ({ grader }, transaction) => {
   try {
     const courses = await db.courses.findAll({ 
       where: {
@@ -27,12 +27,6 @@ const sisProcessEoaiEntries = async ({graderId}, transaction) => {
         courseId: EAOI_CODES
       },
       raw: true
-    })
-
-    const grader = await db.users.findOne({
-      where: {
-        employeeId: graderId
-      }
     })
 
     const rawRegistrations = await getMultipleCourseRegistrations(EAOI_CODES)
@@ -75,13 +69,7 @@ const sisProcessEoaiEntries = async ({graderId}, transaction) => {
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
-
         if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)) {
-          logger.info(`
-            Elements of AI completion ${completion.id} had
-            wrong completion language: ${completion.completion_language}.
-            The completion not added
-          `)
           return matches
         }
 
@@ -93,16 +81,15 @@ const sisProcessEoaiEntries = async ({graderId}, transaction) => {
             registration.email.toLowerCase() === completion.email.toLowerCase() ||
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
-        // Once the gradeScale has been fixed, remember to change the grade to "Hyv."
 
         if (registration && registration.onro) {
-          if (!await isImprovedGrade(courseVersion.courseCode, registration.onro, completion.grade)) {
+          if (!await isImprovedGrade(courseVersion.courseCode, registration.onro, 'Hyv.')) {
             return matches
           } else {
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: 5,
+              grade: 'Hyv.',
               credits: courseVersion.credits,
               language: language,
               attainmentDate: completion.completion_date || date,
@@ -121,11 +108,12 @@ const sisProcessEoaiEntries = async ({graderId}, transaction) => {
       []
     )
 
-    logger.info(`${EAOI[0].code}: Found ${matches.length} new completions.`)
+    logger.info(`${EAOI_CODES[0]}: Found ${matches.length} new completions.`)
 
     if (matches && matches.length > 0) {
       const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
-      await processEntries(newRawEntries, transaction)
+      const checkImprovements = false
+      await processEntries(newRawEntries, transaction, checkImprovements)
     }
     return true
 

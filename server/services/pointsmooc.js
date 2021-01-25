@@ -1,4 +1,5 @@
 const { GraphQLClient } = require('graphql-request')
+const moocApi = require('../config/moocApi')
 const logger = require('@utils/logger')
 const axios = require('axios')
 
@@ -7,6 +8,14 @@ const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
     Authorization: process.env.MOOC_TOKEN
   }
 })
+
+const sisGetCompletions = async (course) => {
+  logger.info({ message: `Fetching completions for course ${course}`, sis:true })
+  const { data } = await moocApi.get(`/completions/${course}`)
+
+  logger.info({ message: `Found total of ${data ? data.length : 0} completions`, sis:true })
+  return data
+}
 
 const getCompletions = async (course) => {
   if (course.includes('AYTKT21018')) return await getCompletionsFromRest() // Elements of AI completions list is too large for GraphQL
@@ -76,6 +85,7 @@ const postRegistrations = async (completionAndStudentIdList) => {
 
 module.exports = {
   getCompletions,
+  sisGetCompletions,
   postRegistrations,
   getEoAICompletions
 }

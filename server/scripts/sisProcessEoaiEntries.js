@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
-const { getEoAICompletions } = require('../services/pointsmooc')
+const { sisGetCompletions } = require('../services/pointsmooc')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
@@ -30,7 +30,7 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
     })
 
     const rawRegistrations = await getMultipleCourseRegistrations(EAOI_CODES)
-    const rawCompletions = await getEoAICompletions()
+    const rawCompletions = await sisGetCompletions('elements-of-ai')
     const rawEntries = await db.raw_entries.findAll({ where: { courseId: courses.map((c) => c.id) }})
 
     // There are so many completions and registrations for Eaoi-courses

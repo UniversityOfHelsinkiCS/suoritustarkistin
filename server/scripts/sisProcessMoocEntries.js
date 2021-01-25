@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { getRegistrations } = require('../services/eduweb')
-const { getCompletions } = require('../services/pointsmooc')
+const { sisGetCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
@@ -26,7 +26,7 @@ const sisProcessMoocEntries = async ({
 }, transaction) => {
 
   const registrations = await getRegistrations(course.courseCode)
-  const completions = await getCompletions(job.slug || course.courseCode)
+  const completions = await sisGetCompletions(job.slug || course.courseCode)
   const batchId = `${course.courseCode}%${moment().format(
     'DD.MM.YY-HHmmss'
   )}`
@@ -56,10 +56,12 @@ const sisProcessMoocEntries = async ({
         if (!await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
           return matches
         } else {
+          const grade = (completion.grade && completion.grade !== 'Hyv.') ? completion.grade : 1
+
           return matches.concat({
             studentNumber: registration.onro,
             batchId: batchId,
-            grade: 5,
+            grade: grade,
             credits: course.credits,
             language: language,
             attainmentDate: completion.completion_date || date,

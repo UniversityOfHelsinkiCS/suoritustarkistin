@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { getRegistrations } = require('../services/eduweb')
-const { getCompletions } = require('../services/pointsmooc')
+const { sisGetCompletions } = require('../services/pointsmooc')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
@@ -36,7 +36,7 @@ const sisProcessBaiEntries = async ({
     })
 
     const registrations = await getRegistrations(course.courseCode)
-    const rawCompletions = await getCompletions(job.slug)
+    const rawCompletions = await sisGetCompletions(job.slug)
 
     // If a completion with same or more credits if found, the new 
     // completion won't replace it

@@ -72,7 +72,8 @@ const EntryCells = ({ entry }) => {
     sent,
     sender,
     gradeScaleId,
-    gradeId
+    gradeId,
+    registered
   } = entry
 
   return (
@@ -127,6 +128,9 @@ const EntryCells = ({ entry }) => {
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-senderName-${entry.id}`}>
         {sender ? sender.name : <NullCell text="Not sent yet"/>}
+      </Table.Cell>
+      <Table.Cell data-cy={`sis-report-registered-${entry.id}`}>
+        {registered ? <Icon name="checkmark" color="green" /> : <Icon name="close" color="red" />}
       </Table.Cell>
     </>
   )
@@ -191,6 +195,7 @@ const TableColumns = () => (
         <Table.HeaderCell>Grade</Table.HeaderCell>
         <Table.HeaderCell>Date sent</Table.HeaderCell>
         <Table.HeaderCell>Sender name</Table.HeaderCell>
+        <Table.HeaderCell>In Sisu</Table.HeaderCell>
         <Table.HeaderCell>Delete</Table.HeaderCell>
       </Table.Row>
     </Table.Header>

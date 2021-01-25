@@ -5,6 +5,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
+const _ = require('lodash')
 
 const languageCodes = {
   en: '6',
@@ -80,11 +81,11 @@ const processMoocCompletions = async (
       []
     )
 
-    logger.info(`${courseCode}: Found ${matches.length} new completions.`)
+    logger.info({message: `${courseCode}: Found ${matches.length} new completions.`, courseCode, amount: matches.length, oodi: true})
 
     const date = new Date()
 
-    const report = matches
+    const data = matches
       .map((match) => {
         const completionDate = match.completionDate
           ? new Date(match.completionDate)
@@ -97,9 +98,10 @@ const processMoocCompletions = async (
           tierCreditAmount[match.tier]
         }`
       })
-      .join('\n')
 
     if (matches.length) {
+      const unique = _.uniq(data)
+      const report = unique.join('\n')
       const dbReport = await db.reports.create({
         fileName: `${courseCode}%${moment().format(
           'DD.MM.YY-HHmmss'

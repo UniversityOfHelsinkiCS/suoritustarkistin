@@ -17,7 +17,7 @@ const addRawEntries = async (req, res) => {
 
     const { courseId, graderId, date, data } = req.body
     if (!courseId || !graderId || !date || !data) {
-      logger.error('Unsuccessful upload: missing form fields')
+      logger.error({message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date, sis: true})
       return res.status(400).json({ error: 'invalid form values' })
     }
 
@@ -30,11 +30,11 @@ const addRawEntries = async (req, res) => {
     }, transaction)
       .then(async () => {
         await transaction.commit()
-        logger.info('Successful CSV insert.')
+        logger.info({message: 'Successful CSV insert', sis: true})
         return res.status(200).json({ message: 'report created successfully' })
       })
       .catch(async (error) => {
-        logger.error('Unsuccessful CSV insert:', error)
+        logger.error({message: `Unsuccessful CSV insert: ${error}`, error, sis: true})
         await transaction.rollback()
         return res.status(400).json({ error: error.toString() })
       })
@@ -53,7 +53,7 @@ const addMoocRawEntries = async (req, res) => {
 
     const { courseId, graderId, date, data } = req.body
     if (!courseId || !graderId || !date || !data) {
-      logger.error('Unsuccessful upload: missing form fields')
+      logger.error({message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date, sis: true})
       return res.status(400).json({ error: 'invalid form values' })
     }
 
@@ -68,7 +68,7 @@ const addMoocRawEntries = async (req, res) => {
         return res.status(200).json({ message: 'report created successfully' })
       })
       .catch(async (error) => {
-        logger.error('Processing new completions failed:', error)
+        logger.error({message: `Processing new completions failed: ${error}`, error, sis: true})
         await transaction.rollback()
         return res.status(400).json({ error: error.toString() })
       })

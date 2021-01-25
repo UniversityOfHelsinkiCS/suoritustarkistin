@@ -5,6 +5,8 @@ const { getEoAICompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
+const _ = require('lodash')
+
 
 const getOodiDate = (date) => {
   return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
@@ -58,7 +60,7 @@ const processEoaiCompletions = async (courses) => {
       }
     }, [])
 
-    logger.info(`${courses[0]}xx: Found ${matches.length} new completions.`)
+    logger.info({message: `${courses[0]}xx: Found ${matches.length} new completions.`, courseCode: courses[0], amount: matches.length, oodi: true})
 
     const date = new Date()
 
@@ -69,7 +71,7 @@ const processEoaiCompletions = async (courses) => {
         '##2#AYTKT21018sv#Elements of AI: Grunderna i artificiell intelligens#'
     }
 
-    const report = matches
+    const data = matches
       .map((match) => {
         const completionDate = match.completionDate
           ? new Date(match.completionDate)
@@ -80,9 +82,10 @@ const processEoaiCompletions = async (courses) => {
           process.env.TEACHERCODE
         }#2#H930#11#93013#3##2,0`
       })
-      .join('\n')
 
     if (matches.length) {
+      const unique = _.uniq(data)
+      const report = unique.join('\n')
       const dbReport = await db.reports.create({
         fileName: `${courses[0]}%${moment().format(
           'DD.MM.YY-HHmmss'

@@ -26,7 +26,7 @@ const sisGetAllReports = async (req, res) => {
     const allRawEntries = await db.raw_entries.findAll({
       include: [
         { model: db.entries, as: 'entry', include: ['sender'] },
-        { model: db.users, as: 'reporter'}
+        { model: db.users, as: 'reporter' }
       ],
       order: [['createdAt', 'DESC']]
     })
@@ -42,7 +42,7 @@ const sisGetUsersReports = async (req, res) => {
       where: { graderId: req.user.id },
       include: [
         { model: db.entries, as: 'entry', include: ['sender'] },
-        { model: db.users, as: 'reporter'}
+        { model: db.users, as: 'reporter' }
       ],
       order: [['createdAt', 'DESC']]
     })
@@ -115,33 +115,34 @@ const sendToSis = async (req, res) => {
 
   let status = 200
   try {
+    logger.info({ message: 'Sending entries to Sisu', amount: data.length, sis: true, user: req.user.name })
     await api.post('suotar/', data)
     await updateSuccess(entryIds, senderId)
   } catch (e) {
     status = 400
     if (!isValidSisuError(e.response)) {
-      logger.error({message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data, sis: true})
-      return res.status(400).send({ message: e.response.data, genericError: true })
-    }
-    const failedEntries = await writerErrorsToEntries(e.response, data, entries, senderId)
-
-    // Entries without an error, is probably(?) sent successfully to Sisu
-    const successEntryIds = entries.filter(({ id }) => !failedEntries.includes(id))
-    await updateSuccess(successEntryIds, senderId)
-    logger.error({message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data, sis: true})
+      logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', failedAmount: failedEntries.length, user: req.user.name, error: e.toString(), sis: true })
+    return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, sis: true, user: req.user.name })
   }
+  const failedEntries = await writeErrorsToEntries(e.response, data, entries, senderId)
 
-  const updatedWithRawEntries = await db.raw_entries.findAll({
-    where: {
-      '$entry.id$': { [Op.in]: entryIds }
-    },
-    include: [
-      { model: db.entries, as: 'entry', include: ['sender'] },
-      { model: db.users, as: 'reporter'}
-    ]
-  })
+  // Entries without an error, is probably(?) sent successfully to Sisu
+  const successEntryIds = entries.filter(({ id }) => !failedEntries.includes(id))
+  await updateSuccess(successEntryIds, senderId)
+  logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data, sis: true })
+}
 
-  return res.status(status).json(updatedWithRawEntries)
+const updatedWithRawEntries = await db.raw_entries.findAll({
+  where: {
+    '$entry.id$': { [Op.in]: entryIds }
+  },
+  include: [
+    { model: db.entries, as: 'entry', include: ['sender'] },
+    { model: db.users, as: 'reporter' }
+  ]
+})
+
+return res.status(status).json(updatedWithRawEntries)
 }
 
 // If the error is coming from Sisu
@@ -167,7 +168,7 @@ const parseSisuErrors = ({ failingIds, violations }) => {
   return errors
 }
 
-const writerErrorsToEntries = async (response, sentEntries, entries, senderId) => {
+const writeErrorsToEntries = async (response, sentEntries, entries, senderId) => {
   const errors = parseSisuErrors(response.data) || response.data
   const failedEntries = []
   for (const index in errors) {

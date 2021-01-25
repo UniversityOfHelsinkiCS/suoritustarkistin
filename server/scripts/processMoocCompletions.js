@@ -7,6 +7,7 @@ const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
 const { isValidGrade } = require('../../utils/validators')
 const hasOodiEntry = require('../services/oodikone')
+const _ = require('lodash')
 
 const languageCodes = {
   en: '6',
@@ -117,11 +118,11 @@ const processMoocCompletions = async (
       []
     )
 
-    logger.info(`${courseCode}: Found ${matches.length} new completions.`)
+    logger.info({message: `${courseCode}: Found ${matches.length} new completions.`, amount: matches.length, oodi: true, courseCode})
 
     const date = new Date()
 
-    const report = matches
+    const data = matches
       .map((match) => {
         const completionDate = match.completionDate
           ? new Date(match.completionDate)
@@ -132,9 +133,10 @@ const processMoocCompletions = async (
           match.grade
         }#106##${teacherCode}#2#H930#11#93013#3##${creditAmount}`
       })
-      .join('\n')
 
     if (matches.length) {
+      const unique = _.uniq(data)
+      const report = unique.join('\n')
       const dbReport = await db.reports.create({
         fileName: `${courseCode}%${moment().format(
           'DD.MM.YY-HHmmss'

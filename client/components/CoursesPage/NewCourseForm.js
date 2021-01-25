@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import * as _ from 'lodash'
 import {
   Form,
   Checkbox,
@@ -83,9 +84,10 @@ export default ({ close }) => {
         <Form.Dropdown
           data-cy="add-course-grader"
           selection
+          search
           required={true}
           label="Grader"
-          options={graders.map((grader) => ({
+          options={_.sortBy(graders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,
             text: grader.name

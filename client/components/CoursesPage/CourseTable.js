@@ -1,10 +1,13 @@
 import React from 'react'
+import * as _ from 'lodash'
 import CourseRow from 'Components/CoursesPage/CourseRow'
 import { useSelector } from 'react-redux'
 import { Grid, Header, Segment } from 'semantic-ui-react'
 
 export default () => {
   const courses = useSelector((state) => state.courses.data)
+
+  if (!courses) return null
 
   return (
     <Segment>
@@ -33,7 +36,7 @@ export default () => {
           </Grid.Column>
           <Grid.Column width={2} />
         </Grid.Row>
-        {courses.map((c) => (
+        {_.sortBy(courses, 'name').map((c) => (
           <CourseRow course={c} key={c.id} />
         ))}
       </Grid>

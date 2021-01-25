@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
+import * as _ from 'lodash'
 import { Grid, Header, Segment } from 'semantic-ui-react'
 
 import User from 'Components/UsersPage/User'
@@ -30,7 +31,7 @@ export default () => {
           </Grid.Column>
           <Grid.Column width={2} />
         </Grid.Row>
-        {users.map((u) => (
+        {_.sortBy(users, 'name').map((u) => (
           <User user={u} key={u.id} />
         ))}
       </Grid>

@@ -19,9 +19,9 @@ export default ({ close }) => {
 
   const filterAYCourses = (courses) => {
     if (!courses) return []
-    return courses.filter((c) => c.courseCode.substring(0, 2) === 'AY')
+    const filteredCourses = courses.filter((c) => c.courseCode.substring(0, 2) === 'AY')
+    return _.sortBy(filteredCourses, 'name')
   }
-
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -47,6 +47,7 @@ export default ({ close }) => {
         <Form.Dropdown
           data-cy="add-job-course"
           selection
+          search
           required={true}
           label="Course"
           options={filterAYCourses(courses).map((course) => ({

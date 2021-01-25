@@ -1,10 +1,13 @@
 import React from 'react'
+import * as _ from 'lodash'
 import JobRow from 'Components/JobsPage/JobRow'
 import { useSelector } from 'react-redux'
 import { Grid, Header, Segment } from 'semantic-ui-react'
 
 export default () => {
   const jobs = useSelector((state) => state.jobs.data)
+
+  if (!jobs) return null
 
   return (
     <Segment>
@@ -32,7 +35,7 @@ export default () => {
             <Header as="h4">Actions</Header>
           </Grid.Column>
         </Grid.Row>
-        {jobs.map((j) => (
+        {_.sortBy(jobs, 'schedule').map((j) => (
           <JobRow job={j} key={j.id} />
         ))}
       </Grid>

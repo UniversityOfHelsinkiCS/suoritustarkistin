@@ -61,7 +61,7 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
       return (!earlierCredit && !earlierEntry)
     })
 
-    const batchId = `${EAOI_CODES[0]}%${moment().format(
+    const batchId = `${EAOI_CODES[0]}-${moment().format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()

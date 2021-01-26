@@ -22,6 +22,12 @@ export const sisHandleEntryDeletionAction = (id) => {
   return callBuilder(route, prefix, 'delete')
 }
 
+export const sisHandleBatchDeletionAction = (batchId) => {
+  const route = `/sis_reports/batch/${batchId}`
+  const prefix = 'SIS_DELETE_BATCH'
+  return callBuilder(route, prefix, 'delete')
+}
+
 export const sendEntriesToSisAction = (entryIds) => {
   const route = `/entries_to_sis`
   const prefix = 'SIS_POST_ENTRIES_TO_SIS'
@@ -86,6 +92,25 @@ export default (state = { data: [] }, action) => {
         error: false
       }
     case 'SIS_DELETE_SINGLE_ENTRY_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
+    case 'SIS_DELETE_BATCH_SUCCESS':
+      return {
+        ...state,
+        data: state.data.filter((e) => e.batchId != action.response.batchId),
+        pending: false,
+        error: false
+      }
+    case 'SIS_DELETE_BATCH_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'SIS_DELETE_BATCH_FAILURE':
       return {
         ...state,
         pending: false,

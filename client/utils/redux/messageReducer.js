@@ -58,6 +58,13 @@ export default (state = null, action) => {
         content: 'The course has been deleted and no new completions can be added.',
         type: 'positive'
       }
+    case 'SIS_DELETE_BATCH_SUCCESS':
+      return {
+        header: 'Completions successfully deleted',
+        content:
+          "Course completions have now been deleted. This won't affect any entries already sent to SIS.",
+        type: 'positive'
+      }
     case 'SIS_POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,

@@ -67,7 +67,7 @@ const processManualEntry = async ({
 
   if (!grader) throw new Error('Grader employee id does not exist.')
 
-  const batchId = `${course.courseCode}%${moment().format(
+  const batchId = `${course.courseCode}-${moment().format(
     'DD.MM.YY-HHmmss'
   )}`
 

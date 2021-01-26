@@ -3,6 +3,7 @@ import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { Accordion, Button, Icon, Message, Table } from 'semantic-ui-react'
+import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
@@ -241,12 +242,13 @@ const reportContents = (report, courses) => {
 
   return (
     <Accordion.Content>
-      <p>Batch reported by <strong>{report[0].reporter ? report[0].reporter.name : "Suotar-bot"}</strong></p>
+      <p>Completions reported by <strong>{report[0].reporter ? report[0].reporter.name : "Suotar-bot"}</strong></p>
       <SendToSisButton
         entries={report
           .filter(({ entry }) => !entry.sent || entry.errors)
           .map(({ entry }) => entry.id)
         } />
+      <DeleteBatchButton batchId={report[0].batchId}/>
 
       {!batchNotSent && !reportContainsErrors && <SisSuccessMessage />}
 
@@ -267,17 +269,19 @@ const reportContents = (report, courses) => {
 }
 
 const title = (batch) => {
-  const reportName = batch[0].batchId.split('%')
-  const timestamp = reportName[1].split('-')
+  const batchName = batch[0].batchId.split('-')
+  const course = batchName[0]
+  const date = batchName[1]
+  const time = batchName[2]
   const hasSuccessfullySentEntries = batch.some(({entry}) => !entry.errors && entry.sent)
   const batchSenders = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
   const includesErrors = batch.filter(({ entry }) => entry.errors).length
 
   return (
-    <Accordion.Title data-cy={`sis-report-${reportName[0]}`}>
-      {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)
-        }:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
+    <Accordion.Title data-cy={`sis-report-${course}`}>
+      {`${course} - ${date} - ${time.substring(0, 2)
+        }:${time.substring(2, 4)}:${time.substring(4, 6)}`}
       <div>
         {hasSuccessfullySentEntries ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("DD.MM.YYYY")} /> : <NotSentToSis />}
         {includesErrors ? <ContainsErrors amount={includesErrors} /> : null}

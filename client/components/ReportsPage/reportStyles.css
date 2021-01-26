@@ -2,3 +2,9 @@
   padding-top: 3px !important;
   padding-bottom: 3px !important;
 }
+
+.delete-popup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

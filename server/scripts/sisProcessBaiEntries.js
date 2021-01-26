@@ -55,7 +55,7 @@ const sisProcessBaiEntries = async ({
       return (!isTierUpgrade(previousEntries, previousCredits, completion))
     })
 
-    const batchId = `${course.courseCode}%${moment().format(
+    const batchId = `${course.courseCode}-${moment().format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()

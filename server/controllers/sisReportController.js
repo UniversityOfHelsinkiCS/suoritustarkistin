@@ -65,6 +65,19 @@ const sisDeleteSingleEntry = async (req, res) => {
   }
 }
 
+const sisDeleteBatch = async (req, res) => {
+  try {
+    db.raw_entries.destroy({
+      where: {
+        batchId: req.params.batchId
+      }
+    })
+    return res.status(200).json({ batchId: req.params.batchId })
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
 /**
  * Send entries to Sisu using importer-db-api.
  * Request body should contain a list of entry ids to be sent to Sisu.
@@ -204,5 +217,6 @@ module.exports = {
   sisGetAllReports,
   sisGetUsersReports,
   sisDeleteSingleEntry,
+  sisDeleteBatch,
   sendToSis
 }

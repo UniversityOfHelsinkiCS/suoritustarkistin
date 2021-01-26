@@ -1,24 +1,11 @@
 const moment = require('moment')
 const { getRegistrations } = require('../services/eduweb')
-const { getCompletions } = require('../services/pointsmooc')
+const { sisGetCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
-const { isValidGrade } = require('../../utils/validators')
-
-const LANGUAGES = ["fi", "sv", "en"]
-
-const isImprovement = (previousGrades, grade) => {
-  if (!isValidGrade(grade)) return false
-  const validGrades = ['Hyl.', 'Hyv.', '1', '2', '3', '4', '5']
-  const betterOrSame = previousGrades.filter(
-    (previousGrade) =>
-      (validGrades.indexOf(previousGrade) || 0) >=
-      (validGrades.indexOf(grade) || 0)
-  )
-
-  return betterOrSame.length === 0
-}
+const { isValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
+const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
@@ -26,37 +13,20 @@ const selectLanguage = (completion, course) => {
   if (!completionLanguage) {
     return courseLanguage
   }
-  if (completionLanguage && !LANGUAGES.includes(completionLanguage)) {
-    logger.error(`Invalid language: ${completionLanguage}`)
+  if (completionLanguage && !SIS_LANGUAGES.includes(completionLanguage)) {
     return courseLanguage
   }
   return completionLanguage
 }
 
 const sisProcessMoocEntries = async ({
-  graderId,
-  courseId,
-  slug
+  job,
+  course,
+  grader
 }, transaction) => {
 
-  const course = await db.courses.findOne({
-    where: {
-      id: courseId
-    }
-  })
-
-  if (!course) throw new Error('Course id does not exist.')
-
-  const grader = await db.users.findOne({
-    where: {
-      employeeId: graderId
-    }
-  })
-
-  if (!grader) throw new Error('Grader employee id does not exist.')
-  const rawEntries = await db.raw_entries.findAll({})
   const registrations = await getRegistrations(course.courseCode)
-  const completions = await getCompletions(slug || course.courseCode)
+  const completions = await sisGetCompletions(job.slug || course.courseCode)
   const batchId = `${course.courseCode}%${moment().format(
     'DD.MM.YY-HHmmss'
   )}`
@@ -65,31 +35,14 @@ const sisProcessMoocEntries = async ({
   const matches = await completions.reduce(
     async (matchesPromise, completion) => {
       const matches = await matchesPromise
-      // TODO: Find a better way to check if there are already completions 
-      // for the same course by the same student
-      const previousGrades = rawEntries
-        .filter(
-          (entry) =>
-            entry.moocCompletionId === completion.id ||
-            entry.moocUserId === completion.user_upstream_id
-        )
-        .map((entry) => entry.grade)
+
       if (completion.grade) {
         if (!isValidGrade(completion.grade)) {
-          logger.error(`Invalid grade: ${completion.grade}`)
+          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
           return matches
         }
+      }
 
-        if (
-          previousGrades.length > 0 &&
-          !isImprovement(previousGrades, completion.grade)
-        ) {
-          return matches
-        } 
-      }
-      if (!completion.grade && previousGrades.length > 0) {
-        return matches
-      }
       const language = selectLanguage(completion, course)
       const registration = registrations.find(
         (registration) =>
@@ -97,35 +50,43 @@ const sisProcessMoocEntries = async ({
             completion.email.toLowerCase() ||
           registration.mooc.toLowerCase() === completion.email.toLowerCase()
       )
+
+      // Remember to change the grade, once the gradeScale-issue has been solved
       if (registration && registration.onro) {
-        return matches.concat({
-          studentNumber: registration.onro,
-          batchId: batchId,
-          grade: completion.grade || 'Hyv.',
-          credits: course.credits,
-          language: language,
-          attainmentDate: completion.completion_date || date,
-          graderId: grader.id,
-          reporterId: null,
-          courseId: course.id,
-          isOpenUni: false,
-          moocUserId: completion.user_upstream_id,
-          moocCompletionId: completion.id
-        })
+        if (!await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
+          return matches
+        } else {
+          const grade = (completion.grade && completion.grade !== 'Hyv.') ? completion.grade : 1
+
+          return matches.concat({
+            studentNumber: registration.onro,
+            batchId: batchId,
+            grade: grade,
+            credits: course.credits,
+            language: language,
+            attainmentDate: completion.completion_date || date,
+            graderId: grader.id,
+            reporterId: null,
+            courseId: course.id,
+            isOpenUni: false,
+            moocUserId: completion.user_upstream_id,
+            moocCompletionId: completion.id
+          })
+        }
       } else {
         return matches
       }
     },
     []
   )
-  logger.info({message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true})
-  // const sliced = matches.slice(6,8)
-  // const newRawEntries = await db.raw_entries.bulkCreate(sliced, {returning: true, transaction})
-  const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
-  logger.info({message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true})
-  await processEntries(newRawEntries, transaction)
+logger.info({message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true})
+  if (matches && matches.length > 0) {
+    const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true, transaction })
+    logger.info({message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true})
+    const checkImprovements = false
+    await processEntries(newRawEntries, transaction, checkImprovements)
+  }
   return true
-
 }
 
 module.exports = { 

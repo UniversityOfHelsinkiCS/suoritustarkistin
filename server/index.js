@@ -35,6 +35,7 @@ const {
   processOhPeEnglish,
   processTiTo
 } = require('./scripts/moocScripts')
+const { checkAllEntriesFromSisu } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
 
 initializeDatabaseConnection()
@@ -242,6 +243,12 @@ initializeDatabaseConnection()
         checkOodiEntries()
       })
     }
+
+    // To be changed when Sisu is master
+    if (process.env.NODE_ENV === 'staging')
+      cron.schedule('0 0 * * *', () => {
+        checkAllEntriesFromSisu()
+      })
 
     app.listen(PORT, () => {
       logger.info(`Started on port ${PORT}`)

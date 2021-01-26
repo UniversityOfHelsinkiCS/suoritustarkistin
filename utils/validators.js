@@ -12,6 +12,10 @@ const SIS_LANGUAGES = [
   "en"
 ]
 
+const EAOI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+
+const BAI_CODES = ['AYTKT21028en']
+
 const isValidStudentId = (id) => {
   if (/^0[12]\d{7}$/.test(id)) {
     // is a 9 digit number with leading 01 or 02
@@ -145,6 +149,9 @@ const isValidSchedule = (schedule) => {
 }
 
 module.exports = {
+  EAOI_CODES,
+  BAI_CODES,
+  SIS_LANGUAGES,
   isValidStudentId,
   isValidOodiDate,
   sisIsValidDate,

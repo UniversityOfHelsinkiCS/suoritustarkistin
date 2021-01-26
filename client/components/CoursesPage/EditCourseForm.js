@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import * as _ from 'lodash'
 import {
   Form,
   Checkbox,
@@ -82,7 +83,8 @@ export default ({ course, close }) => {
           selection
           required={true}
           label="Grader"
-          options={graders.map((grader) => ({
+          search
+          options={_.sortBy(graders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,
             text: grader.name

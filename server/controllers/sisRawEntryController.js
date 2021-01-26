@@ -64,11 +64,11 @@ const addMoocRawEntries = async (req, res) => {
     }, transaction)
       .then(async () => {
         await transaction.commit()
-        logger.info('Successful CSV insert.')
+        logger.info('Report of new completions created successfully.')
         return res.status(200).json({ message: 'report created successfully' })
       })
       .catch(async (error) => {
-        logger.error({message: `Unsuccessful CSV insert: ${error}`, error, sis: true})
+        logger.error({message: `Processing new completions failed: ${error}`, error, sis: true})
         await transaction.rollback()
         return res.status(400).json({ error: error.toString() })
       })

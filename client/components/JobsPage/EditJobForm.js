@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import * as _ from 'lodash'
 import { Form, Checkbox, Input, Button, Segment } from 'semantic-ui-react'
 import { editJobAction } from 'Utilities/redux/jobsReducer'
 import { isValidJob, isValidSchedule } from 'Root/utils/validators'
@@ -19,7 +20,8 @@ export default ({ job, close }) => {
 
   const filterAYCourses = (courses) => {
     if (!courses) return []
-    return courses.filter((c) => c.courseCode.substring(0, 2) === 'AY')
+    const filteredCourses = courses.filter((c) => c.courseCode.substring(0, 2) === 'AY')
+    return _.sortBy(filteredCourses, 'name')
   }
 
   const handleSubmit = (event) => {
@@ -45,6 +47,7 @@ export default ({ job, close }) => {
         <Form.Dropdown
           data-cy="edit-job-course"
           selection
+          search
           required={true}
           label="Course"
           options={filterAYCourses(courses).map((course) => ({

@@ -17,6 +17,7 @@ const checkEntries = async (entries) => {
         return true
     } catch (e) {
         logger.error({ message: 'Failed to check Sisu entries', error: e.toString(), sis: true })
+        return false
     }
 }
 
@@ -36,5 +37,5 @@ const checkAllEntriesFromSisu = async () => {
 }
 
 module.exports = {
-    checkAllEntriesFromSisu
+    checkAllEntriesFromSisu, checkEntries
 }

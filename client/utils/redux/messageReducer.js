@@ -92,6 +92,21 @@ export default (state = null, action) => {
         type: 'negative',
         content: 'See batch for Sisu error messages'
       }
+    case 'SIS_REFRESH_BATCH_STATUS_FAILURE': {
+      const content = action.error.message.message || action.error.message
+      return {
+        header: 'Refreshing status from Sisu failed',
+        type: 'negative',
+        content
+      }
+    }
+    case 'SIS_REFRESH_BATCH_STATUS_SUCCESS': {
+      return {
+        header: 'Batch status refreshed!',
+        type: 'positive',
+        content: 'Batch status successfully refreshed from Sisu.'
+      }
+    }
     default:
       return state
   }

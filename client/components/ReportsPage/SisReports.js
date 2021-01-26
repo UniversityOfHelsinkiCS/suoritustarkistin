@@ -9,8 +9,9 @@ import { sisHandleEntryDeletionAction, refreshBatchStatus } from 'Utilities/redu
 import Notification from 'Components/Message'
 import './reportStyles.css'
 
-const SentToSis = ({ senderNames, formattedDate }) => <span>
-  <span style={{ color: 'green' }}>SENT TO SIS </span>
+const SentToSis = ({ senderNames, formattedDate, missing, totalAmount }) => <span>
+  <span style={{ color: 'green' }}>SENT TO SIS, </span>
+  {missing ? <span style={{ color: 'orange' }}> {missing} of {totalAmount} NOT IN SISU, </span> : null}
   <span style={{ color: 'gray' }}>{formattedDate}, by: {senderNames.join(",")}</span>
 </span>
 
@@ -285,13 +286,20 @@ const title = (batch) => {
   const batchSenders = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
   const includesErrors = batch.filter(({ entry }) => entry.errors).length
+  const amountMissingFromSisu = batch.filter(({ entry }) => !entry.registered).length
 
   return (
     <Accordion.Title data-cy={`sis-report-${course}`}>
       {`${course} - ${date} - ${time.substring(0, 2)
         }:${time.substring(2, 4)}:${time.substring(4, 6)}`}
       <div>
-        {hasSuccessfullySentEntries ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("DD.MM.YYYY")} /> : <NotSentToSis />}
+        {hasSuccessfullySentEntries
+          ? <SentToSis
+            senderNames={batchSenders}
+            formattedDate={moment(sentDate).format("DD.MM.YYYY")}
+            missing={amountMissingFromSisu}
+            totalAmount={batch.length} />
+          : <NotSentToSis />}
         {includesErrors ? <ContainsErrors amount={includesErrors} /> : null}
       </div>
     </Accordion.Title>
@@ -305,6 +313,7 @@ export default ({ reports }) => {
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
   const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
+    .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
   const panels = batchedReports.map((r, i) => {
     return {

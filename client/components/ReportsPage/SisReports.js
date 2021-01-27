@@ -213,8 +213,7 @@ const ReportTable = ({ rows, course }) => (
   )
 )
 
-const reportContents = (report, courses) => {
-  const dispatch = useDispatch()
+const reportContents = (report, courses, dispatch) => {
   const course = courses.find((c) => report[0].courseId === c.id)
   const batchNotSent = report.every(({ entry }) => !entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
@@ -280,8 +279,7 @@ const reportContents = (report, courses) => {
 }
 
 const title = (batch) => {
-  const [course, dateTime] = batch[0].batchId.split('%')
-  const [date, time] = dateTime.split('-')
+  const [course, date, time] = batch[0].batchId.split('-')
   const hasSuccessfullySentEntries = batch.some(({ entry }) => !entry.errors && entry.sent)
   const batchSenders = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
@@ -308,6 +306,7 @@ const title = (batch) => {
 
 export default ({ reports }) => {
   const courses = useSelector((state) => state.courses.data)
+  const dispatch = useDispatch()
 
   if (reports.pending) return <div>LOADING!</div>
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
@@ -319,7 +318,7 @@ export default ({ reports }) => {
     return {
       key: `panel-${i}`,
       title: title(r),
-      content: reportContents(r, courses)
+      content: reportContents(r, courses, dispatch)
     }
   })
 

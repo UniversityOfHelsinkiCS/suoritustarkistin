@@ -3,13 +3,15 @@ import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { Accordion, Button, Icon, Message, Table } from 'semantic-ui-react'
+import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
-import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
+import { sisHandleEntryDeletionAction, refreshBatchStatus } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
 
-const SentToSis = ({ senderNames, formattedDate }) => <span>
-  <span style={{ color: 'green' }}>SENT TO SIS </span>
+const SentToSis = ({ senderNames, formattedDate, missing, totalAmount }) => <span>
+  <span style={{ color: 'green' }}>SENT TO SIS, </span>
+  {missing ? <span style={{ color: 'orange' }}> {missing} of {totalAmount} NOT IN SISU, </span> : null}
   <span style={{ color: 'gray' }}>{formattedDate}, by: {senderNames.join(",")}</span>
 </span>
 
@@ -34,7 +36,7 @@ const DeleteButton = ({ id }) => {
   )
 }
 
-const NullCell = ({ text }) => <span style={{ color: 'red'}}>{text || 'null'}</span>
+const NullCell = ({ text }) => <span style={{ color: 'red' }}>{text || 'null'}</span>
 
 const getUnitName = (name, language) => {
   if (!name) return <NullCell />
@@ -83,19 +85,19 @@ const EntryCells = ({ entry }) => {
         colSpan='2'
         style={{ borderLeft: "2px solid gray" }}
       >
-        <Accordion.Accordion style={{ marginTop: "0px"}}>
+        <Accordion.Accordion style={{ marginTop: "0px" }}>
           <Accordion.Title
             active
             onClick={() => setOpen(!open)}
             data-cy={`sis-report-entry-course-${entry.id}`}
           >
-            <Icon name={`caret ${open ? 'down' : 'right'}`}/>
+            <Icon name={`caret ${open ? 'down' : 'right'}`} />
             {getUnitName(courseUnitRealisationName, completionLanguage)}
           </Accordion.Title>
           <Accordion.Content
             data-cy={`sis-report-course-content-${entry.id}`}
             active={open}
-            style={{ padding: "0.75em 1em"}}
+            style={{ padding: "0.75em 1em" }}
           >
             <strong>Course unit ID</strong>
             <p>{courseUnitId || <NullCell />}</p>
@@ -124,10 +126,10 @@ const EntryCells = ({ entry }) => {
         {getGrade(gradeScaleId, gradeId, completionLanguage)}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-sent-${entry.id}`}>
-        {sent ? moment(sent).format("DD.MM.YYYY") : <NullCell text="Not sent yet"/>}
+        {sent ? moment(sent).format("DD.MM.YYYY") : <NullCell text="Not sent yet" />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-senderName-${entry.id}`}>
-        {sender ? sender.name : <NullCell text="Not sent yet"/>}
+        {sender ? sender.name : <NullCell text="Not sent yet" />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-registered-${entry.id}`}>
         {registered ? <Icon name="checkmark" color="green" /> : <Icon name="close" color="red" />}
@@ -204,14 +206,14 @@ const TableColumns = () => (
 
 const ReportTable = ({ rows, course }) => (
   rows.length && (
-    <Table className="sis-report-table" style={{ padding: "0.em .78em"}}>
+    <Table className="sis-report-table" style={{ padding: "0.em .78em" }}>
       <TableColumns />
       <TableBody key={course.id} rawEntries={rows} course={course} />
     </Table>
   )
 )
 
-const reportContents = (report, courses) => {
+const reportContents = (report, courses, dispatch) => {
   const course = courses.find((c) => report[0].courseId === c.id)
   const batchNotSent = report.every(({ entry }) => !entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
@@ -241,45 +243,61 @@ const reportContents = (report, courses) => {
 
   return (
     <Accordion.Content>
-      <p>Batch reported by <strong>{report[0].reporter ? report[0].reporter.name : "Suotar-bot"}</strong></p>
+      <p>Completions reported by <strong>{report[0].reporter ? report[0].reporter.name : "Suotar-bot"}</strong></p>
       <SendToSisButton
         entries={report
           .filter(({ entry }) => !entry.sent || entry.errors)
           .map(({ entry }) => entry.id)
         } />
+      <DeleteBatchButton batchId={report[0].batchId} />
+      <Button
+        onClick={() => dispatch(
+          refreshBatchStatus(report.map(({ entry }) => entry.id))
+        )}
+        disabled={report.every(({ entry }) => !entry.sent)}
+        icon
+      >
+        <Icon name="refresh" /> Refresh from Sisu
+      </Button>
 
       {!batchNotSent && !reportContainsErrors && <SisSuccessMessage />}
 
       { // Display accordion only when batch contains sent entries or entries with errors
         batchNotSent && !reportContainsErrors
           ? <ReportTable
-              rows={report}
-              course={course}
-            />
+            rows={report}
+            course={course}
+          />
           : <Accordion.Accordion
-              data-cy={`sis-entries-panel-${course.courseCode}`}
-              panels={panels}
-              exclusive={false}
-            />
+            data-cy={`sis-entries-panel-${course.courseCode}`}
+            panels={panels}
+            exclusive={false}
+          />
       }
     </Accordion.Content>
   )
 }
 
 const title = (batch) => {
-  const reportName = batch[0].batchId.split('%')
-  const timestamp = reportName[1].split('-')
-  const hasSuccessfullySentEntries = batch.some(({entry}) => !entry.errors && entry.sent)
+  const [course, date, time] = batch[0].batchId.split('-')
+  const hasSuccessfullySentEntries = batch.some(({ entry }) => !entry.errors && entry.sent)
   const batchSenders = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
   const includesErrors = batch.filter(({ entry }) => entry.errors).length
+  const amountMissingFromSisu = batch.filter(({ entry }) => !entry.registered).length
 
   return (
-    <Accordion.Title data-cy={`sis-report-${reportName[0]}`}>
-      {`${reportName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)
-        }:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
+    <Accordion.Title data-cy={`sis-report-${course}`}>
+      {`${course} - ${date} - ${time.substring(0, 2)
+        }:${time.substring(2, 4)}:${time.substring(4, 6)}`}
       <div>
-        {hasSuccessfullySentEntries ? <SentToSis senderNames={batchSenders} formattedDate={moment(sentDate).format("DD.MM.YYYY")} /> : <NotSentToSis />}
+        {hasSuccessfullySentEntries
+          ? <SentToSis
+            senderNames={batchSenders}
+            formattedDate={moment(sentDate).format("DD.MM.YYYY")}
+            missing={amountMissingFromSisu}
+            totalAmount={batch.length} />
+          : <NotSentToSis />}
         {includesErrors ? <ContainsErrors amount={includesErrors} /> : null}
       </div>
     </Accordion.Title>
@@ -288,17 +306,19 @@ const title = (batch) => {
 
 export default ({ reports }) => {
   const courses = useSelector((state) => state.courses.data)
+  const dispatch = useDispatch()
 
   if (reports.pending) return <div>LOADING!</div>
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
   const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
+    .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
   const panels = batchedReports.map((r, i) => {
     return {
       key: `panel-${i}`,
       title: title(r),
-      content: reportContents(r, courses)
+      content: reportContents(r, courses, dispatch)
     }
   })
 

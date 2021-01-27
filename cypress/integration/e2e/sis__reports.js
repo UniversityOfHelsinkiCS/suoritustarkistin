@@ -51,9 +51,8 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
     cy.get('[data-cy=sis-report-entry-delete-button-1]').should('be.visible').click()
-    cy.get('[data-cy=sis-report-entry-delete-button-2]').should('be.visible').click()
-    cy.get('[data-cy=sis-report-entry-delete-button-3]').should('be.visible').click()
-
-    cy.get('[data-cy=sis-no-reports]')
+    //cy.get('[data-cy=sis-report-entry-delete-button-2]').should('be.visible').click()
+    //cy.get('[data-cy=sis-report-entry-delete-button-3]').should('be.visible').click()
+    cy.get('[data-cy=sis-report-TKT10001]').should('not.exist');
   })
 })

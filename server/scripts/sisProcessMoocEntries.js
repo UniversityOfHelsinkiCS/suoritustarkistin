@@ -27,7 +27,7 @@ const sisProcessMoocEntries = async ({
 
   const registrations = await getRegistrations(course.courseCode)
   const completions = await sisGetCompletions(job.slug || course.courseCode)
-  const batchId = `${course.courseCode}%${moment().format(
+  const batchId = `${course.courseCode}-${moment().format(
     'DD.MM.YY-HHmmss'
   )}`
 

@@ -58,6 +58,13 @@ export default (state = null, action) => {
         content: 'The course has been deleted and no new completions can be added.',
         type: 'positive'
       }
+    case 'SIS_DELETE_BATCH_SUCCESS':
+      return {
+        header: 'Completions successfully deleted',
+        content:
+          "Course completions have now been deleted. This won't affect any entries already sent to SIS.",
+        type: 'positive'
+      }
     case 'SIS_POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,
@@ -85,6 +92,21 @@ export default (state = null, action) => {
         type: 'negative',
         content: 'See batch for Sisu error messages'
       }
+    case 'SIS_REFRESH_BATCH_STATUS_FAILURE': {
+      const content = action.error.message.message || action.error.message
+      return {
+        header: 'Refreshing status from Sisu failed',
+        type: 'negative',
+        content
+      }
+    }
+    case 'SIS_REFRESH_BATCH_STATUS_SUCCESS': {
+      return {
+        header: 'Batch status refreshed!',
+        type: 'positive',
+        content: 'Batch status successfully refreshed from Sisu.'
+      }
+    }
     default:
       return state
   }

@@ -31,7 +31,9 @@ const {
   sisGetAllReports,
   sisGetUsersReports,
   sisDeleteSingleEntry,
-  sendToSis
+  sisDeleteBatch,
+  sendToSis,
+  refreshSisStatus
 } = require('@controllers/sisReportController')
 const {
   addJob,
@@ -88,9 +90,10 @@ router.get('/reports', checkAdmin, getReports)
 
 router.get('/sis_reports', checkAdmin, sisGetAllReports)
 router.delete('/sis_reports/:id', checkAdmin, sisDeleteSingleEntry)
-
+router.delete('/sis_reports/batch/:batchId', checkAdmin, sisDeleteBatch)
 router.post('/sis_raw_entries', checkAdmin, addRawEntries)
 router.post('/entries_to_sis', checkAdmin, sendToSis)
+router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
 
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)

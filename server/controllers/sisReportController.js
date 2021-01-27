@@ -134,7 +134,7 @@ const sendToSis = async (req, res) => {
     await updateSuccess(entryIds, senderId)
   } catch (e) {
     status = 400
-    logger.error({ message: 'Error when sending entries to Sisu', sis: true, error: e.toString(), response: e.response })
+    logger.error({ message: 'Error when sending entries to Sisu', sis: true, error: e.toString() })
     if (!isValidSisuError(e.response)) {
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name, error: e.toString(), sis: true })
       return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, sis: true, user: req.user.name })

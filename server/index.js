@@ -166,7 +166,8 @@ initializeDatabaseConnection()
       processTiTo()
     }
 
-    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN) {
+    const STAGING = process.env.NODE_ENV === 'staging'
+    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING) {
       cron.schedule('0 4 * * 4', () => {
         processEoai()
       })
@@ -245,7 +246,7 @@ initializeDatabaseConnection()
     }
 
     // To be changed when Sisu is master
-    if (process.env.NODE_ENV === 'staging')
+    if (STAGING)
       cron.schedule('0 0 * * *', () => {
         checkAllEntriesFromSisu()
       })

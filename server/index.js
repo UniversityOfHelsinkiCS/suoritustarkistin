@@ -251,7 +251,7 @@ initializeDatabaseConnection()
       })
 
     app.listen(PORT, () => {
-      logger.info(`Started on port ${PORT}`)
+      logger.info(`Started on port ${PORT} with environment ${process.env.NODE_ENV}`)
     })
   })
   .catch((e) => {

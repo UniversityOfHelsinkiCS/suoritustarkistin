@@ -11,6 +11,7 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
       - SUOTAR_TOKEN=token
+      - NODE_ENV=development
     ports:
       - 8000:8000
     container_name: suotar_dev

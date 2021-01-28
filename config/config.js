@@ -17,5 +17,10 @@ module.exports = {
     database_url: process.env.DATABASE_URL,
     dialect: 'postgres',
     logging: false
+  },
+  staging: {
+    database_url: process.env.DATABASE_URL,
+    dialect: 'postgres',
+    logging: false
   }
 }

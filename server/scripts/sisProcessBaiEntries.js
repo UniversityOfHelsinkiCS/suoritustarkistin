@@ -52,14 +52,13 @@ const sisProcessBaiEntries = async ({
           entry.moocUserId === completion.user_upstream_id
       ).map((entry) => entry.credits)
 
-      return (!isTierUpgrade(previousEntries, previousCredits, completion))
+      return (isTierUpgrade(previousEntries, previousCredits, completion))
     })
 
     const batchId = `${course.courseCode}-${moment().format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()
-
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
@@ -69,7 +68,6 @@ const sisProcessBaiEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         // Once the gradeScale has been fixed, remember to change the grade to "Hyv."
-
         if (registration && registration.onro) {
           if (!await isImprovedTier(course.courseCode, registration.onro, tierCreditAmount[completion.tier])) {
             return matches
@@ -83,7 +81,7 @@ const sisProcessBaiEntries = async ({
               attainmentDate: completion.completion_date || date,
               graderId: grader.id,
               reporterId: null,
-              courseId: course[0].id,
+              courseId: course.id,
               isOpenUni: false,
               moocUserId: completion.user_upstream_id,
               moocCompletionId: completion.id

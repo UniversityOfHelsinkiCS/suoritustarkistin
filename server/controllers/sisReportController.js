@@ -143,7 +143,9 @@ const sendToSis = async (req, res) => {
     const failedEntries = await writeErrorsToEntries(e.response, data, entries, senderId)
 
     // Entries without an error, is probably(?) sent successfully to Sisu
-    const successEntryIds = entries.filter(({ id }) => !failedEntries.includes(id))
+    const successEntryIds = entries
+      .filter(({ id }) => !failedEntries.includes(id))
+      .map((entry) => entry.id)
     await updateSuccess(successEntryIds, senderId)
     logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data, sis: true })
   }

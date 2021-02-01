@@ -205,7 +205,7 @@ const ReportTable = ({ rows, course }) => (
 
 const reportContents = (report, courses, dispatch, user) => {
   const course = courses.find((c) => report[0].courseId === c.id)
-  const batchNotSent = report.every(({ entry }) => !entry.sent)
+  const batchSent = report.some(({ entry }) => entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
   const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors)
   const entriesNotSentOrErroneous = report.filter(({ entry }) => entry.errors || !entry.sent)
@@ -213,11 +213,13 @@ const reportContents = (report, courses, dispatch, user) => {
   const panels = [{
     key: 'entries-without-errors',
     title: 'Successfully sent entries',
-    content: <Accordion.Content>
-      <ReportTable
-        rows={entriesWithoutErrors}
-        course={course} />
-    </Accordion.Content>
+    content: (
+      <Accordion.Content>
+        <ReportTable
+          rows={entriesWithoutErrors}
+          course={course} />
+      </Accordion.Content>
+    )
   }]
   if (reportContainsErrors)
     panels.unshift({
@@ -257,10 +259,10 @@ const reportContents = (report, courses, dispatch, user) => {
         <Icon name="refresh" /> Refresh from Sisu
       </Button>
 
-      {!batchNotSent && !reportContainsErrors && <SisSuccessMessage />}
+      {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 
       { // Display accordion only when batch contains sent entries or entries with errors
-        batchNotSent && !reportContainsErrors
+        !batchSent && !reportContainsErrors
           ? <ReportTable
             rows={report}
             course={course}

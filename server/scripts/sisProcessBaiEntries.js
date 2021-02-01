@@ -6,7 +6,7 @@ const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isImprovedTier } = require('../utils/sisEarlierCompletions')
 
-const tierCreditAmount = { 1: '0,0', 2: '1,0', 3: '2,0' }
+const tierCreditAmount = { 1: 0, 2: 1, 3: 2 }
 
 const isTierUpgrade = (previousEntries, previousCredits, completion) => {
   if (!completion.tier || completion.tier === 1) return false

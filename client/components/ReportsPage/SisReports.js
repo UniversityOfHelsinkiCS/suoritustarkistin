@@ -291,7 +291,7 @@ const title = (batch) => {
       <div>
         {hasSuccessfullySentEntries
           ? <SentToSis
-            senderNames={batchSenders}
+            senderNames={_.uniq(batchSenders)}
             formattedDate={moment(sentDate).format("DD.MM.YYYY")}
             missing={amountMissingFromSisu}
             totalAmount={batch.length} />

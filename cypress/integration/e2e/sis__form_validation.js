@@ -8,7 +8,7 @@ describe('SIS form validation', () => {
       cy.asAdmin().visit('')
       cy.get('[data-cy=adminmode-enable]').click()
       cy.get('[data-cy=sis-copypaste]').should('be.visible').click()
-      cy.get('[data-cy=sisSendButton]').should('be.disabled')  
+      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')  
       cy.get('[data-cy=sisPastefield]').type(
         '010000002;7;2,2;se\n011000002;;2,0\n011100009\n011110002;;;fi',
         { delay: 1 }

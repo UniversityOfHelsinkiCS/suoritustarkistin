@@ -62,7 +62,13 @@ export default () => {
           </p>
         </Header>
         <div style={{ marginTop: "2em" }}>
-          <Button color="green" onClick={sendRawEntries}>Create report</Button>
+          <Button
+            data-cy="sis-confirm-sending-button"
+            color="green"
+            onClick={sendRawEntries}
+          >
+            Create report
+          </Button>
           <Button onClick={closeModal}>Cancel</Button>
         </div>
       </Segment>
@@ -74,7 +80,7 @@ export default () => {
         <span style={{ float: 'right' }}>
           <Button
             positive
-            data-cy="sisSendButton"
+            data-cy="sis-create-report-button"
             onClick={() => setShowForm(true)}
             disabled={
               newRawEntries.sending || !sisAreValidNewRawEntries(parseRawEntries(newRawEntries))

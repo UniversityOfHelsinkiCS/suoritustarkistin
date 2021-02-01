@@ -15,7 +15,7 @@ const detailedInstructions = {
 
 const instruction = {
   margin: "0.5em 0em 0.3em 0em",
-  fontWeight: 700,
+  fontWeight: 700
 }
 
 const subHeader = {

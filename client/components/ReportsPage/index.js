@@ -94,6 +94,7 @@ export default () => {
       render: () => (
         <Tab.Pane>
           <SisReports
+            user={user}
             reports={sisReports.data.filter((entry) => entry.reporterId)}
           />
         </Tab.Pane>
@@ -109,6 +110,7 @@ export default () => {
       render: () => (
         <Tab.Pane>
           <SisReports
+            user={user}
             reports={sisReports.data.filter((entry) => !entry.reporterId)}
           />
         </Tab.Pane>

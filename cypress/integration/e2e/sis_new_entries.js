@@ -1,4 +1,3 @@
-import { cy } from "date-fns/locale"
 
 describe('New sis-entries can be added correctly', function () {
   

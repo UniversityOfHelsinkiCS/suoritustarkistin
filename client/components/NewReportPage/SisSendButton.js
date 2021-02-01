@@ -45,7 +45,6 @@ export default () => {
     <>
     <Modal
       basic
-      inverted
       open={showForm}
       onClose={closeModal}
       size="small"

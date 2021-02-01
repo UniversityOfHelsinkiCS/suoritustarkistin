@@ -132,16 +132,20 @@ const sendToSis = async (req, res) => {
     logger.info({ message: 'Sending entries to Sisu', amount: data.length, sis: true, user: req.user.name })
     await api.post('suotar/', data)
     await updateSuccess(entryIds, senderId)
+    logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, sis: true })
   } catch (e) {
     status = 400
+    logger.error({ message: 'Error when sending entries to Sisu', sis: true, error: e.toString() })
     if (!isValidSisuError(e.response)) {
-      logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name, error: e.toString(), sis: true })
+      logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name, errorMessage: e.toString(), sis: true })
       return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, sis: true, user: req.user.name })
     }
     const failedEntries = await writeErrorsToEntries(e.response, data, entries, senderId)
 
     // Entries without an error, is probably(?) sent successfully to Sisu
-    const successEntryIds = entries.filter(({ id }) => !failedEntries.includes(id))
+    const successEntryIds = entries
+      .filter(({ id }) => !failedEntries.includes(id))
+      .map((entry) => entry.id)
     await updateSuccess(successEntryIds, senderId)
     logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data, sis: true })
   }
@@ -216,7 +220,7 @@ const writeErrorsToEntries = async (response, sentEntries, entries, senderId) =>
     const entry = entries.find((e) => e.personId === personId && e.courseUnitRealisationId === courseUnitRealisationId)
     failedEntries.push(entry.id)
     await db.entries.update({
-      errors: { message: errors[index].join(", ") },
+      errors: { message: errors[index] ? errors[index].join(", ") : '' },
       sent: new Date(),
       senderId
     }, {

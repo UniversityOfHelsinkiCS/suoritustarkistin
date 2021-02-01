@@ -4,10 +4,12 @@ import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { Accordion, Button, Icon, Message, Table } from 'semantic-ui-react'
 import DeleteBatchButton from './DeleteBatchButton'
+import SisReportStatus from './SisReportStatus'
 import SendToSisButton from './SendToSisButton'
 import { sisHandleEntryDeletionAction, refreshBatchStatus } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
+import SisReportStatus from './SisReportStatus'
 
 const SentToSis = ({ senderNames, formattedDate, missing, totalAmount }) => <span>
   <span style={{ color: 'green' }}>SENT TO SIS, </span>
@@ -288,16 +290,7 @@ const title = (batch) => {
     <Accordion.Title data-cy={`sis-report-${course}`}>
       {`${course} - ${date} - ${time.substring(0, 2)
         }:${time.substring(2, 4)}:${time.substring(4, 6)}`}
-      <div>
-        {hasSuccessfullySentEntries
-          ? <SentToSis
-            senderNames={_.uniq(batchSenders)}
-            formattedDate={moment(sentDate).format("DD.MM.YYYY")}
-            missing={amountMissingFromSisu}
-            totalAmount={batch.length} />
-          : <NotSentToSis />}
-        {includesErrors ? <ContainsErrors amount={includesErrors} /> : null}
-      </div>
+      <SisReportStatus batch={batch} />
     </Accordion.Title>
   )
 }

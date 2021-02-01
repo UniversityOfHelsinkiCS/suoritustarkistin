@@ -20,7 +20,6 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=sis-report-credits-1]').should('contain', '1,0')
     cy.get('[data-cy=sis-report-student-number-1]').should('contain', '011111111')
     cy.get('[data-cy="sis-report-personId-1').should('contain', "Student's ID 1")
-    cy.get('[data-cy="sis-report-verifierPersonId-1').should('contain', "Grader's ID 1")
     cy.get('[data-cy="sis-report-completionDate-1').should('contain', "30.12.2020")
     cy.get('[data-cy="sis-report-completionLanguage-1').should('contain', "fi")
     cy.get('[data-cy="sis-report-entry-grade-1').should('contain', "1")
@@ -30,7 +29,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=sis-report-entry-course-1').should('contain', 'Sis Valid course 1 - fi').click()
 
     cy.get('[data-cy="sis-report-course-content-1')
-      .should('contain', "Course unit ID 1", "Course unit realisation ID 1", "Assessment ID 1", "sis-0-5")
+      .should('contain', "Course unit ID 1", "Course unit realisation ID 1", "Assessment ID 1", "Grader's ID 1", "sis-0-5")
   })
 
   it('Single entries can be deleted from the reports page', () => {

@@ -85,7 +85,7 @@ const EntryCells = ({ entry }) => {
         colSpan='2'
         style={{ borderLeft: "2px solid gray" }}
       >
-        <Accordion.Accordion style={{ marginTop: "0px" }}>
+        <Accordion className="sis-report-table-accordion" >
           <Accordion.Title
             active
             onClick={() => setOpen(!open)}
@@ -105,16 +105,15 @@ const EntryCells = ({ entry }) => {
             <p>{courseUnitRealisationId || <NullCell />}</p>
             <strong>Assessment item ID</strong>
             <p>{assessmentItemId || <NullCell />}</p>
+            <strong>Grader ID</strong>
+            <p>{verifierPersonId || <NullCell />}</p>
             <strong>Grade scale of the course</strong>
             <p>{gradeScaleId || <NullCell />}</p>
           </Accordion.Content>
-        </Accordion.Accordion>
+        </Accordion>
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-personId-${entry.id}`}>
         {personId ? personId : <NullCell />}
-      </Table.Cell>
-      <Table.Cell data-cy={`sis-report-verifierPersonId-${entry.id}`}>
-        {verifierPersonId ? verifierPersonId : <NullCell />}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionDate-${entry.id}`}>
         {completionDate ? moment(completionDate).format("DD.MM.YYYY") : <NullCell />}
@@ -169,7 +168,7 @@ const TableColumns = () => (
   <>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell colSpan='4'>Manually inserted</Table.HeaderCell>
+        <Table.HeaderCell colSpan='4' />
         <Table.HeaderCell
           colSpan='11'
           style={{ borderLeft: "2px solid gray" }}
@@ -191,7 +190,6 @@ const TableColumns = () => (
           Course Unit
         </Table.HeaderCell>
         <Table.HeaderCell>Student ID</Table.HeaderCell>
-        <Table.HeaderCell>Grader ID</Table.HeaderCell>
         <Table.HeaderCell>Completion date</Table.HeaderCell>
         <Table.HeaderCell>Language</Table.HeaderCell>
         <Table.HeaderCell>Grade</Table.HeaderCell>

@@ -247,17 +247,18 @@ const reportContents = (report, courses, dispatch, user) => {
             .map(({ entry }) => entry.id)
           } />
           <DeleteBatchButton batchId={report[0].batchId} />
+          <Button
+            onClick={() => dispatch(
+              refreshBatchStatus(report.map(({ entry }) => entry.id))
+            )}
+            disabled={report.every(({ entry }) => !entry.sent)}
+            icon
+          >
+            <Icon name="refresh" /> Refresh from Sisu
+          </Button>
         </>
       )}
-      <Button
-        onClick={() => dispatch(
-          refreshBatchStatus(report.map(({ entry }) => entry.id))
-        )}
-        disabled={report.every(({ entry }) => !entry.sent)}
-        icon
-      >
-        <Icon name="refresh" /> Refresh from Sisu
-      </Button>
+
 
       {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 

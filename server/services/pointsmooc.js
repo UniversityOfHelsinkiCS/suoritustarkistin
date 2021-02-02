@@ -9,6 +9,7 @@ const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
   }
 })
 
+// This can be removed once we verify that the REST is working
 const sisGetCompletions = async (course) => {
   logger.info({ message: `Fetching completions for course ${course}`, sis:true })
   const { data } = await moocApi.get(`/completions/${course}`)
@@ -17,11 +18,20 @@ const sisGetCompletions = async (course) => {
   return data
 }
 
-const getCompletions = async (course) => {
-  if (course.includes('AYTKT21018')) return await getCompletionsFromRest() // Elements of AI completions list is too large for GraphQL
-  return await getCompletionsFromGraphQL(course)
+const getNewCompletions = async (course) => {
+  logger.info({ message: `Fetching completions for course ${course}` })
+  const { data } = await moocApi.get(`/completions/${course}`)
+
+  logger.info({ message: `Found total of ${data ? data.length : 0} completions` })
+  return data
 }
 
+const getCompletions = async (course) => {
+  if (course.includes('AYTKT21018')) return await getCompletionsFromRest() // Elements of AI completions list is too large for GraphQL
+  return await getNewCompletions(course)
+}
+
+// This can be removed once we verify that the REST is working
 const getCompletionsFromRest = async () => {
   const { data } = await axios.get(process.env.EOAI_URL, {
     headers: {
@@ -31,6 +41,7 @@ const getCompletionsFromRest = async () => {
   return data
 }
 
+// This can be removed once we verify that the REST is working
 const getEoAICompletions = async () => {
   logger.info("Fetching Elements of AI -completions")
   const { data } = await axios.get(process.env.EOAI_URL, {
@@ -42,6 +53,7 @@ const getEoAICompletions = async () => {
   return data
 }
 
+/* This can be removed once we verify that the REST is working
 const getCompletionsFromGraphQL = async (course) => {
   logger.info(`Fetching completions for course ${course}`)
   const completionsQuery = `
@@ -62,7 +74,7 @@ const getCompletionsFromGraphQL = async (course) => {
   logger.info(`Found total of ${(data && data.completions) ? data.completions.length : 0} completions`)
   return data.completions
 }
-
+*/
 const postRegistrations = async (completionAndStudentIdList) => {
   const registerMutation = `
     mutation registerCompletion($completions: [CompletionArg!]) {

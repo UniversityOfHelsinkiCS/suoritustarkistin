@@ -9,6 +9,7 @@ import SisReportStatus from './SisReportStatus'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
+import { EAOI_CODES, EAOI_NAMEMAP } from '../../../utils/validators'
 
 
 const SisSuccessMessage = () => <Message success>
@@ -30,11 +31,27 @@ const DeleteButton = ({ id }) => {
 
 const NullCell = ({ text }) => <span style={{ color: 'red' }}>{text || 'null'}</span>
 
-const getUnitName = (name, language) => {
+const getSisUnitName = (name, language) => {
   if (!name) return <NullCell />
   if (!name[language]) return name['fi']
   return name[language]
 }
+
+const getCourseName = (rawEntry, course) => {
+  if (EAOI_CODES.includes(course.courseCode)) {
+    return EAOI_NAMEMAP[rawEntry.entry.completionLanguage].name
+  }
+  return course.name
+}
+
+const getCourseCode = (rawEntry, course) => {
+  if (EAOI_CODES.includes(course.courseCode)) {
+    return EAOI_NAMEMAP[rawEntry.entry.completionLanguage].code
+  }
+  return rawEntry.isOpenUni ? `AY${course.courseCode}` : course.courseCode
+}
+
+
 
 const getGrade = (gradeScaleId, gradeId, language) => {
   if (!gradeId || !gradeScaleId || !language) return <NullCell />
@@ -84,7 +101,7 @@ const EntryCells = ({ entry }) => {
             data-cy={`sis-report-entry-course-${entry.id}`}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`} />
-            {getUnitName(courseUnitRealisationName, completionLanguage)}
+            {getSisUnitName(courseUnitRealisationName, completionLanguage)}
           </Accordion.Title>
           <Accordion.Content
             data-cy={`sis-report-course-content-${entry.id}`}
@@ -134,9 +151,8 @@ const TableBody = ({ rawEntries, course }) => (
     {rawEntries.map((rawEntry) => (
       <React.Fragment key={`row-${rawEntry.id}`}>
         <Table.Row>
-          <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>
-            {rawEntry.isOpenUni ? `AY${course.courseCode}` : course.courseCode}</Table.Cell>
-          <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{course.name}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, course)}</Table.Cell>
+          <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
           <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
           <EntryCells entry={rawEntry.entry} />

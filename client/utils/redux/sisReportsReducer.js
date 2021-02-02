@@ -186,7 +186,7 @@ export default (state = { data: [], openAccordions: [] }, action) => {
     case 'OPEN_REPORT':
       return {
         ...state,
-        openAccordions: setOpenAccordions(state.openAccordions, action.id),
+        openAccordions: setOpenAccordions(state.openAccordions, action.id)
       }
     default:
       return state

@@ -14,6 +14,21 @@ const SIS_LANGUAGES = [
 
 const EAOI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
+const EAOI_NAMEMAP = {
+  en: {
+    name: 'The Elements of AI',
+    code: 'AYTKT21018'
+  },
+  fi: {
+    name: 'Elements of AI: Tekoälyn perusteet',
+    code: 'AYTKT21018fi'
+  },
+  sv: {
+    name: 'Elements of AI: Grunderna i artificiell intelligens',
+    code: 'AYTKT21018sv'
+  }
+}
+
 const BAI_CODES = ['AYTKT21028en']
 
 const isValidStudentId = (id) => {
@@ -150,6 +165,7 @@ const isValidSchedule = (schedule) => {
 
 module.exports = {
   EAOI_CODES,
+  EAOI_NAMEMAP,
   BAI_CODES,
   SIS_LANGUAGES,
   isValidStudentId,

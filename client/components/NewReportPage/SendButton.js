@@ -64,7 +64,7 @@ export default () => {
           <div style={{ marginTop: "2em" }}>
             <Button
               size="large"
-              data-cy="sis-confirm-sending-button"
+              data-cy="confirm-sending-button"
               color="green"
               onClick={sendReport}
             >
@@ -86,7 +86,7 @@ export default () => {
           <span style={{ float: 'right' }}>
             <Button
               positive
-              data-cy="sendButton"
+              data-cy="create-report-button"
               onClick={() => setShowForm(true)}
               disabled={
                 newReport.sending || !isValidReport(parseReport(newReport))

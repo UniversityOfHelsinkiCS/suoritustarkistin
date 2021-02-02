@@ -204,6 +204,8 @@ const ReportTable = ({ rows, course }) => (
 )
 
 const reportContents = (report, courses, dispatch, user, openAccordions) => {
+  if (!report || !courses) return null
+
   const course = courses.find((c) => report[0].courseId === c.id)
   const batchSent = report.some(({ entry }) => entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)

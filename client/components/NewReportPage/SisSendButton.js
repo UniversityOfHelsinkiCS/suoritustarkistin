@@ -51,14 +51,14 @@ export default () => {
     >
       <Modal.Content >
       <Segment style={{ height: "15em", textAlign: "center", padding: "2em"}}>
-        <Header>
-          <p>
-            {newRawEntries.data ? newRawEntries.data.length : 0} completion(s) will be reported for the course:</p>
-          <p>{course
+        <Header size="large">
+          {newRawEntries.data ? newRawEntries.data.length : 0} completion(s) will be reported for the course:
+        </Header>
+        <Header size="large">
+          {course
             ? `${course.courseCode}: ${course.name}`
             : <span style={{ color:"grey" }}>No course chosen yet</span>
           }
-          </p>
         </Header>
         <div style={{ marginTop: "2em" }}>
           <Button

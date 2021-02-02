@@ -45,7 +45,7 @@ describe('Form validation', function() {
 
   describe("Validation prevents submission of invalid data", () => {
     it('when pasted data is invalid', () => {
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=pastefield]').type(
         '010000002;7;2,2;se\n011000002;;2,0\n011100009\n011110002;;;fi',
         { delay: 1 }
@@ -67,11 +67,11 @@ describe('Form validation', function() {
         .contains('avoimen kurssi (AYTKTTEST)')
         .click()
   
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
     })
   
     it('when there are missing fields', () => {
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
   
       // missing course
       cy.get('[data-cy=pastefield]').type(
@@ -83,43 +83,43 @@ describe('Form validation', function() {
         .clear()
         .type('5.7.2019')
   
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
         .contains('grader')
         .click()
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=courseSelection]')
         .click()
         .children()
         .contains('tkt:n kurssi (TKTTEST)')
         .click()
-      cy.get('[data-cy=sis-create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
   
       // missing data
       cy.get('[data-cy=pastefield]').clear()
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=pastefield]').type(
         '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
         { delay: 1 }
       )
-      cy.get('[data-cy=sis-create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
   
       // missing date
       cy.get('[data-cy=dateField]')
         .children()
         .clear()
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=dateField]')
         .children()
         .clear()
         .type('5.7.2019')
-      cy.get('[data-cy=sis-create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
     })
   
     it('when uploaded data is invalid', () => {
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+      cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=dragdrop]').click()
       cy.fixture('invalid.csv').then((content) => {
         cy.get('[data-cy=dropzone]').upload(content, 'invalid.csv')
@@ -144,9 +144,9 @@ describe('Form validation', function() {
 
   describe("Separator is detected automatically", () => {
     const testSeparator = (data) => {
-      cy.get('[data-cy=sis-create-report-button]').should("be.disabled")
+      cy.get('[data-cy=create-report-button]').should("be.disabled")
       cy.get('[data-cy=pastefield]').type(data, { delay: 1 })
-      cy.get('[data-cy=sis-create-report-button]').should("be.enabled")
+      cy.get('[data-cy=create-report-button]').should("be.enabled")
       cy.get('[data-cy=pastefield]').clear()
     }
 
@@ -164,7 +164,7 @@ describe('Form validation', function() {
   })
 
   it('passes when uploaded csv contains dates', () => {
-    cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+    cy.get('[data-cy=create-report-button]').should('be.disabled')
     cy.get('[data-cy=dragdrop]').click()
     cy.fixture('valid-with-dates.csv').then((content) => {
       cy.get('[data-cy=dropzone]').upload(content, 'valid-with-dates.csv')
@@ -186,7 +186,7 @@ describe('Form validation', function() {
     cy.contains("1.4.2020")
     cy.contains("2.5.2020")
 
-    cy.get('[data-cy=sis-create-report-button]').should('be.enabled')
+    cy.get('[data-cy=create-report-button]').should('be.enabled')
   }) 
   
 })

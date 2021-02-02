@@ -1,20 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
-import { useDispatch } from 'react-redux'
-import { sisHandleBatchDeletionAction } from 'Utilities/redux/sisReportsReducer'
+import { useDispatch, useSelector } from 'react-redux'
+import { sisHandleBatchDeletionAction, openReport } from 'Utilities/redux/sisReportsReducer'
 
 export default ({ batchId }) => {
+  const [open, setOpen] = useState(false)
   const dispatch = useDispatch()
+  const openAccordions = useSelector((state) => state.sisReports.openAccordions)
+
+  const deleteBatch = () => {
+    dispatch(sisHandleBatchDeletionAction(batchId))
+    dispatch(openReport(batchId))
+  }
 
   return (
     <Popup
+        open={open && openAccordions.includes(batchId)}
         trigger={
           <Button
             negative
             content="Delete completions"
             disabled={!batchId}
+            onClick={() => setOpen(true)}
           />
         }
+        onUnmount={() => setOpen(false)}
+        hideOnScroll
         content={
           <div className="delete-popup">
             <p>
@@ -29,7 +40,7 @@ export default ({ batchId }) => {
               style={{ margin: '5px 2px' }}
               negative
               data-cy={`delete-batch-${batchId}`}
-              onClick={() => dispatch(sisHandleBatchDeletionAction(batchId))}
+              onClick={deleteBatch}
               disabled={!batchId}
               content="Yes, delete completions"
             />

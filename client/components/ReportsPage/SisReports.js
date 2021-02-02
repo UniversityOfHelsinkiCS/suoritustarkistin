@@ -6,7 +6,7 @@ import { Accordion, Button, Icon, Message, Table } from 'semantic-ui-react'
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
-import { sisHandleEntryDeletionAction, refreshBatchStatus } from 'Utilities/redux/sisReportsReducer'
+import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
 
@@ -203,7 +203,7 @@ const ReportTable = ({ rows, course }) => (
   )
 )
 
-const reportContents = (report, courses, dispatch, user) => {
+const reportContents = (report, courses, dispatch, user, openAccordions) => {
   const course = courses.find((c) => report[0].courseId === c.id)
   const batchSent = report.some(({ entry }) => entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
@@ -237,7 +237,7 @@ const reportContents = (report, courses, dispatch, user) => {
     })
 
   return (
-    <Accordion.Content>
+    <Accordion.Content active={openAccordions.includes(report[0].batchId)}>
       <p>Completions reported by <strong>{report[0].reporter ? report[0].reporter.name : "Suotar-bot"}</strong></p>
       {user.adminMode && (
         <>
@@ -291,6 +291,7 @@ const title = (batch) => {
 
 export default ({ reports, user }) => {
   const courses = useSelector((state) => state.courses.data)
+  const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const dispatch = useDispatch()
 
   if (reports.pending) return <div>LOADING!</div>
@@ -303,7 +304,8 @@ export default ({ reports, user }) => {
     return {
       key: `panel-${index}`,
       title: title(report),
-      content: reportContents(report, courses, dispatch, user)
+      content: reportContents(report, courses, dispatch, user, openAccordions),
+      onTitleClick: () => dispatch(openReport(report[0].batchId))
     }
   })
 

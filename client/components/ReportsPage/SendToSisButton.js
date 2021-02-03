@@ -13,28 +13,28 @@ export default ({ entries }) => {
 
   return (
     <Popup
-        trigger={
-          <Button
-            positive
-            content="Send completions to SIS"
-            disabled={
-              reports.pending || !entries.length
-            }
-          />
-        }
-        content={
-          <Button
-            positive
-            data-cy="sendButton"
-            onClick={sendNewEntries}
-            disabled={
-              reports.pending || !entries.length
-            }
-            content="Are you sure?"
-          />
-        }
-        on="click"
-        position="top center"
-      />
+      trigger={
+        <Button
+          positive
+          content="Send completions to SIS"
+          disabled={
+            reports.pending || !entries.length
+          }
+        />
+      }
+      content={
+        <Button
+          positive
+          data-cy="sendButton"
+          onClick={sendNewEntries}
+          disabled={
+            reports.pending || !entries.length
+          }
+          content="Are you sure?"
+        />
+      }
+      on="click"
+      position="top center"
+    />
   )
 }

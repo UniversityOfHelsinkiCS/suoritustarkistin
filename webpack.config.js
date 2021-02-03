@@ -16,11 +16,11 @@ module.exports = (env, argv) => {
   const additionalOptimizations =
     mode === 'production'
       ? {
-          minimizer: [
-            // Make CSS smaller
-            new OptimizeCssAssetsPlugin()
-          ]
-        }
+        minimizer: [
+          // Make CSS smaller
+          new OptimizeCssAssetsPlugin()
+        ]
+      }
       : {}
 
   const additionalEntries =

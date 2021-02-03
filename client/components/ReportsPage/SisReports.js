@@ -182,7 +182,7 @@ const TableColumns = () => (
           style={{ borderLeft: "2px solid gray" }}
         >
           Going to SIS
-            </Table.HeaderCell>
+        </Table.HeaderCell>
       </Table.Row>
     </Table.Header>
     <Table.Header>
@@ -260,10 +260,10 @@ const reportContents = (report, courses, dispatch, user, openAccordions) => {
       {user.adminMode && (
         <>
           <SendToSisButton
-          entries={report
-            .filter(({ entry }) => !entry.sent || entry.errors)
-            .map(({ entry }) => entry.id)
-          } />
+            entries={report
+              .filter(({ entry }) => !entry.sent || entry.errors)
+              .map(({ entry }) => entry.id)
+            } />
           <DeleteBatchButton batchId={report[0].batchId} />
           <Button
             onClick={() => dispatch(

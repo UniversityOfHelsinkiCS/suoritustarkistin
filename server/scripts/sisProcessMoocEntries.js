@@ -79,7 +79,7 @@ const sisProcessMoocEntries = async ({
     },
     []
   )
-logger.info({message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true})
+  logger.info({message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true})
   if (matches && matches.length > 0) {
     const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true, transaction })
     logger.info({message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true})

@@ -51,33 +51,33 @@ export default () => {
         size="small"
       >
         <Modal.Content >
-        <Segment style={{ height: "15em", textAlign: "center", padding: "2em"}}>
-          <Header size="large">
-            {newReport.data ? newReport.data.length : 0} completion(s) will be reported for the course:
-          </Header>
-          <Header size="large">
-            {course
-              ? `${course.courseCode}: ${course.name}`
-              : <span style={{ color:"grey" }}>No course chosen yet</span>
-            }
-          </Header>
-          <div style={{ marginTop: "2em" }}>
-            <Button
-              size="large"
-              data-cy="confirm-sending-button"
-              color="green"
-              onClick={sendReport}
-            >
+          <Segment style={{ height: "15em", textAlign: "center", padding: "2em"}}>
+            <Header size="large">
+              {newReport.data ? newReport.data.length : 0} completion(s) will be reported for the course:
+            </Header>
+            <Header size="large">
+              {course
+                ? `${course.courseCode}: ${course.name}`
+                : <span style={{ color:"grey" }}>No course chosen yet</span>
+              }
+            </Header>
+            <div style={{ marginTop: "2em" }}>
+              <Button
+                size="large"
+                data-cy="confirm-sending-button"
+                color="green"
+                onClick={sendReport}
+              >
               Create report
-            </Button>
-            <Button
-              size="large"
-              onClick={closeModal}
-            >
+              </Button>
+              <Button
+                size="large"
+                onClick={closeModal}
+              >
               Cancel
-            </Button>
-          </div>
-        </Segment>
+              </Button>
+            </div>
+          </Segment>
 
         </Modal.Content>
       </Modal>

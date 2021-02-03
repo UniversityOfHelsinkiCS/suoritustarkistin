@@ -15,39 +15,39 @@ export default ({ batchId }) => {
 
   return (
     <Popup
-        open={open && openAccordions.includes(batchId)}
-        trigger={
-          <Button
-            negative
-            content="Delete completions"
-            disabled={!batchId}
-            onClick={() => setOpen(true)}
-          />
-        }
-        onUnmount={() => setOpen(false)}
-        hideOnScroll
-        content={
-          <div className="delete-popup">
-            <p>
-              <strong>
+      open={open && openAccordions.includes(batchId)}
+      trigger={
+        <Button
+          negative
+          content="Delete completions"
+          disabled={!batchId}
+          onClick={() => setOpen(true)}
+        />
+      }
+      onUnmount={() => setOpen(false)}
+      hideOnScroll
+      content={
+        <div className="delete-popup">
+          <p>
+            <strong>
                 Are you sure?
-              </strong>
-            </p>
-            <p style={{ padding: '5px 2px' }}>
+            </strong>
+          </p>
+          <p style={{ padding: '5px 2px' }}>
               Please note that deleting the completion-report here, will not affect already sent completions in SIS.
-            </p>
-            <Button
-              style={{ margin: '5px 2px' }}
-              negative
-              data-cy={`delete-batch-${batchId}`}
-              onClick={deleteBatch}
-              disabled={!batchId}
-              content="Yes, delete completions"
-            />
-          </div>
-        }
-        on="click"
-        position="top center"
-      />
+          </p>
+          <Button
+            style={{ margin: '5px 2px' }}
+            negative
+            data-cy={`delete-batch-${batchId}`}
+            onClick={deleteBatch}
+            disabled={!batchId}
+            content="Yes, delete completions"
+          />
+        </div>
+      }
+      on="click"
+      position="top center"
+    />
   )
 }

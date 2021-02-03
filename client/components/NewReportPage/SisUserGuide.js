@@ -72,21 +72,21 @@ export default () => (
       </p>
       <p style={subHeader}>
         student number;grade;credits;language;date 
-      <span>
-        <Popup
-          on={'hover', 'click'}
-          pinned
-          trigger={
-            <Icon
-              style={{ marginLeft: "0.3em"}}
-              name="question circle"
-              size="large"
-            ></Icon>
-          }
-          content={DetailedInstructions}
-        >
-        </Popup>
-      </span>
+        <span>
+          <Popup
+            on={'hover', 'click'}
+            pinned
+            trigger={
+              <Icon
+                style={{ marginLeft: "0.3em"}}
+                name="question circle"
+                size="large"
+              ></Icon>
+            }
+            content={DetailedInstructions}
+          >
+          </Popup>
+        </span>
       </p>
       Valid example lines:
       <List>

@@ -59,7 +59,7 @@ describe('Submitting data creates a valid report into database', function() {
 
   it('Grader can create reports', () => {
     cy.asUser().visit('')
-    cy.get('[data-cy=sendButton]').should('be.disabled')
+    cy.get('[data-cy=create-report-button]').should('be.disabled')
     cy.get('[data-cy=pastefield]').type(
       '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi'
     )
@@ -73,11 +73,19 @@ describe('Submitting data creates a valid report into database', function() {
       .contains('E2E')
       .click()
 
-    cy.get('[data-cy=sendButton]')
+    cy.get('[data-cy=create-report-button]')
       .should('not.be.disabled')
       .click()
+
+    cy.get('[data-cy=confirm-sending-button]')
+      .should('be.visible')
+      .click()
+    
+    cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
   })
+
+
 
   it('Grader can view created report', () => {
     cy.asUser().visit('')

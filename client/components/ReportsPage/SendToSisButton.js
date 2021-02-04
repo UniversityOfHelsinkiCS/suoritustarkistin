@@ -3,7 +3,7 @@ import { Button, Popup } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { sendEntriesToSisAction } from 'Utilities/redux/sisReportsReducer'
 
-export default ({entries}) => {
+export default ({ entries }) => {
   const dispatch = useDispatch()
   const reports = useSelector((state) => state.sisReports)
 
@@ -13,28 +13,28 @@ export default ({entries}) => {
 
   return (
     <Popup
-        trigger={
-          <Button
-            positive
-            content="Send completions to SIS"
-            disabled={
-              reports.pending || !entries.length
-            }
-          />
-        }
-        content={
-          <Button
-            positive
-            data-cy="sendButton"
-            onClick={sendNewEntries}
-            disabled={
-              reports.pending || !entries.length
-            }
-            content="Are you sure?"
-          />
-        }
-        on="click"
-        position="top center"
-      />
+      trigger={
+        <Button
+          positive
+          content="Send completions to SIS"
+          disabled={
+            reports.pending || !entries.length
+          }
+        />
+      }
+      content={
+        <Button
+          positive
+          data-cy="sendButton"
+          onClick={sendNewEntries}
+          disabled={
+            reports.pending || !entries.length
+          }
+          content="Are you sure?"
+        />
+      }
+      on="click"
+      position="top center"
+    />
   )
 }

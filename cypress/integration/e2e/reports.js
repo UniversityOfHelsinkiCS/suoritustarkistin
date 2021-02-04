@@ -40,7 +40,7 @@ describe('Submitting data creates a valid report into database', function () {
 
   it('When pasting (typing) Finnish open university course by grader into text field', () => {
     cy.asGrader().visit('')
-    cy.get('[data-cy=sendButton]').should('be.disabled')
+    cy.get('[data-cy=create-report-button]').should('be.disabled')
     cy.get('[data-cy=pastefield]').type(
       '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
       {
@@ -60,9 +60,15 @@ describe('Submitting data creates a valid report into database', function () {
       .contains('avoimen kurssi (AYTKTTEST)')
       .click()
 
-    cy.get('[data-cy=sendButton]')
+    cy.get('[data-cy=create-report-button]')
       .should('not.be.disabled')
       .click()
+
+    cy.get('[data-cy=confirm-sending-button]')
+      .should('be.visible')
+      .click()
+    
+    cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
 
     cy.wait(1000)
@@ -92,7 +98,7 @@ describe('Submitting data creates a valid report into database', function () {
 
   it('When pasting (typing) English tkt course by grader into text field', () => {
     cy.asGrader().visit('')
-    cy.get('[data-cy=sendButton]').should('be.disabled')
+    cy.get('[data-cy=create-report-button]').should('be.disabled')
     cy.get('[data-cy=pastefield]').type(
       '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
       {
@@ -112,9 +118,15 @@ describe('Submitting data creates a valid report into database', function () {
       .contains('tkt:n kurssi (TKTTEST)')
       .click()
 
-    cy.get('[data-cy=sendButton]')
+    cy.get('[data-cy=create-report-button]')
       .should('not.be.disabled')
       .click()
+
+    cy.get('[data-cy=confirm-sending-button]')
+      .should('be.visible')
+      .click()
+    
+    cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
 
     cy.wait(1000)
@@ -144,7 +156,7 @@ describe('Submitting data creates a valid report into database', function () {
 
   it('When dragging (choosing) a file into dropzone', () => {
     cy.asGrader().visit('')
-    cy.get('[data-cy=sendButton]').should('be.disabled')
+    cy.get('[data-cy=create-report-button]').should('be.disabled')
     cy.get('[data-cy=dragdrop]').click()
     cy.wait(1000)
     cy.fixture('valid.csv').then((content) => {
@@ -163,10 +175,17 @@ describe('Submitting data creates a valid report into database', function () {
       .contains('tkt:n kurssi (TKTTEST)')
       .click()
 
-    cy.get('[data-cy=sendButton]')
+    cy.get('[data-cy=create-report-button]')
       .should('not.be.disabled')
       .click()
+
+    cy.get('[data-cy=confirm-sending-button]')
+      .should('be.visible')
+      .click()
+    
+    cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
+
     cy.wait(1000)
 
     cy.request({

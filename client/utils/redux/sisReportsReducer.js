@@ -15,7 +15,6 @@ export const sisGetUsersReportsAction = (id) => {
   return callBuilder(route, prefix, 'get')
 }
 
-
 export const sisHandleEntryDeletionAction = (id) => {
   const route = `/sis_reports/${id}`
   const prefix = 'SIS_DELETE_SINGLE_ENTRY'
@@ -40,10 +39,21 @@ export const refreshBatchStatus = (entryIds) => {
   return callBuilder(route, prefix, 'post', entryIds)
 }
 
+export const openReport = (id) => ({
+  type: 'OPEN_REPORT',
+  id
+})
+
+const setOpenAccordions = (openAccordions, id) => {
+  if(!openAccordions.includes(id)) {
+    return [...openAccordions, id]
+  }
+  return openAccordions.filter((a) => a !== id)
+}
 
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
-export default (state = { data: [] }, action) => {
+export default (state = { data: [], openAccordions: [] }, action) => {
   switch (action.type) {
     case 'SIS_GET_ALL_REPORTS_SUCCESS':
       return {
@@ -107,6 +117,7 @@ export default (state = { data: [] }, action) => {
     case 'SIS_DELETE_BATCH_SUCCESS':
       return {
         ...state,
+        openAccordions: [],
         data: state.data.filter((e) => e.batchId != action.response.batchId),
         pending: false,
         error: false
@@ -171,6 +182,11 @@ export default (state = { data: [] }, action) => {
         ...state,
         pending: false,
         error: true
+      }
+    case 'OPEN_REPORT':
+      return {
+        ...state,
+        openAccordions: setOpenAccordions(state.openAccordions, action.id)
       }
     default:
       return state

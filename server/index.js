@@ -5,6 +5,7 @@ const path = require('path')
 const cron = require('node-cron')
 const routes = require('@utils/routes')
 const logger = require('@utils/logger')
+const Sentry = require('@sentry/node')
 const {
   PORT,
   inProduction,
@@ -41,7 +42,13 @@ const { initializeCronJobs } = require('./scripts/cronjobs')
 initializeDatabaseConnection()
   .then(() => {
     const app = express()
+    Sentry.init({
+      dsn: process.env.SENTRY_ADDR,
+      environment: process.env.NODE_ENV
+    })
+    app.use(Sentry.Handlers.requestHandler())
     app.use(bodyParser.json({ limit: '5mb' }))
+    app.use(Sentry.Handlers.errorHandler())
 
     /**
      * Use hot loading when in development, else serve the static content

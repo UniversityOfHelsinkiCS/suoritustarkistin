@@ -1,3 +1,4 @@
+
 describe('New sis-entries can be added correctly', function () {
   
   it('When pasting (typing) completions with valid data, correct entries are created', () => {
@@ -22,7 +23,7 @@ describe('New sis-entries can be added correctly', function () {
     // Emulate sending two new entries in the same batch
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=sis-copypaste]').should('be.visible').click()
-    cy.get('[data-cy=sisSendButton]').should('be.disabled')
+    cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
     cy.get('[data-cy=sisPastefield]').type(
       '011000002;2;2;en\n010000003;3;3;sv',
       {
@@ -44,9 +45,15 @@ describe('New sis-entries can be added correctly', function () {
       .contains('Valid course 2 (TKT10002)')
       .click()
 
-    cy.get('[data-cy=sisSendButton]')
+    cy.get('[data-cy=sis-create-report-button]')
       .should('not.be.disabled')
       .click()
+
+    cy.get('[data-cy=sis-confirm-sending-button]')
+      .should('be.visible')
+      .click()
+
+    cy.get('[data-cy=sis-create-report-button]')
       .should('be.disabled')
 
     cy.server()
@@ -64,7 +71,6 @@ describe('New sis-entries can be added correctly', function () {
     cy.get('[data-cy=sis-report-student-number-2]').should('contain', '011000002')
     cy.get('[data-cy=sis-report-course-code-3]').should('contain', 'TKT10002')
     cy.get('[data-cy=sis-report-student-number-3]').should('contain', '010000003')
-
   })
 
   it('When pasting (typing) completions with a non-existing employee number, no entries are created', () => {
@@ -91,8 +97,12 @@ describe('New sis-entries can be added correctly', function () {
       .contains('Valid course 1 (TKT10001)')
       .click()
 
-    cy.get('[data-cy=sisSendButton]')
+    cy.get('[data-cy=sis-create-report-button]')
       .should('not.be.disabled')
+      .click()
+
+    cy.get('[data-cy=sis-confirm-sending-button]')
+      .should('be.visible')
       .click()
 
     cy.wait(20000)

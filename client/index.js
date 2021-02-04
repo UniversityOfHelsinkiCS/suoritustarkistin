@@ -5,9 +5,16 @@ import { Provider } from 'react-redux'
 import 'semantic-ui-css/semantic.min.css'
 import 'Assets/custom.css'
 import { setHeaders } from 'Utilities/fakeShibboleth'
+import * as Sentry from "@sentry/react"
 
 import store from 'Utilities/store'
 import App from 'Components/App'
+
+if (process.env.NODE_ENV !== 'development')
+  Sentry.init({
+    dsn: "https://b24cd76c3edb4bd392065046ddb34ab9@sentry.toska.cs.helsinki.fi/4",
+    environment: process.env.NODE_ENV
+  })
 
 const refresh = () =>
   render(

@@ -8,6 +8,12 @@ const qs = require('querystring')
 const logger = require('@utils/logger')
 const { fetchEarlierAttainments, isImprovedGrade } = require('@utils/sisEarlierCompletions')
 
+const handleImporterApiErrors = (e) => {
+  if (e.code === "EAI_AGAIN") throw new Error("Network error. Reload the page and try again")
+  if (e.response.data.status === 404) throw new Error(e.response.data.message)
+  throw new Error(e.toString())
+}
+
 /**
  * Mankel raw entries to sis entries.
  *
@@ -24,8 +30,8 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
   })
 
   const studentNumbers = createdEntries.map((rawEntry) => rawEntry.studentNumber)
-  const students = await api.post('students/', studentNumbers)
-  if (!students.data) throw new Error('Persons with some of the student numbers not found from Sisu')
+  const students = await getStudents(studentNumbers)
+  if (!students) throw new Error('Persons with some of the student numbers not found from Sisu')
 
   const employeeIds = graders.map((grader) => grader.employeeId)
   const employees = await getEmployees(employeeIds)
@@ -49,7 +55,7 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
   const earlierAttainments = checkImprovements === true ? await fetchEarlierAttainments(courseStudentPairs) : []
 
   const data = await Promise.all(createdEntries.map(async (rawEntry) => {
-    const student = students.data.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)
+    const student = students.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)
     const grader = graders.find((g) => g.id === rawEntry.graderId)
     const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
     const course = courses.find((c) => c.id === rawEntry.courseId)
@@ -200,6 +206,15 @@ async function getCourseUnits(rawEntries) {
   return courseUnits
 }
 
+async function getStudents(studentNumbers) {
+  try {
+    const res = await api.post('students/', studentNumbers)
+    return res.data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 /**
  * Get active course unit realisation by course code and date.
  * If no active found, return closest already ended realisation.
@@ -209,8 +224,7 @@ async function fetchCourseUnitRealisation(courseCode) {
     const resp = await api.get(`course_unit_realisations/?code=${courseCode}`)
     return resp.data
   } catch (e) {
-    if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error(e.toString())
+    handleImporterApiErrors(e)
   }
 }
 
@@ -223,8 +237,7 @@ async function fetchCourseUnit(courseCode) {
     const resp = await api.get(`course_units/?codes=${courseCode}`)
     return resp.data
   } catch (e) {
-    if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error(e.toString())
+    handleImporterApiErrors(e)
   }
 }
 
@@ -246,8 +259,7 @@ async function getGrades(codes) {
     const resp = await api.get(`grades?${params}`)
     return resp.data
   } catch (e) {
-    if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error(e.toString())
+    handleImporterApiErrors(e)
   }
 }
 

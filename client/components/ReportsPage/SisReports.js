@@ -219,10 +219,9 @@ const ReportTable = ({ rows, course }) => (
   )
 )
 
-const reportContents = (report, courses, dispatch, user, openAccordions) => {
-  if (!report || !courses) return null
+const reportContents = (report, course, dispatch, user, openAccordions) => {
+  if (!report) return null
 
-  const course = courses.find((c) => report[0].courseId === c.id)
   const batchSent = report.some(({ entry }) => entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
   const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors)
@@ -319,13 +318,21 @@ export default ({ reports, user }) => {
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
   const panels = batchedReports.map((report, index) => {
-
+    
     const reportWithEntries = report.filter((e) => e && e.entry)
     if (!reportWithEntries || !reportWithEntries.length) return null
+
+    const course = courses.find((c) => report[0].courseId === c.id)
+    if (!course) return {
+      key: `panel-${index}`,
+      title: title(reportWithEntries),
+      content: <Accordion.Content>Course for these entries was not found from Suotar</Accordion.Content>
+    }
+  
     return {
       key: `panel-${index}`,
       title: title(reportWithEntries),
-      content: reportContents(reportWithEntries, courses, dispatch, user, openAccordions),
+      content: reportContents(reportWithEntries, course, dispatch, user, openAccordions),
       onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
     }
   })

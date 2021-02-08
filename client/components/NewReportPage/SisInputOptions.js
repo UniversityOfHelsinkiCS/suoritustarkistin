@@ -78,7 +78,7 @@ export default () => {
   }
 
   return (
-    <div style={{ marginBlock: '10px', marginBottom: '20px' }}>
+    <div style={{ marginBlock: '10px', marginBottom: '10px', display: 'flex' }}>
       <Select
         className="input"
         data-cy="sisGraderSelection"
@@ -104,6 +104,9 @@ export default () => {
         selected={showingDate}
         onChange={(date) => handleDateSelection(date)}
       />
+      <span style={{ paddingLeft: "1em", width: "20em", height: "3em" }}>
+        Remember to report completions for the correct academic year (1.8. – 31.7.)
+      </span>
       <SisSendButton />
     </div>
   )

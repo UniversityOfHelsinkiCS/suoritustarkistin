@@ -122,6 +122,24 @@ export default (state = { data: [] }, action) => {
         pending: false,
         error: true
       }
+    case 'SIS_RUN_JOB_SUCCESS':
+      return {
+        ...state,
+        pending: false,
+        error: false
+      }
+    case 'SIS_RUN_JOB_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'SIS_RUN_JOB_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
     default:
       return state
   }

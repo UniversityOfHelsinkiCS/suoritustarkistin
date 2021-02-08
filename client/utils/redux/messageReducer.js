@@ -107,6 +107,33 @@ export default (state = null, action) => {
         content: 'Batch status successfully refreshed from Sisu.'
       }
     }
+    case 'SIS_RUN_JOB_ATTEMPT': {
+      return {
+        header: 'Creating a new report, this might take a while',
+        type: 'neutral'
+      }
+    }
+    case 'SIS_RUN_JOB_SUCCESS': {
+      return {
+        header: 'New report created!',
+        type: 'positive',
+        content: 'You can check it on the View reports-page'
+      }
+    }
+    case 'SIS_RUN_JOB_FAILURE': {
+      if (action.error) {
+        const content = action.error
+        return {
+          header: 'Creating a new report failed',
+          type: 'negative',
+          content
+        }
+      }
+      return {
+        header: 'Creating a new report failed',
+        type: 'negative'
+      }
+    }
     default:
       return state
   }

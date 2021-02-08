@@ -68,7 +68,7 @@ const sisManualRun = async (job, course, grader, transaction) => {
     }) completions`
   )
 
-  sisProcessMoocEntries({
+  const result = sisProcessMoocEntries({
     job,
     course,
     grader
@@ -81,6 +81,8 @@ const sisManualRun = async (job, course, grader, transaction) => {
       logger.error('Unsuccessful job run: ', error)
       await transaction.rollback()
     })
+
+  return result
 }
 
 const sisManualEaoiRun = async (course, grader, transaction) => {
@@ -90,7 +92,7 @@ const sisManualEaoiRun = async (course, grader, transaction) => {
       course.courseCode
     }) completions`
   )
-  sisProcessEoaiEntries({
+  const result = sisProcessEoaiEntries({
     grader
   }, transaction)
     .then(async () => {
@@ -101,6 +103,8 @@ const sisManualEaoiRun = async (course, grader, transaction) => {
       logger.error('Unsuccessful job run: ', error)
       await transaction.rollback()
     })
+
+  return result
 }
 
 const sisManualBaiRun = async (job, course, grader, transaction) => {
@@ -110,7 +114,7 @@ const sisManualBaiRun = async (job, course, grader, transaction) => {
       course.courseCode
     }) completions`
   )
-  sisProcessBaiEntries({
+  const result = sisProcessBaiEntries({
     job,
     course,
     grader
@@ -123,6 +127,8 @@ const sisManualBaiRun = async (job, course, grader, transaction) => {
       logger.error('Unsuccessful job run: ', error)
       await transaction.rollback()
     })
+
+  return result
 }
 
 const activateJob = async (id) => {

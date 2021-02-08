@@ -75,7 +75,7 @@ const runJob = async (req, res) => {
 const sisRunJob = async (req, res) => {
   try {
     if (!req.user.isAdmin) {
-      throw new Error('User is not authorized to create SIS-reports.')
+      return res.status(400).json({ error: 'User is not authorized to create SIS-reports.' })
     }
 
     const transaction = await db.sequelize.transaction()
@@ -88,7 +88,7 @@ const sisRunJob = async (req, res) => {
     })
 
     if (!job) {
-      throw new Error({ message: `No cronjob with id: ${jobId}`})
+      return res.status(400).json({ error: `No cronjob with id: ${jobId}` })
     }
 
     const course = await db.courses.findOne({
@@ -97,8 +97,8 @@ const sisRunJob = async (req, res) => {
       }
     })
 
-    if (!job) {
-      throw new Error({ message: `No course with id: ${job.courseId} found`})
+    if (!course) {
+      return res.status(400).json({ error: `No course with id: ${job.courseId} found`})
     }
 
     const grader = await db.users.findOne({
@@ -108,7 +108,7 @@ const sisRunJob = async (req, res) => {
     })
 
     if (!grader) {
-      throw new Error({ message: `No grader-employee found`})
+      return res.status(400).json({ error: `No grader-employee found for the course: ${job.courseId}`})
     }
 
     if (EAOI_CODES.includes(course.courseCode)) {
@@ -118,11 +118,10 @@ const sisRunJob = async (req, res) => {
     } else {
       await sisManualRun(job, course, grader, transaction)
     }
-
     return res.status(200).json({ id: req.params.id })
   } catch (e) {
     logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
+    res.status(500).json({ error: e.message })
   }
 }
 

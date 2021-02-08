@@ -254,8 +254,9 @@ async function getCourses(rawEntries) {
 }
 
 async function getGrades(codes) {
+  const uniqueCodes = _.uniq(codes)
   try {
-    const params = qs.stringify({ codes })
+    const params = qs.stringify({ codes: uniqueCodes })
     const resp = await api.get(`grades?${params}`)
     return resp.data
   } catch (e) {

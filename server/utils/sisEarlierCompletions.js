@@ -1,5 +1,6 @@
 const api = require('../config/importerApi')
 const logger = require('@utils/logger')
+const _ = require('lodash')
 
 /**
  * Return true if given grade is valid for student. That is, the student does not
@@ -7,7 +8,6 @@ const logger = require('@utils/logger')
 **/
 const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   if (!allEarlierAttainments) return true
-  
   const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
   const earlierAttainments = student ? student.attainments : undefined
   if (!earlierAttainments) return true
@@ -25,10 +25,19 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   return true
 }
 
+/**
+ * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
+ * The data must be fetched in chunks of 100, since importer-api cannot handle bigger payloads. 
+ */
 const fetchEarlierAttainments = async (data) => {
+  let allData = []
   try {
-    const res = await api.post(`suotar/attainments`, data)
-    return res.data
+    const chunks = _.chunk(data, 100)
+    for (const chunk of chunks) {
+      const res = await api.post(`suotar/attainments`, chunk)
+      allData = _.concat(allData, res.data)
+    }
+    return allData
   } catch (e) {
     if (e.response.data.status === 404) throw new Error(e.response.data.message)
     throw new Error(e.toString())

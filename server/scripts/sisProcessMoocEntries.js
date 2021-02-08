@@ -31,9 +31,13 @@ const sisProcessMoocEntries = async ({
     'DD.MM.YY-HHmmss'
   )}`
 
-  const courseStudentPairs = registrations.map((registration) => {
-    return ({ courseCode: course.courseCode, studentNumber: registration.onro })
-  }) 
+  const courseStudentPairs = registrations.reduce((pairs, registration) => {
+    if (registration && registration.onro) {
+      return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
+    } else {
+      return pairs
+    }
+  }, [])
 
   const earlierAttainments = await fetchEarlierAttainments(courseStudentPairs)
 

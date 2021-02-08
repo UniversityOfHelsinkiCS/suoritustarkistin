@@ -6,7 +6,7 @@ const moment = require('moment')
 const api = require('../config/importerApi')
 const qs = require('querystring')
 const logger = require('@utils/logger')
-const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
+const { fetchEarlierAttainments, isImprovedGrade } = require('@utils/sisEarlierCompletions')
 
 /**
  * Mankel raw entries to sis entries.
@@ -41,6 +41,8 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
   const gradeScaleIds = Object.keys(courseUnits).map((key) => courseUnits[key].gradeScaleId)
   const gradeScales = await getGrades(gradeScaleIds)
 
+  const earlierAttainments = checkImprovements === true ? await fetchEarlierAttainments(createdEntries, courses) : []
+
   const data = await Promise.all(createdEntries.map(async (rawEntry) => {
     const student = students.data.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)
     const grader = graders.find((g) => g.id === rawEntry.graderId)
@@ -50,6 +52,7 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
     const courseUnit = courseUnits[rawEntry.id]
     const grade = mapGrades(gradeScales, courseUnit.gradeScaleId, rawEntry)
     const completionDate = moment(rawEntry.attainmentDate).format('YYYY-MM-DD')
+    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
 
     if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
     if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
@@ -60,7 +63,7 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
             ${gradeScales[courseUnit.gradeScaleId].map(({abbreviation}) => abbreviation['fi'])}
         `)
 
-    if (checkImprovements === true && !await isImprovedGrade(course.courseCode, rawEntry.studentNumber, rawEntry.grade)) {
+    if (checkImprovements === true && !improvedGrade) {
       throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
     }
 

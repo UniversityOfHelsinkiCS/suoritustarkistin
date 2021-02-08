@@ -8,7 +8,8 @@ const logger = require('@utils/logger')
 const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   if (!allEarlierAttainments) return true
   
-  const earlierAttainments = allEarlierAttainments.find((a) => a.studentNumber === studentNumber).attainments
+  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierAttainments = student ? student.attainments : undefined
   if (!earlierAttainments) return true
 
   if ([0,1,2,3,4,5].includes(Number(grade))) {
@@ -24,12 +25,8 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   return true
 }
 
-const fetchEarlierAttainments = async (createdEntries, courses) => {
+const fetchEarlierAttainments = async (data) => {
   try {
-    const data = createdEntries.map((rawEntry) => {
-      const course = courses.find((c) => c.id === rawEntry.courseId)
-      return ({ courseCode: course.courseCode, studentNumber: rawEntry.studentNumber })
-    })  
     const res = await api.post(`suotar/attainments`, data)
     return res.data
   } catch (e) {

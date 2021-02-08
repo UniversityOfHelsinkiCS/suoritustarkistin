@@ -41,7 +41,12 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
   const gradeScaleIds = Object.keys(courseUnits).map((key) => courseUnits[key].gradeScaleId)
   const gradeScales = await getGrades(gradeScaleIds)
 
-  const earlierAttainments = checkImprovements === true ? await fetchEarlierAttainments(createdEntries, courses) : []
+  const courseStudentPairs = createdEntries.map((rawEntry) => {
+    const course = courses.find((c) => c.id === rawEntry.courseId)
+    return ({ courseCode: course.courseCode, studentNumber: rawEntry.studentNumber })
+  }) 
+
+  const earlierAttainments = checkImprovements === true ? await fetchEarlierAttainments(courseStudentPairs) : []
 
   const data = await Promise.all(createdEntries.map(async (rawEntry) => {
     const student = students.data.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)

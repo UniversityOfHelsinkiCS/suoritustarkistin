@@ -319,11 +319,14 @@ export default ({ reports, user }) => {
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
   const panels = batchedReports.map((report, index) => {
+
+    const reportWithEntries = report.filter((e) => e && e.entry)
+    if (!reportWithEntries || !reportWithEntries.length) return null
     return {
       key: `panel-${index}`,
-      title: title(report),
-      content: reportContents(report, courses, dispatch, user, openAccordions),
-      onTitleClick: () => dispatch(openReport(report[0].batchId))
+      title: title(reportWithEntries),
+      content: reportContents(reportWithEntries, courses, dispatch, user, openAccordions),
+      onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
     }
   })
 

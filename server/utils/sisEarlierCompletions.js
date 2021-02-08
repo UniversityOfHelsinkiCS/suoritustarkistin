@@ -1,5 +1,4 @@
 const api = require('../config/importerApi')
-const logger = require('@utils/logger')
 const _ = require('lodash')
 
 /**
@@ -44,20 +43,17 @@ const fetchEarlierAttainments = async (data) => {
   }
 }
 
-const isImprovedTier = async (courseCode, studentNumber, credits) => {
-  try {
-    const resp = await api.get(`suotar/attainments/${courseCode}/${studentNumber}`)
-    const earlierCompletions = resp.data
-    if (!earlierCompletions) return true
+const isImprovedTier = async (allEarlierAttainments, studentNumber, credits) => {
+  if (!allEarlierAttainments) return true
 
-    const existingHigherTier = earlierCompletions.some((attainment) => attainment.credits >= Number(credits))
-    if (existingHigherTier) return false
+  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierAttainments = student ? student.attainments : undefined
+  if (!earlierAttainments) return true
 
-    return true
-  } catch(e) {
-    logger.error({message: `Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`, sis: true, error: e.toString()})
-    throw new Error(`Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`)
-  }
+  const existingHigherTier = earlierAttainments.some((attainment) => attainment.credits >= Number(credits))
+  if (existingHigherTier) return false
+
+  return true
 }
 
 

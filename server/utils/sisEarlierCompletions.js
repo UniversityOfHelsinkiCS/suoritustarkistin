@@ -31,7 +31,7 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
 const fetchEarlierAttainments = async (data) => {
   let allData = []
   try {
-    const chunks = _.chunk(data, 100)
+    const chunks = _.chunk(data, 150)
     for (const chunk of chunks) {
       const res = await api.post(`suotar/attainments`, chunk)
       allData = _.concat(allData, res.data)

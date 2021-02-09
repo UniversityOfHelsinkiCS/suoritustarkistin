@@ -75,7 +75,7 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
         .find((e) => e.personId === student.id && e.code === course.courseCode)
 
       const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
-      if (!filteredEnrolments.length)
+      if (!filteredEnrolments || !filteredEnrolments.length)
         throw new Error(`Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`)
 
       // Create here the acual attainments for Sisu
@@ -116,7 +116,7 @@ const filterEnrolments = (completionDate, { enrolments }) => {
       (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate.endDate)
         .diff(moment(a.courseUnitRealisation.activityPeriod.endDate.endDate))
     )
-  if (!sortedEnrolments.length) return null
+  if (!sortedEnrolments || !sortedEnrolments.length) return null
   const properEnrolments = sortedEnrolments.filter(
     (e) => e.courseUnitRealisationId === sortedEnrolments[0].courseUnitRealisationId
   )
@@ -143,7 +143,7 @@ const mapGrades = (gradeScales, id, rawEntry) => {
 async function getEmployees(employeeIds) {
   const responses = await Promise.all(employeeIds.map(async (employeeId) => {
     const resp = await api.get(`employees/${employeeId}`)
-    if (!resp.data.length)
+    if (!resp.data || !resp.data.length)
       throw new Error(`No person found from Sisu with employee number ${employeeId}`)
     return resp
   }))

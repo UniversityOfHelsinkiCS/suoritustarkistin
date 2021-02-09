@@ -14,12 +14,20 @@ const handleImporterApiErrors = (e) => {
   throw new Error(e.toString())
 }
 
+
 /**
  * Mankel raw entries to sis entries.
  *
  * Some extra mayhem with grader and course relations as createdEntries contains only
  * raw entries and related foreign keys. We can't query raw entries with include as we
  * are inside a transaction and relations needs to be fetched separately.
+ *
+ * Mankeling steps:
+ *  1. Fetch relations from local db, fetch all necessary persons, attainments etc from importer
+ *  2. Fetch enrolments from importer with person id - course code pairs
+ *  3. From the enrolments find instances which are for proper course unit realisation, based on the attainment date
+ *  4. Mankel again the enrolments to get Suotar entries
+ *  5. Resolve all nested promises ??
  */
 const processEntries = async (createdEntries, transaction, checkImprovements) => {
   const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
@@ -28,76 +36,104 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
       id: { [Op.in]: Array.from(graderIds) }
     }
   })
+  const courses = await getCourses(createdEntries)
+  const gradeScales = await getGrades()
 
   const studentNumbers = createdEntries.map((rawEntry) => rawEntry.studentNumber)
   const students = await getStudents(studentNumbers)
-  if (!students) throw new Error('Persons with some of the student numbers not found from Sisu')
 
   const employeeIds = graders.map((grader) => grader.employeeId)
   const employees = await getEmployees(employeeIds)
-  if (!employees) throw new Error('Persons with any of the employee numbers not found from Sisu')
 
-  const courseRealisations = await getCourseUnitRealisations(createdEntries)
-  if (!courseRealisations) throw new Error('No active or past course unit realisation found with the course code')
-
-  const courseUnits = await getCourseUnits(createdEntries)
-  if (!courseUnits) throw new Error('Course with the course code not found from Sisu')
-
-  const courses = await getCourses(createdEntries)
-  const gradeScaleIds = Object.keys(courseUnits).map((key) => courseUnits[key].gradeScaleId)
-  const gradeScales = await getGrades(gradeScaleIds)
-
-  const courseStudentPairs = createdEntries.map((rawEntry) => {
-    const course = courses.find((c) => c.id === rawEntry.courseId)
-    return ({ courseCode: course.courseCode, studentNumber: rawEntry.studentNumber })
-  }) 
-
+  const courseStudentPairs = createdEntries.map(({courseId, studentNumber }) => {
+    const { courseCode } = courses.find((c) => c.id === courseId)
+    return ({ courseCode, studentNumber })
+  })
   const earlierAttainments = checkImprovements === true ? await fetchEarlierAttainments(courseStudentPairs) : []
 
-  const data = await Promise.all(createdEntries.map(async (rawEntry) => {
-    const student = students.find(({ studentNumber }) => studentNumber === rawEntry.studentNumber)
-    const grader = graders.find((g) => g.id === rawEntry.graderId)
-    const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
-    const course = courses.find((c) => c.id === rawEntry.courseId)
-    const courseUnitRealisation = courseRealisations[rawEntry.id]
-    const courseUnit = courseUnits[rawEntry.id]
-    const grade = mapGrades(gradeScales, courseUnit.gradeScaleId, rawEntry)
-    const completionDate = moment(rawEntry.attainmentDate).format('YYYY-MM-DD')
-    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
-
-    if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
-    if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
-    if (!courseUnit) throw new Error(`No course unit found with course code ${rawEntry.course.courseCode}`)
-    if (!courseUnitRealisation) throw new Error(`No active or past course unit realisation found with course code ${rawEntry.course.courseCode}`)
-    if (!grade) throw new Error(`
-            Invalid grade "${rawEntry.grade}". Available grades for this course are:
-            ${gradeScales[courseUnit.gradeScaleId].map(({abbreviation}) => abbreviation['fi'])}
-        `)
-
-    if (checkImprovements === true && !improvedGrade) {
-      throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
-    }
-
-    return Promise.resolve({
-      personId: student.id,
-      verifierPersonId: verifier.id,
-      completionLanguage: rawEntry.language,
-      rawEntryId: rawEntry.id,
-      gradeId: grade.localId,
-      completionDate,
-      ...courseUnitRealisation,
-      ...courseUnit
-    })
+  const studentCourseCodePairs = createdEntries.map((rawEntry) => ({
+    personId: (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id,
+    code: courses.find((course) => course.id === rawEntry.courseId).courseCode
   }))
+  const enrolments = await getEnrolments(studentCourseCodePairs)
+
+  // We need to flatten the final data, as one raw entry may be
+  // mankeled to one or more attainment (entry)
+  const data = _.flatten(
+    await Promise.all(createdEntries.map(async (rawEntry) => {
+      const grader = graders.find((g) => g.id === rawEntry.graderId)
+      const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
+      const completionDate = moment(rawEntry.attainmentDate)
+      const course = courses.find((c) => c.id === rawEntry.courseId)
+      const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
+      const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
+
+      if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
+      if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
+
+      const enrolmentsByPersonAndCourse = enrolments
+        .find((e) => e.personId === student.id && e.code === course.courseCode)
+
+      const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
+      if (!filteredEnrolments.length)
+        throw new Error(`Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`)
+
+      // Create here the acual attainments for Sisu
+      const assessmentItemAttainments = await Promise.all(
+        filteredEnrolments
+          .map(async (e) => {
+            const grade = mapGrades(gradeScales, e.gradeScaleId, rawEntry)
+            if (!grade) throw new Error(`
+                Invalid grade "${rawEntry.grade}". Available grades for this course are:
+                ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
+            `)
+            if (checkImprovements === true && !improvedGrade) {
+              throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
+            }
+            return Promise.resolve({
+              ...e,
+              verifierPersonId: verifier.id,
+              rawEntryId: rawEntry.id,
+              gradeId: grade.localId,
+              completionDate: completionDate.format('YYYY-MM-DD')
+            })
+          })
+      )
+      return Promise.resolve(assessmentItemAttainments)
+    }))
+  )
 
   await db.entries.bulkCreate(data, { transaction })
   logger.info({ message: 'Entries success', amount: data.length, sis: true })
   return true
 }
 
+const filterEnrolments = (completionDate, { enrolments }) => {
+  if (!enrolments) return null
+  const sortedEnrolments = enrolments
+    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.endDate).isBefore(moment(completionDate)))
+    .sort(
+      (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate.endDate)
+        .diff(moment(a.courseUnitRealisation.activityPeriod.endDate.endDate))
+    )
+  if (!sortedEnrolments.length) return null
+  const properEnrolments = sortedEnrolments.filter(
+    (e) => e.courseUnitRealisationId === sortedEnrolments[0].courseUnitRealisationId
+  )
+  return properEnrolments.map(({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, courseUnit, courseUnitRealisation }) => ({
+    courseUnitRealisationName: courseUnitRealisation.name,
+    gradeScaleId: courseUnit.gradeScaleId,
+    assessmentItemId,
+    courseUnitRealisationId,
+    courseUnitId,
+    personId
+  }))
+}
+
+
 const mapGrades = (gradeScales, id, rawEntry) => {
   if (id === "sis-0-5") {
-    return gradeScales[id].find(({numericCorrespondence}) => String(numericCorrespondence) === rawEntry.grade)
+    return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === rawEntry.grade)
   } else if (id === "sis-hyl-hyv") {
     return gradeScales[id].find(({ abbreviation }) => abbreviation['fi'] === rawEntry.grade)
   }
@@ -114,98 +150,6 @@ async function getEmployees(employeeIds) {
   return _.flatten(responses.map((resp) => resp.data))
 }
 
-/**
- * Resolve an active object based on given date. Objects needs to have activity
- * property with startDate and endDate. By default the property is activityPeriod, but
- * it can be changed with key argument.
- */
-function resolveActiveObject(objects, date, key = 'activityPeriod') {
-  const momentDate = moment(date)
-  const active = objects.find((obj) => {
-    const { startDate, endDate } = obj[key]
-    return momentDate.isBetween(moment(startDate), moment(endDate))
-  })
-  if (active) return active
-
-  const sorted = objects
-    .filter((obj) => moment(obj[key].endDate).isBefore(momentDate))
-    .sort((a, b) => moment(b[key].endDate).diff(moment(a[key].endDate)))
-
-  return sorted[0]
-}
-
-/**
- * Map correct course unit realisation id and assessment item id by raw entry id.
- * If the course has also an Open uni -version, map the ids for that too
- */
-async function getCourseUnitRealisations(rawEntries) {
-  const courses = await getCourses(rawEntries)
-
-  const courseUnitRealisations = {}
-  for (const course of courses) {
-    let { courseCode } = course
-    if (course.autoSeparate) {
-      courseUnitRealisations[`AY${courseCode}`] = await fetchCourseUnitRealisation(`AY${courseCode}`)
-    }
-    courseUnitRealisations[courseCode] = await fetchCourseUnitRealisation(courseCode)
-  }
-  // TODO: We probably want to check if some course code is missing, not all...
-  if (_.isEmpty(courseUnitRealisations)) throw new Error(`No course unit realisations found`)
-
-
-  const courseRealisations = {}
-  for (const rawEntry of rawEntries) {
-    const { courseId, attainmentDate, id, isOpenUni } = rawEntry
-    let { courseCode } = courses.find((c) => c.id === courseId)
-    courseCode = isOpenUni ?
-      `AY${courseCode}` :
-      courseCode
-    if (!courseUnitRealisations[courseCode]) throw new Error(`No course unit realisations in Sisu with the course code ${courseCode}`)
-    const activeObject = resolveActiveObject(courseUnitRealisations[courseCode], attainmentDate)
-    if (!activeObject) throw new Error(`No active course unit realisation in Sisu with the course code ${courseCode} for ${attainmentDate.toLocaleString()}`)
-
-    const { assessmentItemIds, id: courseUnitRealisationId, name } = activeObject
-    courseRealisations[id] = {
-      courseUnitRealisationId: courseUnitRealisationId,
-      assessmentItemId: assessmentItemIds[0],
-      courseUnitRealisationName: name
-    }
-  }
-  return courseRealisations
-}
-
-async function getCourseUnits(rawEntries) {
-  const courses = await getCourses(rawEntries)
-
-  const courseUnitData = {}
-  for (const course of courses) {
-    const { courseCode } = course
-    if (course.autoSeparate) {
-      courseUnitData[`AY${courseCode}`] = await fetchCourseUnit(`AY${courseCode}`)
-    }
-    courseUnitData[courseCode] = await fetchCourseUnit(courseCode)
-  }
-  // TODO: We probably want to check if some course code is missing, not all...
-  if (_.isEmpty(courseUnitData)) throw new Error(`No course units found`)
-
-  const courseUnits = {}
-  for (const rawEntry of rawEntries) {
-    const { courseId, attainmentDate, id, isOpenUni } = rawEntry
-    let { courseCode } = courses.find((c) => c.id === courseId)
-    courseCode = isOpenUni ?
-      `AY${courseCode}` :
-      courseCode
-    if (!courseUnitData[courseCode]) throw new Error(`No course units in Sisu with the course code ${courseCode}`)
-
-    const activeObject = resolveActiveObject(courseUnitData[courseCode], attainmentDate, 'validityPeriod')
-    if (!activeObject) throw new Error(`No active course unit in Sisu with the course code ${courseCode}`)
-
-    const { id: courseUnitId, gradeScaleId } = activeObject
-    courseUnits[id] = { courseUnitId, gradeScaleId }
-  }
-  return courseUnits
-}
-
 async function getStudents(studentNumbers) {
   try {
     const res = await api.post('students/', studentNumbers)
@@ -215,27 +159,10 @@ async function getStudents(studentNumbers) {
   }
 }
 
-/**
- * Get active course unit realisation by course code and date.
- * If no active found, return closest already ended realisation.
- */
-async function fetchCourseUnitRealisation(courseCode) {
+async function getEnrolments(studentCourseCodes) {
   try {
-    const resp = await api.get(`course_unit_realisations/?code=${courseCode}`)
-    return resp.data
-  } catch (e) {
-    handleImporterApiErrors(e)
-  }
-}
-
-/**
- * Get active course unit object by course code and date.
- * If no active found, return closest already ended course unit.
- */
-async function fetchCourseUnit(courseCode) {
-  try {
-    const resp = await api.get(`course_units/?codes=${courseCode}`)
-    return resp.data
+    const res = await api.post('suotar/enrolments/', studentCourseCodes)
+    return res.data
   } catch (e) {
     handleImporterApiErrors(e)
   }
@@ -253,7 +180,7 @@ async function getCourses(rawEntries) {
   })
 }
 
-async function getGrades(codes) {
+async function getGrades(codes = []) {
   const uniqueCodes = _.uniq(codes)
   try {
     const params = qs.stringify({ codes: uniqueCodes })

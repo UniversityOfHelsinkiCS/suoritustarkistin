@@ -1,14 +1,15 @@
-const { GraphQLClient } = require('graphql-request')
+// const { GraphQLClient } = require('graphql-request')
 const moocApi = require('../config/moocApi')
 const logger = require('@utils/logger')
 const axios = require('axios')
 
+/*
 const client = new GraphQLClient(process.env.MOOC_ADDRESS, {
   headers: {
     Authorization: process.env.MOOC_TOKEN
   }
 })
-
+*/
 // This can be removed once we verify that the REST is working
 const sisGetCompletions = async (course) => {
   logger.info({ message: `Fetching completions for course ${course}`, sis:true })
@@ -75,6 +76,9 @@ const getCompletionsFromGraphQL = async (course) => {
   return data.completions
 }
 */
+
+
+/* This can be removed once we verify that the REST is working
 const postRegistrations = async (completionAndStudentIdList) => {
   const registerMutation = `
     mutation registerCompletion($completions: [CompletionArg!]) {
@@ -91,6 +95,18 @@ const postRegistrations = async (completionAndStudentIdList) => {
   } catch (e) {
     logger.error(
       `Error in updating confirmed registrations. Error message:\n${e}`
+    )
+  }
+}
+*/
+
+const postRegistrations = async (completionAndStudentIdList) => {
+  try {
+    const data = await moocApi.post(`/register-completions`, completionAndStudentIdList)
+    return data.message
+  } catch (error) {
+    logger.error(
+      `Error in updating confirmed registrations. Error: ${error}`
     )
   }
 }

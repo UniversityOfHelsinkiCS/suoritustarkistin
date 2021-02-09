@@ -243,7 +243,7 @@ initializeDatabaseConnection()
         processTiTo()
       })
 
-      cron.schedule('30 12-18 * * *', () => {
+      cron.schedule('*/15 12-18 * * *', () => {
         const timestamp = now()
         logger.info(
           `${timestamp.toLocaleString()} node-cron: Checking oodi entries.`

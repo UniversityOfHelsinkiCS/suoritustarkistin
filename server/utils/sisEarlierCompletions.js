@@ -1,6 +1,3 @@
-const api = require('../config/importerApi')
-const _ = require('lodash')
-
 /**
  * Return true if given grade is valid for student. That is, the student does not
  * already have a higher grade for the course, or for it's substitutions.
@@ -24,25 +21,6 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   return true
 }
 
-/**
- * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
- * The data must be fetched in chunks of 100, since importer-api cannot handle bigger payloads. 
- */
-const fetchEarlierAttainments = async (data) => {
-  let allData = []
-  try {
-    const chunks = _.chunk(data, 150)
-    for (const chunk of chunks) {
-      const res = await api.post(`suotar/attainments`, chunk)
-      allData = _.concat(allData, res.data)
-    }
-    return allData
-  } catch (e) {
-    if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error(e.toString())
-  }
-}
-
 const isImprovedTier = async (allEarlierAttainments, studentNumber, credits) => {
   if (!allEarlierAttainments) return true
 
@@ -57,4 +35,4 @@ const isImprovedTier = async (allEarlierAttainments, studentNumber, credits) => 
 }
 
 
-module.exports = { isImprovedGrade, isImprovedTier, fetchEarlierAttainments }
+module.exports = { isImprovedGrade, isImprovedTier }

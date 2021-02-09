@@ -4,8 +4,9 @@ const { sisGetCompletions } = require('../services/pointsmooc')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
-const { fetchEarlierAttainments, isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 const { EAOI_CODES } = require('@root/utils/validators')
+const { getEarlierAttainments } = require('../services/importer')
 
 const languageMap = {
   "fi_FI" : "fi",
@@ -57,7 +58,7 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
       }
     }, [])
 
-    const earlierAttainments = await fetchEarlierAttainments(courseStudentPairs)
+    const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
     const completions = rawCompletions.filter((completion) => {
       const earlierCredit = credits.find(

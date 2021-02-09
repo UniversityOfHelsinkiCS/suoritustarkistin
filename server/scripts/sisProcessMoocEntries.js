@@ -5,7 +5,8 @@ const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
-const { fetchEarlierAttainments, isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { getEarlierAttainments } = require('../services/importer')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
@@ -39,7 +40,7 @@ const sisProcessMoocEntries = async ({
     }
   }, [])
 
-  const earlierAttainments = await fetchEarlierAttainments(courseStudentPairs)
+  const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
   const date = new Date()
   const matches = await completions.reduce(

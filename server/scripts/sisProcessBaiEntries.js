@@ -4,7 +4,8 @@ const { sisGetCompletions } = require('../services/pointsmooc')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
-const { isImprovedTier, fetchEarlierAttainments } = require('../utils/sisEarlierCompletions')
+const { isImprovedTier } = require('../utils/sisEarlierCompletions')
+const { getEarlierAttainments } = require('../services/importer')
 
 const tierCreditAmount = { 1: 0, 2: 1, 3: 2 }
 
@@ -63,7 +64,7 @@ const sisProcessBaiEntries = async ({
       }
     }, [])
 
-    const earlierAttainments = await fetchEarlierAttainments(courseStudentPairs)
+    const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
     const batchId = `${course.courseCode}-${moment().format(
       'DD.MM.YY-HHmmss'

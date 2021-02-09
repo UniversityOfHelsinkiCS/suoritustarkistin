@@ -3,17 +3,15 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const _ = require('lodash')
 const moment = require('moment')
-const api = require('../config/importerApi')
-const qs = require('querystring')
 const logger = require('@utils/logger')
-const { fetchEarlierAttainments, isImprovedGrade } = require('@utils/sisEarlierCompletions')
-
-const handleImporterApiErrors = (e) => {
-  if (e.code === "EAI_AGAIN") throw new Error("Network error. Reload the page and try again")
-  if (e.response.data.status === 404) throw new Error(e.response.data.message)
-  throw new Error(e.toString())
-}
-
+const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
+const {
+  getEmployees,
+  getStudents,
+  getGrades,
+  getEnrolments,
+  getEarlierAttainments
+} = require('../services/importer')
 
 /**
  * Mankel raw entries to sis entries.
@@ -49,7 +47,7 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
     const { courseCode } = courses.find((c) => c.id === courseId)
     return ({ courseCode, studentNumber })
   })
-  const earlierAttainments = checkImprovements === true ? await fetchEarlierAttainments(courseStudentPairs) : []
+  const earlierAttainments = checkImprovements === true ? await getEarlierAttainments(courseStudentPairs) : []
 
   const studentCourseCodePairs = createdEntries.map((rawEntry) => ({
     personId: (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id,
@@ -130,7 +128,6 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   }))
 }
 
-
 const mapGrades = (gradeScales, id, rawEntry) => {
   if (id === "sis-0-5") {
     return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === rawEntry.grade)
@@ -139,39 +136,7 @@ const mapGrades = (gradeScales, id, rawEntry) => {
   }
 }
 
-// TODO: Create endpoint to db.api for batch converting employee ids
-async function getEmployees(employeeIds) {
-  const responses = await Promise.all(employeeIds.map(async (employeeId) => {
-    const resp = await api.get(`employees/${employeeId}`)
-    if (!resp.data || !resp.data.length)
-      throw new Error(`No person found from Sisu with employee number ${employeeId}`)
-    return resp
-  }))
-  return _.flatten(responses.map((resp) => resp.data))
-}
-
-async function getStudents(studentNumbers) {
-  try {
-    const res = await api.post('students/', studentNumbers)
-    return res.data
-  } catch (e) {
-    handleImporterApiErrors(e)
-  }
-}
-
-async function getEnrolments(studentCourseCodes) {
-  try {
-    const res = await api.post('suotar/enrolments/', studentCourseCodes)
-    return res.data
-  } catch (e) {
-    handleImporterApiErrors(e)
-  }
-}
-
-/**
- * Get all course instances related to raw entries
- */
-async function getCourses(rawEntries) {
+const getCourses = async (rawEntries) => {
   const courseIds = new Set(rawEntries.map(({ courseId }) => courseId))
   return await db.courses.findAll({
     where: {
@@ -180,16 +145,6 @@ async function getCourses(rawEntries) {
   })
 }
 
-async function getGrades(codes = []) {
-  const uniqueCodes = _.uniq(codes)
-  try {
-    const params = qs.stringify({ codes: uniqueCodes })
-    const resp = await api.get(`grades?${params}`)
-    return resp.data
-  } catch (e) {
-    handleImporterApiErrors(e)
-  }
-}
 
 module.exports = {
   processEntries

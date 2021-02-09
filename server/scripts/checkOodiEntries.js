@@ -24,12 +24,18 @@ const checkOodiEntries = async () => {
     })
     logger.info(`Found ${unregisteredCredits.length} unchecked credits`)
 
-    const confirmations = await unregisteredCredits.reduce(
+    const slicedUnregisteredCredits = (unregisteredCredits && unregisteredCredits.length) ? unregisteredCredits.slice(0,50) : []
+
+    if (!slicedUnregisteredCredits.length) {
+      logger.info('No new credits were registered')
+      return null
+    }
+
+    const confirmations = await slicedUnregisteredCredits.reduce(
       async (accPromise, credit) => {
         const acc = await accPromise
         try {
           const hasEntry = await hasOodiEntry(credit.studentId, credit.courseId)
-
           if (hasEntry) {
             return acc.concat({
               completion_id: credit.completionId,

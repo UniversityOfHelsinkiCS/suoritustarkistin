@@ -1,7 +1,7 @@
 const moment = require('moment')
 
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
-const { getEoAICompletions } = require('../services/pointsmooc')
+const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
@@ -21,7 +21,7 @@ const processEoaiCompletions = async (courses) => {
       raw: true
     })
     const rawRegistrations = await getMultipleCourseRegistrations(courses)
-    const rawCompletions = await getEoAICompletions()
+    const rawCompletions = await getCompletions('elements-of-ai')
 
     const registrations = rawRegistrations.filter((registration) => {
       return !credits.find((credit) => credit.studentId === registration.onro)

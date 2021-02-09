@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { getRegistrations } = require('../services/eduweb')
-const { sisGetCompletions } = require('../services/pointsmooc')
+const { getCompletions } = require('../services/pointsmooc')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
@@ -27,7 +27,7 @@ const sisProcessMoocEntries = async ({
 }, transaction) => {
 
   const registrations = await getRegistrations(course.courseCode)
-  const completions = await sisGetCompletions(job.slug || course.courseCode)
+  const completions = await getCompletions(job.slug || course.courseCode)
   const batchId = `${course.courseCode}-${moment().format(
     'DD.MM.YY-HHmmss'
   )}`

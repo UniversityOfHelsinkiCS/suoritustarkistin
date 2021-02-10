@@ -120,7 +120,6 @@ const processManualEntry = async ({
         graderId: grader.id,
         reporterId: reporterId,
         courseId: ayCourse.id,
-        isOpenUni: true
       }
     }
 
@@ -135,7 +134,6 @@ const processManualEntry = async ({
       graderId: grader.id,
       reporterId: reporterId,
       courseId: tktCourse.id,
-      isOpenUni: false
     }
   })
 

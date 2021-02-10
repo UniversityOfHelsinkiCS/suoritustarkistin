@@ -48,7 +48,7 @@ const getCourseCode = (rawEntry, course) => {
   if (EAOI_CODES.includes(course.courseCode)) {
     return EAOI_NAMEMAP[rawEntry.entry.completionLanguage].code
   }
-  return rawEntry.isOpenUni ? `AY${course.courseCode}` : course.courseCode
+  return course.courseCode
 }
 
 

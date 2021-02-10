@@ -79,7 +79,6 @@ const sisProcessMoocEntries = async ({
             graderId: grader.id,
             reporterId: null,
             courseId: course.id,
-            isOpenUni: false,
             moocUserId: completion.user_upstream_id,
             moocCompletionId: completion.id
           })

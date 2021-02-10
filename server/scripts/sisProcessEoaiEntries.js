@@ -109,7 +109,6 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
               graderId: grader.id,
               reporterId: null,
               courseId: courseVersion.id,
-              isOpenUni: false,
               moocUserId: completion.user_upstream_id,
               moocCompletionId: completion.id
             })

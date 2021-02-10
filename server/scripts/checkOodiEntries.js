@@ -24,7 +24,7 @@ const checkOodiEntries = async () => {
     })
     logger.info(`Found ${unregisteredCredits.length} unchecked credits`)
 
-    const slicedUnregisteredCredits = (unregisteredCredits && unregisteredCredits.length) ? unregisteredCredits.slice(0,100) : []
+    const slicedUnregisteredCredits = (unregisteredCredits && unregisteredCredits.length) ? unregisteredCredits.slice(0,200) : []
 
     if (!slicedUnregisteredCredits.length) {
       logger.info('No new credits were registered')

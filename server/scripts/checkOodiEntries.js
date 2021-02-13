@@ -24,7 +24,7 @@ const checkOodiEntries = async () => {
     })
     logger.info(`Found ${unregisteredCredits.length} unchecked credits`)
 
-    const confirmations = await unregisteredCredits.reduce(
+    const allConfirmations = await unregisteredCredits.reduce(
       async (accPromise, credit) => {
         const acc = await accPromise
         try {
@@ -43,9 +43,11 @@ const checkOodiEntries = async () => {
       []
     )
 
+    const confirmations = (allConfirmations && allConfirmations.length > 5) ? allConfirmations.slice(0,5) : allConfirmations
     logger.info(`Found ${confirmations.length} credit registrations`)
 
     if (confirmations.length) {
+      logger.info(`Registered ids and student numbers: `, confirmations)
       const result = await postRegistrations(confirmations)
       if (result === 'success') {
         confirmations.forEach(({ completion_id }) =>

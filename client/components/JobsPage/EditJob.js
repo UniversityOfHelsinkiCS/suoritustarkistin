@@ -2,14 +2,21 @@ import React, { useState } from 'react'
 import EditJobForm from 'Components/JobsPage/EditJobForm'
 import { Modal, Button } from 'semantic-ui-react'
 
-export default ({ job }) => {
+export default ({ job, jobs }) => {
   const [showForm, setShowForm] = useState(false)
 
   const closeModal = () => setShowForm(false)
 
   return (
     <Modal
-      trigger={<Button onClick={() => setShowForm(true)}>Edit</Button>}
+      trigger={
+        <Button
+          disabled={jobs.pending}
+          onClick={() => setShowForm(true)}
+        >
+          Edit
+        </Button>
+      }
       basic
       open={showForm}
       onClose={closeModal}

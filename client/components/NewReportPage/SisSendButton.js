@@ -50,7 +50,7 @@ export default () => {
       size="small"
     >
       <Modal.Content >
-        <Segment style={{ height: "15em", textAlign: "center", padding: "2em"}}>
+        <Segment style={{ height: "20em", textAlign: "center", padding: "2em"}}>
           <Header size="large">
             {newRawEntries.data ? newRawEntries.data.length : 0} completion(s) will be reported for the course:
           </Header>
@@ -76,7 +76,7 @@ export default () => {
     </Modal>
     <Popup
       trigger={
-        <span style={{ float: 'right' }}>
+        <div style={{ position: "absolute", right: "1em" }}>
           <Button
             positive
             data-cy="sis-create-report-button"
@@ -86,7 +86,7 @@ export default () => {
             }
             content="Create report"
           />
-        </span>
+        </div>
       }
       content="Report contains validation errors, see table below."
       disabled={!newRawEntries.data || sisAreValidNewRawEntries(parseRawEntries(newRawEntries))}

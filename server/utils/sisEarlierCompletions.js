@@ -1,46 +1,37 @@
-const api = require('../config/importerApi')
-const logger = require('@utils/logger')
-
 /**
  * Return true if given grade is valid for student. That is, the student does not
  * already have a higher grade for the course, or for it's substitutions.
- * Grade should be passed as full grade object from Sisu.
- */
-const isImprovedGrade = async (courseCode, studentNumber, grade) => {
-  try {
-    const resp = await api.get(`suotar/attainments/${courseCode}/${studentNumber}`)
-    const earlierCompletions = resp.data
-    if (!earlierCompletions) return true
-        
-    if ([0,1,2,3,4,5].includes(Number(grade))) {
-      const existingBetterGrade = earlierCompletions.some((attainment) => attainment.grade.numericCorrespondence >= Number(grade))
-      if (existingBetterGrade) return false
-    }
-    if (['Hyl.', 'Hyv.'].includes(grade)) {
-      const existingPassedCompletion = earlierCompletions.some((attainment) => attainment.grade.passed)
-      if (existingPassedCompletion) return false
-    }
-    return true
-  } catch(e) {
-    logger.error({message: `Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`, sis: true, error: e.toString()})
-    throw new Error(`Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`)
+**/
+const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
+  if (!allEarlierAttainments) return true
+  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierAttainments = student ? student.attainments : undefined
+  if (!earlierAttainments) return true
+
+  if ([0,1,2,3,4,5].includes(Number(grade))) {
+    const existingBetterGrade = earlierAttainments.some((attainment) => attainment.grade.numericCorrespondence >= Number(grade))
+    if (existingBetterGrade) return false
   }
+
+  if (['Hyl.', 'Hyv.'].includes(grade)) {
+    const existingPassedAttainment = earlierAttainments.some((attainment) => attainment.grade.passed)
+    if (existingPassedAttainment) return false
+  }
+
+  return true
 }
 
-const isImprovedTier = async (courseCode, studentNumber, credits) => {
-  try {
-    const resp = await api.get(`suotar/attainments/${courseCode}/${studentNumber}`)
-    const earlierCompletions = resp.data
-    if (!earlierCompletions) return true
+const isImprovedTier = async (allEarlierAttainments, studentNumber, credits) => {
+  if (!allEarlierAttainments) return true
 
-    const existingHigherTier = earlierCompletions.some((attainment) => attainment.credits >= Number(credits))
-    if (existingHigherTier) return false
+  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierAttainments = student ? student.attainments : undefined
+  if (!earlierAttainments) return true
 
-    return true
-  } catch(e) {
-    logger.error({message: `Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`, sis: true, error: e.toString()})
-    throw new Error(`Failed to retrieve attainments for course ${courseCode} and student ${studentNumber}`)
-  }
+  const existingHigherTier = earlierAttainments.some((attainment) => attainment.credits >= Number(credits))
+  if (existingHigherTier) return false
+
+  return true
 }
 
 

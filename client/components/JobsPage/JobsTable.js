@@ -2,15 +2,16 @@ import React from 'react'
 import * as _ from 'lodash'
 import JobRow from 'Components/JobsPage/JobRow'
 import { useSelector } from 'react-redux'
-import { Grid, Header, Segment } from 'semantic-ui-react'
+import { Grid, Header, Loader, Segment } from 'semantic-ui-react'
 
 export default () => {
-  const jobs = useSelector((state) => state.jobs.data)
+  const jobs = useSelector((state) => state.jobs)
 
-  if (!jobs) return null
+  if (!jobs || !jobs.data) return null
 
   return (
     <Segment>
+      <Loader size='big' active={jobs.pending} />
       <Grid celled="internally">
         <Grid.Row>
           <Grid.Column width={2}>
@@ -35,8 +36,8 @@ export default () => {
             <Header as="h4">Actions</Header>
           </Grid.Column>
         </Grid.Row>
-        {_.sortBy(jobs, 'schedule').map((j) => (
-          <JobRow job={j} key={j.id} />
+        {_.sortBy(jobs.data, 'schedule').map((j) => (
+          <JobRow job={j} jobs={jobs} key={j.id} />
         ))}
       </Grid>
     </Segment>

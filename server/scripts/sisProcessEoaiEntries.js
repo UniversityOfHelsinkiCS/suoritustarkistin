@@ -6,6 +6,7 @@ const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 const { EAOI_CODES } = require('@root/utils/validators')
+const { getEarlierAttainments } = require('../services/importer')
 
 const languageMap = {
   "fi_FI" : "fi",
@@ -33,6 +34,8 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
     const rawCompletions = await sisGetCompletions('elements-of-ai')
     const rawEntries = await db.raw_entries.findAll({ where: { courseId: courses.map((c) => c.id) }})
 
+
+
     // There are so many completions and registrations for Eaoi-courses
     // that some cleaning should be done first, based on existing data
     const registrations = rawRegistrations.filter((registration) => {
@@ -46,6 +49,16 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
       )
       return (!earlierCredit && !earlierEntry)
     })
+
+    const courseStudentPairs = registrations.reduce((pairs, registration) => {
+      if (registration && registration.onro) {
+        return pairs.concat({ courseCode: EAOI_CODES[0], studentNumber: registration.onro })
+      } else {
+        return pairs
+      }
+    }, [])
+
+    const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
     const completions = rawCompletions.filter((completion) => {
       const earlierCredit = credits.find(
@@ -83,7 +96,7 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
         )
 
         if (registration && registration.onro) {
-          if (!await isImprovedGrade(courseVersion.courseCode, registration.onro, 'Hyv.')) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, 'Hyv.')) {
             return matches
           } else {
             return matches.concat({
@@ -96,7 +109,6 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
               graderId: grader.id,
               reporterId: null,
               courseId: courseVersion.id,
-              isOpenUni: false,
               moocUserId: completion.user_upstream_id,
               moocCompletionId: completion.id
             })

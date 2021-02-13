@@ -68,7 +68,7 @@ export default (state = null, action) => {
     case 'SIS_POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,
-        content: `Sending the course completions failed. ${action.error || 'If the error persists, please contact grp-toska@cs.helsinki.fi'}.`,
+        content: `${action.error || 'If the error persists, please contact grp-toska@cs.helsinki.fi'}.`,
         type: 'negative'
       }
     case 'SIS_POST_RAW_ENTRIES_SUCCESS':
@@ -105,6 +105,33 @@ export default (state = null, action) => {
         header: 'Batch status refreshed!',
         type: 'positive',
         content: 'Batch status successfully refreshed from Sisu.'
+      }
+    }
+    case 'SIS_RUN_JOB_ATTEMPT': {
+      return {
+        header: 'Creating a new report, this might take a while',
+        type: 'neutral'
+      }
+    }
+    case 'SIS_RUN_JOB_SUCCESS': {
+      return {
+        header: 'New report created!',
+        type: 'positive',
+        content: 'You can check it on the View reports-page'
+      }
+    }
+    case 'SIS_RUN_JOB_FAILURE': {
+      if (action.error) {
+        const content = action.error
+        return {
+          header: 'Creating a new report failed',
+          type: 'negative',
+          content
+        }
+      }
+      return {
+        header: 'Creating a new report failed',
+        type: 'negative'
       }
     }
     default:

@@ -1,4 +1,5 @@
 const moment = require('moment')
+const { Op } = require("sequelize")
 const db = require('../models/index')
 const {
   isValidStudentId,
@@ -51,13 +52,37 @@ const processManualEntry = async ({
   data
 }, transaction) => {
 
-  const course = await db.courses.findOne({
+
+  const originalCourse = await db.courses.findOne({
     where: {
       id: courseId
     }
   })
 
-  if (!course) throw new Error('Course id does not exist.')
+  if (!originalCourse) throw new Error('Course does not exist.')
+
+  let ayCourse = undefined
+  let tktCourse = undefined
+
+  if (originalCourse.autoSeparate) {
+    ayCourse = await db.courses.findOne({
+      where: {
+        courseCode: `AY${originalCourse.courseCode}`
+      }
+    })
+
+    tktCourse = await db.courses.findOne({
+      where: {
+        [Op.and]: [
+          { courseCode: originalCourse.courseCode },
+          { autoSeparate: !true }
+        ]
+      }
+    })
+
+    if (!ayCourse) throw new Error('AY-version of the course is missing!')
+    if (!tktCourse) throw new Error('TKT-version of the course is missing!')
+  }
 
   const grader = await db.users.findOne({
     where: {
@@ -67,17 +92,19 @@ const processManualEntry = async ({
 
   if (!grader) throw new Error('Grader employee id does not exist.')
 
-  const batchId = `${course.courseCode}-${moment().format(
+  const batchId = `${originalCourse.courseCode}-${moment().format(
     'DD.MM.YY-HHmmss'
   )}`
 
-  const registrations = course.autoSeparate
-    ? await getRegistrations([`AY${course.courseCode}`])
+  const registrations = originalCourse.autoSeparate
+    ? await getRegistrations([ayCourse.courseCode])
     : undefined
+
+
 
   const rawEntries = data.map((rawEntry) => {
     validateEntry(rawEntry)
-    validateCourse(course.courseCode)
+    validateCourse(originalCourse.courseCode)
 
     // Separation for combo-courses
     // If the student has a registration to the Open uni -course,
@@ -87,13 +114,12 @@ const processManualEntry = async ({
         studentNumber: rawEntry.studentId,
         batchId: batchId,
         grade: rawEntry.grade ? rawEntry.grade : 'Hyv.',
-        credits: rawEntry.credits ? rawEntry.credits : course.credits,
-        language: rawEntry.language ? rawEntry.language : course.language,
+        credits: rawEntry.credits ? rawEntry.credits : ayCourse.credits,
+        language: rawEntry.language ? rawEntry.language : ayCourse.language,
         attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
         graderId: grader.id,
         reporterId: reporterId,
-        courseId: course.id,
-        isOpenUni: true
+        courseId: ayCourse.id,
       }
     }
 
@@ -102,20 +128,27 @@ const processManualEntry = async ({
       studentNumber: rawEntry.studentId,
       batchId: batchId,
       grade: rawEntry.grade ? rawEntry.grade : 'Hyv.',
-      credits: rawEntry.credits ? rawEntry.credits : course.credits,
-      language: rawEntry.language ? rawEntry.language : course.language,
+      credits: rawEntry.credits ? rawEntry.credits : tktCourse.credits,
+      language: rawEntry.language ? rawEntry.language : tktCourse.language,
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,
       reporterId: reporterId,
-      courseId: course.id,
-      isOpenUni: false
+      courseId: tktCourse.id,
     }
   })
 
-  const rawEntryIds = await db.raw_entries.bulkCreate(rawEntries, {returning: true, transaction})
+
+  const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
   const checkImprovements = true
-  logger.info({message: 'Raw entries success', amount: rawEntryIds.length, course: course.courseCode, batchId, sis: true})
-  await processEntries(rawEntryIds, transaction, checkImprovements)
+
+  logger.info({ 
+    message: 'Raw entries created successfully',
+    amount: newRawEntries.length,
+    course: originalCourse.courseCode,
+    batchId,
+    sis: true
+  })
+  await processEntries(newRawEntries, transaction, checkImprovements)
   return true
 }
 

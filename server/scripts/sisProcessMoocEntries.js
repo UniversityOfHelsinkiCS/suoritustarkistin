@@ -6,6 +6,7 @@ const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { getEarlierAttainments } = require('../services/importer')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
@@ -31,6 +32,16 @@ const sisProcessMoocEntries = async ({
     'DD.MM.YY-HHmmss'
   )}`
 
+  const courseStudentPairs = registrations.reduce((pairs, registration) => {
+    if (registration && registration.onro) {
+      return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
+    } else {
+      return pairs
+    }
+  }, [])
+
+  const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
+
   const date = new Date()
   const matches = await completions.reduce(
     async (matchesPromise, completion) => {
@@ -53,7 +64,7 @@ const sisProcessMoocEntries = async ({
 
       // Remember to change the grade, once the gradeScale-issue has been solved
       if (registration && registration.onro) {
-        if (!await isImprovedGrade(course.courseCode, registration.onro, completion.grade)) {
+        if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
           return matches
         } else {
           const grade = (completion.grade && completion.grade !== 'Hyv.') ? completion.grade : 1
@@ -68,7 +79,6 @@ const sisProcessMoocEntries = async ({
             graderId: grader.id,
             reporterId: null,
             courseId: course.id,
-            isOpenUni: false,
             moocUserId: completion.user_upstream_id,
             moocCompletionId: completion.id
           })

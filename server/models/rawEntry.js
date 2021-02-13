@@ -9,7 +9,6 @@ module.exports = (sequelize, DataTypes) => {
       credits: DataTypes.STRING, // Credits as String??
       language: DataTypes.STRING,
       attainmentDate: DataTypes.DATE,
-      isOpenUni: DataTypes.BOOLEAN,
       moocUserId: DataTypes.INTEGER,
       moocCompletionId: DataTypes.STRING,
       graderId: {

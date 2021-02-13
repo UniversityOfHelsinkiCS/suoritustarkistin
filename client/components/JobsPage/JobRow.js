@@ -4,7 +4,7 @@ import { Button, Grid, Icon } from 'semantic-ui-react'
 import { deleteJobAction, runJobAction, sisRunJobAction } from 'Utilities/redux/jobsReducer'
 import EditJob from 'Components/JobsPage/EditJob'
 
-export default ({ job }) => {
+export default ({ job, jobs }) => {
   const dispatch = useDispatch()
   const [really, setReally] = useState(false)
   const courses = useSelector((state) => state.courses.data)
@@ -29,6 +29,7 @@ export default ({ job }) => {
 
   const DeleteButton = () => (
     <Button
+      disabled={jobs.pending}
       onClick={() => {
         setReally(true)
       }}
@@ -39,6 +40,7 @@ export default ({ job }) => {
 
   const RunButton = () => (
     <Button
+      disabled={jobs.pending}
       onClick={() => dispatch(runJobAction(job.id))}
       content="Run"
       color="yellow"
@@ -47,6 +49,7 @@ export default ({ job }) => {
 
   const SisRunButton = () => (
     <Button
+      disabled={jobs.pending}
       onClick={() => dispatch(sisRunJobAction(job.id))}
       content="Make a SIS-run"
       color="blue"
@@ -83,7 +86,7 @@ export default ({ job }) => {
         )}
       </Grid.Column>
       <Grid.Column width={4}>
-        <EditJob job={job} />
+        <EditJob jobs={jobs} job={job} />
         <RunButton />
         <SisRunButton />
         {really ? <Confirm /> : <DeleteButton />}

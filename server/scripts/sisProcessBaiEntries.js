@@ -5,6 +5,7 @@ const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isImprovedTier } = require('../utils/sisEarlierCompletions')
+const { getEarlierAttainments } = require('../services/importer')
 
 const tierCreditAmount = { 1: 0, 2: 1, 3: 2 }
 
@@ -55,6 +56,16 @@ const sisProcessBaiEntries = async ({
       return (isTierUpgrade(previousEntries, previousCredits, completion))
     })
 
+    const courseStudentPairs = registrations.reduce((pairs, registration) => {
+      if (registration && registration.onro) {
+        return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
+      } else {
+        return pairs
+      }
+    }, [])
+
+    const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
+
     const batchId = `${course.courseCode}-${moment().format(
       'DD.MM.YY-HHmmss'
     )}`
@@ -69,7 +80,7 @@ const sisProcessBaiEntries = async ({
         )
         // Once the gradeScale has been fixed, remember to change the grade to "Hyv."
         if (registration && registration.onro) {
-          if (!await isImprovedTier(course.courseCode, registration.onro, tierCreditAmount[completion.tier])) {
+          if (!await isImprovedTier(earlierAttainments, registration.onro, tierCreditAmount[completion.tier])) {
             return matches
           } else {
             return matches.concat({
@@ -82,7 +93,6 @@ const sisProcessBaiEntries = async ({
               graderId: grader.id,
               reporterId: null,
               courseId: course.id,
-              isOpenUni: false,
               moocUserId: completion.user_upstream_id,
               moocCompletionId: completion.id
             })

@@ -24,11 +24,11 @@ export default () => {
     )
   }
 
-  if (message.type === 'negative') {
+  if (message.type === 'negative' || message.type === 'neutral') {
     return (
       <Message
         data-cy="negative-message"
-        negative
+        color={message.type === 'negative' ? 'red' : 'blue'}
         onDismiss={() => dispatch(clearMessageAction())}
         header={message.header}
         content={message.content}

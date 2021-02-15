@@ -90,13 +90,14 @@ const sisProcessMoocEntries = async ({
     []
   )
   logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true })
-  const checkImprovements = false
 
   if (matches && matches.length > 0) {
     const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true, transaction })
     logger.info({ message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true })
 
+    const checkImprovements = false
     const [failed, success] = await processEntries(newRawEntries, transaction, checkImprovements)
+
     if (failed.length) {
       logger.info({ message: `${failed.length} entries failed`, sis:true })
       for (const failedEntry of failed) {
@@ -109,6 +110,7 @@ const sisProcessMoocEntries = async ({
       logger.info({ message: 'Entries success', amount: success.length, sis: true })
     }
   }
+
   return true
 }
 

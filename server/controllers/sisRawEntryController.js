@@ -34,7 +34,7 @@ const addRawEntries = async (req, res) => {
         return res.status(200).json({ message: 'report created successfully' })
       })
       .catch(async (error) => {
-        logger.error({message: `Unsuccessful CSV insert: ${error}`, error, sis: true})
+        logger.error({message: `Unsuccessful CSV insert: ${error}. ${error.stack}`, error, sis: true})
         await transaction.rollback()
         return res.status(400).json({ error: error.toString() })
       })

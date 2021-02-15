@@ -148,11 +148,13 @@ const processManualEntry = async ({
     sis: true
   })
   const [failed, success] = await processEntries(newRawEntries, transaction, checkImprovements)
-  if (failed.length)
-    throw new Error(JSON.stringify(failed))
-  await db.entries.bulkCreate(success, { transaction })
-  logger.info({ message: 'Entries success', amount: success.length, sis: true })
-  return true
+  if (!failed.length) {
+    await db.entries.bulkCreate(success, { transaction })
+    logger.info({ message: 'Entries success', amount: success.length, sis: true })
+    return { message: "success", success, failed }
+  } else {
+    return { message: "error", success, failed }
+  }
 }
 
 module.exports = {

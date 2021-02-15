@@ -68,7 +68,7 @@ export default (state = null, action) => {
     case 'SIS_POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,
-        content: `${action.error || 'If the error persists, please contact grp-toska@cs.helsinki.fi'}.`,
+        content: `${(action.error && action.error.failed) ? "Check out the errors below" : `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi'.`}`,
         type: 'negative'
       }
     case 'SIS_POST_RAW_ENTRIES_SUCCESS':

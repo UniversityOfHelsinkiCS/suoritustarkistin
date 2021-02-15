@@ -162,6 +162,28 @@ const getDateCell = (date) => {
   return <Table.Cell />
 }
 
+const getErrorCell = (newRawEntries, studentId) => {
+  const failed = newRawEntries.failed
+
+  if (failed) {
+    const failedRow = failed.find((f) => f.studentNumber === studentId)
+
+    if (failedRow) {
+      return (
+        <Table.Cell style={invalidStyle}>
+          <Icon name="ban" />
+          {failedRow.message}
+        </Table.Cell>
+      )
+    } else {
+      return <Table.Cell />
+    }
+  }
+
+  return null
+}
+
+
 export default () => {
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const graders = useSelector((state) => state.graders.data)
@@ -192,6 +214,7 @@ export default () => {
         <Table.Cell />
       )}
       {getDateCell(row.attainmentDate || date)}
+      {getErrorCell(newRawEntries, row.studentId)}
     </Table.Row>
   ))
 
@@ -206,6 +229,7 @@ export default () => {
           <Table.HeaderCell>Language</Table.HeaderCell>
           <Table.HeaderCell>Grader</Table.HeaderCell>
           <Table.HeaderCell>Completion date</Table.HeaderCell>
+          {newRawEntries.failed && <Table.HeaderCell>Errors</Table.HeaderCell>}
         </Table.Row>
       </Table.Header>
       <Table.Body>{reportRows}</Table.Body>

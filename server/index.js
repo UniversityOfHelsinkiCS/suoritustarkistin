@@ -234,11 +234,12 @@ initializeDatabaseConnection()
       cron.schedule('55 4 * * 4', () => {
         processCybsec6()
       })
-
+/*    Babysteps: 
+      Try moving one small course to cronjobs-table instead 
       cron.schedule('0 5 * * 4', () => {
         processOhPePython()
       })
-
+*/
       cron.schedule('5 5 * * 4', () => {
         processTiTo()
       })

@@ -123,10 +123,25 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
     logger.info(`${EAOI_CODES[0]}: Found ${matches.length} new completions.`)
 
     if (matches && matches.length > 0) {
-      const newRawEntries = await db.raw_entries.bulkCreate(matches, {returning: true, transaction})
+      const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true, transaction })
+      logger.info({ message: 'Raw entries success', amount: newRawEntries.length, course: EAOI_CODES[0], batchId, sis: true })
+  
       const checkImprovements = false
-      await processEntries(newRawEntries, transaction, checkImprovements)
+      const [failed, success] = await processEntries(newRawEntries, transaction, checkImprovements)
+
+      if (failed.length) {
+        logger.info({ message: `${failed.length} entries failed`, sis:true })
+        for (const failedEntry of failed) {
+          logger.info({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}`})
+        }
+      }
+  
+      if (success && success.length) {
+        await db.entries.bulkCreate(success, { transaction })
+        logger.info({ message: 'Entries success', amount: success.length, sis: true })
+      }
     }
+
     return true
 
   } catch (error) {

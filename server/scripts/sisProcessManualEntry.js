@@ -82,8 +82,9 @@ const processManualEntry = async ({
 
     if (!ayCourse) throw new Error('AY-version of the course is missing!')
     if (!tktCourse) throw new Error('TKT-version of the course is missing!')
-  } else
+  } else {
     tktCourse = originalCourse
+  }
 
   const grader = await db.users.findOne({
     where: {
@@ -100,8 +101,6 @@ const processManualEntry = async ({
   const registrations = originalCourse.autoSeparate
     ? await getRegistrations([ayCourse.courseCode])
     : undefined
-
-
 
   const rawEntries = data.map((rawEntry) => {
     validateEntry(rawEntry)

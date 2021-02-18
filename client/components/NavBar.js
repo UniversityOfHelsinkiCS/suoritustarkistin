@@ -40,6 +40,21 @@ export default () => {
     )
   }
 
+  const getSandboxButton = () => {
+    return (
+      <Menu.Item
+        data-cy="nav-sandbox"
+        as={Link}
+        to={'/sandbox'}
+        name="sandbox"
+        active={activeItem === 'sandbox'}
+        onClick={handleItemClick}
+      >
+        Sandbox
+      </Menu.Item>
+    )
+  }
+
   const CoursesButton = () => {
     return (
       <Menu.Item
@@ -145,6 +160,7 @@ export default () => {
       {user.adminMode ? <CoursesButton /> : null}
       {user.adminMode ? <UsersButton /> : null}
       {user.adminMode ? <JobsButton /> : null}
+      {user.isAdmin ? getSandboxButton() : null}
       {user.isAdmin ? getAdminButton() : null}
 
       {window.localStorage.getItem('adminLoggedInAs') ? (

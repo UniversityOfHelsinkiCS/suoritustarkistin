@@ -179,14 +179,11 @@ initializeDatabaseConnection()
         processEoai()
       })
 
-      cron.schedule('15 4 * * 4', () => {
-        processOhPe()
+      cron.schedule('35 5 * * 4', () => {
+        processBuildingai()
       })
 
-      cron.schedule('20 4 * * 4', () => {
-        processOhJa()
-      })
-
+      /*
       cron.schedule('30 4 * * 4', () => {
         processCybsec1()
       })
@@ -211,18 +208,7 @@ initializeDatabaseConnection()
         processCybsec3_2020()
       })
 
-      cron.schedule('25 5 * * 4', () => {
-        processOhPePythonSyksy()
-      })
-
-      cron.schedule('30 5 * * 4', () => {
-        processOhPeEnglish()
-      })
-
-      cron.schedule('35 5 * * 4', () => {
-        processBuildingai()
-      })
-
+      
       cron.schedule('45 4 * * 4', () => {
         processCybsec4()
       })
@@ -234,15 +220,32 @@ initializeDatabaseConnection()
       cron.schedule('55 4 * * 4', () => {
         processCybsec6()
       })
-/*    Babysteps: 
-      Try moving one small course to cronjobs-table instead 
+
       cron.schedule('0 5 * * 4', () => {
         processOhPePython()
       })
-*/
+
+      cron.schedule('15 4 * * 4', () => {
+        processOhPe()
+      })
+
+      cron.schedule('20 4 * * 4', () => {
+        processOhJa()
+      })
+
+      cron.schedule('25 5 * * 4', () => {
+        processOhPePythonSyksy()
+      })
+
+      cron.schedule('30 5 * * 4', () => {
+        processOhPeEnglish()
+      })
+
       cron.schedule('5 5 * * 4', () => {
         processTiTo()
       })
+
+      */
 
       cron.schedule('0 6 * * *', () => {
         const timestamp = now()

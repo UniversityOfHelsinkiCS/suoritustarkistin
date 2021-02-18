@@ -29,7 +29,7 @@ const {
  *  [failedEntries, validEntries]
  */
 
-const processEntries = async (createdEntries, transaction, checkImprovements) => {
+const processEntries = async (createdEntries, checkImprovements) => {
   const success = []
   const failed = []
   const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
@@ -70,11 +70,11 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
     const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
 
     if (!student) {
-      failed.push({ studentNumber: rawEntry.studentNumber, message: 'Person with student number not found from Sisu' })
+      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: 'Person with student number not found from Sisu' })
       return Promise.resolve()
     }
     if (!verifier) {
-      failed.push({ studentNumber: rawEntry.studentNumber, message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu` })
+      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu` })
       return Promise.resolve()
     }
 
@@ -83,7 +83,7 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
 
     const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
     if (!filteredEnrolments || !filteredEnrolments.length) {
-      failed.push({ studentNumber: rawEntry.studentNumber, message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}` })
+      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}` })
       return Promise.resolve()
     }
 
@@ -94,13 +94,18 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
           const grade = mapGrades(gradeScales, e.gradeScaleId, rawEntry)
           if (!grade) {
             failed.push({
+              id: rawEntry.id,
               studentNumber: rawEntry.studentNumber,
               message: `Invalid grade "${rawEntry.grade} for course ${course.courseCode}". Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}`
             })
             return Promise.resolve()
           }
           if (checkImprovements === true && !improvedGrade) {
-            failed.push({ studentNumber: rawEntry.studentNumber, message: `Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}` })
+            failed.push({
+              id: rawEntry.id,
+              studentNumber: rawEntry.studentNumber,
+              message: `Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`
+            })
             return Promise.resolve()
           }
           success.push({
@@ -108,7 +113,8 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
             verifierPersonId: verifier.id,
             rawEntryId: rawEntry.id,
             gradeId: grade.localId,
-            completionDate: completionDate.format('YYYY-MM-DD')
+            completionDate: completionDate.format('YYYY-MM-DD'),
+            completionLanguage: rawEntry.language
           })
           return Promise.resolve()
         })

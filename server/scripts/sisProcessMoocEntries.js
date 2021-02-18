@@ -92,16 +92,22 @@ const sisProcessMoocEntries = async ({
   logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true })
 
   if (matches && matches.length > 0) {
-    const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true, transaction })
+    const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true })
     logger.info({ message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true })
 
     const checkImprovements = false
-    const [failed, success] = await processEntries(newRawEntries, transaction, checkImprovements)
+    const [failed, success] = await processEntries(newRawEntries, checkImprovements)
 
     if (failed.length) {
       logger.info({ message: `${failed.length} entries failed`, sis:true })
+
       for (const failedEntry of failed) {
         logger.info({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}`})
+        await db.raw_entries.destroy({
+          where: {
+            id: failedEntry.id
+          }
+        })
       }
     }
 

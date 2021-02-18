@@ -12,7 +12,7 @@ import App from 'Components/App'
 
 if (process.env.NODE_ENV !== 'development')
   Sentry.init({
-    dsn: "https://b24cd76c3edb4bd392065046ddb34ab9@sentry.toska.cs.helsinki.fi/4",
+    dsn: "https://86bd3a31dbb84a518b581f10cce03b2e@sentry.cs.helsinki.fi/3",
     environment: process.env.NODE_ENV
   })
 

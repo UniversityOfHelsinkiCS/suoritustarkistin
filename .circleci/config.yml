@@ -13,6 +13,22 @@ executors:
         environment:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
+jobs:
+  sentry:
+    docker:
+      - image: circleci/node:4.8.2
+    environment:
+      SENTRY_ORG: toska
+      SENTRY_PROJECT: suotar
+    steps:
+      - checkout # check out the code in the project directory
+      - run: |
+          curl -sL https://sentry.io/get-cli/ | bash
+          export SENTRY_RELEASE=$(sentry-cli releases propose-version)
+          sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
+          sentry-cli releases set-commits --auto $SENTRY_RELEASE
+          sentry-cli releases finalize $SENTRY_RELEASE
+
 workflows:
   build-test-deploy:
     jobs:
@@ -37,6 +53,10 @@ workflows:
           image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
           tag: 'production'
           extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin/'
+          filters:
+            branches:
+              only: master
+      - sentry:
           filters:
             branches:
               only: master

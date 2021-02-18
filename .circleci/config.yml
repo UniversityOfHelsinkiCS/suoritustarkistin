@@ -57,6 +57,8 @@ workflows:
             branches:
               only: master
       - sentry:
+          requires:
+            - cypress/run
           filters:
             branches:
               only: master

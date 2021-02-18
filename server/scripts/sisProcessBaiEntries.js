@@ -128,11 +128,12 @@ const sisProcessBaiEntries = async ({
 
       if (success && success.length) {
         await db.entries.bulkCreate(success, { transaction })
-        logger.info({ message: 'Entries success', amount: success.length, sis: true })
+        logger.info({ message: `${success.length} new entries created`, amount: success.length, sis: true })
+        return { message: "success" }
       }
     }
 
-    return true
+    return { message: "no new entries" }
 
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)

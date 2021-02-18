@@ -60,6 +60,18 @@ const manualRun = async (id) => {
   )
 }
 
+const clearTransaction = async (result, transaction) => {
+  if (result === "success") {
+    logger.info('Job run ended successfully, new entries created')
+    await transaction.commit()
+  } else {
+    await transaction.rollback()
+    logger.info('Job run ended successfully, no new entries created')
+  }
+
+  return result
+}
+
 const sisManualRun = async (job, course, grader, transaction) => {
   const timeStamp = new Date(Date.now())
   logger.info(
@@ -67,22 +79,20 @@ const sisManualRun = async (job, course, grader, transaction) => {
       course.courseCode
     }) completions`
   )
-
-  const result = sisProcessMoocEntries({
+  
+  await sisProcessMoocEntries({
     job,
     course,
     grader
   }, transaction)
-    .then(async () => {
-      await transaction.commit()
-      logger.info('Job run finished successfully.')
+    .then(async (response) => {
+      return await clearTransaction(response.message, transaction)
     })
     .catch(async (error) => {
       logger.error('Unsuccessful job run: ', error)
-      await transaction.rollback()
+      transaction.rollback()
+      return error 
     })
-
-  return result
 }
 
 const sisManualEaoiRun = async (course, grader, transaction) => {
@@ -92,19 +102,18 @@ const sisManualEaoiRun = async (course, grader, transaction) => {
       course.courseCode
     }) completions`
   )
-  const result = sisProcessEoaiEntries({
+
+  await sisProcessEoaiEntries({
     grader
   }, transaction)
-    .then(async () => {
-      await transaction.commit()
-      logger.info('Job run finished successfully.')
+    .then(async (response) => {
+      return await clearTransaction(response.message, transaction)
     })
     .catch(async (error) => {
       logger.error('Unsuccessful job run: ', error)
       await transaction.rollback()
+      return error
     })
-
-  return result
 }
 
 const sisManualBaiRun = async (job, course, grader, transaction) => {
@@ -114,21 +123,20 @@ const sisManualBaiRun = async (job, course, grader, transaction) => {
       course.courseCode
     }) completions`
   )
-  const result = sisProcessBaiEntries({
+
+  await sisProcessBaiEntries({
     job,
     course,
     grader
   }, transaction)
-    .then(async () => {
-      await transaction.commit()
-      logger.info('Job run finished successfully.')
+    .then(async (response) => {
+      return await clearTransaction(response.message, transaction)
     })
     .catch(async (error) => {
       logger.error('Unsuccessful job run: ', error)
       await transaction.rollback()
+      return error
     })
-
-  return result
 }
 
 const activateJob = async (id) => {

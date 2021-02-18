@@ -93,7 +93,7 @@ const sisProcessMoocEntries = async ({
 
   if (matches && matches.length > 0) {
     const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true })
-    logger.info({ message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true })
+    logger.info({ message: `${matches.length} new raw entries created`, amount: newRawEntries.length, course: course.courseCode, batchId, sis: true })
 
     const checkImprovements = false
     const [failed, success] = await processEntries(newRawEntries, checkImprovements)
@@ -113,11 +113,12 @@ const sisProcessMoocEntries = async ({
 
     if (success && success.length) {
       await db.entries.bulkCreate(success, { transaction })
-      logger.info({ message: 'Entries success', amount: success.length, sis: true })
+      logger.info({ message: `${success.length} new entries created`, amount: success.length, sis: true })
+      return { message: "success" }
     }
   }
 
-  return true
+  return { message: "no new entries" }
 }
 
 module.exports = { 

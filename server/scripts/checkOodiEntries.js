@@ -47,13 +47,8 @@ const checkOodiEntries = async () => {
     logger.info(`Found ${confirmations.length} credit registrations`)
 
     if (confirmations.length) {
-      logger.info(`Registered ids and student numbers: `)
-      for (const c of confirmations) {
-        logger.info(`Student number: ${c.student_number}`)
-        logger.info(`Completion id: ${c.completion_id}`)
-      }
       const result = await postRegistrations(confirmations)
-      if (result === 'success') {
+      if (result === 'OK') {
         confirmations.forEach(({ completion_id }) =>
           markAsRegistered(completion_id)
         )

@@ -24,7 +24,7 @@ const checkOodiEntries = async () => {
     })
     logger.info(`Found ${unregisteredCredits.length} unchecked credits`)
 
-    const allConfirmations = await unregisteredCredits.reduce(
+    const confirmations = await unregisteredCredits.reduce(
       async (accPromise, credit) => {
         const acc = await accPromise
         try {
@@ -43,7 +43,6 @@ const checkOodiEntries = async () => {
       []
     )
 
-    const confirmations = (allConfirmations && allConfirmations.length > 5) ? allConfirmations.slice(0,5) : allConfirmations
     logger.info(`Found ${confirmations.length} credit registrations`)
 
     if (confirmations.length) {

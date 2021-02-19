@@ -32,7 +32,7 @@ const checkOodiEntries = async () => {
           if (hasEntry) {
             return acc.concat({
               completion_id: credit.completionId,
-              student_number: credit.studentId
+              student_number: String(credit.studentId)
             })
           }
         } catch (error) {

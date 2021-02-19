@@ -40,9 +40,10 @@ const postRegistrations = async (completionAndStudentIdList) => {
 }
 */
 
-const postRegistrations = async (completionAndStudentIdList) => {
+const postRegistrations = async (completions) => {
   try {
-    const data = await moocApi.post(`/register-completions`, completionAndStudentIdList)
+    const data = await moocApi.post(`/register-completions`, completions)
+    logger.info(`Mooc-api responded with: ${data}`)
     return data.message
   } catch (error) {
     logger.error(

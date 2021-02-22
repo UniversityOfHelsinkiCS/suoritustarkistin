@@ -13,9 +13,11 @@ COPY package* ./
 
 RUN npm ci --only=production
 
+# Install Sentry
+RUN curl -sL https://sentry.io/get-cli/ | bash
+
 COPY . .
-RUN curl -sL https://sentry.io/get-cli/ | bash && \
-    SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
+RUN SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
     echo "${SENTRY_RELEASE}" > /SENTRY_RELEASE && \
     SENTRY_RELEASE="${SENTRY_RELEASE}" npm run build
 

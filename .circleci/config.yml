@@ -61,7 +61,7 @@ workflows:
             - run:
                 name: Notify
                 command: |
-                  curl --silent -X POST -H 'Content-type: application/json' --data "{\"text\":\"${CIRCLE_PROJECT_REPONAME} production started deployment!\"}" ${SLACKBOT_URL}
+                  curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Suoritustarkistin *${CIRCLE_PROJECT_REPONAME}* started deployment\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif\",\"alt_text\":\"cute cat\"}}]}" ${SLACKBOT_URL}
           filters:
             branches:
               only: master

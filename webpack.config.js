@@ -4,6 +4,12 @@ const htmlTemplate = require('html-webpack-template')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
+const { SENTRY_RELEASE } = process.env
+const sentryRelease = !SENTRY_RELEASE ? 'unknown' : SENTRY_RELEASE
+
+// eslint-disable-next-line
+console.log('sentry settings:', { sentryRelease })
+
 
 module.exports = (env, argv) => {
   const { mode } = argv
@@ -90,7 +96,12 @@ module.exports = (env, argv) => {
         chunkFilename: '[name]-[id].css'
       }),
       new webpack.DefinePlugin({
-        __BASE_PATH__: JSON.stringify(BASE_PATH)
+        __BASE_PATH__: JSON.stringify(BASE_PATH),
+        'process.env': {
+          NODE_ENV: JSON.stringify(mode),
+          SENTRY_RELEASE: JSON.stringify(sentryRelease),
+          BUILT_AT: JSON.stringify(new Date().toISOString())
+        }
       }),
       ...additionalPlugins
     ]

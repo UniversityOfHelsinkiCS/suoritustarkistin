@@ -54,12 +54,10 @@ workflows:
           image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
           tag: 'production'
           extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin/'
-          filters:
-            branches:
-              only: master
-      - sentry:
-          requires:
-            - cypress/run
+          after_build:
+            - run:
+                name: Create sentry release
+                command: docker run -it --entrypoint ./sentry-release.sh "$DOCKER_USER"/"$CIRCLE_PROJECT_REPONAME"
           filters:
             branches:
               only: master

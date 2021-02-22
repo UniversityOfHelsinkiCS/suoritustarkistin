@@ -57,7 +57,9 @@ workflows:
           after_build:
             - run:
                 name: Create sentry release
-                command: 'docker run -it --env SENTRY_URL --env SENTRY_AUTH_TOKEN --entrypoint ./sentry-release.sh "$DOCKER_USER"/"$CIRCLE_PROJECT_REPONAME":production'
+                command: |
+                  'docker run -it --env SENTRY_URL --env SENTRY_AUTH_TOKEN --entrypoint ./sentry-release.sh "$DOCKER_USER"/"$CIRCLE_PROJECT_REPONAME":production'
+                  'curl --silent -X POST -H 'Content-type: application/json' --data "{\"text\":\"${CIRCLE_PROJECT_REPONAME} production started deployment!\"}" ${SLACKBOT_URL}'
           filters:
             branches:
               only: master

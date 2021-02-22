@@ -61,7 +61,7 @@ workflows:
             - run:
                 name: Notify
                 command: |
-                  curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Suoritustarkistin *${CIRCLE_PROJECT_REPONAME}* started deployment\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif\",\"alt_text\":\"cute cat\"}}]}" ${SLACKBOT_URL}
+                  curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"${CIRCLE_PROJECT_REPONAME} *production* started deployment\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif\",\"alt_text\":\"cute cat\"}},{\"type\":\"actions\",\"elements\":[{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Open Suotar :suotar:\",\"emoji\":true},\"url\":\"https://study.cs.helsinki.fi/suoritustarkistin/\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Github\",\"emoji\":true},\"url\":\"https://github.com/UniversityOfHelsinkiCS/suoritustarkistin\"}]}]}" ${SLACKBOT_URL}
           filters:
             branches:
               only: master

@@ -9,10 +9,14 @@ ENV BASE_PATH=$BASE_PATH
 
 # Setup
 WORKDIR /usr/src/app
-COPY . .
+COPY package* ./
 
 RUN npm ci --only=production
 
-RUN npm run build
+COPY . .
+RUN curl -sL https://sentry.io/get-cli/ | bash && \
+    SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
+    echo "${SENTRY_RELEASE}" > /SENTRY_RELEASE && \
+    SENTRY_RELEASE="${SENTRY_RELEASE}" npm run build
 
 CMD ["npm", "start"]

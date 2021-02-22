@@ -57,7 +57,7 @@ workflows:
           after_build:
             - run:
                 name: Create sentry release
-                command: 'docker run -it --entrypoint ./sentry-release.sh "$DOCKER_USER"/"$CIRCLE_PROJECT_REPONAME":production'
+                command: 'docker run -it --env SENTRY_URL --env SENTRY_AUTH_TOKEN --entrypoint ./sentry-release.sh "$DOCKER_USER"/"$CIRCLE_PROJECT_REPONAME":production'
           filters:
             branches:
               only: master

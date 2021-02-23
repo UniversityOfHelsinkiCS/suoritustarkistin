@@ -11,6 +11,7 @@ const parseUser = async (req, res, next) => {
           employeeId: req.headers.employeenumber
         },
         defaults: {
+          uid: req.headers.uid,
           email: req.headers.mail,
           name: `${req.headers.givenname} ${req.headers.sn}`,
           isGrader:

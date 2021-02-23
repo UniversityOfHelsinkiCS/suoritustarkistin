@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Icon, Tab, Menu } from 'semantic-ui-react'
-import { getAllJobsAction } from 'Utilities/redux/jobsReducer'
+import { getAllJobsAction } from 'Utilities/redux/moocJobsReducer'
 import { getKurkiCoursesAction } from 'Utilities/redux/kurkiReducer'
 import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
 import { getAllGradersAction } from 'Utilities/redux/gradersReducer'

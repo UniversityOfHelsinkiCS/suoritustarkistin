@@ -88,7 +88,7 @@ export default () => {
   const AutomatedReportsButton = () => {
     return (
       <Menu.Item
-        data-cy="nav-jobs"
+        data-cy="nav-automated-reports"
         as={Link}
         to={'/automated-reports'}
         name="automated-reports"

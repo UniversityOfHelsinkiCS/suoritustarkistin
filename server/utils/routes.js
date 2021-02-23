@@ -43,7 +43,7 @@ const {
   sisRunJob,
   deleteJob,
   deleteAllJobs
-} = require('@controllers/jobsController')
+} = require('@controllers/moocJobsController')
 const {
   getKurkiCourses,
   addKurkiRawEntries

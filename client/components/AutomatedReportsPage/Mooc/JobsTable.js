@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { Grid, Header, Loader, Segment } from 'semantic-ui-react'
 
 export default () => {
-  const jobs = useSelector((state) => state.jobs)
+  const jobs = useSelector((state) => state.moocJobs)
 
   if (!jobs || !jobs.data) return null
 

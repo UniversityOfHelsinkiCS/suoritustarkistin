@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Grid, Icon } from 'semantic-ui-react'
-import { deleteJobAction, runJobAction, sisRunJobAction } from 'Utilities/redux/jobsReducer'
+import { deleteJobAction, runJobAction, sisRunJobAction } from 'Utilities/redux/moocJobsReducer'
 import EditJob from 'Components/AutomatedReportsPage/Mooc/EditJob'
 
 export default ({ job, jobs }) => {
@@ -38,20 +38,20 @@ export default ({ job, jobs }) => {
     />
   )
 
-  const RunButton = () => (
+  const CreateReportButton = () => (
     <Button
       disabled={jobs.pending}
       onClick={() => dispatch(runJobAction(job.id))}
-      content="Run"
+      content="Create report"
       color="yellow"
     />
   )
 
-  const SisRunButton = () => (
+  const CreateSisReportButton = () => (
     <Button
       disabled={jobs.pending}
       onClick={() => dispatch(sisRunJobAction(job.id))}
-      content="Make a SIS-run"
+      content="Create SIS-report"
       color="blue"
     />
   )
@@ -87,8 +87,8 @@ export default ({ job, jobs }) => {
       </Grid.Column>
       <Grid.Column width={4}>
         <EditJob jobs={jobs} job={job} />
-        <RunButton />
-        <SisRunButton />
+        <CreateReportButton />
+        <CreateSisReportButton />
         {really ? <Confirm /> : <DeleteButton />}
       </Grid.Column>
     </Grid.Row>

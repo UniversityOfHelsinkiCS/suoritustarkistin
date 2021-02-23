@@ -12,7 +12,7 @@ import newEntries from './sisNewEntriesReducer'
 import kurki from './kurkiReducer'
 import message from './messageReducer'
 import users from './usersReducer'
-import jobs from './jobsReducer'
+import moocJobs from './moocJobsReducer'
 
 export default combineReducers({
   user,
@@ -27,5 +27,5 @@ export default combineReducers({
   kurki,
   message,
   users,
-  jobs
+  moocJobs
 })

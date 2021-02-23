@@ -57,6 +57,10 @@ const {
 
 const router = Router()
 
+router.get('/sandbox', () => {
+  throw new Error('Suotar exploded!')
+})
+
 // Routes for testing
 router.delete('/courses', notInProduction, deleteAllCourses)
 router.post('/users', notInProduction, addUser)

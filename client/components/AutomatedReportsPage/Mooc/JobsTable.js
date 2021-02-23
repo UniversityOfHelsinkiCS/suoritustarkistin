@@ -1,6 +1,6 @@
 import React from 'react'
 import * as _ from 'lodash'
-import JobRow from 'Components/JobsPage/JobRow'
+import JobRow from 'Components/AutomatedReportsPage/Mooc/JobRow'
 import { useSelector } from 'react-redux'
 import { Grid, Header, Loader, Segment } from 'semantic-ui-react'
 

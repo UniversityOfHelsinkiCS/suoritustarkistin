@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import NewJobForm from 'Components/JobsPage/NewJobForm'
+import EditJobForm from 'Components/AutomatedReportsPage/Mooc/EditJobForm'
 import { Modal, Button } from 'semantic-ui-react'
 
-export default () => {
+export default ({ job, jobs }) => {
   const [showForm, setShowForm] = useState(false)
 
   const closeModal = () => setShowForm(false)
@@ -11,11 +11,10 @@ export default () => {
     <Modal
       trigger={
         <Button
-          data-cy="add-job-button"
-          positive
+          disabled={jobs.pending}
           onClick={() => setShowForm(true)}
         >
-          Add new job
+          Edit
         </Button>
       }
       basic
@@ -24,7 +23,7 @@ export default () => {
       size="small"
     >
       <Modal.Content>
-        <NewJobForm close={closeModal} />
+        <EditJobForm job={job} close={closeModal} />
       </Modal.Content>
     </Modal>
   )

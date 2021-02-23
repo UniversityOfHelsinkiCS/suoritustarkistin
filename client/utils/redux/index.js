@@ -9,6 +9,7 @@ import registrations from './registrationsReducer'
 import newReport from './newReportReducer'
 import newRawEntries from './sisNewRawEntriesReducer'
 import newEntries from './sisNewEntriesReducer'
+import kurki from './kurkiReducer'
 import message from './messageReducer'
 import users from './usersReducer'
 import jobs from './jobsReducer'
@@ -23,6 +24,7 @@ export default combineReducers({
   newReport,
   newRawEntries,
   newEntries,
+  kurki,
   message,
   users,
   jobs

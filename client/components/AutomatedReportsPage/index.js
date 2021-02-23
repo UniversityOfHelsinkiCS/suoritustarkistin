@@ -21,32 +21,33 @@ export default () => {
   }, [])
 
   let panes = [{
-      menuItem: (
-        <Menu.Item key="mooc-jobs" data-cy="mooc-jobs-tab">
-          <Icon name="file alternate outline" />
+    menuItem: (
+      <Menu.Item key="mooc-jobs" data-cy="mooc-jobs-tab">
+        <Icon name="file alternate outline" />
           Mooc
-        </Menu.Item>
-      ),
-      render: () => (
-        <Tab.Pane>
-          <NewJob />
-          <Message />
-          <JobsTable />
-        </Tab.Pane>
-      )
-    },
-    {
-      menuItem: (
-        <Menu.Item key="kurki-jobs" data-cy="kurki-jobs-tab">
-          <Icon name="folder open" />
+      </Menu.Item>
+    ),
+    render: () => (
+      <Tab.Pane>
+        <NewJob />
+        <Message />
+        <JobsTable />
+      </Tab.Pane>
+    )
+  },
+  {
+    menuItem: (
+      <Menu.Item key="kurki-jobs" data-cy="kurki-jobs-tab">
+        <Icon name="folder open" />
           Kurki
-        </Menu.Item>
-      ),
-      render: () => (
-        <Tab.Pane>
-          <CourseTable />
-        </Tab.Pane>
-      )
+      </Menu.Item>
+    ),
+    render: () => (
+      <Tab.Pane>
+        <Message />
+        <CourseTable />
+      </Tab.Pane>
+    )
   }]
 
   return <Tab data-cy="automated-reports-tab" panes={panes} />

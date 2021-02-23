@@ -13,10 +13,10 @@ export const getKurkiCoursesAction = () => {
   return callBuilder(route, prefix, 'get')
 }
 
-export const createKurkiReportAction = (id, graderId) => {
+export const addKurkiRawEntriesAction = (kurkiCourse) => {
   const route = '/kurki/raw_entries'
   const prefix = 'CREATE_REPORT_ACTION'
-  return callBuilder(route, prefix, 'post', { id, graderId })
+  return callBuilder(route, prefix, 'post', { kurkiCourse })
 }
 
 // Reducer

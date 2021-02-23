@@ -45,7 +45,8 @@ const {
   deleteAllJobs
 } = require('@controllers/jobsController')
 const {
-  getKurkiCourses
+  getKurkiCourses,
+  addKurkiRawEntries
 } = require('@controllers/kurkiController')
 const {
   getCourseRegistrations
@@ -110,5 +111,6 @@ router.post('/sis_jobs/:id', checkAdmin, sisRunJob)
 router.delete('/jobs/:id', checkAdmin, deleteJob)
 
 router.get('/kurki/courses', checkAdmin, getKurkiCourses)
+router.post('/kurki/raw_entries', checkAdmin, addKurkiRawEntries)
 
 module.exports = router

@@ -1,7 +1,8 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
-const { getCourses, createCourse } = require('../services/kurki')
-const { processKurkiEntries } = require('../scripts/sisProcessKurkiEntries')
+const { getCourses } = require('../services/kurki')
+const { createCourse } = require('../scripts/createCourse')
+// const { processKurkiEntries } = require('../scripts/sisProcessKurkiEntries')
 
 const getKurkiCourses = async (req, res) => {
   try {
@@ -18,8 +19,9 @@ const addKurkiRawEntries = async (req, res) => {
     if (!req.user.isAdmin) {
       return res.status(400).json({ error: 'User is not authorized to create SIS-reports.' })
     }
-
-    const transaction = await db.sequelize.transaction()
+    if (!req.body.kurkiCourse) {
+      return res.status(400).json({ error: 'Course details missing' })
+    }
 
     const {
       kurkiId,
@@ -27,7 +29,7 @@ const addKurkiRawEntries = async (req, res) => {
       credits,
       language,
       graderUid
-    } = req.params
+    } = req.body.kurkiCourse
 
     const courseCode = kurkiId.split('.')[0]
 
@@ -53,18 +55,11 @@ const addKurkiRawEntries = async (req, res) => {
         courseCode,
         language,
         credits,
-        graderId: grader.id,
-        transaction
+        graderId: grader.id
       })
     }
-
-    let result = await processKurkiEntries({
-      course,
-      graderId: grader.id,
-      transaction
-    })
     
-    return res.status(200).json({ result })
+    return res.status(200).json({ message: "Report created successfully!" })
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: e.message })

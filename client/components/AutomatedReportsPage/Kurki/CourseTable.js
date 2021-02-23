@@ -1,18 +1,24 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Button, Header, Grid, Loader, Segment } from 'semantic-ui-react'
 
-import { addKurkiRawEntries } from 'Utilities/redux/kurkiReducer'
+import { addKurkiRawEntriesAction } from 'Utilities/redux/kurkiReducer'
 
 const CourseTable = () => {
+  const dispatch = useDispatch()
   const kurki = useSelector((state) => state.kurki)
 
   if (!kurki || !kurki.courses) return null
 
-  console.log(kurki)
-  const createReport = (id, graderId) => {
-    console.log(id)
-    // addKurkiRawEntries(id, graderId)
+  const createReport = (course) => {
+    const newCourse = {
+      kurkiId: course.id,
+      name: course.name,
+      credits: course.credits,
+      language: course.language,
+      graderUid: course.ownerId
+    }
+    dispatch(addKurkiRawEntriesAction(newCourse))
   }
 
   return (
@@ -43,7 +49,7 @@ const CourseTable = () => {
             <Grid.Column width={3}>
               <Button
                 color="blue"
-                onClick={createReport(course.id, course.ownerId)}
+                onClick={() => createReport(course)}
               >
                 Create a report
               </Button>

@@ -151,7 +151,7 @@ export default (state = null, action) => {
       return {
         header: 'Creating a new report failed!',
         content:
-          `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
+          `${action.error.message}`,
         type: 'negative'
       }
     default:

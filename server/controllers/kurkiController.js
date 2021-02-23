@@ -2,7 +2,7 @@ const logger = require('@utils/logger')
 const db = require('../models/index')
 const { getCourses } = require('../services/kurki')
 const { createCourse } = require('../scripts/createCourse')
-// const { processKurkiEntries } = require('../scripts/sisProcessKurkiEntries')
+const { processKurkiEntries } = require('../scripts/sisProcessKurkiEntries')
 
 const getKurkiCourses = async (req, res) => {
   try {
@@ -19,9 +19,6 @@ const addKurkiRawEntries = async (req, res) => {
     if (!req.user.isAdmin) {
       return res.status(400).json({ error: 'User is not authorized to create SIS-reports.' })
     }
-    if (!req.body.kurkiCourse) {
-      return res.status(400).json({ error: 'Course details missing' })
-    }
 
     const {
       kurkiId,
@@ -30,6 +27,10 @@ const addKurkiRawEntries = async (req, res) => {
       language,
       graderUid
     } = req.body.kurkiCourse
+
+    if (!req.body.kurkiCourse || !kurkiId) {
+      return res.status(400).json({ error: 'Course details missing' })
+    }
 
     const courseCode = kurkiId.split('.')[0]
 
@@ -58,8 +59,14 @@ const addKurkiRawEntries = async (req, res) => {
         graderId: grader.id
       })
     }
-    
-    return res.status(200).json({ message: "Report created successfully!" })
+
+    const result = await processKurkiEntries({ kurkiId, course, grader })
+
+    if (!result.error) {
+      return res.status(200).json({ result })
+    } else {
+      return res.status(400).json({ error: result.error.toString() })
+    }
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: e.message })

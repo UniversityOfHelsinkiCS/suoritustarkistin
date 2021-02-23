@@ -16,7 +16,7 @@ const CourseTable = () => {
       name: course.name,
       credits: course.credits,
       language: course.language,
-      graderUid: course.ownerId
+      graderUid: course.ownerId 
     }
     dispatch(addKurkiRawEntriesAction(newCourse))
   }

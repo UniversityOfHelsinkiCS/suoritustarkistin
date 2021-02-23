@@ -4,13 +4,12 @@ const { isValidCourse } = require('@root/utils/validators')
 
 const createCourse = async (course) => {
   try {
-    if (!isValidCourse(course)) return false
-
+    if (!isValidCourse(course)) return { error: "Course details are not valid"}
     const newCourse = await db.courses.create(course)
     return newCourse
   } catch (e) {
     logger.error(e.message)
-    return false
+    return { error: e.message }
   }
 }
 

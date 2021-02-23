@@ -118,7 +118,7 @@ export default (state = null, action) => {
         return {
           header: 'New report created!',
           type: 'positive',
-          content: 'You can check it on the View reports-page'
+          content: 'You can check it on the View reports -page'
         }  
       }
       return {
@@ -141,6 +141,19 @@ export default (state = null, action) => {
         type: 'negative'
       }
     }
+    case 'CREATE_KURKI_REPORT_SUCCESS':
+      return {
+        header: 'New report created!',
+        content:'You can check it on the View reports -page',
+        type: 'positive'
+      }
+    case 'CREATE_KURKI_REPORT_FAILURE':
+      return {
+        header: 'Creating a new report failed!',
+        content:
+          `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
+        type: 'negative'
+      }
     default:
       return state
   }

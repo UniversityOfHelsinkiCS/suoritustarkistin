@@ -46,7 +46,7 @@ const addKurkiRawEntries = async (req, res) => {
     })
 
     if (!grader) {
-      return res.status(400).json({ error: `No grader-employee found with the uid: ${graderUid}`})
+      return res.status(400).json({ error: `No grader-employee found with the ID: ${graderUid}. Check that the user has already visited Suotar` })
     }
 
     if (!course) {

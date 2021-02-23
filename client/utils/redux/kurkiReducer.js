@@ -15,7 +15,7 @@ export const getKurkiCoursesAction = () => {
 
 export const addKurkiRawEntriesAction = (kurkiCourse) => {
   const route = '/kurki/raw_entries'
-  const prefix = 'CREATE_REPORT_ACTION'
+  const prefix = 'CREATE_KURKI_REPORT'
   return callBuilder(route, prefix, 'post', { kurkiCourse })
 }
 

@@ -121,7 +121,8 @@ export default ({ user }) => {
   return (
     <Grid.Row>
       <Grid.Column width={3}>{user.name}</Grid.Column>
-      <Grid.Column width={4}>{user.employeeId}</Grid.Column>
+      <Grid.Column width={2}>{user.uid}</Grid.Column>
+      <Grid.Column width={2}>{user.employeeId}</Grid.Column>
       <Grid.Column width={3}>{user.email}</Grid.Column>
       <Grid.Column textAlign="center" width={2}>
         <GraderBadge />

@@ -13,6 +13,23 @@ executors:
         environment:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
+jobs:
+  sentry:
+    docker:
+      - image: circleci/node:4.8.2
+    environment:
+      SENTRY_ORG: toska
+      SENTRY_PROJECT: suotar
+    steps:
+      - checkout # check out the code in the project directory
+      - run: |
+          curl -sL https://sentry.io/get-cli/ | bash
+          export SENTRY_RELEASE=$(sentry-cli releases propose-version)
+          sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
+          sentry-cli releases set-commits --auto $SENTRY_RELEASE
+          sentry-cli releases files $SENTRY_RELEASE upload /dist/main.js '~/main.js'
+          sentry-cli releases finalize $SENTRY_RELEASE
+
 workflows:
   build-test-deploy:
     jobs:
@@ -37,6 +54,14 @@ workflows:
           image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
           tag: 'production'
           extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin/'
+          after_build:
+            - run:
+                name: Create sentry release
+                command: docker run -it --env SENTRY_URL --env SENTRY_AUTH_TOKEN --entrypoint ./sentry-release.sh "$DOCKER_USER"/"$CIRCLE_PROJECT_REPONAME":production
+            - run:
+                name: Notify
+                command: |
+                  curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"${CIRCLE_PROJECT_REPONAME} *production* started deployment\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif\",\"alt_text\":\"cute cat\"}},{\"type\":\"actions\",\"elements\":[{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Open Suotar :suotar:\",\"emoji\":true},\"url\":\"https://study.cs.helsinki.fi/suoritustarkistin/\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Github\",\"emoji\":true},\"url\":\"https://github.com/UniversityOfHelsinkiCS/suoritustarkistin\"}]}]}" ${SLACKBOT_URL}
           filters:
             branches:
               only: master

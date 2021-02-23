@@ -11,6 +11,7 @@ const parseUser = async (req, res, next) => {
           employeeId: req.headers.employeenumber
         },
         defaults: {
+          uid: req.headers.uid,
           email: req.headers.mail,
           name: `${req.headers.givenname} ${req.headers.sn}`,
           isGrader:
@@ -21,6 +22,14 @@ const parseUser = async (req, res, next) => {
             !!(req.headers.employeenumber === 'admin' && !inProduction)
         }
       })
+      if (!user.uid) {
+        await db.users.update({ uid: req.headers.uid }, {
+          where: {
+            employeeId: req.headers.employeenumber
+          }
+        })
+        logger.info(`Uid added to user: ${user.name}`)
+      }
       if (created) {
         logger.info(`New user: ${user.name}, ${user.email}`)
         sendNewUserEmail(user)

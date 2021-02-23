@@ -4,7 +4,7 @@ const { processManualEntry } = require('../scripts/sisProcessManualEntry')
 const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
-  return res.status(500).json({ error: 'Server went BOOM!' })
+  return res.status(500).json({ error: error.toString() })
 }
 
 const addRawEntries = async (req, res) => {
@@ -21,28 +21,27 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'invalid form values' })
     }
 
-    processManualEntry({
+    const result = await processManualEntry({
       graderId,
       reporterId: req.user.id,
       courseId,
       date,
       data
     }, transaction)
-      .then(async () => {
-        await transaction.commit()
-        logger.info({message: 'Successful CSV insert', sis: true})
-        return res.status(200).json({ message: 'report created successfully' })
-      })
-      .catch(async (error) => {
-        logger.error({message: `Unsuccessful CSV insert: ${error}`, error, sis: true})
-        await transaction.rollback()
-        return res.status(400).json({ error: error.toString() })
-      })
+
+    if (result.message === "success") {
+      await transaction.commit()
+      logger.info({ message: 'Report of new completions created successfully.', sis: true})
+      return res.status(200).json({ message: 'report created successfully' })
+    } else {
+      await transaction.rollback()
+      logger.error({ message: `Processing new completions failed`, sis: true})
+      return res.status(400).json({ message: "Processing new completions failed", failed: result.failed })
+    }
   } catch (error) {
     handleDatabaseError(res, error)
   }
 }
-
 
 const addMoocRawEntries = async (req, res) => {
   try {

@@ -82,6 +82,8 @@ const processManualEntry = async ({
 
     if (!ayCourse) throw new Error('AY-version of the course is missing!')
     if (!tktCourse) throw new Error('TKT-version of the course is missing!')
+  } else {
+    tktCourse = originalCourse
   }
 
   const grader = await db.users.findOne({
@@ -100,8 +102,6 @@ const processManualEntry = async ({
     ? await getRegistrations([ayCourse.courseCode])
     : undefined
 
-
-
   const rawEntries = data.map((rawEntry) => {
     validateEntry(rawEntry)
     validateCourse(originalCourse.courseCode)
@@ -119,7 +119,7 @@ const processManualEntry = async ({
         attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
         graderId: grader.id,
         reporterId: reporterId,
-        courseId: ayCourse.id,
+        courseId: ayCourse.id
       }
     }
 
@@ -133,23 +133,28 @@ const processManualEntry = async ({
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,
       reporterId: reporterId,
-      courseId: tktCourse.id,
+      courseId: tktCourse.id
     }
   })
 
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
   const checkImprovements = true
-
-  logger.info({ 
+  logger.info({
     message: 'Raw entries created successfully',
     amount: newRawEntries.length,
     course: originalCourse.courseCode,
     batchId,
     sis: true
   })
-  await processEntries(newRawEntries, transaction, checkImprovements)
-  return true
+  const [failed, success] = await processEntries(newRawEntries, transaction, checkImprovements)
+  if (!failed.length) {
+    await db.entries.bulkCreate(success, { transaction })
+    logger.info({ message: 'Entries success', amount: success.length, sis: true })
+    return { message: "success", success, failed }
+  } else {
+    return { message: "error", success, failed }
+  }
 }
 
 module.exports = {

@@ -89,14 +89,36 @@ const sisProcessMoocEntries = async ({
     },
     []
   )
-  logger.info({message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true})
+  logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.`, sis: true })
+
   if (matches && matches.length > 0) {
-    const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true, transaction })
-    logger.info({message: 'Raw entries success', amount: newRawEntries.length, course: course.courseCode, batchId, sis: true})
+    const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true })
+    logger.info({ message: `${matches.length} new raw entries created`, amount: newRawEntries.length, course: course.courseCode, batchId, sis: true })
+
     const checkImprovements = false
-    await processEntries(newRawEntries, transaction, checkImprovements)
+    const [failed, success] = await processEntries(newRawEntries, checkImprovements)
+
+    if (failed.length) {
+      logger.info({ message: `${failed.length} entries failed`, sis:true })
+
+      for (const failedEntry of failed) {
+        logger.info({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}`})
+        await db.raw_entries.destroy({
+          where: {
+            id: failedEntry.id
+          }
+        })
+      }
+    }
+
+    if (success && success.length) {
+      await db.entries.bulkCreate(success, { transaction })
+      logger.info({ message: `${success.length} new entries created`, amount: success.length, sis: true })
+      return { message: "success" }
+    }
   }
-  return true
+
+  return { message: "no new entries" }
 }
 
 module.exports = { 

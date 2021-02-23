@@ -68,7 +68,7 @@ export default (state = null, action) => {
     case 'SIS_POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,
-        content: `${action.error || 'If the error persists, please contact grp-toska@cs.helsinki.fi'}.`,
+        content: `${(action.error && action.error.failed) ? "Check out the errors below" : `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi'.`}`,
         type: 'negative'
       }
     case 'SIS_POST_RAW_ENTRIES_SUCCESS':
@@ -114,11 +114,18 @@ export default (state = null, action) => {
       }
     }
     case 'SIS_RUN_JOB_SUCCESS': {
-      return {
-        header: 'New report created!',
-        type: 'positive',
-        content: 'You can check it on the View reports-page'
+      if (action.message == "success") {
+        return {
+          header: 'New report created!',
+          type: 'positive',
+          content: 'You can check it on the View reports-page'
+        }  
       }
+      return {
+        header: 'No report created!',
+        type: 'negative',
+        content: 'There were no new completions to be reported'
+      }  
     }
     case 'SIS_RUN_JOB_FAILURE': {
       if (action.error) {

@@ -111,14 +111,15 @@ const sisRunJob = async (req, res) => {
       return res.status(400).json({ error: `No grader-employee found for the course: ${job.courseId}`})
     }
 
+    let result = ""
     if (EAOI_CODES.includes(course.courseCode)) {
-      await sisManualEaoiRun(course, grader, transaction)
+      result = await sisManualEaoiRun(course, grader, transaction)
     } else if (BAI_CODES.includes(course.courseCode)) {
-      await sisManualBaiRun(job, course, grader, transaction)
+      result = await sisManualBaiRun(job, course, grader, transaction)
     } else {
-      await sisManualRun(job, course, grader, transaction)
+      result = await sisManualRun(job, course, grader, transaction)
     }
-    return res.status(200).json({ id: req.params.id })
+    return res.status(200).json({ result })
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: e.message })

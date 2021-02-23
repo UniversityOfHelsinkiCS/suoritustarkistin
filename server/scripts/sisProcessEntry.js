@@ -1,9 +1,7 @@
 const db = require('../models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-const _ = require('lodash')
 const moment = require('moment')
-const logger = require('@utils/logger')
 const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
 const {
   getEmployees,
@@ -26,8 +24,14 @@ const {
  *  3. From the enrolments find instances which are for proper course unit realisation, based on the attainment date
  *  4. Mankel again the enrolments to get Suotar entries
  *  5. Resolve all nested promises ??
+ *
+ * Returns list with two elements:
+ *  [failedEntries, validEntries]
  */
-const processEntries = async (createdEntries, transaction, checkImprovements) => {
+
+const processEntries = async (createdEntries, checkImprovements) => {
+  const success = []
+  const failed = []
   const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
   const graders = await db.users.findAll({
     where: {
@@ -43,7 +47,7 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
   const employeeIds = graders.map((grader) => grader.employeeId)
   const employees = await getEmployees(employeeIds)
 
-  const courseStudentPairs = createdEntries.map(({courseId, studentNumber }) => {
+  const courseStudentPairs = createdEntries.map(({ courseId, studentNumber }) => {
     const { courseCode } = courses.find((c) => c.id === courseId)
     return ({ courseCode, studentNumber })
   })
@@ -57,53 +61,68 @@ const processEntries = async (createdEntries, transaction, checkImprovements) =>
 
   // We need to flatten the final data, as one raw entry may be
   // mankeled to one or more attainment (entry)
-  const data = _.flatten(
-    await Promise.all(createdEntries.map(async (rawEntry) => {
-      const grader = graders.find((g) => g.id === rawEntry.graderId)
-      const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
-      const completionDate = moment(rawEntry.attainmentDate)
-      const course = courses.find((c) => c.id === rawEntry.courseId)
-      const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
-      const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
+  await Promise.all(createdEntries.map(async (rawEntry) => {
+    const grader = graders.find((g) => g.id === rawEntry.graderId)
+    const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
+    const completionDate = moment(rawEntry.attainmentDate)
+    const course = courses.find((c) => c.id === rawEntry.courseId)
+    const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
+    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
 
-      if (!student) throw new Error(`Person with student number ${rawEntry.studentNumber} not found from Sisu`)
-      if (!verifier) throw new Error(`Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`)
+    if (!student) {
+      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: 'Person with student number not found from Sisu' })
+      return Promise.resolve()
+    }
+    if (!verifier) {
+      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu` })
+      return Promise.resolve()
+    }
 
-      const enrolmentsByPersonAndCourse = enrolments
-        .find((e) => e.personId === student.id && e.code === course.courseCode)
+    const enrolmentsByPersonAndCourse = enrolments
+      .find((e) => e.personId === student.id && e.code === course.courseCode)
 
-      const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
-      if (!filteredEnrolments || !filteredEnrolments.length)
-        throw new Error(`Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`)
+    const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
+    if (!filteredEnrolments || !filteredEnrolments.length) {
+      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}` })
+      return Promise.resolve()
+    }
 
-      // Create here the acual attainments for Sisu
-      const assessmentItemAttainments = await Promise.all(
-        filteredEnrolments
-          .map(async (e) => {
-            const grade = mapGrades(gradeScales, e.gradeScaleId, rawEntry)
-            if (!grade) throw new Error(`
-                Invalid grade "${rawEntry.grade}". Available grades for this course are:
-                ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
-            `)
-            if (checkImprovements === true && !improvedGrade) {
-              throw new Error(`Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`)
-            }
-            return Promise.resolve({
-              ...e,
-              verifierPersonId: verifier.id,
-              rawEntryId: rawEntry.id,
-              gradeId: grade.localId,
-              completionDate: completionDate.format('YYYY-MM-DD')
+    // Create here the acual attainments for Sisu
+    await Promise.all(
+      filteredEnrolments
+        .map(async (e) => {
+          const grade = mapGrades(gradeScales, e.gradeScaleId, rawEntry)
+          if (!grade) {
+            failed.push({
+              id: rawEntry.id,
+              studentNumber: rawEntry.studentNumber,
+              message: `Invalid grade "${rawEntry.grade} for course ${course.courseCode}". Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}`
             })
+            return Promise.resolve()
+          }
+          if (checkImprovements === true && !improvedGrade) {
+            failed.push({
+              id: rawEntry.id,
+              studentNumber: rawEntry.studentNumber,
+              message: `Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`
+            })
+            return Promise.resolve()
+          }
+          success.push({
+            ...e,
+            verifierPersonId: verifier.id,
+            rawEntryId: rawEntry.id,
+            gradeId: grade.localId,
+            completionDate: completionDate.format('YYYY-MM-DD'),
+            completionLanguage: rawEntry.language
           })
-      )
-      return Promise.resolve(assessmentItemAttainments)
-    }))
-  )
+          return Promise.resolve()
+        })
+    )
+    return Promise.resolve()
+  }))
 
-  await db.entries.bulkCreate(data, { transaction })
-  logger.info({ message: 'Entries success', amount: data.length, sis: true })
-  return true
+  return [failed, success]
 }
 
 const filterEnrolments = (completionDate, { enrolments }) => {
@@ -141,7 +160,8 @@ const getCourses = async (rawEntries) => {
   return await db.courses.findAll({
     where: {
       id: { [Op.in]: Array.from(courseIds) }
-    }
+    },
+    raw: true
   })
 }
 

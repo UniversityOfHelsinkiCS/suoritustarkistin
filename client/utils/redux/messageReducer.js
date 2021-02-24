@@ -151,7 +151,7 @@ export default (state = null, action) => {
       return {
         header: 'Creating a new report failed!',
         content:
-          `${action.error.message}`,
+          `${action.error}`,
         type: 'negative'
       }
     default:

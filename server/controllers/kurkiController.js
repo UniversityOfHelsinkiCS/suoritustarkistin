@@ -65,7 +65,8 @@ const addKurkiRawEntries = async (req, res) => {
     if (!result.error) {
       return res.status(200).json({ result })
     } else {
-      return res.status(400).json({ error: result.error.toString() })
+      console.log(result.error)
+      return res.status(400).json({ error: result.error.message.toString() })
     }
   } catch (e) {
     logger.error(e.message)

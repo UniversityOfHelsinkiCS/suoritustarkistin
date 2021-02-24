@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Header, Grid, Loader, Segment } from 'semantic-ui-react'
+import moment from 'moment'
 
 import { addKurkiRawEntriesAction } from 'Utilities/redux/kurkiReducer'
 
@@ -45,7 +46,7 @@ const CourseTable = () => {
             <Grid.Column width={2}>{course.id.split(".")[0]}</Grid.Column>
             <Grid.Column width={5}>{course.name}</Grid.Column>
             <Grid.Column width={4}>{course.ownerId}</Grid.Column>
-            <Grid.Column width={2}>{course.startDate}</Grid.Column>
+            <Grid.Column width={2}>{moment(course.startDate).format("DD.MM.YYYY")}</Grid.Column>
             <Grid.Column width={3}>
               <Button
                 color="blue"

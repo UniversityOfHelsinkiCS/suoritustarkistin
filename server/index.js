@@ -48,7 +48,6 @@ initializeDatabaseConnection()
     })
     app.use(Sentry.Handlers.requestHandler())
     app.use(bodyParser.json({ limit: '5mb' }))
-    app.use(Sentry.Handlers.errorHandler())
 
     /**
      * Use hot loading when in development, else serve the static content
@@ -92,6 +91,7 @@ initializeDatabaseConnection()
       const INDEX_PATH = path.resolve(DIST_PATH, 'index.html')
       app.use(express.static(DIST_PATH))
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
+      app.use(Sentry.Handlers.errorHandler())
     }
 
     initializeCronJobs()

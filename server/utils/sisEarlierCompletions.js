@@ -5,6 +5,7 @@
 const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   if (!allEarlierAttainments) return true
   const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
+  
   const earlierAttainments = student ? student.attainments : undefined
   if (!earlierAttainments) return true
 

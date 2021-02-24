@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       attainmentDate: DataTypes.DATE,
       moocUserId: DataTypes.INTEGER,
       moocCompletionId: DataTypes.STRING,
+      registeredToMooc: DataTypes.DATE,
       graderId: {
         type: DataTypes.INTEGER,
         references: {

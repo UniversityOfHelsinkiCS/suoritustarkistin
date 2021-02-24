@@ -85,17 +85,17 @@ export default () => {
     )
   }
 
-  const JobsButton = () => {
+  const AutomatedReportsButton = () => {
     return (
       <Menu.Item
-        data-cy="nav-jobs"
+        data-cy="nav-automated-reports"
         as={Link}
-        to={'/jobs'}
-        name="cronjobs"
-        active={activeItem === 'cronjobs'}
+        to={'/automated-reports'}
+        name="automated-reports"
+        active={activeItem === 'automated-reports'}
         onClick={handleItemClick}
       >
-        Cronjobs
+        Automated reports
       </Menu.Item>
     )
   }
@@ -157,9 +157,9 @@ export default () => {
       >
         View reports
       </Menu.Item>
+      {user.adminMode ? <AutomatedReportsButton /> : null}
       {user.adminMode ? <CoursesButton /> : null}
       {user.adminMode ? <UsersButton /> : null}
-      {user.adminMode ? <JobsButton /> : null}
       {user.isAdmin ? getSandboxButton() : null}
       {user.isAdmin ? getAdminButton() : null}
 

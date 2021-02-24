@@ -50,7 +50,7 @@ export default () => {
       size="small"
     >
       <Modal.Content >
-        <Segment style={{ height: "20em", textAlign: "center", padding: "2em"}}>
+        <Segment style={{ height: "15em", textAlign: "center", padding: "2em"}}>
           <Header size="large">
             {newRawEntries.data ? newRawEntries.data.length : 0} completion(s) will be reported for the course:
           </Header>

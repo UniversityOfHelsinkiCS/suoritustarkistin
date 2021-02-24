@@ -17,7 +17,10 @@ export default () => {
           <Grid.Column width={3}>
             <Header as="h4">Name</Header>
           </Grid.Column>
-          <Grid.Column width={4}>
+          <Grid.Column width={2}>
+            <Header as="h4">User ID</Header>
+          </Grid.Column>
+          <Grid.Column width={2}>
             <Header as="h4">Employee number</Header>
           </Grid.Column>
           <Grid.Column width={3}>

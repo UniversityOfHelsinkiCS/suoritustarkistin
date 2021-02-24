@@ -43,7 +43,11 @@ const {
   sisRunJob,
   deleteJob,
   deleteAllJobs
-} = require('@controllers/jobsController')
+} = require('@controllers/moocJobsController')
+const {
+  getKurkiCourses,
+  addKurkiRawEntries
+} = require('@controllers/kurkiController')
 const {
   getCourseRegistrations
 } = require('@controllers/registrationController')
@@ -105,5 +109,8 @@ router.put('/jobs/:id', checkAdmin, editJob)
 router.post('/jobs/:id', checkAdmin, runJob)
 router.post('/sis_jobs/:id', checkAdmin, sisRunJob)
 router.delete('/jobs/:id', checkAdmin, deleteJob)
+
+router.get('/kurki/courses', checkAdmin, getKurkiCourses)
+router.post('/kurki/raw_entries', checkAdmin, addKurkiRawEntries)
 
 module.exports = router

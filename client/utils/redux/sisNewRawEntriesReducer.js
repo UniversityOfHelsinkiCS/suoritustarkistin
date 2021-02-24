@@ -40,12 +40,15 @@ export default (state = initialState, action) => {
         data: null,
         courseId: null,
         sending: false,
-        rawData: ''
+        rawData: '',
+        error: ''
       }
     case 'SIS_POST_RAW_ENTRIES_FAILURE':
       return {
         ...state,
-        sending: false
+        sending: false,
+        error: action.error.message,
+        failed: action.error.failed
       }
     case 'GET_REGISTRATIONS_SUCCESS':
       return {

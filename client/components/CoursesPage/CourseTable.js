@@ -6,6 +6,7 @@ import { Grid, Header, Segment } from 'semantic-ui-react'
 
 export default () => {
   const courses = useSelector((state) => state.courses.data)
+  const graders = useSelector((state) => state.graders.data)
 
   if (!courses) return null
 
@@ -26,7 +27,7 @@ export default () => {
             <Header as="h4">Credit amount</Header>
           </Grid.Column>
           <Grid.Column width={3}>
-            <Header as="h4">Grader name</Header>
+            <Header as="h4">Graders</Header>
           </Grid.Column>
           <Grid.Column width={2}>
             <Header as="h4">Email magic</Header>
@@ -37,7 +38,7 @@ export default () => {
           <Grid.Column width={2} />
         </Grid.Row>
         {_.sortBy(courses, 'name').map((c) => (
-          <CourseRow course={c} key={c.id} />
+          <CourseRow course={c} graders={graders} key={c.id} />
         ))}
       </Grid>
     </Segment>

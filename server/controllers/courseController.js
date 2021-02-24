@@ -11,13 +11,27 @@ const cleanCourses = (courses) => {
     credits: course.credits,
     isMooc: course.isMooc,
     autoSeparate: course.autoSeparate,
-    graderId: course.graderId
+    graderId: course.graderId,
+    graders: course.graders,
   }))
 }
 
 const getCourses = async (req, res) => {
   try {
-    const courses = await db.courses.findAll()
+    const courses = await db.courses.findAll({
+      include: [
+        { 
+          model: db.users,
+          as: 'graders',
+          attributes: {
+            exclude: ['id', 'userCourses', 'createdAt', 'updatedAt']
+          },
+          through: {
+            attributes: []
+          }
+        }
+      ]
+    })
     res.status(200).json(cleanCourses(courses))
   } catch (e) {
     logger.error(e.message)

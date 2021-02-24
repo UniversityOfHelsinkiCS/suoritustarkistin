@@ -15,7 +15,7 @@ const getUsers = async (req, res) => {
             attributes: []
           }
         }
-      ],
+      ]
     })
     res.status(200).json(users)
   } catch (e) {

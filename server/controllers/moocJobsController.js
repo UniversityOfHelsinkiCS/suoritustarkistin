@@ -49,6 +49,7 @@ const editJob = async (req, res) => {
       returning: true,
       where: { id: req.params.id }
     })
+
     if (rows) {
       updatedJob.active
         ? activateJob(updatedJob.id)

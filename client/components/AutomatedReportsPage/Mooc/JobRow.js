@@ -22,8 +22,8 @@ export default ({ job, jobs }) => {
 
   const getGraderName = () => {
     if (!graders) return null
-    if (!course) return null
-    const grader = graders.find((g) => g.id === course.graderId)
+    if (!job) return null
+    const grader = graders.find((g) => g.id === job.graderId)
     return grader ? grader.name : null
   }
 

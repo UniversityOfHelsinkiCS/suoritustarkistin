@@ -43,7 +43,19 @@ const getCourses = async (req, res) => {
 const getUsersCourses = async (req, res) => {
   try {
     const courses = await db.courses.findAll({
-      where: { graderId: req.user.id }
+      where: { graderId: req.user.id },
+      include: [
+        { 
+          model: db.users,
+          as: 'graders',
+          attributes: {
+            exclude: ['userCourses', 'createdAt', 'updatedAt']
+          },
+          through: {
+            attributes: []
+          }
+        }
+      ]
     })
     res.status(200).json(cleanCourses(courses))
   } catch (e) {

@@ -1,5 +1,7 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
+const { Op } = require('sequelize')
+const _ = require('lodash')
 const { isValidCourse } = require('@root/utils/validators')
 
 const cleanCourses = (courses) => {
@@ -23,7 +25,7 @@ const getCourses = async (req, res) => {
           model: db.users,
           as: 'graders',
           attributes: {
-            exclude: ['id', 'userCourses', 'createdAt', 'updatedAt']
+            exclude: ['userCourses', 'createdAt', 'updatedAt']
           },
           through: {
             attributes: []
@@ -83,7 +85,7 @@ const addCourse = async (req, res) => {
           model: db.users,
           as: 'graders',
           attributes: {
-            exclude: ['id', 'userCourses', 'createdAt', 'updatedAt']
+            exclude: ['userCourses', 'createdAt', 'updatedAt']
           },
           through: {
             attributes: []
@@ -102,17 +104,78 @@ const addCourse = async (req, res) => {
 }
 
 const editCourse = async (req, res) => {
+
+  const transaction = await db.sequelize.transaction()
+
   try {
-    const course = req.body
+    let course = req.body
+    const graders = course.graders
 
     if (!isValidCourse(course))
       return res.status(400).json({ error: 'Malformed course data.' })
 
+    delete course.graders
     const [rows, [updatedCourse]] = await db.courses.update(course, {
       returning: true,
       where: { id: req.params.id }
     })
-    if (rows) return res.status(200).json(updatedCourse)
+
+    if (rows) {
+      const usersCourses = await db.users_courses.findAll({
+        where: {
+          courseId: updatedCourse.id
+        }
+      })
+
+      const gradersForRemoval = _.difference(usersCourses.map((uc) => uc.userId), graders)
+
+      if (gradersForRemoval.length) {
+        for (const graderId of gradersForRemoval) {
+          await db.users_courses.destroy({
+            where: {
+              [Op.and]: [
+                { user_id: graderId },
+                { course_id: updatedCourse.id }
+              ]
+            }, transaction
+          })
+        }
+      }
+
+      for (const graderId of graders) {
+        const user = (
+          await db.users.findOne({
+            where: {
+              id: graderId
+            }, transaction
+          })
+        )
+
+        if (!usersCourses.find((uc) => uc.userId === graderId)) {
+          await user.addCourse(updatedCourse, { through: "users_courses" }, transaction)
+        }
+      }
+
+      transaction.commit()
+  
+      const updatedCourseWithGraders = await db.courses.findOne({
+        where: { id: updatedCourse.id },
+        include: [
+          { 
+            model: db.users,
+            as: 'graders',
+            attributes: {
+              exclude: ['userCourses', 'createdAt', 'updatedAt']
+            },
+            through: {
+              attributes: []
+            }
+          }
+        ]
+      })
+      return res.status(200).json(cleanCourses([updatedCourseWithGraders]))
+    }
+
     return res.status(400).json({ error: 'id not found.' })
   } catch (e) {
     logger.error(e.message)

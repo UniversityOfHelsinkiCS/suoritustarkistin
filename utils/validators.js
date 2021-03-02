@@ -82,7 +82,7 @@ const isValidCourseCode = (courseCode) =>
 
 const areValidGraders = (graders) => {
   if (!Array.isArray(graders)) return false
-  if (!graders.every(grader => typeof grader === 'number')) return false
+  if (!graders.every((grader) => typeof grader === 'number')) return false
   return true
 }
 

@@ -41,7 +41,7 @@ export default (state = null, action) => {
       }
     case 'EDIT_COURSE_SUCCESS':
       return {
-        header: `${action.response.name} has been successfully modified!`,
+        header: `${action.response[0].name} has been successfully modified!`,
         content: 'New completions will be added with the modified course information.',
         type: 'positive'
       }

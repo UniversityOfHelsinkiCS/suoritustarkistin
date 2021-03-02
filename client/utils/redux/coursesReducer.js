@@ -100,7 +100,7 @@ export default (state = { data: [] }, action) => {
       return {
         ...state,
         data: state.data.map((c) =>
-          c.id == action.response.id ? action.response : c
+          c.id == action.response[0].id ? action.response[0] : c
         ),
         pending: false,
         error: false

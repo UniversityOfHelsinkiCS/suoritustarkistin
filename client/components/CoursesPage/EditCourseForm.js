@@ -23,8 +23,11 @@ export default ({ course, close }) => {
   const dispatch = useDispatch()
   const allGraders = useSelector((state) => state.graders.data)
   const [data, setData] = useState(
-    course || { isMooc: false, autoSeparate: false }
+    { ...course, graders: course.graders.map((g) => g.id)}
+    || { isMooc: false, autoSeparate: false, graders: [] }
   )
+
+  if (!allGraders) return null
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -91,7 +94,7 @@ export default ({ course, close }) => {
             text: grader.name
           }))}
           value={data.graders}
-          onChange={(e, { value }) => setData({ ...data, graders: [...value]  })}
+          onChange={(e, { value }) => setData({ ...data, graders: value  })}
         />
         <Popup
           trigger={

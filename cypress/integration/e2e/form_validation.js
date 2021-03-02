@@ -29,14 +29,14 @@ describe('Form validation', function() {
         courseCode: 'AYTKTTEST',
         language: 'fi',
         credits: '8,0',
-        graderId: response.body.id
+        graders: [response.body.id]
       })
       cy.request('POST', '/api/courses', {
         name: 'tkt:n kurssi',
         courseCode: 'TKTTEST',
         language: 'en',
         credits: '8,0',
-        graderId: response.body.id
+        graders: [response.body.id]
       })
     })
 

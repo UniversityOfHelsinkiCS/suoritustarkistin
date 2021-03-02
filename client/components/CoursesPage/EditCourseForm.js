@@ -21,7 +21,7 @@ import {
 
 export default ({ course, close }) => {
   const dispatch = useDispatch()
-  const graders = useSelector((state) => state.graders.data)
+  const allGraders = useSelector((state) => state.graders.data)
   const [data, setData] = useState(
     course || { isMooc: false, autoSeparate: false }
   )
@@ -80,17 +80,18 @@ export default ({ course, close }) => {
           icon={isValidCreditAmount(data.credits) ? 'check' : 'times'}
         />
         <Form.Dropdown
-          selection
           required={true}
           label="Grader"
           search
-          options={_.sortBy(graders, 'name').map((grader) => ({
+          multiple
+          selection
+          options={_.sortBy(allGraders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,
             text: grader.name
           }))}
-          value={data.graderId}
-          onChange={(e, d) => setData({ ...data, graderId: d.value })}
+          value={data.graders}
+          onChange={(e, { value }) => setData({ ...data, graders: [...value]  })}
         />
         <Popup
           trigger={

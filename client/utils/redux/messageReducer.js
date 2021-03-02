@@ -28,7 +28,7 @@ export default (state = null, action) => {
       }
     case 'ADD_COURSE_SUCCESS':
       return {
-        header: `Course ${action.response.name} has been created.`,
+        header: `Course ${action.response[0].name} has been created.`,
         content: 'You can now add new completions for the course.',
         type: 'positive'
       }

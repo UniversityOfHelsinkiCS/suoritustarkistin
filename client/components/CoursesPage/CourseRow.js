@@ -19,7 +19,7 @@ export default ({ course, graders }) => {
   )
 
   const getGradersNames = () => {
-    if (!graders) return null
+    if (!graders || !course.graders) return null
     const courseGraders = course.graders.map((grader) => grader.name)
     return courseGraders ? courseGraders.join(', ') : null
   }

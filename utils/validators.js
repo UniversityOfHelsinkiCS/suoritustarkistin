@@ -79,6 +79,13 @@ const isValidHYCourseCode = (courseCode) =>
 const isValidCourseCode = (courseCode) =>
   isValidOpenCourseCode(courseCode) || isValidHYCourseCode(courseCode)
 
+
+const areValidGraders = (graders) => {
+  if (!Array.isArray(graders)) return false
+  if (!graders.every(grader => typeof grader === 'number')) return false
+  return true
+}
+
 const isValidCourse = (course) => {
   if (course.autoSeparate && !isValidHYCourseCode(course.courseCode))
     return false
@@ -92,7 +99,7 @@ const isValidCourse = (course) => {
   if (!course.name) return false
   if (!isValidLanguage(course.language)) return false
   if (!isValidCreditAmount(course.credits)) return false
-  if (!course.graderId) return false
+  if (!areValidGraders(course.graders)) return false
   return true
 }
 

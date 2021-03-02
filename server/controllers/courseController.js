@@ -11,8 +11,7 @@ const cleanCourses = (courses) => {
     credits: course.credits,
     isMooc: course.isMooc,
     autoSeparate: course.autoSeparate,
-    graderId: course.graderId,
-    graders: course.graders,
+    graders: course.graders
   }))
 }
 
@@ -52,15 +51,51 @@ const getUsersCourses = async (req, res) => {
 }
 
 const addCourse = async (req, res) => {
+
+  const transaction = await db.sequelize.transaction()
+
   try {
-    const course = req.body
+    let course = req.body
+    const graders = course.graders
 
     if (!isValidCourse(course))
       return res.status(400).json({ error: 'Malformed course data.' })
 
-    const newCourse = await db.courses.create(course)
-    res.status(200).json(newCourse)
+    delete course.graders
+    const newCourse = await db.courses.create(course, transaction)
+
+    for (const graderId of graders) {
+      const user = (
+        await db.users.findOne({
+          where: {
+            id: graderId
+          }, transaction
+        })
+      )
+
+      await user.addCourse(newCourse, { through: "users_courses" }, transaction)
+    }
+
+    const newCourseWithGraders = await db.courses.findOne({
+      where: { id: newCourse.id },
+      include: [
+        { 
+          model: db.users,
+          as: 'graders',
+          attributes: {
+            exclude: ['id', 'userCourses', 'createdAt', 'updatedAt']
+          },
+          through: {
+            attributes: []
+          }
+        }
+      ]
+    })
+
+    transaction.commit()
+    res.status(200).json(cleanCourses([newCourseWithGraders]))
   } catch (e) {
+    await transaction.rollback()
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
   }

@@ -22,7 +22,8 @@ import {
 export default ({ close }) => {
   const dispatch = useDispatch()
   const graders = useSelector((state) => state.graders.data)
-  const [data, setData] = useState({ isMooc: false, autoSeparate: false })
+  const [data, setData] = useState({ isMooc: false, autoSeparate: false, graders: [] })
+
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -83,17 +84,18 @@ export default ({ close }) => {
         />
         <Form.Dropdown
           data-cy="add-course-grader"
-          selection
           search
           required={true}
           label="Grader"
+          multiple
+          selection
           options={_.sortBy(graders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,
             text: grader.name
           }))}
-          value={data.graderId || ''}
-          onChange={(e, d) => setData({ ...data, graderId: d.value })}
+          value={data.graders}
+          onChange={(e, d) => setData({ ...data, graders: d.value })}
         />
         <Popup
           trigger={

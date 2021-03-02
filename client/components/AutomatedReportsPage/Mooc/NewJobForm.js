@@ -12,12 +12,7 @@ export default ({ close }) => {
   const graders = useSelector((state) => state.graders.data)
   const [data, setData] = useState({ active: false })
 
-  const findGraderName = () => {
-    if (!data.courseId) return null
-    const course = courses.find((c) => c.id === data.courseId)
-    const grader = graders.find((g) => g.id === course.graderId)
-    return grader.name
-  }
+  if (!courses || !graders) return null
 
   const filterAYCourses = (courses) => {
     if (!courses) return []
@@ -60,11 +55,19 @@ export default ({ close }) => {
           value={data.courseId || null}
           onChange={(e, d) => setData({ ...data, courseId: d.value })}
         />
-        <Form.Field
-          data-cy="add-job-grader"
-          control={Input}
+        <Form.Dropdown
+          required={true}
           label="Grader"
-          value={findGraderName()}
+          selection
+          options={_.sortBy(graders, 'name').map((grader) => ({
+            key: grader.id,
+            value: grader.id,
+            text: grader.name
+          }))}
+          onChange={(e, { value }) => setData({ ...data, graderId: value  })}
+          data-cy="add-job-grader"
+          label="Grader"
+          value={data.graderId || null}
         />
         <Form.Field
           data-cy="add-job-slug"

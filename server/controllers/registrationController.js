@@ -5,7 +5,7 @@ const { getRegistrations } = require('../services/eduweb')
 const getCourseRegistrations = async (req, res) => {
   try {
     const course = await db.courses.findOne({ where: { id: req.params.id } })
-    if (!req.user.isAdmin && req.user.id !== course.graderId)
+    if (!req.user.isAdmin && !course.graders.includes(req.user.id))
       return res.status(403).end()
     if (!course.isMooc && !course.autoSeparate) return res.status(404).end()
 

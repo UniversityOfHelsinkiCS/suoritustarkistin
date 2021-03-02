@@ -104,7 +104,7 @@ const sisRunJob = async (req, res) => {
 
     const grader = await db.users.findOne({
       where: {
-        id: course.graderId
+        id: job.graderId
       }
     })
 

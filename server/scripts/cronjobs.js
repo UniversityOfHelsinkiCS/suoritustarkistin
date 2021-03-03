@@ -2,9 +2,6 @@ const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const processMoocCompletions = require('./processMoocCompletions')
-const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
-const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
-const { processBaiEntries } = require('../scripts/sisProcessBaiEntries')
 
 let cronjobs = {}
 
@@ -60,85 +57,6 @@ const manualRun = async (id) => {
   )
 }
 
-const clearTransaction = async (result, transaction) => {
-  if (result === "success") {
-    logger.info('Job run ended successfully, new entries created')
-    await transaction.commit()
-  } else {
-    await transaction.rollback()
-    logger.info('Job run ended successfully, no new entries created')
-  }
-
-  return result
-}
-
-const sisManualRun = async (job, course, grader, transaction) => {
-  const timeStamp = new Date(Date.now())
-  logger.info(
-    `${timeStamp.toLocaleString()} Manual sis-job run: Processing new ${course.name} (${
-      course.courseCode
-    }) completions`
-  )
-  
-  await processMoocEntries({
-    job,
-    course,
-    grader
-  }, transaction)
-    .then(async (response) => {
-      return await clearTransaction(response.message, transaction)
-    })
-    .catch(async (error) => {
-      logger.error('Unsuccessful job run: ', error)
-      transaction.rollback()
-      return error 
-    })
-}
-
-const sisManualEaoiRun = async (course, grader, transaction) => {
-  const timeStamp = new Date(Date.now())
-  logger.info(
-    `${timeStamp.toLocaleString()} Manual eaoi-sis-job run: Processing new ${course.name} (${
-      course.courseCode
-    }) completions`
-  )
-
-  await processEoaiEntries({
-    grader
-  }, transaction)
-    .then(async (response) => {
-      return await clearTransaction(response.message, transaction)
-    })
-    .catch(async (error) => {
-      logger.error('Unsuccessful job run: ', error)
-      await transaction.rollback()
-      return error
-    })
-}
-
-const sisManualBaiRun = async (job, course, grader, transaction) => {
-  const timeStamp = new Date(Date.now())
-  logger.info(
-    `${timeStamp.toLocaleString()} Manual bai-sis-job run: Processing new ${course.name} (${
-      course.courseCode
-    }) completions`
-  )
-
-  await processBaiEntries({
-    job,
-    course,
-    grader
-  }, transaction)
-    .then(async (response) => {
-      return await clearTransaction(response.message, transaction)
-    })
-    .catch(async (error) => {
-      logger.error('Unsuccessful job run: ', error)
-      await transaction.rollback()
-      return error
-    })
-}
-
 const activateJob = async (id) => {
   const job = await db.jobs.findOne({ where: { id } })
   const course = await db.courses.findOne({ where: { id: job.courseId } })
@@ -172,9 +90,6 @@ const deactivateJob = async (id) => {
 module.exports = {
   initializeCronJobs,
   manualRun,
-  sisManualRun,
-  sisManualBaiRun,
-  sisManualEaoiRun,
   activateJob,
   deactivateJob
 }

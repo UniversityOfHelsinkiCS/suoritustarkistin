@@ -114,7 +114,7 @@ export default (state = null, action) => {
       }
     }
     case 'SIS_RUN_JOB_SUCCESS': {
-      if (action.message == "success") {
+      if (action.response.message == "success") {
         return {
           header: 'New report created!',
           type: 'positive',
@@ -122,8 +122,8 @@ export default (state = null, action) => {
         }  
       }
       return {
-        header: 'No report created!',
-        type: 'negative',
+        header: 'No report created',
+        type: 'neutral',
         content: 'There were no new completions to be reported'
       }  
     }

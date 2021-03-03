@@ -1,12 +1,12 @@
 const moment = require('moment')
-const { getMultipleCourseRegistrations } = require('../services/eduweb')
-const { getCompletions } = require('../services/pointsmooc')
 const db = require('@models/index')
 const logger = require('@utils/logger')
-const { processEntries } = require('./sisProcessEntry')
+const { getMultipleCourseRegistrations } = require('../services/eduweb')
+const { getEarlierAttainments } = require('../services/importer')
+const { getCompletions } = require('../services/pointsmooc')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 const { isValidHylHyvGrade, EAOI_CODES } = require('@root/utils/validators')
-const { getEarlierAttainments } = require('../services/importer')
+const { automatedAddToDb } = require('./automatedAddToDb')
 
 const languageMap = {
   "fi_FI" : "fi",
@@ -14,7 +14,7 @@ const languageMap = {
   "sv_SE" : "sv"
 } 
 
-const processEoaiEntries = async ({ grader }, transaction) => {
+const processEoaiEntries = async ({ grader }) => {
   try {
     const courses = await db.courses.findAll({ 
       where: {
@@ -85,7 +85,6 @@ const processEoaiEntries = async ({ grader }, transaction) => {
         }
 
         if (!isValidHylHyvGrade(completion.grade)) {
-          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
           return matches
         }
 
@@ -125,46 +124,11 @@ const processEoaiEntries = async ({ grader }, transaction) => {
 
     logger.info(`${EAOI_CODES[0]}: Found ${matches.length} new completions.`)
 
-    if (matches && matches.length > 0) {
-      const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true })
-      logger.info({
-        message:  `${matches.length} new raw entries created`,
-        amount: newRawEntries.length,
-        course: EAOI_CODES[0],
-        batchId,
-        sis: true
-      })
-  
-      const checkImprovements = false
-      const [failed, success] = await processEntries(newRawEntries, checkImprovements)
-
-      if (failed.length) {
-        logger.info({ message: `${failed.length} entries failed`, sis:true })
-  
-        for (const failedEntry of failed) {
-          logger.info({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}`})
-          await db.raw_entries.destroy({
-            where: {
-              id: failedEntry.id
-            }
-          })
-        }
-      }
-  
-      if (success && success.length) {
-        await db.entries.bulkCreate(success, { transaction })
-        logger.info({
-          message: `${success.length} new entries created`,
-          amount: success.length,
-          sis: true
-        })
-        return { message: "success" }
-      }
-    }
-
-    return { message: "no new entries" }
+    const result = await automatedAddToDb(matches, courses[0], batchId)
+    return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)
+    return { message: error.message }
   }
 }
 

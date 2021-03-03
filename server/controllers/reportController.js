@@ -126,7 +126,7 @@ const getSingleReport = async (req, res) => {
 
 const deleteAllReports = async (req, res) => {
   try {
-    db.reports.destroy({ where: {} })
+    await db.reports.destroy({ where: {} })
     return res.status(204).end()
   } catch (error) {
     handleDatabaseError(res, error)

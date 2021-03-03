@@ -14,7 +14,7 @@ const languageMap = {
   "sv_SE" : "sv"
 } 
 
-const sisProcessEoaiEntries = async ({ grader }, transaction) => {
+const processEoaiEntries = async ({ grader }, transaction) => {
   try {
     const courses = await db.courses.findAll({ 
       where: {
@@ -33,8 +33,6 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
     const rawRegistrations = await getMultipleCourseRegistrations(EAOI_CODES)
     const rawCompletions = await getCompletions('elements-of-ai')
     const rawEntries = await db.raw_entries.findAll({ where: { courseId: courses.map((c) => c.id) }})
-
-
 
     // There are so many completions and registrations for Eaoi-courses
     // that some cleaning should be done first, based on existing data
@@ -129,7 +127,13 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
 
     if (matches && matches.length > 0) {
       const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true })
-      logger.info({ message: 'Raw entries success', amount: newRawEntries.length, course: EAOI_CODES[0], batchId, sis: true })
+      logger.info({
+        message:  `${matches.length} new raw entries created`,
+        amount: newRawEntries.length,
+        course: EAOI_CODES[0],
+        batchId,
+        sis: true
+      })
   
       const checkImprovements = false
       const [failed, success] = await processEntries(newRawEntries, checkImprovements)
@@ -149,7 +153,11 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
   
       if (success && success.length) {
         await db.entries.bulkCreate(success, { transaction })
-        logger.info({ message: `${success.length} new entries created`, amount: success.length, sis: true })
+        logger.info({
+          message: `${success.length} new entries created`,
+          amount: success.length,
+          sis: true
+        })
         return { message: "success" }
       }
     }
@@ -161,5 +169,5 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
 }
 
 module.exports = {
-  sisProcessEoaiEntries
+  processEoaiEntries
 }

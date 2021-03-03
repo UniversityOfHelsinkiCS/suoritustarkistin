@@ -19,7 +19,7 @@ const { initializeDatabaseConnection } = require('./database/connection')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
 const {
   processEoai,
-  processBuildingai,
+  processBuildingai
 } = require('./scripts/moocScripts')
 const { checkAllEntriesFromSisu } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')

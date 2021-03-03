@@ -2,9 +2,9 @@ const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const processMoocCompletions = require('./processMoocCompletions')
-const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
-const { sisProcessEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
-const { sisProcessBaiEntries } = require('../scripts/sisProcessBaiEntries')
+const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
+const { processBaiEntries } = require('../scripts/sisProcessBaiEntries')
 
 let cronjobs = {}
 
@@ -80,7 +80,7 @@ const sisManualRun = async (job, course, grader, transaction) => {
     }) completions`
   )
   
-  await sisProcessMoocEntries({
+  await processMoocEntries({
     job,
     course,
     grader
@@ -103,7 +103,7 @@ const sisManualEaoiRun = async (course, grader, transaction) => {
     }) completions`
   )
 
-  await sisProcessEoaiEntries({
+  await processEoaiEntries({
     grader
   }, transaction)
     .then(async (response) => {
@@ -124,7 +124,7 @@ const sisManualBaiRun = async (job, course, grader, transaction) => {
     }) completions`
   )
 
-  await sisProcessBaiEntries({
+  await processBaiEntries({
     job,
     course,
     grader

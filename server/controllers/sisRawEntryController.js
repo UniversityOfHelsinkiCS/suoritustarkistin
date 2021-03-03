@@ -1,7 +1,7 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/sisProcessManualEntry')
-const { sisProcessMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
   return res.status(500).json({ error: error.toString() })
@@ -56,7 +56,7 @@ const addMoocRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'invalid form values' })
     }
 
-    sisProcessMoocEntries({
+    processMoocEntries({
       graderId,
       courseId
       // course-slug

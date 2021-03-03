@@ -42,12 +42,14 @@ const getCourses = async (req, res) => {
 
 const getUsersCourses = async (req, res) => {
   try {
-    const courses = await db.courses.findAll({
-      where: { graderId: req.user.id },
+    const user = await db.users.findOne({
+      where: {
+        id: req.user.id
+      },
       include: [
         { 
-          model: db.users,
-          as: 'graders',
+          model: db.courses,
+          as: 'courses',
           attributes: {
             exclude: ['userCourses', 'createdAt', 'updatedAt']
           },
@@ -57,7 +59,7 @@ const getUsersCourses = async (req, res) => {
         }
       ]
     })
-    res.status(200).json(cleanCourses(courses))
+    res.status(200).json(cleanCourses(user.courses))
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })

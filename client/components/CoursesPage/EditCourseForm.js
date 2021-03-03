@@ -109,7 +109,10 @@ export default ({ course, close }) => {
           }
           mouseEnterDelay={300}
           mouseLeaveDelay={500}
-          content="Enables indentifying students with either MOOC email address or student numbers. Requires MOOC-bit to be set in Open university systems."
+          content={`
+            Enables indentifying students with either MOOC email address or 
+            student numbers. Requires MOOC-bit to be set in Open university systems.
+          `}
         />
         <Popup
           trigger={
@@ -122,7 +125,10 @@ export default ({ course, close }) => {
           }
           mouseEnterDelay={300}
           mouseLeaveDelay={500}
-          content="Enables automatic detection of HY and Open university students when both courses are held simultaneously. Requires MOOC-bit to be set in Open university systems."
+          content={`
+            Enables automatic detection of HY and Open university students 
+            when both courses are held simultaneously. Requires MOOC-bit to be set in Open university systems.
+          `}
         />
         <Form.Group>
           <Form.Field

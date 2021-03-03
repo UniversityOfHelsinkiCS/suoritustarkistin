@@ -5,7 +5,7 @@ const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
-const { EAOI_CODES } = require('@root/utils/validators')
+const { isValidHylHyvGrade, EAOI_CODES } = require('@root/utils/validators')
 const { getEarlierAttainments } = require('../services/importer')
 
 const languageMap = {
@@ -86,6 +86,11 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
           return matches
         }
 
+        if (!isValidHylHyvGrade(completion.grade)) {
+          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
+          return matches
+        }
+
         const language = languageMap[completion.completion_language]
         const courseVersion = courses.find((c) => c.language === language)
 
@@ -96,13 +101,13 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, 'Hyv.')) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
             return matches
           } else {
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: 'Hyv.',
+              grade: completion.grade,
               credits: courseVersion.credits,
               language: language,
               attainmentDate: completion.completion_date || date,

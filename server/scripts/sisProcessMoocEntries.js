@@ -47,11 +47,9 @@ const sisProcessMoocEntries = async ({
     async (matchesPromise, completion) => {
       const matches = await matchesPromise
 
-      if (completion.grade) {
-        if (!isValidGrade(completion.grade)) {
-          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
-          return matches
-        }
+      if (!isValidGrade(completion.grade)) {
+        logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
+        return matches
       }
 
       const language = selectLanguage(completion, course)
@@ -62,17 +60,14 @@ const sisProcessMoocEntries = async ({
           registration.mooc.toLowerCase() === completion.email.toLowerCase()
       )
 
-      // Remember to change the grade, once the gradeScale-issue has been solved
       if (registration && registration.onro) {
         if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
           return matches
         } else {
-          const grade = (completion.grade && completion.grade !== 'Hyv.') ? completion.grade : 1
-
           return matches.concat({
             studentNumber: registration.onro,
             batchId: batchId,
-            grade: grade,
+            grade: completion.grade,
             credits: course.credits,
             language: language,
             attainmentDate: completion.completion_date || date,

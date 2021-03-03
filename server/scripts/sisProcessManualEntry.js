@@ -113,7 +113,7 @@ const processManualEntry = async ({
       return {
         studentNumber: rawEntry.studentId,
         batchId: batchId,
-        grade: rawEntry.grade ? rawEntry.grade : 'Hyv.',
+        grade: rawEntry.grade,
         credits: rawEntry.credits ? rawEntry.credits : ayCourse.credits,
         language: rawEntry.language ? rawEntry.language : ayCourse.language,
         attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
@@ -127,7 +127,7 @@ const processManualEntry = async ({
     return {
       studentNumber: rawEntry.studentId,
       batchId: batchId,
-      grade: rawEntry.grade ? rawEntry.grade : 'Hyv.',
+      grade: rawEntry.grade,
       credits: rawEntry.credits ? rawEntry.credits : tktCourse.credits,
       language: rawEntry.language ? rawEntry.language : tktCourse.language,
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,

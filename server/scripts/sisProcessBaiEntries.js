@@ -4,6 +4,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
+const { isValidHylHyvGrade } = require('../../utils/validators')
 const { isImprovedTier } = require('../utils/sisEarlierCompletions')
 const { getEarlierAttainments } = require('../services/importer')
 
@@ -73,6 +74,12 @@ const sisProcessBaiEntries = async ({
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
+
+        if (!isValidHylHyvGrade(completion.grade)) {
+          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
+          return matches
+        }
+
         const registration = registrations.find(
           (registration) =>
             registration.email.toLowerCase() === completion.email.toLowerCase() ||
@@ -86,7 +93,7 @@ const sisProcessBaiEntries = async ({
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: 'Hyv.',
+              grade: completion.grade,
               credits: tierCreditAmount[completion.tier],
               language: 'en',
               attainmentDate: completion.completion_date || date,

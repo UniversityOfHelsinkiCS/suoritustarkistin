@@ -45,13 +45,18 @@ const processKurkiEntries = async ({
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
-  
-        if (completion.grade) {
-          if (!isValidGrade(completion.grade)) {
-            logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
-            return matches
-          }
+
+        let grade = completion.grade
+
+        if (grade === "-") {
+          grade = 0
         }
+
+        if (!isValidGrade(grade)) {
+          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
+          return matches
+        }
+
         const language = selectLanguage(completion, course)
 
         // Remember to change the grade, once the gradeScale-issue has been solved
@@ -59,7 +64,6 @@ const processKurkiEntries = async ({
           if (!isImprovedGrade(earlierAttainments, completion.studentNumber, completion.grade)) {
             return matches
           } else {
-            const grade = isValidGrade(completion.grade) ? completion.grade : 1
             return matches.concat({
               studentNumber: completion.studentNumber,
               batchId: batchId,

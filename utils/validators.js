@@ -62,6 +62,8 @@ const sisIsDateObject = (date) => {
 
 const isValidGrade = (grade) => /^([0-5]|Hyv\.|Hyl\.)$/.test(grade) // 0 to 5, Hyv. or Hyl.
 
+const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // Hyv. or Hyl.
+
 const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
 
 const isValidLanguage = (language) => LANGUAGES[language]
@@ -180,6 +182,7 @@ module.exports = {
   sisIsValidDate,
   sisIsDateObject,
   isValidGrade,
+  isValidHylHyvGrade,
   isValidCreditAmount,
   isValidLanguage,
   isValidEmailAddress,

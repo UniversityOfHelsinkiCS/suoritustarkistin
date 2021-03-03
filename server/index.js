@@ -20,21 +20,6 @@ const checkOodiEntries = require('./scripts/checkOodiEntries')
 const {
   processEoai,
   processBuildingai,
-  processCybsec1,
-  processCybsec2,
-  processCybsec3,
-  processCybsec1_2020,
-  processCybsec2_2020,
-  processCybsec3_2020,
-  processCybsec4,
-  processCybsec5,
-  processCybsec6,
-  processOhPe,
-  processOhJa,
-  processOhPePython,
-  processOhPePythonSyksy,
-  processOhPeEnglish,
-  processTiTo
 } = require('./scripts/moocScripts')
 const { checkAllEntriesFromSisu } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
@@ -112,65 +97,6 @@ initializeDatabaseConnection()
         `${timestamp.toLocaleString()} manual run: Checking oodi entries.`
       )
       checkOodiEntries()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec1') {
-      processCybsec1()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec2') {
-      processCybsec2()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec3') {
-      processCybsec3()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec1_2020') {
-      processCybsec1_2020()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec2_2020') {
-      processCybsec2_2020()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec3_2020') {
-      processCybsec3_2020()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec4') {
-      processCybsec4()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec5') {
-      processCybsec5()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec6') {
-      processCybsec6()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpe') {
-      processOhPe()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpepython') {
-      processOhPePython()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpepythonsyksy') {
-      processOhPePythonSyksy()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpeenglish') {
-      processOhPeEnglish()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohja') {
-      processOhJa()
-    }
-    if (process.argv[2] && process.argv[2] === 'tito') {
-      processTiTo()
     }
 
     const STAGING = process.env.NODE_ENV === 'staging'

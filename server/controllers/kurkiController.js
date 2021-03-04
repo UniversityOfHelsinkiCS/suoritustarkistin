@@ -65,7 +65,7 @@ const addKurkiRawEntries = async (req, res) => {
     if (!result.error) {
       return res.status(200).json({ result })
     } else {
-      console.log(result.error)
+      console.log(result.error) //eslint-disable-line
       return res.status(400).json({ error: result.error.message.toString() })
     }
   } catch (e) {

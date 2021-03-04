@@ -85,6 +85,7 @@ initializeDatabaseConnection()
     } else {
       app.use(shibbolethCharsetMiddleware(SHIBBOLETH_HEADERS))
       app.use(parseUser)
+      app.use(currentUser)
       app.use('/api', routes)
 
       const DIST_PATH = path.resolve(__dirname, '../dist')

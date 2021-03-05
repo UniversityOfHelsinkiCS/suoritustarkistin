@@ -2,6 +2,9 @@ const kurkiApi = require('../config/kurkiApi')
 const logger = require('@utils/logger')
 
 const getCourses = async () => {
+  if (process.env.NODE_ENV === 'staging') {
+    return []
+  }
   logger.info({ message: `Fetching course instance from Kurki` })
   const { data } = await kurkiApi.get(`/frozen`)
 
@@ -10,6 +13,9 @@ const getCourses = async () => {
 }
 
 const getCompletions = async (kurkiId) => {
+  if (process.env.NODE_ENV === 'staging') {
+    return []
+  }
   logger.info({ message: `Fetching completions from Kurki for course ${kurkiId}` })
   const { data } = await kurkiApi.get(`/${kurkiId}/frozen-participants`)
 

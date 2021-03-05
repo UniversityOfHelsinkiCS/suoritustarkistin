@@ -5,7 +5,6 @@ const Op = Sequelize.Op
 const axios = require('axios')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const { getEmployees } = require('../services/importer')
-const moment = require('moment')
 
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
@@ -124,7 +123,7 @@ const sendToSis = async (req, res) => {
       verifierPersonId: verifier[0].id,
       courseUnitRealisationId,
       assessmentItemId,
-      completionDate: moment(completionDate).format('YYYY-MM-DD'),
+      completionDate,
       completionLanguage,
       courseUnitId,
       gradeScaleId,

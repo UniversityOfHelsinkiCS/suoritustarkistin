@@ -3,7 +3,7 @@ const db = require('../models/index')
 const {
   manualRun,
   activateJob,
-  deactivateJob,
+  deactivateJob
 } = require('../scripts/cronjobs')
 const { isValidJob, EAOI_CODES, BAI_CODES } = require('@root/utils/validators')
 const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')

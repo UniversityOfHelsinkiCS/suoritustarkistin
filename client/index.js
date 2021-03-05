@@ -9,6 +9,7 @@ import * as Sentry from "@sentry/react"
 
 import store from 'Utilities/store'
 import App from 'Components/App'
+import ErrorBoundary from 'Components/ErrorBoundary'
 
 if (process.env.NODE_ENV !== 'development')
   Sentry.init({
@@ -21,7 +22,9 @@ const refresh = () =>
   render(
     <Provider store={store}>
       <BrowserRouter basename={__BASE_PATH__}>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
       </BrowserRouter>
     </Provider>,
     document.getElementById('root')

@@ -8,15 +8,11 @@ import { isValidJob, isValidSchedule } from 'Root/utils/validators'
 export default ({ job, close }) => {
   const dispatch = useDispatch()
   const courses = useSelector((state) => state.courses.data)
-  const graders = useSelector((state) => state.graders.data)
   const [data, setData] = useState(job || { active: false })
 
-  const findGraderName = () => {
-    if (!data.courseId) return null
-    const course = courses.find((c) => c.id === data.courseId)
-    const grader = graders.find((g) => g.id === course.graderId)
-    return grader.name
-  }
+  if (!data.courseId) return null
+
+  const course = courses.find((c) => c.id === data.courseId)
 
   const filterAYCourses = (courses) => {
     if (!courses) return []
@@ -47,7 +43,7 @@ export default ({ job, close }) => {
         <Form.Dropdown
           data-cy="edit-job-course"
           selection
-          search
+          search={true}
           required={true}
           label="Course"
           options={filterAYCourses(courses).map((course) => ({
@@ -58,11 +54,18 @@ export default ({ job, close }) => {
           value={data.courseId || null}
           onChange={(e, d) => setData({ ...data, courseId: d.value })}
         />
-        <Form.Field
-          data-cy="edit-job-grader"
-          control={Input}
+        <Form.Dropdown
+          required={true}
           label="Grader"
-          value={findGraderName()}
+          selection
+          options={_.sortBy(course.graders, 'name').map((grader) => ({
+            key: grader.id,
+            value: grader.id,
+            text: grader.name
+          }))}
+          onChange={(e, { value }) => setData({ ...data, graderId: value  })}
+          data-cy="edit-job-grader"
+          label="Grader"
         />
         <Form.Field
           data-cy="edit-job-slug"

@@ -3,7 +3,20 @@ const db = require('../models/index')
 
 const getUsers = async (req, res) => {
   try {
-    const users = await db.users.findAll()
+    const users = await db.users.findAll({
+      include: [
+        { 
+          model: db.courses,
+          as: 'courses',
+          attributes: {
+            exclude: ['id', 'userCourses', 'createdAt', 'updatedAt']
+          },
+          through: {
+            attributes: []
+          }
+        }
+      ]
+    })
     res.status(200).json(users)
   } catch (e) {
     logger.error(e.message)

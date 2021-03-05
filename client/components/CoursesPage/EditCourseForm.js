@@ -21,10 +21,13 @@ import {
 
 export default ({ course, close }) => {
   const dispatch = useDispatch()
-  const graders = useSelector((state) => state.graders.data)
+  const allGraders = useSelector((state) => state.graders.data)
   const [data, setData] = useState(
-    course || { isMooc: false, autoSeparate: false }
+    { ...course, graders: course.graders.map((g) => g.id)}
+    || { isMooc: false, autoSeparate: false, graders: [] }
   )
+
+  if (!allGraders) return null
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -80,17 +83,18 @@ export default ({ course, close }) => {
           icon={isValidCreditAmount(data.credits) ? 'check' : 'times'}
         />
         <Form.Dropdown
-          selection
           required={true}
           label="Grader"
           search
-          options={_.sortBy(graders, 'name').map((grader) => ({
+          multiple
+          selection
+          options={_.sortBy(allGraders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,
             text: grader.name
           }))}
-          value={data.graderId}
-          onChange={(e, d) => setData({ ...data, graderId: d.value })}
+          value={data.graders}
+          onChange={(e, { value }) => setData({ ...data, graders: value  })}
         />
         <Popup
           trigger={
@@ -105,7 +109,10 @@ export default ({ course, close }) => {
           }
           mouseEnterDelay={300}
           mouseLeaveDelay={500}
-          content="Enables indentifying students with either MOOC email address or student numbers. Requires MOOC-bit to be set in Open university systems."
+          content={`
+            Enables indentifying students with either MOOC email address or 
+            student numbers. Requires MOOC-bit to be set in Open university systems.
+          `}
         />
         <Popup
           trigger={
@@ -118,7 +125,10 @@ export default ({ course, close }) => {
           }
           mouseEnterDelay={300}
           mouseLeaveDelay={500}
-          content="Enables automatic detection of HY and Open university students when both courses are held simultaneously. Requires MOOC-bit to be set in Open university systems."
+          content={`
+            Enables automatic detection of HY and Open university students 
+            when both courses are held simultaneously. Requires MOOC-bit to be set in Open university systems.
+          `}
         />
         <Form.Group>
           <Form.Field

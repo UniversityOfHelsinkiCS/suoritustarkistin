@@ -19,22 +19,7 @@ const { initializeDatabaseConnection } = require('./database/connection')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
 const {
   processEoai,
-  processBuildingai,
-  processCybsec1,
-  processCybsec2,
-  processCybsec3,
-  processCybsec1_2020,
-  processCybsec2_2020,
-  processCybsec3_2020,
-  processCybsec4,
-  processCybsec5,
-  processCybsec6,
-  processOhPe,
-  processOhJa,
-  processOhPePython,
-  processOhPePythonSyksy,
-  processOhPeEnglish,
-  processTiTo
+  processBuildingai
 } = require('./scripts/moocScripts')
 const { checkAllEntriesFromSisu } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
@@ -115,65 +100,6 @@ initializeDatabaseConnection()
       checkOodiEntries()
     }
 
-    if (process.argv[2] && process.argv[2] === 'cybsec1') {
-      processCybsec1()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec2') {
-      processCybsec2()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec3') {
-      processCybsec3()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec1_2020') {
-      processCybsec1_2020()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec2_2020') {
-      processCybsec2_2020()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec3_2020') {
-      processCybsec3_2020()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec4') {
-      processCybsec4()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec5') {
-      processCybsec5()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'cybsec6') {
-      processCybsec6()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpe') {
-      processOhPe()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpepython') {
-      processOhPePython()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpepythonsyksy') {
-      processOhPePythonSyksy()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohpeenglish') {
-      processOhPeEnglish()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'ohja') {
-      processOhJa()
-    }
-    if (process.argv[2] && process.argv[2] === 'tito') {
-      processTiTo()
-    }
-
     const STAGING = process.env.NODE_ENV === 'staging'
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING) {
       cron.schedule('0 4 * * 4', () => {
@@ -183,70 +109,6 @@ initializeDatabaseConnection()
       cron.schedule('35 5 * * 4', () => {
         processBuildingai()
       })
-
-      /*
-      cron.schedule('30 4 * * 4', () => {
-        processCybsec1()
-      })
-
-      cron.schedule('35 4 * * 4', () => {
-        processCybsec2()
-      })
-
-      cron.schedule('40 4 * * 4', () => {
-        processCybsec3()
-      })
-
-      cron.schedule('10 5 * * 4', () => {
-        processCybsec1_2020()
-      })
-
-      cron.schedule('15 5 * * 4', () => {
-        processCybsec2_2020()
-      })
-
-      cron.schedule('20 5 * * 4', () => {
-        processCybsec3_2020()
-      })
-
-      
-      cron.schedule('45 4 * * 4', () => {
-        processCybsec4()
-      })
-
-      cron.schedule('50 4 * * 4', () => {
-        processCybsec5()
-      })
-
-      cron.schedule('55 4 * * 4', () => {
-        processCybsec6()
-      })
-
-      cron.schedule('0 5 * * 4', () => {
-        processOhPePython()
-      })
-
-      cron.schedule('15 4 * * 4', () => {
-        processOhPe()
-      })
-
-      cron.schedule('20 4 * * 4', () => {
-        processOhJa()
-      })
-
-      cron.schedule('25 5 * * 4', () => {
-        processOhPePythonSyksy()
-      })
-
-      cron.schedule('30 5 * * 4', () => {
-        processOhPeEnglish()
-      })
-
-      cron.schedule('5 5 * * 4', () => {
-        processTiTo()
-      })
-
-      */
 
       cron.schedule('0 5 * * 5', () => {
         const timestamp = now()

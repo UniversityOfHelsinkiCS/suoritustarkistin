@@ -13,5 +13,14 @@ module.exports = (sequelize, DataTypes) => {
     {}
   )
 
+  Users.associate = function (models) {
+    Users.belongsToMany(models.courses, {
+      onDelete: 'SET NULL',
+      through: 'users_courses',
+      foreignKey: 'userId',
+      as: 'courses'
+    })    
+  }
+
   return Users
 }

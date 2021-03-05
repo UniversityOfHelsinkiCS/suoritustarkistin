@@ -28,7 +28,7 @@ export default (state = null, action) => {
       }
     case 'ADD_COURSE_SUCCESS':
       return {
-        header: `Course ${action.response.name} has been created.`,
+        header: `Course ${action.response[0].name} has been created.`,
         content: 'You can now add new completions for the course.',
         type: 'positive'
       }
@@ -41,7 +41,7 @@ export default (state = null, action) => {
       }
     case 'EDIT_COURSE_SUCCESS':
       return {
-        header: `${action.response.name} has been successfully modified!`,
+        header: `${action.response[0].name} has been successfully modified!`,
         content: 'New completions will be added with the modified course information.',
         type: 'positive'
       }
@@ -114,7 +114,7 @@ export default (state = null, action) => {
       }
     }
     case 'SIS_RUN_JOB_SUCCESS': {
-      if (action.message == "success") {
+      if (action.response.message == "success") {
         return {
           header: 'New report created!',
           type: 'positive',
@@ -122,8 +122,8 @@ export default (state = null, action) => {
         }  
       }
       return {
-        header: 'No report created!',
-        type: 'negative',
+        header: 'No report created',
+        type: 'neutral',
         content: 'There were no new completions to be reported'
       }  
     }

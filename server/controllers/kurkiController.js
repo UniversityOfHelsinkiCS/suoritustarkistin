@@ -56,7 +56,7 @@ const addKurkiRawEntries = async (req, res) => {
         courseCode,
         language,
         credits,
-        graderId: grader.id
+        graders: [grader.id]
       })
     }
 

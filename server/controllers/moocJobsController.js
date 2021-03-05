@@ -4,13 +4,11 @@ const {
   manualRun,
   activateJob,
   deactivateJob,
-  sisManualBaiRun,
-  sisManualEaoiRun,
-  sisManualRun
 } = require('../scripts/cronjobs')
-
-const { isValidJob } = require('@root/utils/validators')
-const { EAOI_CODES, BAI_CODES } = require('../../utils/validators')
+const { isValidJob, EAOI_CODES, BAI_CODES } = require('@root/utils/validators')
+const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
+const { processBaiEntries } = require('../scripts/sisProcessBaiEntries')
+const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
 
 const getJobs = async (req, res) => {
   try {
@@ -49,6 +47,7 @@ const editJob = async (req, res) => {
       returning: true,
       where: { id: req.params.id }
     })
+
     if (rows) {
       updatedJob.active
         ? activateJob(updatedJob.id)
@@ -77,8 +76,6 @@ const sisRunJob = async (req, res) => {
     if (!req.user.isAdmin) {
       return res.status(400).json({ error: 'User is not authorized to create SIS-reports.' })
     }
-
-    const transaction = await db.sequelize.transaction()
     const jobId = req.params.id
 
     const job = await db.jobs.findOne({
@@ -86,40 +83,44 @@ const sisRunJob = async (req, res) => {
         id: jobId
       }
     })
-
-    if (!job) {
-      return res.status(400).json({ error: `No cronjob with id: ${jobId}` })
-    }
+    if (!job) return res.status(400).json({ error: `No cronjob with id: ${jobId}` })
 
     const course = await db.courses.findOne({
       where: {
         id: job.courseId
       }
     })
-
-    if (!course) {
-      return res.status(400).json({ error: `No course with id: ${job.courseId} found`})
-    }
+    if (!course) return res.status(400).json({ error: `No course with id: ${job.courseId} found`})
 
     const grader = await db.users.findOne({
       where: {
-        id: course.graderId
+        id: job.graderId
       }
     })
+    if (!grader) return res.status(400).json({ error: `No grader found for the job: ${course.name}`})
 
-    if (!grader) {
-      return res.status(400).json({ error: `No grader-employee found for the course: ${job.courseId}`})
-    }
+    const timeStamp = new Date(Date.now())
 
+    logger.info(
+      `${timeStamp.toLocaleString()} Manual mooc-job run: Processing new ${course.name} (${
+        course.courseCode
+      }) completions`
+    )
     let result = ""
+
     if (EAOI_CODES.includes(course.courseCode)) {
-      result = await sisManualEaoiRun(course, grader, transaction)
+      result = await processEoaiEntries({ grader })
     } else if (BAI_CODES.includes(course.courseCode)) {
-      result = await sisManualBaiRun(job, course, grader, transaction)
+      result = await processBaiEntries({ job, course, grader })
     } else {
-      result = await sisManualRun(job, course, grader, transaction)
+      result = await processMoocEntries({ job, course, grader })
     }
-    return res.status(200).json({ result })
+
+    if (result.message === "no new entries" || result.message === "success") {
+      return res.status(200).json({ message: result.message })
+    }
+
+    return res.status(500).json({ error: result.message })
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: e.message })

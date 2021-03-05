@@ -1,12 +1,12 @@
 const moment = require('moment')
-const { getMultipleCourseRegistrations } = require('../services/eduweb')
-const { getCompletions } = require('../services/pointsmooc')
 const db = require('@models/index')
 const logger = require('@utils/logger')
-const { processEntries } = require('./sisProcessEntry')
-const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
-const { EAOI_CODES } = require('@root/utils/validators')
+const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
+const { getCompletions } = require('../services/pointsmooc')
+const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { isValidHylHyvGrade, EAOI_CODES } = require('@root/utils/validators')
+const { automatedAddToDb } = require('./automatedAddToDb')
 
 const languageMap = {
   "fi_FI" : "fi",
@@ -14,7 +14,7 @@ const languageMap = {
   "sv_SE" : "sv"
 } 
 
-const sisProcessEoaiEntries = async ({ grader }, transaction) => {
+const processEoaiEntries = async ({ grader }) => {
   try {
     const courses = await db.courses.findAll({ 
       where: {
@@ -33,8 +33,6 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
     const rawRegistrations = await getMultipleCourseRegistrations(EAOI_CODES)
     const rawCompletions = await getCompletions('elements-of-ai')
     const rawEntries = await db.raw_entries.findAll({ where: { courseId: courses.map((c) => c.id) }})
-
-
 
     // There are so many completions and registrations for Eaoi-courses
     // that some cleaning should be done first, based on existing data
@@ -86,6 +84,10 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
           return matches
         }
 
+        if (!isValidHylHyvGrade(completion.grade)) {
+          return matches
+        }
+
         const language = languageMap[completion.completion_language]
         const courseVersion = courses.find((c) => c.language === language)
 
@@ -96,13 +98,13 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, 'Hyv.')) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
             return matches
           } else {
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: 'Hyv.',
+              grade: completion.grade,
               credits: courseVersion.credits,
               language: language,
               attainmentDate: completion.completion_date || date,
@@ -122,39 +124,14 @@ const sisProcessEoaiEntries = async ({ grader }, transaction) => {
 
     logger.info(`${EAOI_CODES[0]}: Found ${matches.length} new completions.`)
 
-    if (matches && matches.length > 0) {
-      const newRawEntries = await db.raw_entries.bulkCreate(matches, { returning: true })
-      logger.info({ message: 'Raw entries success', amount: newRawEntries.length, course: EAOI_CODES[0], batchId, sis: true })
-  
-      const checkImprovements = false
-      const [failed, success] = await processEntries(newRawEntries, checkImprovements)
-
-      if (failed.length) {
-        logger.info({ message: `${failed.length} entries failed`, sis:true })
-  
-        for (const failedEntry of failed) {
-          logger.info({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}`})
-          await db.raw_entries.destroy({
-            where: {
-              id: failedEntry.id
-            }
-          })
-        }
-      }
-  
-      if (success && success.length) {
-        await db.entries.bulkCreate(success, { transaction })
-        logger.info({ message: `${success.length} new entries created`, amount: success.length, sis: true })
-        return { message: "success" }
-      }
-    }
-
-    return { message: "no new entries" }
+    const result = await automatedAddToDb(matches, courses[0], batchId)
+    return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)
+    return { message: error.message }
   }
 }
 
 module.exports = {
-  sisProcessEoaiEntries
+  processEoaiEntries
 }

@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Button, Grid, Icon } from 'semantic-ui-react'
 import { deleteCourseAction } from 'Utilities/redux/coursesReducer'
 import EditCourse from 'Components/CoursesPage/EditCourse'
 
-export default ({ course }) => {
+export default ({ course, graders }) => {
   const dispatch = useDispatch()
   const [really, setReally] = useState(false)
-  const graders = useSelector((state) => state.graders.data)
 
   const DeleteButton = () => (
     <Button
@@ -19,10 +18,10 @@ export default ({ course }) => {
     />
   )
 
-  const getGraderName = () => {
-    if (!graders) return null
-    const grader = graders.find((g) => g.id === course.graderId)
-    return grader ? grader.name : null
+  const getGradersNames = () => {
+    if (!graders || !course.graders) return null
+    const courseGraders = course.graders.map((grader) => grader.name)
+    return courseGraders ? courseGraders.join(', ') : null
   }
 
   const Confirm = () => (
@@ -46,7 +45,7 @@ export default ({ course }) => {
       <Grid.Column width={2}>{course.courseCode}</Grid.Column>
       <Grid.Column width={1}>{course.language}</Grid.Column>
       <Grid.Column width={1}>{course.credits}</Grid.Column>
-      <Grid.Column width={3}>{getGraderName()}</Grid.Column>
+      <Grid.Column width={3}>{getGradersNames()}</Grid.Column>
       <Grid.Column textAlign="center" width={2}>
         {course.isMooc ? (
           <Icon name="check" color="green" size="large" />

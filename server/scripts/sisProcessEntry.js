@@ -70,11 +70,20 @@ const processEntries = async (createdEntries, checkImprovements) => {
     const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
 
     if (!student) {
-      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: 'Person with student number not found from Sisu' })
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: 'Person with student number not found from Sisu'
+      })
       return Promise.resolve()
     }
+
     if (!verifier) {
-      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu` })
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`
+      })
       return Promise.resolve()
     }
 
@@ -82,8 +91,13 @@ const processEntries = async (createdEntries, checkImprovements) => {
       .find((e) => e.personId === student.id && e.code === course.courseCode)
 
     const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
+
     if (!filteredEnrolments || !filteredEnrolments.length) {
-      failed.push({ id: rawEntry.id, studentNumber: rawEntry.studentNumber, message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}` })
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`
+      })
       return Promise.resolve()
     }
 
@@ -96,7 +110,10 @@ const processEntries = async (createdEntries, checkImprovements) => {
             failed.push({
               id: rawEntry.id,
               studentNumber: rawEntry.studentNumber,
-              message: `Invalid grade "${rawEntry.grade} for course ${course.courseCode}". Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}`
+              message: `
+                Invalid grade "${rawEntry.grade} for course ${course.courseCode}". 
+                Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
+              `
             })
             return Promise.resolve()
           }

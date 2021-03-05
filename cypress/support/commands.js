@@ -93,7 +93,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       courseCode: 'TKT10001',
       language: 'fi',
       credits: '3,0',
-      graderId: response.body.id,
+      graders: [response.body.id],
     })
     cy.request('POST', '/api/courses', {
       id: 2,
@@ -101,7 +101,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       courseCode: 'TKT10002',
       language: 'en',
       credits: '8,0',
-      graderId: response.body.id,
+      graders: [response.body.id],
     })
     cy.request('POST', '/api/courses', {
       id: 3,
@@ -109,7 +109,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       courseCode: 'TKT10003',
       language: 'sv',
       credits: '5,0',
-      graderId: response.body.id,
+      graders: [response.body.id],
     })
 
   cy.request('POST', '/api/users', {
@@ -125,7 +125,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       courseCode: 'AYTKT10004',
       language: 'fi',
       credits: '4,0',
-      graderId: response.body.id,
+      graders: [response.body.id],
     })
     cy.request('POST', '/api/courses', {
       id: 5,
@@ -133,7 +133,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       courseCode: 'CSM12106',
       language: 'en',
       credits: '5,0',
-      graderId: response.body.id,
+      graders: [response.body.id],
     })
     cy.request('POST', '/api/courses', {
       id: 6,
@@ -141,7 +141,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       courseCode: 'DATA12001',
       language: 'en',
       credits: '5,0',
-      graderId: response.body.id,
+      graders: [response.body.id],
     })
     })
   })

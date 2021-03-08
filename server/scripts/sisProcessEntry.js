@@ -111,7 +111,7 @@ const processEntries = async (createdEntries, checkImprovements) => {
               id: rawEntry.id,
               studentNumber: rawEntry.studentNumber,
               message: `
-                Invalid grade "${rawEntry.grade} for course ${course.courseCode}". 
+                Invalid grade "${rawEntry.grade}" for course "${course.courseCode}". 
                 Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
               `
             })
@@ -165,10 +165,17 @@ const filterEnrolments = (completionDate, { enrolments }) => {
 }
 
 const mapGrades = (gradeScales, id, rawEntry) => {
+  let grade = rawEntry.grade
   if (id === "sis-0-5") {
-    return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === rawEntry.grade)
+    if (grade === "Hyl." || grade === "-") {
+      grade = "0"
+    }
+    return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === grade)
   } else if (id === "sis-hyl-hyv") {
-    return gradeScales[id].find(({ abbreviation }) => abbreviation['fi'] === rawEntry.grade)
+    if (grade === 0 || grade === "0" || grade === "-") {
+      grade = "Hyl."
+    }
+    return gradeScales[id].find(({ abbreviation }) => abbreviation['fi'] === grade)
   }
 }
 

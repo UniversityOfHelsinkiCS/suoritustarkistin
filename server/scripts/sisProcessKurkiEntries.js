@@ -1,8 +1,8 @@
 const moment = require('moment')
+const logger = require('@utils/logger')
+const { sisIsValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { getCompletions } = require('../services/kurki')
 const { getEarlierAttainments } = require('../services/importer')
-const logger = require('@utils/logger')
-const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
@@ -45,13 +45,7 @@ const processKurkiEntries = async ({
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
 
-        let grade = completion.grade
-
-        if (grade === "-") {
-          grade = 0
-        }
-
-        if (!isValidGrade(grade)) {
+        if (!sisIsValidGrade(completion.grade)) {
           logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
           return matches
         }
@@ -65,7 +59,7 @@ const processKurkiEntries = async ({
             return matches.concat({
               studentNumber: completion.studentNumber,
               batchId: batchId,
-              grade: grade,
+              grade: completion.grade,
               credits: completion.credits || course.credits,
               language: language,
               attainmentDate: completion.courseFinishDate || date,
@@ -89,7 +83,7 @@ const processKurkiEntries = async ({
     return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)
-    return { error }
+    return { message: error.message }
   }
 }
 

@@ -3,7 +3,7 @@ const { Op } = require("sequelize")
 const db = require('../models/index')
 const {
   isValidStudentId,
-  isValidGrade,
+  sisIsValidGrade,
   isValidCreditAmount
 } = require('../../utils/validators')
 const { processEntries } = require('./sisProcessEntry')
@@ -21,7 +21,7 @@ const validateEntry = ({
   if (!isValidStudentId(studentId)) {
     throw new Error(`'${studentId}' is not valid student id`)
   }
-  if (grade && !isValidGrade(grade)) {
+  if (grade && !sisIsValidGrade(grade)) {
     throw new Error(`'${grade}' is not valid grade`)
   }
   if (credits && !isValidCreditAmount(credits)) {
@@ -136,7 +136,6 @@ const processManualEntry = async ({
       courseId: tktCourse.id
     }
   })
-
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
   const checkImprovements = true

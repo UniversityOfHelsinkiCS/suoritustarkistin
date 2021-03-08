@@ -62,6 +62,8 @@ const sisIsDateObject = (date) => {
 
 const isValidGrade = (grade) => /^([0-5]|Hyv\.|Hyl\.)$/.test(grade) // 0 to 5, Hyv. or Hyl.
 
+const sisIsValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
+
 const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // Hyv. or Hyl.
 
 const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
@@ -139,7 +141,7 @@ const sisIsValidLanguage = (language) => {
 const sisIsValidRow = (row) => {
   if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
-  if (row.grade && !isValidGrade(row.grade)) return false
+  if (row.grade && !sisIsValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
   if (row.language && !sisIsValidLanguage(row.language)) return false
   if (row.attainmentDate && !sisIsValidDate(row.attainmentDate)) return false
@@ -182,6 +184,7 @@ module.exports = {
   sisIsValidDate,
   sisIsDateObject,
   isValidGrade,
+  sisIsValidGrade,
   isValidHylHyvGrade,
   isValidCreditAmount,
   isValidLanguage,

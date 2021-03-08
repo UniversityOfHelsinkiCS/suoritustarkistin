@@ -9,7 +9,7 @@ import SisReportStatus from './SisReportStatus'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
-import { EAOI_CODES, EAOI_NAMEMAP } from '../../../utils/validators'
+import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
 
 
 const SisSuccessMessage = () => <Message success>
@@ -38,15 +38,15 @@ const getSisUnitName = (name, language) => {
 }
 
 const getCourseName = (rawEntry, course) => {
-  if (EAOI_CODES.includes(course.courseCode)) {
-    return EAOI_NAMEMAP[rawEntry.entry.completionLanguage].name
+  if (EOAI_CODES.includes(course.courseCode)) {
+    return EOAI_NAMEMAP[rawEntry.entry.completionLanguage].name
   }
   return course.name
 }
 
 const getCourseCode = (rawEntry, course) => {
-  if (EAOI_CODES.includes(course.courseCode)) {
-    return EAOI_NAMEMAP[rawEntry.entry.completionLanguage].code
+  if (EOAI_CODES.includes(course.courseCode)) {
+    return EOAI_NAMEMAP[rawEntry.entry.completionLanguage].code
   }
   return course.courseCode
 }

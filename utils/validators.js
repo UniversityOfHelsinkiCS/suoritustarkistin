@@ -12,9 +12,9 @@ const SIS_LANGUAGES = [
   "en"
 ]
 
-const EAOI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+const EOAI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
-const EAOI_NAMEMAP = {
+const EOAI_NAMEMAP = {
   en: {
     name: 'The Elements of AI',
     code: 'AYTKT21018'
@@ -175,8 +175,8 @@ const isValidSchedule = (schedule) => {
 }
 
 module.exports = {
-  EAOI_CODES,
-  EAOI_NAMEMAP,
+  EOAI_CODES,
+  EOAI_NAMEMAP,
   BAI_CODES,
   SIS_LANGUAGES,
   isValidStudentId,

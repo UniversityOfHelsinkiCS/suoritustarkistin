@@ -44,7 +44,7 @@ export const parseCSV = (string) => {
     return {
       studentId: addLeadingZero(splitRow[0]).trim(),
       batchId: '',
-      grade: splitRow[1] && splitRow[1].trim(),
+      grade: splitRow[1] ? splitRow[1].trim() : 'Hyv.',
       credits: splitRow[2] && splitRow[2].trim(),
       language: splitRow[3] && splitRow[3].trim(),
       attainmentDate: formatDate(splitRow[4]),

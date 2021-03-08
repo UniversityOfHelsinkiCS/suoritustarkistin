@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Icon } from 'semantic-ui-react'
+import { Table, Icon, Popup } from 'semantic-ui-react'
 import { useSelector } from 'react-redux'
 
 const { commify } = require('Root/utils/commify')
@@ -10,11 +10,17 @@ const {
   isValidCreditAmount,
   isValidLanguage,
   sisIsValidDate,
+  sisFutureDate,
+  sisPastDate,
   sisIsDateObject
 } = require('Root/utils/validators')
 
 const validStyle = {
   background: '#d2f3db'
+}
+
+const warningStyle = {
+  background: '#f7d96a'
 }
 
 const changedStyle = {
@@ -141,6 +147,26 @@ const getLanguageCell = (language, course) => {
 
 const getDateCell = (date) => {
   if (date) {
+    const past = sisPastDate(date)
+    const future = sisFutureDate(date)
+    if (past || future) {
+      return (
+        <Popup
+          trigger={
+            <Table.Cell style={warningStyle}>
+            <Icon name="exclamation" />
+            {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
+          </Table.Cell>
+          }
+          mouseEnterDelay={300}
+          mouseLeaveDelay={500}
+          content={future
+            ? <p>Completion date <strong>set to future</strong>, check that it is correct. Adding completions to this date is still possible.</p>
+            : <p>Completion date <strong>set far back in the past</strong>, check that it is correct. Adding completions to this date is still possible.</p>
+          }
+        />
+      )
+    }
     if (sisIsValidDate(date)) {
       return <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
     }

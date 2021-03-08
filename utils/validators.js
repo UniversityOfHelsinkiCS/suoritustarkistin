@@ -1,3 +1,4 @@
+const moment = require('moment')
 const cron = require('node-cron')
 
 const LANGUAGES = {
@@ -52,6 +53,22 @@ const sisIsValidDate = (date) => {
   if (!date) return false
   if (sisIsDateObject(date)) {
     if (date.getFullYear() > 1999 && date.getFullYear() < 2099) return true
+  }
+  return false
+}
+
+const sisFutureDate = (date) => {
+  if (!date) return false
+  if (sisIsDateObject(date)) {
+    if (date > new Date()) return true
+  }
+  return false
+}
+
+const sisPastDate = (date) => {
+  if (!date) return false
+  if (sisIsDateObject(date)) {
+    if (date < moment().subtract(100, 'days')) return 'past'
   }
   return false
 }
@@ -183,6 +200,8 @@ module.exports = {
   isValidOodiDate,
   sisIsValidDate,
   sisIsDateObject,
+  sisFutureDate,
+  sisPastDate,
   isValidGrade,
   sisIsValidGrade,
   isValidHylHyvGrade,

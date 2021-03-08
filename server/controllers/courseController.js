@@ -79,7 +79,6 @@ const addCourse = async (req, res) => {
 
     delete course.graders
     const newCourse = await db.courses.create(course, transaction)
-
     for (const graderId of graders) {
       const user = (
         await db.users.findOne({
@@ -109,11 +108,15 @@ const addCourse = async (req, res) => {
     })
 
     transaction.commit()
-    res.status(200).json(cleanCourses([newCourseWithGraders]))
+    return res.status(200).json(cleanCourses([newCourseWithGraders]))
   } catch (e) {
     await transaction.rollback()
+    if (e.message === "Validation error") {
+      logger.error(`Course with the course code already exists`)
+      return res.status(400).json({ error: `Course with the course code already exists` })
+    }
     logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
+    return res.status(500).json({ error: 'server went BOOM!' })
   }
 }
 
@@ -192,6 +195,10 @@ const editCourse = async (req, res) => {
 
     return res.status(400).json({ error: 'id not found.' })
   } catch (e) {
+    if (e.message === "Validation error") {
+      logger.error(`Course with the course code already exists`)
+      return res.status(400).json({ error: `Course with the course code already exists` })
+    }
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
   }

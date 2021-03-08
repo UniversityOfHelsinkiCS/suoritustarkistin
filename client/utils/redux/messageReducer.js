@@ -36,7 +36,7 @@ export default (state = null, action) => {
       return {
         header: 'Creating the course failed!',
         content:
-          'Course creation failed. If the error persists, please contact grp-toska@cs.helsinki.fi.',
+          `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
         type: 'negative'
       }
     case 'EDIT_COURSE_SUCCESS':
@@ -49,7 +49,7 @@ export default (state = null, action) => {
       return {
         header: 'Modifying the course failed.',
         content:
-          'Course modification has failed. If the error persists, please contact grp-toska@cs.helsinki.fi.',
+          `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
         type: 'negative'
       }
     case 'DELETE_COURSE_SUCCESS':

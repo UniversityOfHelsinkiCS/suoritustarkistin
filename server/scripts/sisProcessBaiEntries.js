@@ -4,7 +4,6 @@ const logger = require('@utils/logger')
 const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
-const { isValidHylHyvGrade } = require('@root/utils/validators')
 const { isImprovedTier } = require('../utils/sisEarlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
@@ -75,10 +74,6 @@ const processBaiEntries = async ({
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
 
-        if (!isValidHylHyvGrade(completion.grade)) {
-          return matches
-        }
-
         const registration = registrations.find(
           (registration) =>
             registration.email.toLowerCase() === completion.email.toLowerCase() ||
@@ -92,7 +87,7 @@ const processBaiEntries = async ({
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: completion.grade,
+              grade: "Hyv.",
               credits: tierCreditAmount[completion.tier],
               language: 'en',
               attainmentDate: completion.completion_date || date,

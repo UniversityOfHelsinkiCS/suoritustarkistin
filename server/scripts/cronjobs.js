@@ -1,9 +1,10 @@
 const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
-const { EOAI_CODES } = require('@root/utils/validators')
+const { EOAI_CODES, BAI_CODES } = require('@root/utils/validators')
 const processMoocCompletions = require('./processMoocCompletions')
 const processEoaiCompletions = require('./processEoaiCompletions')
+const processBaiCompletions = require('./processBaiCompletions')
 
 let cronjobs = {}
 
@@ -26,7 +27,9 @@ const initializeCronJobs = async () => {
         }) completions.`
       )
       if (EOAI_CODES.includes(course.courseCode)) {
-        await processEoaiCompletions()
+        await processEoaiCompletions(grader)
+      } else if (BAI_CODES.includes(course.courseCode)) {
+        await processBaiCompletions(grader, course, job) 
       } else {
         await processMoocCompletions(
           course.courseCode,
@@ -55,7 +58,9 @@ const manualRun = async (id) => {
   )
 
   if (EOAI_CODES.includes(course.courseCode)) {
-    await processEoaiCompletions()
+    await processEoaiCompletions(grader)
+  } else if (BAI_CODES.includes(course.courseCode)) {
+    await processBaiCompletions(grader, course, job) 
   } else {
     await processMoocCompletions(
       course.courseCode,
@@ -83,8 +88,10 @@ const activateJob = async (id) => {
       }) completions.`
     )
     if (EOAI_CODES.includes(course.courseCode)) {
-      await processEoaiCompletions()
-    } else {
+      await processEoaiCompletions(grader)
+    } else if (BAI_CODES.includes(course.courseCode)) {
+      await processBaiCompletions(grader, course, job) 
+    } else {  
       await processMoocCompletions(
         course.courseCode,
         course.name,

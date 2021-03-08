@@ -12,7 +12,7 @@ const getOodiDate = (date) => {
   return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
 }
 
-const processEoaiCompletions = async () => {
+const processEoaiCompletions = async (grader) => {
   try {
     const credits = await db.credits.findAll({
       where: {
@@ -79,7 +79,7 @@ const processEoaiCompletions = async () => {
         return `${match.studentId}${
           courseStrings[match.completionLanguage]
         }${getOodiDate(completionDate)}#0#Hyv.#106##${
-          process.env.TEACHERCODE
+          grader.employeeId
         }#2#H930#11#93013#3##2,0`
       })
 

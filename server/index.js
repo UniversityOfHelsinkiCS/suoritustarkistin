@@ -17,10 +17,6 @@ const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
 const checkOodiEntries = require('./scripts/checkOodiEntries')
-const {
-  processEoai,
-  processBuildingai
-} = require('./scripts/moocScripts')
 const { checkAllEntriesFromSisu } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
 
@@ -83,14 +79,6 @@ initializeDatabaseConnection()
 
     const now = () => new Date(Date.now())
 
-    if (process.argv[2] && process.argv[2] === 'eoai') {
-      processEoai()
-    }
-
-    if (process.argv[2] && process.argv[2] === 'buildingai') {
-      processBuildingai()
-    }
-
     if (process.argv[2] && process.argv[2] === 'checkoodi') {
       const timestamp = now()
       logger.info(
@@ -101,14 +89,6 @@ initializeDatabaseConnection()
 
     const STAGING = process.env.NODE_ENV === 'staging'
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING) {
-      cron.schedule('0 4 * * 4', () => {
-        processEoai()
-      })
-
-      cron.schedule('35 5 * * 4', () => {
-        processBuildingai()
-      })
-
       cron.schedule('0 5 * * 5', () => {
         const timestamp = now()
         logger.info(

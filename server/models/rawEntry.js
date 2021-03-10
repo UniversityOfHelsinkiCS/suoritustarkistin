@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
     RawEntry.hasOne(models.entries, {foreignKey: 'rawEntryId', as: 'entry', onDelete:'CASCADE', onUpdate:'CASCADE'})
     RawEntry.belongsTo(models.users, {foreignKey: 'reporterId', as: 'reporter'})
     RawEntry.belongsTo(models.users, {foreignKey: 'graderId', as: 'grader'})
-    RawEntry.belongsTo(models.courses, {foreignKey: 'courseId', as: 'course'})
+    RawEntry.belongsTo(models.courses, {foreignKey: 'courseId', as: 'course', onDelete:'SET NULL'})
   }
   return RawEntry
 }

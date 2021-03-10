@@ -101,6 +101,15 @@ const processEntries = async (createdEntries, checkImprovements) => {
       return Promise.resolve()
     }
 
+    if (!validateCredits(filteredEnrolments, rawEntry.credits)) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolments[0].credits.min} to ${filteredEnrolments[0].credits.max}`
+      })
+      return Promise.resolve()
+    }
+
     // Create here the acual attainments for Sisu
     await Promise.all(
       filteredEnrolments
@@ -157,11 +166,16 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   return properEnrolments.map(({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, courseUnit, courseUnitRealisation }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: courseUnit.gradeScaleId,
+    credits: courseUnit.credits,
     assessmentItemId,
     courseUnitRealisationId,
     courseUnitId,
     personId
   }))
+}
+
+const validateCredits = (enrolments, targetCredits) => {
+  return enrolments.some(({ credits }) => targetCredits >= credits.min && targetCredits <= credits.max)
 }
 
 const mapGrades = (gradeScales, id, rawEntry) => {

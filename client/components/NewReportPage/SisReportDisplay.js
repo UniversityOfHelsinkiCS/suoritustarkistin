@@ -154,9 +154,9 @@ const getDateCell = (date) => {
         <Popup
           trigger={
             <Table.Cell style={warningStyle}>
-            <Icon name="exclamation" />
-            {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
-          </Table.Cell>
+              <Icon name="exclamation" />
+              {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
+            </Table.Cell>
           }
           mouseEnterDelay={300}
           mouseLeaveDelay={500}

@@ -151,10 +151,15 @@ const processEntries = async (createdEntries, checkImprovements) => {
   return [failed, success]
 }
 
+/**
+ * Find the best matching enrollment. That is an enrolment where the course unit realisation's start
+ * date is *before* completion date and with the greatest end date. That yields us the enrollment
+ * with course unit currently active, or the closest already ended realisation.
+ */
 const filterEnrolments = (completionDate, { enrolments }) => {
   if (!enrolments) return null
   const sortedEnrolments = enrolments
-    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.endDate).isBefore(moment(completionDate)))
+    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isBefore(moment(completionDate)))
     .sort(
       (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate.endDate)
         .diff(moment(a.courseUnitRealisation.activityPeriod.endDate.endDate))

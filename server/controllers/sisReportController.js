@@ -4,6 +4,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const axios = require('axios')
 const { checkEntries } = require('../scripts/checkSisEntries')
+const { getEmployees } = require('../services/importer')
 
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
@@ -88,6 +89,11 @@ const sendToSis = async (req, res) => {
     throw new Error('User is not authorized to report credits.')
   }
 
+  const verifier = await getEmployees([req.user.employeeId])
+  if (!verifier.length)
+    throw new Error(`Verifier with employee number ${req.user.employeeId} not found`)
+
+
   const entryIds = req.body
   const entries = await db.entries.findAll({
     where: {
@@ -102,7 +108,6 @@ const sendToSis = async (req, res) => {
   const data = entries.map((entry) => {
     const {
       personId,
-      verifierPersonId,
       courseUnitRealisationId,
       assessmentItemId,
       completionDate,
@@ -115,7 +120,7 @@ const sendToSis = async (req, res) => {
 
     return {
       personId,
-      verifierPersonId,
+      verifierPersonId: verifier[0].id,
       courseUnitRealisationId,
       assessmentItemId,
       completionDate,
@@ -129,15 +134,17 @@ const sendToSis = async (req, res) => {
 
   let status = 200
   try {
-    logger.info({ message: 'Sending entries to Sisu', amount: data.length, sis: true, user: req.user.name })
+    logger.info({ message: 'Sending entries to Sisu', amount: data.length, sis: true, user: req.user.name, payload: JSON.stringify(data) })
     await api.post('suotar/', data)
     await updateSuccess(entryIds, senderId)
     logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, sis: true })
   } catch (e) {
     status = 400
-    logger.error({ message: 'Error when sending entries to Sisu', sis: true, error: e.toString() })
+    const payload = JSON.stringify(data)
+    const errorMessage = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
+    logger.error({ message: 'Error when sending entries to Sisu', sis: true, errorMessage, payload })
     if (!isValidSisuError(e.response)) {
-      logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name, errorMessage: e.toString(), sis: true })
+      logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name, sis: true })
       return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, sis: true, user: req.user.name })
     }
     const failedEntries = await writeErrorsToEntries(e.response, data, entries, senderId)
@@ -147,7 +154,7 @@ const sendToSis = async (req, res) => {
       .filter(({ id }) => !failedEntries.includes(id))
       .map((entry) => entry.id)
     await updateSuccess(successEntryIds, senderId)
-    logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, error: e.response.data, sis: true })
+    logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, sis: true })
   }
 
   const updatedWithRawEntries = await db.raw_entries.findAll({
@@ -199,15 +206,15 @@ const isValidSisuError = (response) => {
 
 const parseSisuErrors = ({ failingIds, violations }) => {
   if (!failingIds || !violations) return null
-  const errors = Array(failingIds.length).fill(undefined)
-  failingIds
-    .filter((id) => id !== "non-identifiable")
+  const identifiableViolations = failingIds.filter((id) => id !== "non-identifiable")
+  const errors = Array(identifiableViolations.length).fill(undefined)
+  identifiableViolations
     .forEach((id) => {
       // path is like importActiveAttainments.attainments[1].personId
       // where we want to obtain the index (attainments[index]) so we can
       // specify which entry the violation is related to
       const index = violations[id][0].path.split(".")[1].substr(-2, 1)
-      errors[index] = violations[id].map((violation) => violation.message)
+      errors[index] = violations[id].map((violation) => JSON.stringify(violation))
     })
   return errors
 }

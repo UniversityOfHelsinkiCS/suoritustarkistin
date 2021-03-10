@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
-import { Accordion, Button, Icon, Message, Table } from 'semantic-ui-react'
+import { Accordion, Button, Icon, Message, Table, Radio } from 'semantic-ui-react'
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
@@ -309,6 +309,7 @@ const title = (batch) => {
 export default ({ reports, user }) => {
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
+  const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false })
   const dispatch = useDispatch()
 
   if (reports.pending) return <div>LOADING!</div>
@@ -317,28 +318,52 @@ export default ({ reports, user }) => {
   const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
-  const panels = batchedReports.map((report, index) => {
-    
-    const reportWithEntries = report.filter((e) => e && e.entry)
-    if (!reportWithEntries || !reportWithEntries.length) return null
+  const filterBatches = (report) => {
+    if (!filters.errors && !filters.missing && !filters.notSent) return true
 
-    const course = courses.find((c) => report[0].courseId === c.id)
-    if (!course) return {
-      key: `panel-${index}`,
-      title: title(reportWithEntries),
-      content: <Accordion.Content>Course for these entries was not found from Suotar</Accordion.Content>
-    }
-  
-    return {
-      key: `panel-${index}`,
-      title: title(reportWithEntries),
-      content: reportContents(reportWithEntries, course, dispatch, user, openAccordions),
-      onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
-    }
-  })
+    const containsErrors = report.some(({ entry }) => (entry.errors || {}).message)
+    const notSent = report.every(({ entry }) => !entry.sent)
+    const missingFromSisu = report.some(({ entry }) => entry.sent && !(entry.errors || {}).message && !entry.registered)
+    if (filters.errors && containsErrors) return true
+    if (filters.missing && missingFromSisu) return true
+    if (filters.notSent && notSent) return true
+    return false
+  }
+
+  const panels = batchedReports
+    .filter(filterBatches)
+    .map((report, index) => {
+      const reportWithEntries = report.filter((e) => e && e.entry)
+      if (!reportWithEntries || !reportWithEntries.length) return null
+
+      const course = courses.find((c) => report[0].courseId === c.id)
+      if (!course) return {
+        key: `panel-${index}`,
+        title: title(reportWithEntries),
+        content: <Accordion.Content>Course for these entries was not found from Suotar</Accordion.Content>
+      }
+
+      return {
+        key: `panel-${index}`,
+        title: title(reportWithEntries),
+        content: reportContents(reportWithEntries, course, dispatch, user, openAccordions),
+        onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
+      }
+    })
+
+  const toggleFilter = (name) => setFilters({ ...filters, [name]: !filters[name] })
+
+  const Filters = () => <div style={{ marginBottom: '2rem' }}>
+    <h3>View reports with:</h3>
+    <Radio label='Contains errors' style={{ margin: '0 1rem' }} checked={filters.errors} onClick={() => toggleFilter('errors')} toggle />
+    <Radio label='Sent missing from Sisu' style={{ margin: '0 1rem' }} checked={filters.missing} onClick={() => toggleFilter('missing')} toggle />
+    <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
+  </div>
+
 
   return <>
     <Notification />
+    <Filters />
     <Accordion panels={panels} exclusive={false} fluid styled />
   </>
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import * as _ from 'lodash'
 import moment from 'moment'
+import { Label } from 'semantic-ui-react'
 
 const styles = {
   success: {
@@ -31,49 +32,33 @@ const SisReportStatus = ({ batch }) => {
   const amountOfErrors = batch.filter(({ entry }) => entry.errors).length
   const amountMissingFromSisu = batch.filter(({ entry }) => !entry.registered).length
 
-  const getMissing = () => (
-    <>
-      <p style={styles.success}>
-        SENT TO SIS
-      </p>
-      <p style={styles.missing}>
-        {amountMissingFromSisu} of {batch.length} NOT IN SISU
-      </p>
-      <p style={styles.info}>
-        {formattedDate}, by: {_.uniq(senderNames).join(",")}
-      </p>
-    </>
-  )
+  const getMissing = () => hasSuccessfullySentEntries && amountMissingFromSisu ? (
+    <Label basic color='orange' pointing='left'>
+      {amountMissingFromSisu} of {batch.length} NOT IN SISU
+    </Label>
 
-  const getSuccess = () => (
-    <span>
-      <p style={styles.success}>
-        SENT TO SIS
-      </p>
-      <p style={styles.info}>
-        {formattedDate}, by: {_.uniq(senderNames).join(",")}
-      </p>
-    </span>
-  )
+  ) : null
 
-  const getNotSent = () => (
-    <p style={styles.error}>
-      NOT SENT TO SIS
-    </p>
-  )
-  
-  const getErrorAmount = () => (
-    <p style={styles.missing}>
+  const getErrorAmount = () => amountOfErrors !== 0 ? (
+    <Label basic color='red' pointing='left'>
       {`CONTAINS ${amountOfErrors} ERROR(S)`}
-    </p>
-  ) 
+    </Label>
+  ) : null
+
+  const batchStatus = (sent) => <span style={sent ? styles.success : styles.error}>
+    {sent ? 'SENT TO SIS' : 'NOT SENT TO SIS'}
+  </span>
+
+  const getDateSent = () => sentDate ? <p style={styles.info}>
+    {formattedDate}, by: {_.uniq(senderNames).join(",")}
+  </p> : null
 
   return (
     <div>
-      {hasSuccessfullySentEntries && !amountMissingFromSisu && getSuccess()}
-      {hasSuccessfullySentEntries && amountMissingFromSisu && getMissing()}
-      {!hasSuccessfullySentEntries && getNotSent()}
-      {amountOfErrors !== 0 && getErrorAmount()}
+      {batchStatus(hasSuccessfullySentEntries)}
+      {getMissing()}
+      {getErrorAmount()}
+      {getDateSent()}
     </div>
   )
 }

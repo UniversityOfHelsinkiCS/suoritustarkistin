@@ -322,12 +322,15 @@ export default ({ reports, user }) => {
     const reportWithEntries = report.filter((e) => e && e.entry)
     if (!reportWithEntries || !reportWithEntries.length) return null
 
-    const course = courses.find((c) => report[0].courseId === c.id)
-    if (!course) return {
-      key: `panel-${index}`,
-      title: title(reportWithEntries),
-      content: <Accordion.Content>Course for these entries was not found from Suotar</Accordion.Content>
+    const placeholderCourse = {
+      id: 'COURSE DELETED',
+      name: 'COURSE DELETED',
+      courseCode: 'COURSE DELETED',
+      language: 'COURSE DELETED',
+      credits: 'COURSE DELETED',
     }
+
+    const course = courses.find((c) => report[0].courseId === c.id) || placeholderCourse
   
     return {
       key: `panel-${index}`,

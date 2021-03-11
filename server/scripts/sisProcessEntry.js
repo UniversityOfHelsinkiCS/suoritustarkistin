@@ -101,6 +101,15 @@ const processEntries = async (createdEntries, checkImprovements) => {
       return Promise.resolve()
     }
 
+    if (!validateCredits(filteredEnrolments, rawEntry.credits)) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolments[0].credits.min} to ${filteredEnrolments[0].credits.max}`
+      })
+      return Promise.resolve()
+    }
+
     // Create here the acual attainments for Sisu
     await Promise.all(
       filteredEnrolments
@@ -142,10 +151,15 @@ const processEntries = async (createdEntries, checkImprovements) => {
   return [failed, success]
 }
 
+/**
+ * Find the best matching enrollment. That is an enrolment where the course unit realisation's start
+ * date is *before* completion date and with the greatest end date. That yields us the enrollment
+ * with course unit currently active, or the closest already ended realisation.
+ */
 const filterEnrolments = (completionDate, { enrolments }) => {
   if (!enrolments) return null
   const sortedEnrolments = enrolments
-    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.endDate).isBefore(moment(completionDate)))
+    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isBefore(moment(completionDate)))
     .sort(
       (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate.endDate)
         .diff(moment(a.courseUnitRealisation.activityPeriod.endDate.endDate))
@@ -157,11 +171,16 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   return properEnrolments.map(({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, courseUnit, courseUnitRealisation }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: courseUnit.gradeScaleId,
+    credits: courseUnit.credits,
     assessmentItemId,
     courseUnitRealisationId,
     courseUnitId,
     personId
   }))
+}
+
+const validateCredits = (enrolments, targetCredits) => {
+  return enrolments.some(({ credits }) => targetCredits >= credits.min && targetCredits <= credits.max)
 }
 
 const mapGrades = (gradeScales, id, rawEntry) => {

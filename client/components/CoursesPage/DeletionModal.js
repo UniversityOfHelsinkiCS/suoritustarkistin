@@ -27,7 +27,10 @@ const DeletionModal = ({ showForm, setShowForm, id }) => {
               Are you sure you want to delete the course? 
             </Header>
             <Header>
-              {unsent && `There are still ${unsent} completions to this course that have not been sent to SIS. Those will be deleted as well.`}
+              {unsent > 0 && 
+                `There are still ${unsent} completions to this course that 
+                have not been sent to SIS. Those will be deleted as well.`
+              }
             </Header>
             <div style={{ marginTop: "2em" }}>
               <Button
@@ -35,7 +38,7 @@ const DeletionModal = ({ showForm, setShowForm, id }) => {
                 color="red"
                 onClick={() => deleteCourse(id)}
               >
-                Yes, delete the course {unsent && "and unsent completions"}
+                Yes, delete the course {unsent > 0 && "and unsent completions"}
               </Button>
               <Button onClick={closeModal}>Cancel</Button>
             </div>

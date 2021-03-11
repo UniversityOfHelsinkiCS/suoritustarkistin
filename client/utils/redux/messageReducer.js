@@ -58,6 +58,12 @@ export default (state = null, action) => {
         content: 'The course has been deleted and no new completions can be added.',
         type: 'positive'
       }
+    case 'DELETE_COURSE_FAILURE':
+      return {
+        header: `Deleting the course failed.`,
+        content: `${action.error}`,
+        type: 'negative'
+      }
     case 'SIS_DELETE_BATCH_SUCCESS':
       return {
         header: 'Completions successfully deleted',

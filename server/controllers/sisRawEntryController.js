@@ -43,5 +43,5 @@ const addRawEntries = async (req, res) => {
 }
 
 module.exports = {
-  addRawEntries,
+  addRawEntries
 }

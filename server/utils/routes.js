@@ -5,6 +5,7 @@ const {
   addCourse,
   editCourse,
   deleteAllCourses,
+  confirmDeletion,
   deleteCourse
 } = require('@controllers/courseController')
 const {
@@ -81,7 +82,8 @@ router.get('/courses', checkAdmin, getCourses)
 router.post('/courses', addCourse)
 router.get('/courses/:id/registrations', getCourseRegistrations)
 router.put('/courses/:id', editCourse)
-router.delete('/courses/:id', checkAdmin, deleteCourse)
+router.get('/courses/:id/confirm_deletion', checkAdmin, confirmDeletion)
+router.delete('/courses/:id/', checkAdmin, deleteCourse)
 
 router.get('/users', checkAdmin, getUsers)
 router.get('/users/graders', checkAdmin, getGraders)

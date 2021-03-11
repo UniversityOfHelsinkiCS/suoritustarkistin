@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       reporterId: {
         type: DataTypes.INTEGER,
+        allowNull: true,
         references: {
           model: 'users',
           key: 'id'
@@ -28,17 +29,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       courseId: {
         type: DataTypes.INTEGER,
+        allowNull: true,
         references: {
           model: 'courses',
           key: 'id'
-        }
+        },
       }
     }, {})
   RawEntry.associate = (models) => {
     RawEntry.hasOne(models.entries, {foreignKey: 'rawEntryId', as: 'entry', onDelete:'CASCADE', onUpdate:'CASCADE'})
     RawEntry.belongsTo(models.users, {foreignKey: 'reporterId', as: 'reporter'})
     RawEntry.belongsTo(models.users, {foreignKey: 'graderId', as: 'grader'})
-    RawEntry.belongsTo(models.courses, {foreignKey: 'courseId', as: 'course', onDelete:'SET NULL'})
+    RawEntry.belongsTo(models.courses, {foreignKey: 'courseId', as: 'course'})
   }
   return RawEntry
 }

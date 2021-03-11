@@ -209,9 +209,42 @@ const deleteAllCourses = async (req, res) => {
   res.status(204).end()
 }
 
+const unsentEntries = async (id) => {
+  const rawEntries = await db.raw_entries.findAll({
+    where: {
+      courseId: id
+    },
+    include: [
+      { model: db.entries, as: 'entry'}
+    ]
+  })
+  const notSentYet = rawEntries.filter(({ entry }) => !entry.sent)
+  return notSentYet ? notSentYet.map((rawEntry) => rawEntry.id) : []
+}
+
+const confirmDeletion = async (req, res) => {
+  try {
+    const unsent = await unsentEntries(req.params.id)
+    res.status(200).json({ unsent: unsent.length })
+  } catch (e) {
+    res.status(500).json({ error: "Server went BOOM!" })
+  }
+
+}
+
 const deleteCourse = async (req, res) => {
-  await db.courses.destroy({ where: { id: req.params.id } })
-  return res.status(200).json({ id: req.params.id })
+  const transaction = await db.sequelize.transaction()
+
+  try {
+    const unsent = await unsentEntries(req.params.id)
+    await db.raw_entries.destroy({ where: { id: unsent }, transaction })
+    await db.courses.destroy({ where: { id: req.params.id }, transaction })
+    transaction.commit()
+    res.status(200).json({ id: req.params.id })
+  } catch (error) {
+    transaction.rollback()
+    res.status(500).json({ error: "Server went BOOM!" })
+  }
 }
 
 module.exports = {
@@ -220,5 +253,6 @@ module.exports = {
   addCourse,
   editCourse,
   deleteAllCourses,
+  confirmDeletion,
   deleteCourse
 }

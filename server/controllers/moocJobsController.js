@@ -5,7 +5,7 @@ const {
   activateJob,
   deactivateJob
 } = require('../scripts/cronjobs')
-const { isValidJob, EAOI_CODES, BAI_CODES } = require('@root/utils/validators')
+const { isValidJob, EOAI_CODES, BAI_CODES } = require('@root/utils/validators')
 const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
 const { processBaiEntries } = require('../scripts/sisProcessBaiEntries')
 const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
@@ -108,7 +108,7 @@ const sisRunJob = async (req, res) => {
     )
     let result = ""
 
-    if (EAOI_CODES.includes(course.courseCode)) {
+    if (EOAI_CODES.includes(course.courseCode)) {
       result = await processEoaiEntries({ grader })
     } else if (BAI_CODES.includes(course.courseCode)) {
       result = await processBaiEntries({ job, course, grader })

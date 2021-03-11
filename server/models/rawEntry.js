@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       reporterId: {
         type: DataTypes.INTEGER,
+        allowNull: true,
         references: {
           model: 'users',
           key: 'id'
@@ -28,10 +29,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       courseId: {
         type: DataTypes.INTEGER,
+        allowNull: true,
         references: {
           model: 'courses',
           key: 'id'
-        }
+        },
       }
     }, {})
   RawEntry.associate = (models) => {

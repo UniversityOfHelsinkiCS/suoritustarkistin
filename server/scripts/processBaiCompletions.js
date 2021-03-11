@@ -6,6 +6,7 @@ const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
 const logger = require('@utils/logger')
 const _ = require('lodash')
+const { BAI_CODES } = require('../../utils/validators')
 
 const languageCodes = {
   en: '6',
@@ -19,19 +20,20 @@ const isTierUpgrade = (previousTiers, completion) => {
   return true
 }
 
+const tierCreditAmount = { 1: '0,0', 2: '1,0', 3: '2,0' } // Tier credit amounts
+
 const getOodiDate = (date) => {
   return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
 }
 
-const processMoocCompletions = async (
-  courseCode,
-  courseName,
-  tierCreditAmount,
-  teacherCode,
-  language,
-  slug
-) => {
+const processBaiCompletions = async (grader, course, job) => {
   try {
+
+    const courseCode = BAI_CODES[0]
+    const courseName = course.name
+    const teacherCode = grader.employeeId
+    const language = course.language
+
     const credits = await db.credits.findAll({
       where: {
         courseId: courseCode
@@ -40,7 +42,7 @@ const processMoocCompletions = async (
     })
 
     const registrations = await getRegistrations(courseCode)
-    const completions = await getCompletions(slug)
+    const completions = await getCompletions(job.slug)
 
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
@@ -134,4 +136,4 @@ const processMoocCompletions = async (
   }
 }
 
-module.exports = processMoocCompletions
+module.exports = processBaiCompletions

@@ -1,26 +1,26 @@
 const moment = require('moment')
-
+const _ = require('lodash')
+const db = require('../models/index')
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
-const db = require('../models/index')
 const sendEmail = require('../utils/sendEmail')
+const { EOAI_CODES } = require('@root/utils/validators')
 const logger = require('@utils/logger')
-const _ = require('lodash')
 
 
 const getOodiDate = (date) => {
   return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
 }
 
-const processEoaiCompletions = async (courses) => {
+const processEoaiCompletions = async (grader) => {
   try {
     const credits = await db.credits.findAll({
       where: {
-        courseId: courses
+        courseId: EOAI_CODES
       },
       raw: true
     })
-    const rawRegistrations = await getMultipleCourseRegistrations(courses)
+    const rawRegistrations = await getMultipleCourseRegistrations(EOAI_CODES)
     const rawCompletions = await getCompletions('elements-of-ai')
 
     const registrations = rawRegistrations.filter((registration) => {
@@ -48,7 +48,7 @@ const processEoaiCompletions = async (courses) => {
       if (registration && registration.onro) {
         return matches.concat({
           studentId: registration.onro,
-          courseId: courses[0],
+          courseId: EOAI_CODES[0],
           moocId: completion.user_upstream_id,
           completionId: completion.id,
           isInOodikone: false,
@@ -60,7 +60,7 @@ const processEoaiCompletions = async (courses) => {
       }
     }, [])
 
-    logger.info({message: `${courses[0]}xx: Found ${matches.length} new completions.`, courseCode: courses[0], amount: matches.length, oodi: true})
+    logger.info({message: `${EOAI_CODES[0]}xx: Found ${matches.length} new completions.`, courseCode: EOAI_CODES[0], amount: matches.length, oodi: true})
 
     const date = new Date()
 
@@ -79,7 +79,7 @@ const processEoaiCompletions = async (courses) => {
         return `${match.studentId}${
           courseStrings[match.completionLanguage]
         }${getOodiDate(completionDate)}#0#Hyv.#106##${
-          process.env.TEACHERCODE
+          grader.employeeId
         }#2#H930#11#93013#3##2,0`
       })
 
@@ -87,7 +87,7 @@ const processEoaiCompletions = async (courses) => {
       const unique = _.uniq(data)
       const report = unique.join('\n')
       const dbReport = await db.reports.create({
-        fileName: `${courses[0]}%${moment().format(
+        fileName: `${EOAI_CODES[0]}%${moment().format(
           'DD.MM.YY-HHmmss'
         )}-AUTOMATIC.dat`,
         data: report

@@ -1,7 +1,10 @@
 const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
+const { EOAI_CODES, BAI_CODES } = require('@root/utils/validators')
 const processMoocCompletions = require('./processMoocCompletions')
+const processEoaiCompletions = require('./processEoaiCompletions')
+const processBaiCompletions = require('./processBaiCompletions')
 
 let cronjobs = {}
 
@@ -16,21 +19,27 @@ const initializeCronJobs = async () => {
     const course = courses.find((c) => c.id === job.courseId)
     const grader = users.find((u) => u.id === job.graderId)
 
-    const createdJob = cron.schedule(job.schedule, () => {
+    const createdJob = cron.schedule(job.schedule, async () => {
       const timestamp = new Date(Date.now())
       logger.info(
         `${timestamp.toLocaleString()} Processing new ${course.name} (${
           course.courseCode
         }) completions.`
       )
-      processMoocCompletions(
-        course.courseCode,
-        course.name,
-        course.credits,
-        grader.employeeId,
-        course.language,
-        job.slug
-      )
+      if (EOAI_CODES.includes(course.courseCode)) {
+        await processEoaiCompletions(grader)
+      } else if (BAI_CODES.includes(course.courseCode)) {
+        await processBaiCompletions(grader, course, job) 
+      } else {
+        await processMoocCompletions(
+          course.courseCode,
+          course.name,
+          course.credits,
+          grader.employeeId,
+          course.language,
+          job.slug
+        )
+      }
     })
     return { ...acc, [job.id]: createdJob }
   }, {})
@@ -47,14 +56,21 @@ const manualRun = async (id) => {
       course.courseCode
     }) completions.`
   )
-  processMoocCompletions(
-    course.courseCode,
-    course.name,
-    course.credits,
-    grader.employeeId,
-    course.language,
-    job.slug
-  )
+
+  if (EOAI_CODES.includes(course.courseCode)) {
+    await processEoaiCompletions(grader)
+  } else if (BAI_CODES.includes(course.courseCode)) {
+    await processBaiCompletions(grader, course, job) 
+  } else {
+    await processMoocCompletions(
+      course.courseCode,
+      course.name,
+      course.credits,
+      grader.employeeId,
+      course.language,
+      job.slug
+    )  
+  }
 }
 
 const activateJob = async (id) => {
@@ -64,21 +80,27 @@ const activateJob = async (id) => {
 
   if (cronjobs[id]) cronjobs[id].destroy() // Delete old job to prevent duplicates.
 
-  const createdJob = cron.schedule(job.schedule, () => {
+  const createdJob = cron.schedule(job.schedule, async () => {
     const timestamp = new Date(Date.now())
     logger.info(
       `${timestamp.toLocaleString()} Processing new ${course.name} (${
         course.courseCode
       }) completions.`
     )
-    processMoocCompletions(
-      course.courseCode,
-      course.name,
-      course.credits,
-      grader.employeeId,
-      course.language,
-      job.slug
-    )
+    if (EOAI_CODES.includes(course.courseCode)) {
+      await processEoaiCompletions(grader)
+    } else if (BAI_CODES.includes(course.courseCode)) {
+      await processBaiCompletions(grader, course, job) 
+    } else {  
+      await processMoocCompletions(
+        course.courseCode,
+        course.name,
+        course.credits,
+        grader.employeeId,
+        course.language,
+        job.slug
+      )
+    }
   })
   cronjobs = { ...cronjobs, [job.id]: createdJob }
 }

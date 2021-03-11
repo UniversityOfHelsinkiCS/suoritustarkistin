@@ -5,7 +5,7 @@ const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
-const { isValidHylHyvGrade, EAOI_CODES } = require('@root/utils/validators')
+const { EOAI_CODES } = require('@root/utils/validators')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
 const languageMap = {
@@ -18,23 +18,23 @@ const processEoaiEntries = async ({ grader }) => {
   try {
     const courses = await db.courses.findAll({ 
       where: {
-        courseCode: EAOI_CODES
+        courseCode: EOAI_CODES
       },
       raw: true
     })
 
     const credits = await db.credits.findAll({
       where: {
-        courseId: EAOI_CODES
+        courseId: EOAI_CODES
       },
       raw: true
     })
 
-    const rawRegistrations = await getMultipleCourseRegistrations(EAOI_CODES)
+    const rawRegistrations = await getMultipleCourseRegistrations(EOAI_CODES)
     const rawCompletions = await getCompletions('elements-of-ai')
     const rawEntries = await db.raw_entries.findAll({ where: { courseId: courses.map((c) => c.id) }})
 
-    // There are so many completions and registrations for Eaoi-courses
+    // There are so many completions and registrations for EOAI-courses
     // that some cleaning should be done first, based on existing data
     const registrations = rawRegistrations.filter((registration) => {
       const earlierCredit = credits.find(
@@ -50,7 +50,7 @@ const processEoaiEntries = async ({ grader }) => {
 
     const courseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
-        return pairs.concat({ courseCode: EAOI_CODES[0], studentNumber: registration.onro })
+        return pairs.concat({ courseCode: EOAI_CODES[0], studentNumber: registration.onro })
       } else {
         return pairs
       }
@@ -72,7 +72,7 @@ const processEoaiEntries = async ({ grader }) => {
       return (!earlierCredit && !earlierEntry)
     })
 
-    const batchId = `${EAOI_CODES[0]}-${moment().format(
+    const batchId = `${EOAI_CODES[0]}-${moment().format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()
@@ -81,10 +81,6 @@ const processEoaiEntries = async ({ grader }) => {
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
         if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)) {
-          return matches
-        }
-
-        if (!isValidHylHyvGrade(completion.grade)) {
           return matches
         }
 
@@ -98,13 +94,13 @@ const processEoaiEntries = async ({ grader }) => {
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.")) {
             return matches
           } else {
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: completion.grade,
+              grade: "Hyv.",
               credits: courseVersion.credits,
               language: language,
               attainmentDate: completion.completion_date || date,
@@ -122,7 +118,7 @@ const processEoaiEntries = async ({ grader }) => {
       []
     )
 
-    logger.info(`${EAOI_CODES[0]}: Found ${matches.length} new completions.`)
+    logger.info(`${EOAI_CODES[0]}: Found ${matches.length} new completions.`)
 
     const result = await automatedAddToDb(matches, courses[0], batchId)
     return result

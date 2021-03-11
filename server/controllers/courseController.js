@@ -79,7 +79,6 @@ const addCourse = async (req, res) => {
 
     delete course.graders
     const newCourse = await db.courses.create(course, transaction)
-
     for (const graderId of graders) {
       const user = (
         await db.users.findOne({
@@ -109,11 +108,15 @@ const addCourse = async (req, res) => {
     })
 
     transaction.commit()
-    res.status(200).json(cleanCourses([newCourseWithGraders]))
+    return res.status(200).json(cleanCourses([newCourseWithGraders]))
   } catch (e) {
     await transaction.rollback()
+    if (e.message === "Validation error") {
+      logger.error(`Course with the course code already exists`)
+      return res.status(400).json({ error: `Course with the course code already exists` })
+    }
     logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
+    return res.status(500).json({ error: 'server went BOOM!' })
   }
 }
 
@@ -192,6 +195,10 @@ const editCourse = async (req, res) => {
 
     return res.status(400).json({ error: 'id not found.' })
   } catch (e) {
+    if (e.message === "Validation error") {
+      logger.error(`Course with the course code already exists`)
+      return res.status(400).json({ error: `Course with the course code already exists` })
+    }
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
   }
@@ -202,9 +209,42 @@ const deleteAllCourses = async (req, res) => {
   res.status(204).end()
 }
 
+const unsentEntries = async (id) => {
+  const rawEntries = await db.raw_entries.findAll({
+    where: {
+      courseId: id
+    },
+    include: [
+      { model: db.entries, as: 'entry'}
+    ]
+  })
+  const notSentYet = rawEntries.filter(({ entry }) => !entry.sent)
+  return notSentYet ? notSentYet.map((rawEntry) => rawEntry.id) : []
+}
+
+const confirmDeletion = async (req, res) => {
+  try {
+    const unsent = await unsentEntries(req.params.id)
+    res.status(200).json({ unsent: unsent.length })
+  } catch (e) {
+    res.status(500).json({ error: "Server went BOOM!" })
+  }
+
+}
+
 const deleteCourse = async (req, res) => {
-  await db.courses.destroy({ where: { id: req.params.id } })
-  return res.status(200).json({ id: req.params.id })
+  const transaction = await db.sequelize.transaction()
+
+  try {
+    const unsent = await unsentEntries(req.params.id)
+    await db.raw_entries.destroy({ where: { id: unsent }, transaction })
+    await db.courses.destroy({ where: { id: req.params.id }, transaction })
+    transaction.commit()
+    res.status(200).json({ id: req.params.id })
+  } catch (error) {
+    transaction.rollback()
+    res.status(500).json({ error: "Server went BOOM!" })
+  }
 }
 
 module.exports = {
@@ -213,5 +253,6 @@ module.exports = {
   addCourse,
   editCourse,
   deleteAllCourses,
+  confirmDeletion,
   deleteCourse
 }

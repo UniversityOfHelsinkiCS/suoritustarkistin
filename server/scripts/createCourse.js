@@ -3,14 +3,10 @@ const db = require('../models/index')
 const { isValidCourse } = require('@root/utils/validators')
 
 const createCourse = async (course) => {
-  try {
-    if (!isValidCourse(course)) return { error: "Course details are not valid"}
-    const newCourse = await db.courses.create(course)
-    return newCourse
-  } catch (e) {
-    logger.error(e.message)
-    return { error: e.message }
-  }
+  if (!isValidCourse(course)) throw new Error({ message: "Course details are not valid" })
+  const newCourse = await db.courses.create(course)
+  logger.info(`New course created "${newCourse.courseCode}: ${newCourse.name}`)
+  return newCourse
 }
 
 module.exports = { createCourse }

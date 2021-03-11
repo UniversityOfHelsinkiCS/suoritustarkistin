@@ -101,6 +101,15 @@ const processEntries = async (createdEntries, checkImprovements) => {
       return Promise.resolve()
     }
 
+    if (!validateCredits(filteredEnrolments, rawEntry.credits)) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolments[0].credits.min} to ${filteredEnrolments[0].credits.max}`
+      })
+      return Promise.resolve()
+    }
+
     // Create here the acual attainments for Sisu
     await Promise.all(
       filteredEnrolments
@@ -111,7 +120,7 @@ const processEntries = async (createdEntries, checkImprovements) => {
               id: rawEntry.id,
               studentNumber: rawEntry.studentNumber,
               message: `
-                Invalid grade "${rawEntry.grade} for course ${course.courseCode}". 
+                Invalid grade "${rawEntry.grade}" for course "${course.courseCode}". 
                 Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
               `
             })
@@ -162,6 +171,7 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   return properEnrolments.map(({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, courseUnit, courseUnitRealisation }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: courseUnit.gradeScaleId,
+    credits: courseUnit.credits,
     assessmentItemId,
     courseUnitRealisationId,
     courseUnitId,
@@ -169,11 +179,22 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   }))
 }
 
+const validateCredits = (enrolments, targetCredits) => {
+  return enrolments.some(({ credits }) => targetCredits >= credits.min && targetCredits <= credits.max)
+}
+
 const mapGrades = (gradeScales, id, rawEntry) => {
+  let grade = rawEntry.grade
   if (id === "sis-0-5") {
-    return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === rawEntry.grade)
+    if (grade === "Hyl." || grade === "-") {
+      grade = "0"
+    }
+    return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === grade)
   } else if (id === "sis-hyl-hyv") {
-    return gradeScales[id].find(({ abbreviation }) => abbreviation['fi'] === rawEntry.grade)
+    if (grade === 0 || grade === "0" || grade === "-") {
+      grade = "Hyl."
+    }
+    return gradeScales[id].find(({ abbreviation }) => abbreviation['fi'] === grade)
   }
 }
 

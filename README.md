@@ -1,7 +1,7 @@
 # Suotar - Course Completion Checker
 [Suotar](https://study.cs.helsinki.fi/suoritustarkistin/) is a tool designed to make registering course completions easy.
 
-Additionally, Suotar automatically checks for Elements of AI completions every week.
+Additionally, Suotar automatically checks completions for various mooc-courses every week.
 
 ## User's Guide
 [Päivittämätön käyttöohje suomeksi](kayttoohje.md)
@@ -50,12 +50,12 @@ When the feature is approved for the course by AY, student ID may also be replac
 ## Developer Information
 **Master:** [![CircleCI](https://circleci.com/gh/UniversityOfHelsinkiCS/suoritustarkistin/tree/master.svg?style=svg)](https://circleci.com/gh/UniversityOfHelsinkiCS/suoritustarkistin/tree/master)
 
-**Trunk:** [![CircleCI](https://circleci.com/gh/UniversityOfHelsinkiCS/suoritustarkistin/tree/trunk.svg?style=svg)](https://circleci.com/gh/UniversityOfHelsinkiCS/suoritustarkistin/tree/trunk)
-
 ### Development Environment
 1. Clone the repository
 2. Make sure you have a .env-file with the necessary variables in the project root
-3. ```npm run dev```
+3. ```npm install```
+4. ```npm run dev```
+5. Open localhost:8000
 
 ### Program Logic
 - [Sequence diagram for the EoAI weekly script](documentation/Suotar_Weekly_EoAI_Credit_Markup_Script.png)

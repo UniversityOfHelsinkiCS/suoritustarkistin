@@ -9,7 +9,7 @@ import SisReportStatus from './SisReportStatus'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
-import { EAOI_CODES, EAOI_NAMEMAP } from '../../../utils/validators'
+import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
 
 
 const SisSuccessMessage = () => <Message success>
@@ -38,15 +38,15 @@ const getSisUnitName = (name, language) => {
 }
 
 const getCourseName = (rawEntry, course) => {
-  if (EAOI_CODES.includes(course.courseCode)) {
-    return EAOI_NAMEMAP[rawEntry.entry.completionLanguage].name
+  if (EOAI_CODES.includes(course.courseCode)) {
+    return EOAI_NAMEMAP[rawEntry.entry.completionLanguage].name
   }
   return course.name
 }
 
 const getCourseCode = (rawEntry, course) => {
-  if (EAOI_CODES.includes(course.courseCode)) {
-    return EAOI_NAMEMAP[rawEntry.entry.completionLanguage].code
+  if (EOAI_CODES.includes(course.courseCode)) {
+    return EOAI_NAMEMAP[rawEntry.entry.completionLanguage].code
   }
   return course.courseCode
 }
@@ -330,18 +330,21 @@ export default ({ reports, user }) => {
     return false
   }
 
+  const placeholderCourse = {
+    id: 'COURSE DELETED',
+    name: 'COURSE DELETED',
+    courseCode: 'COURSE DELETED',
+    language: 'COURSE DELETED',
+    credits: 'COURSE DELETED',
+  }
+
   const panels = batchedReports
     .filter(filterBatches)
     .map((report, index) => {
       const reportWithEntries = report.filter((e) => e && e.entry)
       if (!reportWithEntries || !reportWithEntries.length) return null
 
-      const course = courses.find((c) => report[0].courseId === c.id)
-      if (!course) return {
-        key: `panel-${index}`,
-        title: title(reportWithEntries),
-        content: <Accordion.Content>Course for these entries was not found from Suotar</Accordion.Content>
-      }
+      const course = courses.find((c) => report[0].courseId === c.id) || placeholderCourse
 
       return {
         key: `panel-${index}`,

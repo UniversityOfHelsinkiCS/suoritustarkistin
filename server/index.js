@@ -20,6 +20,8 @@ const checkOodiEntries = require('./scripts/checkOodiEntries')
 const { checkAllEntriesFromSisu } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
 
+const { IN_MAINTENANCE } = process.env
+
 initializeDatabaseConnection()
   .then(() => {
     const app = express()
@@ -76,7 +78,8 @@ initializeDatabaseConnection()
       app.use(Sentry.Handlers.errorHandler())
     }
 
-    initializeCronJobs()
+    if (!IN_MAINTENANCE)
+      initializeCronJobs()
 
     const now = () => new Date(Date.now())
 
@@ -89,7 +92,7 @@ initializeDatabaseConnection()
     }
 
     const STAGING = process.env.NODE_ENV === 'staging'
-    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING) {
+    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
       cron.schedule('0 5 * * 5', () => {
         const timestamp = now()
         logger.info(
@@ -100,13 +103,15 @@ initializeDatabaseConnection()
     }
 
     // To be changed when Sisu is master
-    if (STAGING)
+    if (STAGING && !IN_MAINTENANCE)
       cron.schedule('0 0 * * *', () => {
         checkAllEntriesFromSisu()
       })
 
     app.listen(PORT, () => {
       logger.info(`Started on port ${PORT} with environment ${process.env.NODE_ENV}`)
+      if (IN_MAINTENANCE)
+        logger.info(`Maintenance mode enabled for environment ${process.env.NODE_ENV}`)
     })
   })
   .catch((e) => {

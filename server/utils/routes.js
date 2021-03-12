@@ -115,4 +115,6 @@ router.delete('/jobs/:id', checkAdmin, deleteJob)
 router.get('/kurki/courses', checkAdmin, getKurkiCourses)
 router.post('/kurki/raw_entries', checkAdmin, addKurkiRawEntries)
 
+router.get('/status', (req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
+
 module.exports = router

@@ -13,6 +13,7 @@ import kurki from './kurkiReducer'
 import message from './messageReducer'
 import users from './usersReducer'
 import moocJobs from './moocJobsReducer'
+import systemStatus from './systemStatusReducer'
 
 export default combineReducers({
   user,
@@ -27,5 +28,6 @@ export default combineReducers({
   kurki,
   message,
   users,
-  moocJobs
+  moocJobs,
+  systemStatus
 })

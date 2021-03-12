@@ -335,7 +335,7 @@ export default ({ reports, user }) => {
     name: 'COURSE DELETED',
     courseCode: 'COURSE DELETED',
     language: 'COURSE DELETED',
-    credits: 'COURSE DELETED',
+    credits: 'COURSE DELETED'
   }
 
   const panels = batchedReports

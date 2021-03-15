@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
@@ -307,12 +307,17 @@ const title = (batch) => {
 }
 
 export default ({ reports, user }) => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(false)
+  }, [])
+
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false })
   const dispatch = useDispatch()
 
-  if (reports.pending) return <div>LOADING!</div>
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
   const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
@@ -335,7 +340,7 @@ export default ({ reports, user }) => {
     name: 'COURSE DELETED',
     courseCode: 'COURSE DELETED',
     language: 'COURSE DELETED',
-    credits: 'COURSE DELETED',
+    credits: 'COURSE DELETED'
   }
 
   const panels = batchedReports
@@ -363,6 +368,9 @@ export default ({ reports, user }) => {
     <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
   </div>
 
+  if (loading) {
+    return <div>LOADING!</div>
+  } 
 
   return <>
     <Notification />

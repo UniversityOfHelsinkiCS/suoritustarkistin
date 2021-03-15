@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Accordion, Table } from 'semantic-ui-react'
+import TabLoader from './TabLoader'
 
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
 const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
@@ -64,9 +65,14 @@ const title = (report) => {
 }
 
 export default () => {
-  const reports = useSelector((state) => state.reports)
+  const [loading, setLoading] = useState(true)
 
-  if (reports.pending) return <div>LOADING!</div>
+  useEffect(() => {
+    setLoading(false)
+  }, [])
+
+  const reports = useSelector((state) => state.reports)
+  if (reports.pending || loading) return <TabLoader />
 
   const manualReports = reports.data.filter((report) => report.reporterId) // filter out EoAI reports.
 

@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Segment } from 'semantic-ui-react'
+import TabLoader from './TabLoader'
 
 const Downloaded = () => (
   <div data-cy="report-downloaded" style={{ color: 'green' }}>
@@ -19,9 +20,15 @@ const reportLines = (report) => {
 }
 
 export default ({ reports }) => {
-  if (reports.pending) return <div>LOADING!</div>
+  const [loading, setLoading] = useState(true)
 
+  useEffect(() => {
+    setLoading(false)
+  }, [])
+
+  if (reports.pending || loading) return <TabLoader />
   if (reports.data.length === 0) return <div>NO REPORTS FOUND.</div>
+
 
   return (
     <div data-cy="raw-reports">

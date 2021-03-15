@@ -6,6 +6,7 @@ import { Accordion, Button, Icon, Message, Table, Radio } from 'semantic-ui-reac
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
+import TabLoader from './TabLoader'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
@@ -50,8 +51,6 @@ const getCourseCode = (rawEntry, course) => {
   }
   return course.courseCode
 }
-
-
 
 const getGrade = (gradeScaleId, gradeId, language) => {
   if (!gradeId || !gradeScaleId || !language) return <NullCell />
@@ -368,9 +367,7 @@ export default ({ reports, user }) => {
     <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
   </div>
 
-  if (loading) {
-    return <div>LOADING!</div>
-  } 
+  if (loading) return <TabLoader />
 
   return <>
     <Notification />

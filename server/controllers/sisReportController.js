@@ -4,7 +4,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const axios = require('axios')
 const { checkEntries } = require('../scripts/checkSisEntries')
-const { getEmployees } = require('../services/importer')
+const { getEmployees, getAcceptorPersons } = require('../services/importer')
 
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
@@ -89,11 +89,6 @@ const sendToSis = async (req, res) => {
     throw new Error('User is not authorized to report credits.')
   }
 
-  const verifier = await getEmployees([req.user.employeeId])
-  if (!verifier.length)
-    throw new Error(`Verifier with employee number ${req.user.employeeId} not found`)
-
-
   const entryIds = req.body
   const entries = await db.entries.findAll({
     where: {
@@ -103,7 +98,14 @@ const sendToSis = async (req, res) => {
     raw: true,
     nest: true
   })
+
   const senderId = req.user.id
+
+  const verifier = await getEmployees(([req.user.employeeId]))
+  if (!verifier.length)
+    throw new Error(`Verifier with employee number ${req.user.employeeId} not found`)
+
+  const acceptors = await getAcceptorPersons(entries.map(({courseUnitRealisationId}) => courseUnitRealisationId))
 
   const data = entries.map((entry) => {
     const {
@@ -121,6 +123,7 @@ const sendToSis = async (req, res) => {
     return {
       personId,
       verifierPersonId: verifier[0].id,
+      acceptorPersons: acceptors[courseUnitRealisationId],
       courseUnitRealisationId,
       assessmentItemId,
       completionDate,

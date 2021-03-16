@@ -120,7 +120,7 @@ const processEntries = async (createdEntries, checkImprovements) => {
               id: rawEntry.id,
               studentNumber: rawEntry.studentNumber,
               message: `
-                Invalid grade "${rawEntry.grade}" for course "${course.courseCode}". 
+                Invalid grade "${rawEntry.grade}" for course "${course.courseCode}".
                 Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
               `
             })

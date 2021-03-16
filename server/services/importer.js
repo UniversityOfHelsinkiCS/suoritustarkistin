@@ -48,6 +48,15 @@ async function getGrades(codes = []) {
   }
 }
 
+async function getAcceptorPersons(courseUnitRealisationIds) {
+  try {
+    const { data } = await api.post(`suotar/acceptors/`, courseUnitRealisationIds)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
  * The data must be fetched in chunks of 100, since importer-api cannot handle bigger payloads. 
@@ -72,5 +81,6 @@ module.exports = {
   getStudents,
   getEnrolments,
   getGrades,
-  getEarlierAttainments
+  getEarlierAttainments,
+  getAcceptorPersons
 }

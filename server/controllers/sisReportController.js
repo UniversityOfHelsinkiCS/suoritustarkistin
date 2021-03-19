@@ -89,6 +89,11 @@ const sendToSis = async (req, res) => {
     throw new Error('User is not authorized to report credits.')
   }
 
+  const verifier = await getEmployees([req.user.employeeId])
+  if (!verifier.length)
+    throw new Error(`Verifier with employee number ${req.user.employeeId} not found`)
+
+
   const entryIds = req.body
   const entries = await db.entries.findAll({
     where: {
@@ -98,12 +103,7 @@ const sendToSis = async (req, res) => {
     raw: true,
     nest: true
   })
-
   const senderId = req.user.id
-
-  const verifier = await getEmployees(([req.user.employeeId]))
-  if (!verifier.length)
-    throw new Error(`Verifier with employee number ${req.user.employeeId} not found`)
 
   const acceptors = await getAcceptorPersons(entries.map(({courseUnitRealisationId}) => courseUnitRealisationId))
 

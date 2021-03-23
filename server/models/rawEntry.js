@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         references: {
           model: 'courses',
           key: 'id'
-        },
+        }
       }
     }, {})
   RawEntry.associate = (models) => {

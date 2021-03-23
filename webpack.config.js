@@ -4,23 +4,21 @@ const htmlTemplate = require('html-webpack-template')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
-const { SENTRY_RELEASE } = process.env
+const { SENTRY_RELEASE, NODE_ENV } = process.env
 const sentryRelease = !SENTRY_RELEASE ? 'unknown' : SENTRY_RELEASE
 
 // eslint-disable-next-line
-console.log('sentry settings:', { sentryRelease })
+console.log('sentry settings:', { sentryRelease }, 'env', NODE_ENV)
 
-
+// eslint-disable-next-line
 module.exports = (env, argv) => {
-  const { mode } = argv
-
   const additionalPlugins =
-    mode === 'production'
+    NODE_ENV === 'production' || NODE_ENV === 'staging'
       ? [] // Make JS smaller
       : [new webpack.HotModuleReplacementPlugin()] // Enable hot module replacement
 
   const additionalOptimizations =
-    mode === 'production'
+    NODE_ENV === 'production' || NODE_ENV === 'staging'
       ? {
         minimizer: [
           // Make CSS smaller
@@ -30,14 +28,16 @@ module.exports = (env, argv) => {
       : {}
 
   const additionalEntries =
-    mode === 'production'
+    NODE_ENV === 'production' || NODE_ENV === 'staging'
       ? []
       : ['webpack-hot-middleware/client?http://localhost:8000']
 
   const BASE_PATH = process.env.BASE_PATH || '/'
 
   return {
-    mode,
+    mode: (NODE_ENV === 'production' || NODE_ENV === 'staging') // Webpack mode must be prod, dev or none
+      ? 'production'
+      : 'development',
     output: {
       publicPath: BASE_PATH
     },
@@ -99,7 +99,7 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         __BASE_PATH__: JSON.stringify(BASE_PATH),
         'process.env': {
-          NODE_ENV: JSON.stringify(mode),
+          NODE_ENV: JSON.stringify(NODE_ENV),
           SENTRY_RELEASE: JSON.stringify(sentryRelease),
           BUILT_AT: JSON.stringify(new Date().toISOString())
         }

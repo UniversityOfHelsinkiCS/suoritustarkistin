@@ -10,6 +10,8 @@ import { images } from 'Utilities/common'
 import { Link } from 'react-router-dom'
 import FakeShibboMenu from './fakeShibboMenu'
 
+const STAGING = process.env.NODE_ENV === 'staging'
+
 export default () => {
   const [activeItem, setActiveItem] = useState('newReport')
   const dispatch = useDispatch()
@@ -117,7 +119,7 @@ export default () => {
 
   if (!user) return null
   return (
-    <Menu stackable size="huge" fluid>
+    <Menu size="huge" style={STAGING ? {backgroundColor: '#ffeaed'} : {}} stackable fluid>
       <Menu.Item 
         style={{ fontSize: 'xx-large', padding: '0.5em' }}
         as={Link}
@@ -130,7 +132,7 @@ export default () => {
           style={{ marginRight: '1em' }}
           alt="tosca"
         />{' '}
-        SUOTAR
+        SUOTAR{STAGING ? <span style={{fontSize: '2rem'}}>-staging</span> : null}
       </Menu.Item>
 
       <Menu.Item

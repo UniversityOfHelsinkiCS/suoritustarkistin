@@ -13,7 +13,7 @@ import FakeShibboMenu from './fakeShibboMenu'
 const STAGING = process.env.NODE_ENV === 'staging'
 
 export default () => {
-  const [activeItem, setActiveItem] = useState('newReport')
+  const [activeItem, setActiveItem] = useState(getMenuItemFromUrl())
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
 
@@ -63,8 +63,8 @@ export default () => {
         data-cy="nav-courses"
         as={Link}
         to={'/courses'}
-        name="editCourses"
-        active={activeItem === 'editCourses'}
+        name="courses"
+        active={activeItem === 'courses'}
         onClick={handleItemClick}
       >
         Edit courses
@@ -78,8 +78,8 @@ export default () => {
         data-cy="nav-users"
         as={Link}
         to={'/users'}
-        name="editUsers"
-        active={activeItem === 'editUsers'}
+        name="users"
+        active={activeItem === 'users'}
         onClick={handleItemClick}
       >
         Edit users
@@ -153,8 +153,8 @@ export default () => {
         data-cy="nav-reports"
         as={Link}
         to={'/reports'}
-        name="viewReports"
-        active={activeItem === 'viewReports'}
+        name="reports"
+        active={activeItem === 'reports'}
         onClick={handleItemClick}
       >
         View reports
@@ -175,4 +175,12 @@ export default () => {
       </Menu.Item>
     </Menu>
   )
+}
+
+function getMenuItemFromUrl() {
+  // In production path is prefixed with /suoritustarkistin/
+  const index = process.env.NODE_ENV === 'development' ? 1 : 2
+  const path = window.location.pathname.split('/')[index] || '/'
+  if (path === '/') return 'newReport'
+  return path
 }

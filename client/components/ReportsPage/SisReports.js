@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,6 +6,7 @@ import { Accordion, Button, Icon, Message, Table, Radio } from 'semantic-ui-reac
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
+import TabLoader from './TabLoader'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 import './reportStyles.css'
@@ -50,8 +51,6 @@ const getCourseCode = (rawEntry, course) => {
   }
   return course.courseCode
 }
-
-
 
 const getGrade = (gradeScaleId, gradeId, language) => {
   if (!gradeId || !gradeScaleId || !language) return <NullCell />
@@ -307,12 +306,17 @@ const title = (batch) => {
 }
 
 export default ({ reports, user }) => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(false)
+  }, [])
+
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false })
   const dispatch = useDispatch()
 
-  if (reports.pending) return <div>LOADING!</div>
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
   const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
@@ -363,6 +367,7 @@ export default ({ reports, user }) => {
     <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
   </div>
 
+  if (loading) return <TabLoader />
 
   return <>
     <Notification />

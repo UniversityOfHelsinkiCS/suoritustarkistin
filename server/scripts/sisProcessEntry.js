@@ -101,7 +101,7 @@ const processEntries = async (createdEntries, checkImprovements) => {
       return Promise.resolve()
     }
 
-    if (!validateCredits(filteredEnrolments, rawEntry.credits)) {
+    if (!validateCredits(filteredEnrolments, parseFloat(rawEntry.credits))) {
       failed.push({
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,

@@ -52,6 +52,11 @@ const getCourseCode = (rawEntry, course) => {
   return course.courseCode
 }
 
+const getCourseUnitRealisationSisuUrl = (realisation) => `
+  https://sis-helsinki${process.env.NODE_ENV === 'staging' ? '-test' : ''}.funidata.fi
+/teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
+`
+
 const getGrade = (gradeScaleId, gradeId, language) => {
   if (!gradeId || !gradeScaleId || !language) return <NullCell />
   if (gradeScaleId === "sis-0-5") return gradeId
@@ -263,6 +268,11 @@ const reportContents = (report, course, dispatch, user, openAccordions) => {
               .map(({ entry }) => entry.id)
             } />
           <DeleteBatchButton batchId={report[0].batchId} />
+          <a href={getCourseUnitRealisationSisuUrl(report[0].entry.courseUnitRealisationId)} target="_blank" rel="noopener noreferrer">
+            <Button icon>
+              <Icon name="external" /> View attainments in Sisu
+            </Button>
+          </a>
           <Button
             onClick={() => dispatch(
               refreshBatchStatus(report.map(({ entry }) => entry.id))

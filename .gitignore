@@ -10,3 +10,4 @@ cypress.env.json
 cypress/screenshots
 cypress/videos
 testdata.js
+.vscode/

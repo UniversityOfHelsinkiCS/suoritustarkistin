@@ -12,7 +12,7 @@ export default () => {
 
   return (
     <Segment>
-      <Grid celled="internally">
+      <Grid celled="internally" style={{wordWrap: 'anywhere'}}>
         <Grid.Row>
           <Grid.Column width={3}>
             <Header as="h4">Name</Header>

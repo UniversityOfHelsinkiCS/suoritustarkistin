@@ -57,6 +57,15 @@ async function getAcceptorPersons(courseUnitRealisationIds) {
   }
 }
 
+async function resolveUser(formData) {
+  try {
+    const { data } = await api.post(`suotar/resolve_user/`, formData)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
  * The data must be fetched in chunks of 100, since importer-api cannot handle bigger payloads. 
@@ -82,5 +91,6 @@ module.exports = {
   getEnrolments,
   getGrades,
   getEarlierAttainments,
-  getAcceptorPersons
+  getAcceptorPersons,
+  resolveUser
 }

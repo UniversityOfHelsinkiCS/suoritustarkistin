@@ -5,17 +5,17 @@ describe('Submitting data creates a valid report into database', function () {
         proxy.xhr.setRequestHeader('employeenumber', Cypress.env('ADMIN_EMPLOYEE_NUMBER'))
       },
     })
-    cy.request('DELETE', '/api/courses')
-    cy.request('DELETE', '/api/users')
-    cy.request('DELETE', '/api/reports')
+    cy.request('DELETE', '/api/seed/courses')
+    cy.request('DELETE', '/api/seed/users')
+    cy.request('DELETE', '/api/seed/reports')
 
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'admin',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: false,
     })
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'grader',
       employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
       isAdmin: false,
@@ -67,14 +67,14 @@ describe('Submitting data creates a valid report into database', function () {
     cy.get('[data-cy=confirm-sending-button]')
       .should('be.visible')
       .click()
-    
+
     cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
 
     cy.wait(1000)
 
     cy.request({
-      url: 'api/reports/list',
+      url: 'api/seed/reports/list',
       headers: {
         Authorization: Cypress.env('SUOTAR_TOKEN'),
       },
@@ -125,14 +125,14 @@ describe('Submitting data creates a valid report into database', function () {
     cy.get('[data-cy=confirm-sending-button]')
       .should('be.visible')
       .click()
-    
+
     cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
 
     cy.wait(1000)
 
     cy.request({
-      url: 'api/reports/list',
+      url: 'api/seed/reports/list',
       headers: {
         Authorization: Cypress.env('SUOTAR_TOKEN'),
       },
@@ -182,14 +182,14 @@ describe('Submitting data creates a valid report into database', function () {
     cy.get('[data-cy=confirm-sending-button]')
       .should('be.visible')
       .click()
-    
+
     cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
 
     cy.wait(1000)
 
     cy.request({
-      url: 'api/reports/list',
+      url: 'api/seed/reports/list',
       headers: {
         Authorization: Cypress.env('SUOTAR_TOKEN'),
       },

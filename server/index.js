@@ -64,6 +64,7 @@ initializeDatabaseConnection()
             return res.end()
           })
         })
+        app.use((err, req, res) => { res.status(500).send(err.toString()) })
       })
     } else {
       app.use(shibbolethCharsetMiddleware(SHIBBOLETH_HEADERS))

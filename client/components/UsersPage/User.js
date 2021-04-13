@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { Button, Grid, Icon, Popup } from 'semantic-ui-react'
-import { editUserAction } from 'Utilities/redux/usersReducer'
+import { editUserAction, deleteUser } from 'Utilities/redux/usersReducer'
 
 export default ({ user }) => {
   const dispatch = useDispatch()
@@ -26,6 +26,8 @@ export default ({ user }) => {
   const removeGrader = () => {
     dispatch(editUserAction({ ...user, isGrader: false }))
   }
+
+  const handleDeleteUser = () => dispatch(deleteUser(user.id))
 
   const GraderBadge = () => {
     return user.isGrader ? (
@@ -118,19 +120,49 @@ export default ({ user }) => {
       />
     )
   }
+
+  const DeleteUser = () =>
+    <Popup
+      trigger={
+        <Button
+          data-cy={`${user.name}-delete`}
+          icon="trash"
+          color="red"
+          size="large"
+          content="Delete user"
+          basic
+        />
+      }
+      content={
+        <Button
+          data-cy="delete-user-confirm"
+          color="red"
+          content="Are you sure?"
+          size="massive"
+          onClick={() => handleDeleteUser()}
+        />
+      }
+      on="click"
+      position="top center"
+    />
+
+
   return (
     <Grid.Row>
-      <Grid.Column width={3}>{user.name}</Grid.Column>
-      <Grid.Column width={2}>{user.uid}</Grid.Column>
+      <Grid.Column width={4}>{user.name}</Grid.Column>
+      <Grid.Column width={1}>{user.uid}</Grid.Column>
       <Grid.Column width={2}>{user.employeeId}</Grid.Column>
       <Grid.Column width={3}>{user.email}</Grid.Column>
-      <Grid.Column textAlign="center" width={2}>
+      <Grid.Column textAlign="center" width={1}>
         <GraderBadge />
       </Grid.Column>
-      <Grid.Column textAlign="center" width={2}>
+      <Grid.Column textAlign="center" width={1}>
         <AdminBadge />
       </Grid.Column>
-      <Grid.Column width={2}>
+      <Grid.Column textAlign="center" width={2}>
+        <DeleteUser />
+      </Grid.Column>
+      <Grid.Column width={1}>
         <Icon onClick={logInAs} size="large" name="sign-in" />
       </Grid.Column>
     </Grid.Row>

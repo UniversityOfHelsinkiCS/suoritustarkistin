@@ -66,23 +66,24 @@ Cypress.Commands.add('asGrader', () => {
 
 Cypress.Commands.add('initializeUsersAndCourses', () => {
 
-  cy.request('DELETE', '/api/courses')
-  cy.request('DELETE', '/api/users')
+  cy.request('DELETE', '/api/seed/courses')
+  cy.request('DELETE', '/api/seed/users')
 
   cy.fixture('sis/raw-entries-before.json').as('initialRawEntriesJSON');
   cy.fixture('sis/raw-entries-add.json').as('addRawEntriesJSON');
   cy.fixture('sis/raw-entries-after.json').as('updatedRawEntriesJSON');
 
-  cy.request('POST', '/api/users', {
+  cy.request('POST', '/api/seed/users', {
     name: 'user',
     employeeId: 321,
     isAdmin: false,
     isGrader: false,
   })
 
-  cy.request('POST', '/api/users', {
+  cy.request('POST', '/api/seed/users', {
     name: 'grader',
     employeeId: 111,
+    uid: 'grader1',
     isAdmin: false,
     isGrader: true,
   })
@@ -112,9 +113,10 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
       graders: [response.body.id],
     })
 
-  cy.request('POST', '/api/users', {
+  cy.request('POST', '/api/seed/users', {
     name: 'admin',
     employeeId: 123,
+    uid: 'admin1',
     isAdmin: true,
     isGrader: false,
   })

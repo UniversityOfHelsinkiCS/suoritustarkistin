@@ -1,7 +1,6 @@
 'use strict';
 const axios = require('axios')
 
-const db = require('../server/models/index')
 const api = axios.create({
   headers: {
     token: process.env.IMPORTER_DB_API_TOKEN || ''
@@ -21,8 +20,9 @@ const getUid = async ({ email, employeeId }) => {
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const users = await db.users.findAll({ where: { uid: null }, raw: true })
-    await Promise.all(users.map(async (u) => {
+    //const users = await db.users.findAll({ where: { uid: null }, raw: true })
+    const users = await queryInterface.sequelize.query("SELECT * FROM users WHERE uid IS NULL;")
+    await Promise.all(users[0].map(async (u) => {
       const uid = await getUid(u)
       if (!uid) {
         console.log('NO UID FOUND FOR', u.email)

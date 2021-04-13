@@ -8,6 +8,7 @@ import {
   Message
 } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
+import * as _ from 'lodash'
 
 import { fetchUser, createUser } from 'Utilities/redux/usersReducer'
 
@@ -38,11 +39,12 @@ export default ({ close }) => {
   const [formData, setFormData] = useState({ ...INITIAL_FORM_DATA })
   const [message, setMessage] = useState('')
   const data = useSelector((state) => state.users)
+  const courses = useSelector((state) => state.courses.data)
 
   useEffect(() => {
     if (data.error) setMessage(data.fetchedUser.error)
     if (data.fetchedUser)
-      setFormData({...formData, ...parseUser(data.fetchedUser)})
+      setFormData({ ...formData, ...parseUser(data.fetchedUser) })
   }, [data])
 
   const handleFieldChange = (event) => {
@@ -55,6 +57,12 @@ export default ({ close }) => {
   const handleSubmit = () => dispatch(createUser(formData))
 
   const handleFetchUser = () => dispatch(fetchUser(formData))
+
+  const courseOptions = _.sortBy(courses, 'name').map((course) => ({
+    key: course.id,
+    value: course.id,
+    text: course.name
+  }))
 
   return (
     <Segment style={{ width: '50em' }}>
@@ -125,12 +133,24 @@ export default ({ close }) => {
             setFormData({ ...formData, isAdmin: d.checked })
           }}
         />
+        <Form.Dropdown
+          data-cy="add-course"
+          search
+          required={true}
+          label="Add courses for user (optional)"
+          options={courseOptions}
+          value={data.graders}
+          onChange={(e, d) => setFormData({ ...formData, graders: d.value })}
+          multiple
+          selection
+        />
         <Form.Field
           style={styles.field}
           data-cy="add-user-fetch"
           control={Button}
           content="Fetch user details"
           onClick={handleFetchUser}
+          disabled={!(formData.uid && formData.email && formData.employeeId)}
           icon="refresh"
           color="blue"
           basic

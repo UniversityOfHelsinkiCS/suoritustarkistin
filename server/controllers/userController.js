@@ -42,8 +42,10 @@ const getUsersGraders = async (req, res) => {
 
 const addUser = async (req, res, next) => {
   try {
-    const user = req.body
+    const { courses, ...user } = req.body
     const newUser = await db.users.create(user)
+    if (courses && courses.length)
+      await Promise.all(courses.map((course) => newUser.addCourse(course, { through: "users_courses" })))
     res.status(200).json(newUser)
   } catch (e) {
     next(e)

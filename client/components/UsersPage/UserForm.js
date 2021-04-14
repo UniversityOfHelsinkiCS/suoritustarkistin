@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import * as _ from 'lodash'
 
 import { fetchUser, createUser } from 'Utilities/redux/usersReducer'
-
+import { isValidEmailAddress } from 'Root/utils/validators'
 
 const INITIAL_FORM_DATA = {
   email: '',
@@ -19,7 +19,9 @@ const INITIAL_FORM_DATA = {
   employeeId: '',
   name: '',
   isGrader: false,
-  isAdmin: false
+  isAdmin: false,
+  courses: [],
+  errors: {}
 }
 
 const styles = {
@@ -43,7 +45,7 @@ export default ({ close }) => {
 
   useEffect(() => {
     if (data.error) setMessage(data.fetchedUser.error)
-    if (data.fetchedUser)
+    if (!data.error && !data.pending)
       setFormData({ ...formData, ...parseUser(data.fetchedUser) })
   }, [data])
 
@@ -52,9 +54,15 @@ export default ({ close }) => {
     setFormData({ ...formData, [name]: value })
   }
 
-  const validate = () => formData.email && formData.employeeId && formData.uid && formData.name
+  const validate = () => (
+    (formData.email && isValidEmailAddress(formData.email)) &&
+    formData.employeeId && formData.uid && formData.name
+  )
 
-  const handleSubmit = () => dispatch(createUser(formData))
+  const handleSubmit = () => {
+    dispatch(createUser(formData))
+    close()
+  }
 
   const handleFetchUser = () => dispatch(fetchUser(formData))
 
@@ -82,6 +90,8 @@ export default ({ close }) => {
           onChange={handleFieldChange}
           error={false}
           name="email"
+          error={formData.email && !isValidEmailAddress(formData.email)}
+          required
         />
         <Form.Field
           style={styles.field}
@@ -93,6 +103,7 @@ export default ({ close }) => {
           onChange={handleFieldChange}
           error={false}
           name="uid"
+          required
         />
         <Form.Field
           style={styles.field}
@@ -104,6 +115,7 @@ export default ({ close }) => {
           onChange={handleFieldChange}
           error={false}
           name="employeeId"
+          required
         />
         <Form.Field
           style={styles.field}
@@ -115,6 +127,7 @@ export default ({ close }) => {
           onChange={handleFieldChange}
           error={false}
           name="name"
+          required
         />
         <Form.Field
           style={styles.field}
@@ -136,11 +149,10 @@ export default ({ close }) => {
         <Form.Dropdown
           data-cy="add-course"
           search
-          required={true}
           label="Add courses for user (optional)"
           options={courseOptions}
-          value={data.graders}
-          onChange={(e, d) => setFormData({ ...formData, graders: d.value })}
+          value={data.courses}
+          onChange={(e, d) => setFormData({ ...formData, courses: d.value })}
           multiple
           selection
         />
@@ -150,7 +162,7 @@ export default ({ close }) => {
           control={Button}
           content="Fetch user details"
           onClick={handleFetchUser}
-          disabled={!(formData.uid && formData.email && formData.employeeId)}
+          disabled={!(formData.uid || formData.email || formData.employeeId)}
           icon="refresh"
           color="blue"
           basic

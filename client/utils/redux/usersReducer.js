@@ -60,9 +60,7 @@ export default (state = { data: [], fetchedUser: {} }, action) => {
     case 'EDIT_USER_SUCCESS':
       return {
         ...state,
-        data: state.data.map((u) =>
-          u.id == action.response.id ? action.response : u
-        ),
+        data: state.data.filter((u) => u.id !== action.response.id).concat([action.response]),
         pending: false,
         error: false
       }

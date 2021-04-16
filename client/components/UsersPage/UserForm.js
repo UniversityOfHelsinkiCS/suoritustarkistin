@@ -10,7 +10,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import * as _ from 'lodash'
 
-import { fetchUser, createUser } from 'Utilities/redux/usersReducer'
+import { fetchUser, createUser, editUserAction } from 'Utilities/redux/usersReducer'
 import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
 import { isValidEmailAddress } from 'Root/utils/validators'
 
@@ -29,17 +29,13 @@ const styles = {
   field: { margin: '.5rem 0rem' }
 }
 
-export default ({ close }) => {
+export default ({ close, user }) => {
   const dispatch = useDispatch()
   const [formData, setFormData] = useState({ ...INITIAL_FORM_DATA })
   const [message, setMessage] = useState('')
   const [courseOptions, setCourseOptions] = useState([])
   const data = useSelector((state) => state.users)
-  const courses = useSelector((state) => state.courses.data)
-
-  useEffect(() => {
-    dispatch(getAllCoursesAction())
-  }, [])
+  const courses = useSelector((state) => state.courses)
 
   useEffect(() => {
     if (data.error) setMessage(data.fetchedUser.error)
@@ -48,14 +44,28 @@ export default ({ close }) => {
   }, [data])
 
   useEffect(() => {
-    setCourseOptions(_.sortBy(courses, 'name').map((course) => ({
+    if (!courses.data.length && !courses.pending) {
+      dispatch(getAllCoursesAction())
+      return () => { }
+    }
+    const options = _.sortBy(courses.data, 'name').map((course) => ({
       key: course.id,
       value: course.id,
-      courseCode: course.courseCode,
+      coursecode: course.courseCode,
       text: `${course.name} (${course.courseCode})`
-    })))
-  }, [courses])
-
+    }))
+    setCourseOptions(options)
+    if (user && courses.data.length) {
+      const userCourses = user.courses.map((course) => course.courseCode)
+      setFormData({
+        ...formData,
+        ...user,
+        courses: options
+          .filter((option) => userCourses.includes(option.coursecode))
+          .map((option) => option.key)
+      })
+    }
+  }, [courses, user])
 
   const handleFieldChange = (event) => {
     const { name, value } = event.target
@@ -68,7 +78,8 @@ export default ({ close }) => {
   )
 
   const handleSubmit = () => {
-    dispatch(createUser(formData))
+    if (user) dispatch(editUserAction(formData))
+    else dispatch(createUser(formData))
     close()
   }
 
@@ -81,7 +92,7 @@ export default ({ close }) => {
     name: (fetchedUser.firstNames || fetchedUser.lastName) ? `${fetchedUser.firstNames} ${fetchedUser.lastName}` : formData.name,
     courses: (fetchedUser.courses && fetchedUser.courses.length)
       ? courseOptions
-        .filter((option) => fetchedUser.courses.includes(option.courseCode))
+        .filter((option) => fetchedUser.courses.includes(option.coursecode))
         .map((option) => option.key)
       : formData.courses
   })
@@ -93,7 +104,7 @@ export default ({ close }) => {
         <p>{message}</p>
       </Message> : null}
 
-      <Form width={4} loading={data.pending}>
+      <Form width={4} loading={data.pending || courses.pending}>
         <Form.Field
           style={styles.field}
           data-cy="add-email-name"

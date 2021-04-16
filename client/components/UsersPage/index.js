@@ -29,7 +29,6 @@ export default () => {
         basic
         open={showForm}
         onClose={() => setShowForm(false)}
-        size="small"
       >
         <Modal.Content>
           <UserForm close={() => setShowForm(false)} />

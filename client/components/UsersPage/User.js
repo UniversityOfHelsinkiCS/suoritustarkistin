@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Button, Grid, Icon, Popup } from 'semantic-ui-react'
+import { Button, Grid, Icon, Popup, Modal } from 'semantic-ui-react'
+
 import { editUserAction, deleteUser } from 'Utilities/redux/usersReducer'
+import UserForm from 'Components/UsersPage/UserForm'
 
 export default ({ user }) => {
   const dispatch = useDispatch()
+  const [showForm, setShowForm] = useState(false)
 
   const logInAs = () => {
     localStorage.setItem('adminLoggedInAs', user.employeeId)
@@ -146,20 +149,37 @@ export default ({ user }) => {
       position="top center"
     />
 
+  const EditUser = () => <Modal
+    trigger={
+      <Button
+        data-cy={`${user.name}-delete`}
+        icon="edit"
+        color="yellow"
+        size="large"
+        content="Edit user"
+        onClick={() => setShowForm(true)}
+        basic />
+    }
+    basic
+    open={showForm}
+    onClose={() => setShowForm(false)}
+  >
+    <Modal.Content>
+      <UserForm user={user} close={() => setShowForm(false)} />
+    </Modal.Content>
+  </Modal>
 
   return (
     <Grid.Row>
-      <Grid.Column width={4}>{user.name}</Grid.Column>
-      <Grid.Column width={1}>{user.uid}</Grid.Column>
-      <Grid.Column width={2}>{user.employeeId}</Grid.Column>
-      <Grid.Column width={3}>{user.email}</Grid.Column>
+      <Grid.Column width={8}>{user.name} ({user.uid})</Grid.Column>
       <Grid.Column textAlign="center" width={1}>
         <GraderBadge />
       </Grid.Column>
       <Grid.Column textAlign="center" width={1}>
         <AdminBadge />
       </Grid.Column>
-      <Grid.Column textAlign="center" width={2}>
+      <Grid.Column textAlign="center" width={3}>
+        <EditUser />
         <DeleteUser />
       </Grid.Column>
       <Grid.Column width={1}>

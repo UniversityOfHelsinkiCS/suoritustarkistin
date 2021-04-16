@@ -14,17 +14,8 @@ export default () => {
     <Segment>
       <Grid celled="internally" style={{wordWrap: 'anywhere'}}>
         <Grid.Row>
-          <Grid.Column width={4}>
+          <Grid.Column width={8}>
             <Header as="h4">Name</Header>
-          </Grid.Column>
-          <Grid.Column width={1}>
-            <Header as="h4">User ID</Header>
-          </Grid.Column>
-          <Grid.Column width={2}>
-            <Header as="h4">Employee number</Header>
-          </Grid.Column>
-          <Grid.Column width={3}>
-            <Header as="h4">Email</Header>
           </Grid.Column>
           <Grid.Column width={1}>
             <Header as="h4">Grader</Header>
@@ -32,8 +23,8 @@ export default () => {
           <Grid.Column width={1}>
             <Header as="h4">Admin</Header>
           </Grid.Column>
-          <Grid.Column width={2}>
-            <Header as="h4">Delete</Header>
+          <Grid.Column width={3}>
+            <Header as="h4">Edit</Header>
           </Grid.Column>
           <Grid.Column width={1} />
         </Grid.Row>

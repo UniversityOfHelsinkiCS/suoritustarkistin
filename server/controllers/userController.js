@@ -59,14 +59,30 @@ const deleteAllUsers = async (req, res) => {
 
 const editUser = async (req, res) => {
   try {
-    const user = req.body
-
-    const [rows, [updatedUser]] = await db.users.update(user, {
+    const { courses, ...user } = req.body
+    const [rows] = await db.users.update(user, {
       returning: true,
       where: { id: req.params.id }
     })
-    if (rows) return res.status(200).json(updatedUser)
-    return res.status(400).json({ error: 'id not found.' })
+    if (!rows) res.status(400).json({ error: 'id not found.' })
+    const userToAddCourses = await db.users.findOne({
+      where: { id: req.params.id },
+      include: [
+        {
+          model: db.courses,
+          as: 'courses',
+          attributes: {
+            exclude: ['id', 'userCourses', 'createdAt', 'updatedAt']
+          },
+          through: {
+            attributes: []
+          }
+        }
+      ]
+    })
+    await userToAddCourses.setCourses(courses)
+    await userToAddCourses.reload()
+    return res.status(200).json(userToAddCourses)
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })

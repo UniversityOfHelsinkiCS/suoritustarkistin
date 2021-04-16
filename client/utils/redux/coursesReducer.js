@@ -41,7 +41,7 @@ export const deleteCourseAction = (id) => {
 
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
-export default (state = { data: [], unsent: 0 }, action) => {
+export default (state = { data: [], unsent: 0, pending: false }, action) => {
   switch (action.type) {
     case 'GET_ALL_COURSES_SUCCESS':
       return {

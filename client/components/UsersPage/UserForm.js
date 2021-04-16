@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import * as _ from 'lodash'
 
 import { fetchUser, createUser } from 'Utilities/redux/usersReducer'
+import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
 import { isValidEmailAddress } from 'Root/utils/validators'
 
 const INITIAL_FORM_DATA = {
@@ -28,26 +29,33 @@ const styles = {
   field: { margin: '.5rem 0rem' }
 }
 
-const parseUser = (fetchedUser) => ({
-  email: fetchedUser.primaryEmail || '',
-  uid: fetchedUser.eduPersonPrincipalName ? fetchedUser.eduPersonPrincipalName.split("@")[0] : '',
-  employeeId: fetchedUser.employeeNumber || '',
-  name: (fetchedUser.firstNames || fetchedUser.lastName) ? `${fetchedUser.firstNames} ${fetchedUser.lastName}` : ''
-})
-
-
 export default ({ close }) => {
   const dispatch = useDispatch()
   const [formData, setFormData] = useState({ ...INITIAL_FORM_DATA })
   const [message, setMessage] = useState('')
+  const [courseOptions, setCourseOptions] = useState([])
   const data = useSelector((state) => state.users)
   const courses = useSelector((state) => state.courses.data)
+
+  useEffect(() => {
+    dispatch(getAllCoursesAction())
+  }, [])
 
   useEffect(() => {
     if (data.error) setMessage(data.fetchedUser.error)
     if (!data.error && !data.pending)
       setFormData({ ...formData, ...parseUser(data.fetchedUser) })
   }, [data])
+
+  useEffect(() => {
+    setCourseOptions(_.sortBy(courses, 'name').map((course) => ({
+      key: course.id,
+      value: course.id,
+      courseCode: course.courseCode,
+      text: `${course.name} (${course.courseCode})`
+    })))
+  }, [courses])
+
 
   const handleFieldChange = (event) => {
     const { name, value } = event.target
@@ -66,11 +74,17 @@ export default ({ close }) => {
 
   const handleFetchUser = () => dispatch(fetchUser(formData))
 
-  const courseOptions = _.sortBy(courses, 'name').map((course) => ({
-    key: course.id,
-    value: course.id,
-    text: course.name
-  }))
+  const parseUser = (fetchedUser) => ({
+    email: fetchedUser.primaryEmail || formData.email,
+    uid: fetchedUser.eduPersonPrincipalName ? fetchedUser.eduPersonPrincipalName.split("@")[0] : formData.uid,
+    employeeId: fetchedUser.employeeNumber || formData.employeeId,
+    name: (fetchedUser.firstNames || fetchedUser.lastName) ? `${fetchedUser.firstNames} ${fetchedUser.lastName}` : formData.name,
+    courses: (fetchedUser.courses && fetchedUser.courses.length)
+      ? courseOptions
+        .filter((option) => fetchedUser.courses.includes(option.courseCode))
+        .map((option) => option.key)
+      : formData.courses
+  })
 
   return (
     <Segment style={{ width: '50em' }}>
@@ -90,7 +104,7 @@ export default ({ close }) => {
           onChange={handleFieldChange}
           error={false}
           name="email"
-          error={formData.email && !isValidEmailAddress(formData.email)}
+          error={Boolean(formData.email && !isValidEmailAddress(formData.email))}
           required
         />
         <Form.Field
@@ -151,7 +165,7 @@ export default ({ close }) => {
           search
           label="Add courses for user (optional)"
           options={courseOptions}
-          value={data.courses}
+          value={formData.courses}
           onChange={(e, d) => setFormData({ ...formData, courses: d.value })}
           multiple
           selection

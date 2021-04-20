@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import * as _ from 'lodash'
 import {
@@ -9,7 +9,7 @@ import {
   Segment,
   Popup
 } from 'semantic-ui-react'
-import { editCourseAction } from 'Utilities/redux/coursesReducer'
+import { editCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
   isValidOpenCourseCode,
@@ -19,13 +19,30 @@ import {
   isValidLanguage
 } from 'Root/utils/validators'
 
-export default ({ course, close }) => {
+export default ({ course, close: closeModal }) => {
   const dispatch = useDispatch()
   const allGraders = useSelector((state) => state.graders.data)
+  const courseData = useSelector((state) => state.courses)
   const [data, setData] = useState(
-    { ...course, graders: course.graders.map((g) => g.id)}
+    { ...course, graders: course.graders.map((g) => g.id) }
     || { isMooc: false, autoSeparate: false, graders: [] }
   )
+
+  useEffect(() => {
+    if (courseData.responsibles && !courseData.pending) {
+      const responsibleUids = Object.keys(courseData.responsibles)
+        .filter((r) => courseData.responsibles[r].person.eduPersonPrincipalName)
+        .map((r) => courseData.responsibles[r].person.eduPersonPrincipalName.split("@")[0])
+      const newGraders = allGraders.filter((g) => responsibleUids.includes(g.uid)).map(({id}) => id)
+      const graders = _.uniq(data.graders.concat(newGraders))
+      setData({ ...data, graders })
+    }
+  }, [courseData])
+
+  const close = () => {
+    dispatch(resetResponsibles())
+    closeModal()
+  }
 
   if (!allGraders) return null
 
@@ -43,7 +60,7 @@ export default ({ course, close }) => {
 
   return (
     <Segment>
-      <Form>
+      <Form loading={courseData.pending}>
         <Form.Field
           required={true}
           control={Input}
@@ -94,7 +111,16 @@ export default ({ course, close }) => {
             text: grader.name
           }))}
           value={data.graders}
-          onChange={(e, { value }) => setData({ ...data, graders: value  })}
+          onChange={(e, { value }) => setData({ ...data, graders: value })}
+        />
+        <Form.Field
+          data-cy="fetch-graders"
+          control={Button}
+          onClick={() => dispatch(getResponsiblesAction(course.courseCode))}
+          content="Fetch course graders"
+          icon="refresh"
+          color="blue"
+          basic
         />
         <Popup
           trigger={

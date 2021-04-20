@@ -21,6 +21,12 @@ export const addCourseAction = (data) => {
   return callBuilder(route, prefix, 'post', data)
 }
 
+export const getResponsiblesAction = (courseCode) => {
+  const route = `/courses/${courseCode}/responsibles`
+  const prefix = 'GET_RESPONSIBLES'
+  return callBuilder(route, prefix, 'get')
+}
+
 export const editCourseAction = (data) => {
   const route = `/courses/${data.id}`
   const prefix = 'EDIT_COURSE'
@@ -38,6 +44,10 @@ export const deleteCourseAction = (id) => {
   const prefix = 'DELETE_COURSE'
   return callBuilder(route, prefix, 'delete')
 }
+
+export const resetResponsibles = () => ({
+  type: 'RESPONSIBLES_RESET'
+})
 
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
@@ -87,6 +97,7 @@ export default (state = { data: [], unsent: 0, pending: false }, action) => {
       return {
         ...state,
         data: state.data.concat(action.response),
+        responsibles: null,
         pending: false,
         error: false
       }
@@ -108,6 +119,7 @@ export default (state = { data: [], unsent: 0, pending: false }, action) => {
         data: state.data.map((c) =>
           c.id == action.response[0].id ? action.response[0] : c
         ),
+        responsibles: null,
         pending: false,
         error: false
       }
@@ -161,6 +173,21 @@ export default (state = { data: [], unsent: 0, pending: false }, action) => {
         pending: false,
         error: true
       }
+    case 'GET_RESPONSIBLES_SUCCESS':
+      return {
+        ...state,
+        responsibles: action.response,
+        pending: false,
+        error: false
+      }
+    case 'GET_RESPONSIBLES_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'RESPONSIBLES_RESET':
+      return { ...state, responsibles: null }
     default:
       return state
   }

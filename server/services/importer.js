@@ -85,6 +85,16 @@ const getEarlierAttainments = async (data) => {
   }
 }
 
+async function getResponsibles(courseCode) {
+  try {
+    const { data } = await api.get(`suotar/responsibles/${courseCode}`)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
+
 module.exports = {
   getEmployees,
   getStudents,
@@ -92,5 +102,6 @@ module.exports = {
   getGrades,
   getEarlierAttainments,
   getAcceptorPersons,
-  resolveUser
+  resolveUser,
+  getResponsibles
 }

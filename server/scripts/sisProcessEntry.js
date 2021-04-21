@@ -159,7 +159,7 @@ const processEntries = async (createdEntries, checkImprovements) => {
 const filterEnrolments = (completionDate, { enrolments }) => {
   if (!enrolments) return null
   const sortedEnrolments = enrolments
-    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isBefore(moment(completionDate)))
+    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(moment(completionDate)))
     .sort(
       (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate.endDate)
         .diff(moment(a.courseUnitRealisation.activityPeriod.endDate.endDate))

@@ -9,6 +9,9 @@ const {
 const { processEntries } = require('./sisProcessEntry')
 const { getRegistrations } = require('../services/eduweb')
 const logger = require('@utils/logger')
+const sendEmail = require('../utils/sendEmail')
+const emailFactory = require('../utils/emailFactory')
+
 
 const LANGUAGES = ["fi", "sv", "en"]
 
@@ -154,6 +157,17 @@ const processManualEntry = async ({
       amount: success.length,
       sis: true
     })
+    const info = await sendEmail(
+      `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
+      null,
+      null,
+      emailFactory(success.length, 0, originalCourse.courseCode)
+    )
+    if (info) {
+      (info.accepted || []).forEach((sent) => logger.info(`Email sent to ${sent}`))
+      // eslint-disable-next-line no-unexpected-multiline
+      (info.rejected || []).forEach((notSent) => logger.info(`Address ${notSent} was rejected`))
+    }
     return { message: "success", success, failed }
   } else {
     return { message: "error", success, failed }

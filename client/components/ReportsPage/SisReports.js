@@ -8,6 +8,7 @@ import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
 import TabLoader from './TabLoader'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
+import sisuErrorMessages from 'Utilities/sisuErrorMessages.json'
 import Notification from 'Components/Message'
 import './reportStyles.css'
 import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
@@ -150,6 +151,17 @@ const EntryCells = ({ entry }) => {
   )
 }
 
+const parseEntryError = (error) => {
+  try {
+    const { messageTemplate, message, path } = error
+    if (!sisuErrorMessages[messageTemplate] || !path)
+      return message
+    return `${sisuErrorMessages[messageTemplate]} in attribute ${path.split(".")[2]}`
+  } catch (e) {
+    return error.message || JSON.stringify(error)
+  }
+}
+
 const TableBody = ({ rawEntries, course }) => (
   <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => (
@@ -168,7 +180,7 @@ const TableBody = ({ rawEntries, course }) => (
           <Table.Row>
             <Table.Cell
               colSpan='15'
-              error>{`Errors from SIS: ${rawEntry.entry.errors.message}`}
+              error>{parseEntryError(rawEntry.entry.errors)}
             </Table.Cell>
           </Table.Row>}
       </React.Fragment>

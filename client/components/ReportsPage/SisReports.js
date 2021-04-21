@@ -151,7 +151,7 @@ const EntryCells = ({ entry }) => {
   )
 }
 
-const parseEntryError = (error) => {
+const parseEntryError = ({ message: error }) => {
   try {
     const { messageTemplate, message, path } = error
     if (!sisuErrorMessages[messageTemplate] || !path)

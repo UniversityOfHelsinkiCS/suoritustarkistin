@@ -164,9 +164,8 @@ const processManualEntry = async ({
       emailFactory(success.length, 0, originalCourse.courseCode)
     )
     if (info) {
-      (info.accepted || []).forEach((sent) => logger.info(`Email sent to ${sent}`))
-      // eslint-disable-next-line no-unexpected-multiline
-      (info.rejected || []).forEach((notSent) => logger.info(`Address ${notSent} was rejected`))
+      if (info.accepted.length) info.accepted.forEach((sent) => logger.info(`Email sent to ${sent}`))
+      if (info.rejected.length) info.rejected.forEach((notSent) => logger.info(`Address ${notSent} was rejected`))
     }
     return { message: "success", success, failed }
   } else {

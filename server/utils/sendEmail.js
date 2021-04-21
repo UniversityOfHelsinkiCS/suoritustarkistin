@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer')
 const logger = require('@utils/logger')
 const { isEnabled, messageOptions, smtpOptions } = require('../config/email')
 
-const sendEmail = async (subject, text, attachments) => {
+const sendEmail = async (subject, text, attachments, html) => {
   if (!isEnabled) {
     logger.error('Email disabled, set EMAIL_ENABLED=true to enable.')
     return
@@ -12,9 +12,10 @@ const sendEmail = async (subject, text, attachments) => {
   const emailOptions = {
     ...messageOptions,
     subject,
-    text,
     attachments
   }
+  if (text) emailOptions.text = text
+  if (html) emailOptions.html = html
 
   return transporter.sendMail(emailOptions)
 }

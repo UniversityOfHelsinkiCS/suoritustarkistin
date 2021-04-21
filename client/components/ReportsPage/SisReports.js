@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { Accordion, Button, Icon, Message, Table, Radio } from 'semantic-ui-react'
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
@@ -327,12 +328,20 @@ const title = (batch) => {
   )
 }
 
-export default ({ reports, user }) => {
+export default withRouter(({ reports, user, match }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setLoading(false)
   }, [])
+
+  useEffect(() => {
+    if (match) {
+      const { activeBatch } = match.params
+      if (activeBatch)
+        dispatch(openReport(activeBatch))
+    }
+  }, [match])
 
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
@@ -396,4 +405,4 @@ export default ({ reports, user }) => {
     <Filters />
     <Accordion panels={panels} exclusive={false} fluid styled />
   </>
-}
+})

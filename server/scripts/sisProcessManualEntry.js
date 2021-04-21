@@ -160,8 +160,12 @@ const processManualEntry = async ({
     const info = await sendEmail(
       `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
       null,
-      null,
-      emailFactory(success.length, 0, originalCourse.courseCode)
+      [{
+        filename: 'suotar.png',
+        path: `${process.cwd()}/client/assets/suotar.png`,
+        cid: 'toskasuotarlogoustcid'
+      }],
+      emailFactory(success.length, 0, originalCourse.courseCode, batchId)
     )
     if (info) {
       if (info.accepted.length) info.accepted.forEach((sent) => logger.info(`Email sent to ${sent}`))

@@ -14,6 +14,7 @@ export default () => (
     <Switch>
       <ProtectedRoute exact path="/" component={NewReportPage} />
       <ProtectedRoute exact path="/reports" component={ReportsPage} />
+      <ProtectedRoute exact path="/reports/sisu/:activeBatch" component={ReportsPage} />
       <ProtectedRoute exact path="/courses" component={CoursesPage} />
       <ProtectedRoute exact path="/users" component={UsersPage} />
       <ProtectedRoute exact path="/automated-reports" component={AutomatedReportsPage} />

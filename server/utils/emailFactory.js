@@ -1,4 +1,4 @@
-module.exports = (amount, unsentAmount, courseCode) => `
+module.exports = (amount, unsentAmount, courseCode, batchId) => `
 <!doctype html>
 <html>
   <head>
@@ -112,7 +112,7 @@ module.exports = (amount, unsentAmount, courseCode) => `
                                 <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
                                   <tbody>
                                     <tr>
-                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;"> <a href="#" target="_blank" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">Näytä uusi raportti Suotarissa</a> </td>
+                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;"> <a href="https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${batchId}" target="_blank" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">Näytä uusi raportti Suotarissa</a> </td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -134,6 +134,11 @@ module.exports = (amount, unsentAmount, courseCode) => `
                   <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
                     <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">Suotar by Toska, grp-toska@helsinki.fi</span>
                   </td>
+                </tr>
+                <tr>
+                    <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                        <img style="width: 300px" src="cid:toskasuotarlogoustcid"/>
+                    </td>
                 </tr>
               </table>
             </div>

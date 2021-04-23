@@ -113,7 +113,9 @@ const fetchUserDetails = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
+    const { name } = await db.users.findOne({ where: { id: req.params.id }, raw: true })
     await db.users.destroy({ where: { id: req.params.id } })
+    logger.info(`User ${name} deleted by ${req.user.name}`)
     return res.status(200).send(req.params.id)
   } catch (e) {
     next(e)

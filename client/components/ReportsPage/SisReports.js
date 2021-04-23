@@ -7,7 +7,6 @@ import { Accordion, Button, Icon, Message, Table, Radio } from 'semantic-ui-reac
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
-import TabLoader from './TabLoader'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import sisuErrorMessages from 'Utilities/sisuErrorMessages.json'
 import Notification from 'Components/Message'
@@ -330,23 +329,20 @@ const title = (batch) => {
 
 export default withRouter(({ reports, user, match }) => {
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(false)
-  }, [])
-
-  useEffect(() => {
-    if (match) {
-      const { activeBatch } = match.params
-      if (activeBatch)
-        dispatch(openReport(activeBatch))
-    }
-  }, [match])
-
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false })
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (match && reports.length) {
+      const { activeBatch } = match.params
+      if (activeBatch && loading) {
+        dispatch(openReport(activeBatch))
+        setLoading(false)
+      }
+    }
+  }, [match, reports])
 
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
@@ -397,8 +393,6 @@ export default withRouter(({ reports, user, match }) => {
     <Radio label='Sent missing from Sisu' style={{ margin: '0 1rem' }} checked={filters.missing} onClick={() => toggleFilter('missing')} toggle />
     <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
   </div>
-
-  if (loading) return <TabLoader />
 
   return <>
     <Notification />

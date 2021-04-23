@@ -1,7 +1,8 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { resolveUser } = require('../services/importer')
-
+const sendEmail = require('../utils/sendEmail')
+const { forNewUser } = require('../utils/emailFactory')
 
 const getUsers = async (req, res) => {
   try {
@@ -47,6 +48,17 @@ const addUser = async (req, res, next) => {
     if (courses && courses.length)
       await Promise.all(courses.map((course) => newUser.addCourse(course, { through: "users_courses" })))
     res.status(200).json(newUser)
+    sendEmail({
+      to: newUser.email,
+      replyTo: 'Toska <grp-toska@helsinki.fi>',
+      subject: 'An user account to Suoritustarkistin is created for you!',
+      html: forNewUser(newUser.name),
+      attachments: [{
+        filename: 'suotar.png',
+        path: `${process.cwd()}/client/assets/suotar.png`,
+        cid: 'toskasuotarlogoustcid'
+      }]
+    })
   } catch (e) {
     next(e)
   }

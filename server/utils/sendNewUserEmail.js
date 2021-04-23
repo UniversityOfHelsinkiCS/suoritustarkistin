@@ -1,37 +1,16 @@
-const nodemailer = require('nodemailer')
-const logger = require('@utils/logger')
-const { isEnabled, messageOptions, smtpOptions } = require('../config/email')
+const sendEmail = require('../utils/sendEmail')
+const { newUserForAdmin } = require('../utils/emailFactory')
 
-const sendNewUserEmail = async (user) => {
-
-  if (!isEnabled) {
-    logger.error('Email disabled, set EMAIL_ENABLED=true to enable.')
-    return
-  }
-
-  try {
-    const transporter = nodemailer.createTransport(smtpOptions)
-    const emailOptions = {
-      from: messageOptions.from,
-      to: "Toska <grp-toska@helsinki.fi>",
-      subject: 'New user in Suotar 👀',
-      html: `<p>${user.name} (${user.email}) just logged into Suotar for the first time! </p>
-            <p>If the user should be granted with Grader-priviledges, <a href="https://study.cs.helsinki.fi/suoritustarkistin/">go and grant them</a></p>
-            <img src="cid:toskasuotarlogoustcid"/>`,
-      attachments: [
-        {
-          filename: 'suotar.png',
-          path: `${process.cwd()}/client/assets/suotar.png`,
-          cid: 'toskasuotarlogoustcid'
-        }
-      ]
-    }
-  
-    transporter.sendMail(emailOptions)
-  } catch (e) {
-    logger.error("Failed to send newUserEmail.", e)
-  }
- 
-}
+const sendNewUserEmail = async (user) => await sendEmail({
+  to: 'Toska <grp-toska@helsinki.fi>',
+  replyTo: 'Toska <grp-toska@helsinki.fi>',
+  subject: 'New user in Suotar 👀',
+  html: newUserForAdmin(user.name, user.email),
+  attachments: [{
+    filename: 'suotar.png',
+    path: `${process.cwd()}/client/assets/suotar.png`,
+    cid: 'toskasuotarlogoustcid'
+  }]
+})
 
 module.exports = sendNewUserEmail

@@ -10,7 +10,7 @@ const { processEntries } = require('./sisProcessEntry')
 const { getRegistrations } = require('../services/eduweb')
 const logger = require('@utils/logger')
 const sendEmail = require('../utils/sendEmail')
-const emailFactory = require('../utils/emailFactory')
+const { newReport } = require('../utils/emailFactory')
 
 
 const LANGUAGES = ["fi", "sv", "en"]
@@ -157,20 +157,15 @@ const processManualEntry = async ({
       amount: success.length,
       sis: true
     })
-    const info = await sendEmail(
-      `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
-      null,
-      [{
+    sendEmail({
+      subject: `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
+      attachments: [{
         filename: 'suotar.png',
         path: `${process.cwd()}/client/assets/suotar.png`,
         cid: 'toskasuotarlogoustcid'
       }],
-      emailFactory(success.length, 0, originalCourse.courseCode, batchId)
-    )
-    if (info) {
-      if (info.accepted.length) info.accepted.forEach((sent) => logger.info(`Email sent to ${sent}`))
-      if (info.rejected.length) info.rejected.forEach((notSent) => logger.info(`Address ${notSent} was rejected`))
-    }
+      html: newReport(success.length, 0, originalCourse.courseCode, batchId)
+    })
     return { message: "success", success, failed }
   } else {
     return { message: "error", success, failed }

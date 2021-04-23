@@ -152,7 +152,7 @@ const newReport = (amount, unsentAmount, courseCode, batchId) => Template(
             </tbody>
           </table>
           <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Suotarissa yhteensä ${unsentAmount} lähettämätöntä raporttia.</p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilanteissa ota yhteys grp-toska@helsinki.fi</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilanteissa ota yhteys <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a></p>
         </td>
       </tr>
     </table>
@@ -184,7 +184,7 @@ const forNewUser = (name) => Template(`
               </tr>
             </tbody>
           </table>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">If you are facing any problems, please contact: grp-toska@helsinki.fi</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">If you are facing any problems, please contact: <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a></p>
         </td>
       </tr>
     </table>
@@ -214,7 +214,6 @@ const newUserForAdmin = (name, email) => Template(`
               </tr>
             </tbody>
           </table>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilanteissa ota yhteys grp-toska@helsinki.fi</p>
         </td>
       </tr>
     </table>

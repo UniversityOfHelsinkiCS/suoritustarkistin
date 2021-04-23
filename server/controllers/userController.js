@@ -52,7 +52,7 @@ const addUser = async (req, res, next) => {
       to: newUser.email,
       replyTo: 'Toska <grp-toska@helsinki.fi>',
       cc: null,
-      subject: 'An user account to Suoritustarkistin is created for you!',
+      subject: 'A Suoritustarkistin user account has been created for you',
       html: forNewUser(newUser.name),
       attachments: [{
         filename: 'suotar.png',

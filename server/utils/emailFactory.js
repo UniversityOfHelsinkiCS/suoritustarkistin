@@ -152,7 +152,7 @@ const newReport = (amount, unsentAmount, courseCode, batchId) => Template(
             </tbody>
           </table>
           <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Suotarissa yhteensä ${unsentAmount} lähettämätöntä raporttia.</p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilnateissa ota yhteys grp-toska@helsinki.fi</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilanteissa ota yhteys grp-toska@helsinki.fi</p>
         </td>
       </tr>
     </table>
@@ -167,7 +167,8 @@ const forNewUser = (name) => Template(`
       <tr>
         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
         <p>Hi ${name},<br>
-        an user account to Suoritustarkistin has been created for you! If you don't have access to grade courses which you should, please reply to this message and specify which courses you should have access to.</p>
+        a Suoritustarkistin user account has been created for you!</p>
+        <p>If you don't have access to the courses that you need, please reply to this message and specify which courses you should have access to.</p>
           <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
             <tbody>
               <tr>
@@ -183,12 +184,12 @@ const forNewUser = (name) => Template(`
               </tr>
             </tbody>
           </table>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilnateissa ota yhteys grp-toska@helsinki.fi</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">If you are facing any problems, please contact: grp-toska@helsinki.fi</p>
         </td>
       </tr>
     </table>
   </td>
-</tr>`, 'An user account to Suoritustarkistin is created for you!')
+</tr>`, 'A Suoritustarkistin user account has been created for you')
 
 const newUserForAdmin = (name, email) => Template(`
 <tr>
@@ -213,7 +214,7 @@ const newUserForAdmin = (name, email) => Template(`
               </tr>
             </tbody>
           </table>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilnateissa ota yhteys grp-toska@helsinki.fi</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilanteissa ota yhteys grp-toska@helsinki.fi</p>
         </td>
       </tr>
     </table>

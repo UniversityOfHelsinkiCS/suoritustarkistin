@@ -3,6 +3,7 @@ const { newUserForAdmin } = require('../utils/emailFactory')
 
 const sendNewUserEmail = async (user) => await sendEmail({
   to: 'Toska <grp-toska@helsinki.fi>',
+  cc: null,
   replyTo: 'Toska <grp-toska@helsinki.fi>',
   subject: 'New user in Suotar 👀',
   html: newUserForAdmin(user.name, user.email),

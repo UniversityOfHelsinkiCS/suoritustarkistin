@@ -51,6 +51,7 @@ const addUser = async (req, res, next) => {
     sendEmail({
       to: newUser.email,
       replyTo: 'Toska <grp-toska@helsinki.fi>',
+      cc: null,
       subject: 'An user account to Suoritustarkistin is created for you!',
       html: forNewUser(newUser.name),
       attachments: [{

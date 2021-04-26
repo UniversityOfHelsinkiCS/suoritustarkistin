@@ -6,7 +6,8 @@ const {
   editCourse,
   deleteAllCourses,
   confirmDeletion,
-  deleteCourse
+  deleteCourse,
+  getCourseResponsibles
 } = require('@controllers/courseController')
 const {
   getUsers,
@@ -14,7 +15,9 @@ const {
   getUsersGraders,
   addUser,
   editUser,
-  deleteAllUsers
+  deleteAllUsers,
+  fetchUserDetails,
+  deleteUser
 } = require('@controllers/userController')
 const {
   addReport,
@@ -66,13 +69,13 @@ router.get('/sandbox', () => {
   throw new Error('Suotar exploded!')
 })
 
-// Routes for testing
-router.delete('/courses', notInProduction, deleteAllCourses)
-router.post('/users', notInProduction, addUser)
-router.delete('/users', notInProduction, deleteAllUsers)
-router.get('/reports/list', notInProduction, getReportList)
-router.delete('/reports', notInProduction, deleteAllReports)
-router.delete('/jobs', notInProduction, deleteAllJobs)
+// Routes for seeding the test database
+router.delete('/seed/courses', notInProduction, deleteAllCourses)
+router.delete('/seed/users', notInProduction, deleteAllUsers)
+router.get('/seed/reports/list', notInProduction, getReportList)
+router.delete('/seed/reports', notInProduction, deleteAllReports)
+router.delete('/seed/jobs', notInProduction, deleteAllJobs)
+router.post('/seed/users', notInProduction, addUser)
 
 // Production routes
 router.post('/login', login)
@@ -84,10 +87,14 @@ router.get('/courses/:id/registrations', getCourseRegistrations)
 router.put('/courses/:id', editCourse)
 router.get('/courses/:id/confirm_deletion', checkAdmin, confirmDeletion)
 router.delete('/courses/:id/', checkAdmin, deleteCourse)
+router.get('/courses/:courseCode/responsibles', checkAdmin, getCourseResponsibles)
 
 router.get('/users', checkAdmin, getUsers)
 router.get('/users/graders', checkAdmin, getGraders)
+router.post('/users/fetch', checkAdmin, fetchUserDetails)
+router.post('/users', checkAdmin, addUser)
 router.put('/users/:id', checkAdmin, editUser)
+router.delete('/users/:id', checkAdmin, deleteUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
 router.get('/users/:id/reports', checkIdMatch, getUsersReports)
 router.get('/users/:id/sis_reports', checkIdMatch, sisGetUsersReports)

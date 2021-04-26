@@ -2,30 +2,33 @@
 
 describe("Permissions", () => {
   before(() => {
-    cy.request('DELETE', '/api/users')
+    cy.request('DELETE', '/api/seed/users')
 
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'admin',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
+      uid: 'uid1',
       isAdmin: true,
       isGrader: false
     })
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'grader',
       employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
+      uid: 'uid2',
       isAdmin: false,
       isGrader: true
     })
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'user',
       employeeId: Cypress.env('USER_EMPLOYEE_NUMBER'),
+      uid: 'uid3',
       isAdmin: false,
       isGrader: false
     })
   })
 
-  it("Users with employeeId and isGrader=false see who they should contact to get permissions", () => {    
-    cy.request('POST', '/api/users', {
+  it("Users with employeeId and isGrader=false see who they should contact to get permissions", () => {
+    cy.request('POST', '/api/seed/users', {
       name: 'employeeIsGraderFalse',
       employeeId: 'employeeIsGraderFalse',
       isAdmin: false,

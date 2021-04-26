@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import * as _ from 'lodash'
 import {
@@ -9,7 +9,7 @@ import {
   Popup,
   Segment
 } from 'semantic-ui-react'
-import { addCourseAction } from 'Utilities/redux/coursesReducer'
+import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
   isValidOpenCourseCode,
@@ -19,11 +19,27 @@ import {
   isValidLanguage
 } from 'Root/utils/validators'
 
-export default ({ close }) => {
+export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
   const graders = useSelector((state) => state.graders.data)
+  const courseData = useSelector((state) => state.courses)
   const [data, setData] = useState({ isMooc: false, autoSeparate: false, graders: [] })
 
+  useEffect(() => {
+    if (courseData.responsibles && !courseData.pending) {
+      const responsibleUids = Object.keys(courseData.responsibles)
+        .filter((r) => courseData.responsibles[r].person.eduPersonPrincipalName)
+        .map((r) => courseData.responsibles[r].person.eduPersonPrincipalName.split("@")[0])
+      const newGraders = graders.filter((g) => responsibleUids.includes(g.uid)).map(({ id }) => id)
+      const updatedGraders = _.uniq(data.graders.concat(newGraders))
+      setData({ ...data, graders: updatedGraders })
+    }
+  }, [courseData])
+
+  const close = () => {
+    dispatch(resetResponsibles())
+    closeModal()
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -40,7 +56,7 @@ export default ({ close }) => {
 
   return (
     <Segment style={{ width: '50em' }}>
-      <Form width={4}>
+      <Form width={4} loading={courseData.pending}>
         <Form.Field
           data-cy="add-course-name"
           required={true}
@@ -96,6 +112,16 @@ export default ({ close }) => {
           }))}
           value={data.graders}
           onChange={(e, d) => setData({ ...data, graders: d.value })}
+        />
+        <Form.Field
+          data-cy="fetch-graders"
+          control={Button}
+          disabled={!hasValidCourseCode(data.courseCode)}
+          onClick={() => dispatch(getResponsiblesAction(data.courseCode))}
+          content="Fetch course graders"
+          icon="refresh"
+          color="blue"
+          basic
         />
         <Popup
           trigger={

@@ -14,7 +14,7 @@ import {
 import { Menu, Icon, Tab } from 'semantic-ui-react'
 import { getAllCoursesAction } from '../../utils/redux/coursesReducer'
 
-export default () => {
+export default ({match}) => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
   const reports = useSelector((state) => state.reports)
@@ -119,5 +119,5 @@ export default () => {
     ]
   }
 
-  return <Tab panes={panes} />
+  return <Tab panes={panes} defaultActiveIndex={match.params.activeBatch ? 3 : 0} />
 }

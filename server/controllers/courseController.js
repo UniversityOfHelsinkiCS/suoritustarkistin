@@ -3,6 +3,8 @@ const db = require('../models/index')
 const { Op } = require('sequelize')
 const _ = require('lodash')
 const { isValidCourse } = require('@root/utils/validators')
+const { getResponsibles } = require('../services/importer')
+
 
 const cleanCourses = (courses) => {
   return courses.map((course) => ({
@@ -21,7 +23,7 @@ const getCourses = async (req, res) => {
   try {
     const courses = await db.courses.findAll({
       include: [
-        { 
+        {
           model: db.users,
           as: 'graders',
           attributes: {
@@ -47,7 +49,7 @@ const getUsersCourses = async (req, res) => {
         id: req.user.id
       },
       include: [
-        { 
+        {
           model: db.courses,
           as: 'courses',
           attributes: {
@@ -94,7 +96,7 @@ const addCourse = async (req, res) => {
     const newCourseWithGraders = await db.courses.findOne({
       where: { id: newCourse.id },
       include: [
-        { 
+        {
           model: db.users,
           as: 'graders',
           attributes: {
@@ -174,11 +176,11 @@ const editCourse = async (req, res) => {
       }
 
       transaction.commit()
-  
+
       const updatedCourseWithGraders = await db.courses.findOne({
         where: { id: updatedCourse.id },
         include: [
-          { 
+          {
             model: db.users,
             as: 'graders',
             attributes: {
@@ -215,7 +217,7 @@ const unsentEntries = async (id) => {
       courseId: id
     },
     include: [
-      { model: db.entries, as: 'entry'}
+      { model: db.entries, as: 'entry' }
     ]
   })
   const notSentYet = rawEntries.filter(({ entry }) => !entry.sent)
@@ -247,6 +249,8 @@ const deleteCourse = async (req, res) => {
   }
 }
 
+const getCourseResponsibles = async (req, res) => res.send(await getResponsibles(req.params.courseCode))
+
 module.exports = {
   getCourses,
   getUsersCourses,
@@ -254,5 +258,6 @@ module.exports = {
   editCourse,
   deleteAllCourses,
   confirmDeletion,
-  deleteCourse
+  deleteCourse,
+  getCourseResponsibles
 }

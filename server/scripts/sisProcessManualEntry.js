@@ -9,6 +9,9 @@ const {
 const { processEntries } = require('./sisProcessEntry')
 const { getRegistrations } = require('../services/eduweb')
 const logger = require('@utils/logger')
+const sendEmail = require('../utils/sendEmail')
+const { newReport } = require('../utils/emailFactory')
+
 
 const LANGUAGES = ["fi", "sv", "en"]
 
@@ -153,6 +156,15 @@ const processManualEntry = async ({
       message: 'Entries success',
       amount: success.length,
       sis: true
+    })
+    sendEmail({
+      subject: `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
+      attachments: [{
+        filename: 'suotar.png',
+        path: `${process.cwd()}/client/assets/suotar.png`,
+        cid: 'toskasuotarlogoustcid'
+      }],
+      html: newReport(success.length, 0, originalCourse.courseCode, batchId)
     })
     return { message: "success", success, failed }
   } else {

@@ -77,6 +77,7 @@ initializeDatabaseConnection()
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
       app.use(Sentry.Handlers.errorHandler())
     }
+    app.use((err, req, res) => { res.status(500).send(err.toString()) })
 
     if (!IN_MAINTENANCE)
       initializeCronJobs()

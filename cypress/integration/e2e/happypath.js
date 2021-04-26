@@ -1,16 +1,16 @@
 describe('Submitting data creates a valid report into database', function() {
   before(function() {
-    cy.request('DELETE', '/api/courses')
-    cy.request('DELETE', '/api/users')
-    cy.request('DELETE', '/api/reports')
+    cy.request('DELETE', '/api/seed/courses')
+    cy.request('DELETE', '/api/seed/users')
+    cy.request('DELETE', '/api/seed/reports')
 
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'admin',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: false
     })
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'user',
       employeeId: Cypress.env('USER_EMPLOYEE_NUMBER'),
       isAdmin: false,
@@ -80,7 +80,7 @@ describe('Submitting data creates a valid report into database', function() {
     cy.get('[data-cy=confirm-sending-button]')
       .should('be.visible')
       .click()
-    
+
     cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
   })

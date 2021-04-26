@@ -115,21 +115,11 @@ const processBaiCompletions = async (grader, course, job) => {
         match.reportId = dbReport.id
         db.credits.create(match)
       })
-      if (dbReport) {
-        const info = await sendEmail(
-          `Uusia kurssisuorituksia: ${courseName}`,
-          'Viikoittaisen automaattiajon tuottamat siirtotiedostot saatavilla OodiToolissa.'
-        )
-        if (info) {
-          info.accepted.forEach((accepted) =>
-            logger.info(`Email sent to ${accepted}.`)
-          )
-        } else if (info) {
-          info.rejected.forEach((rejected) =>
-            logger.error(`Address ${rejected} was rejected.`)
-          )
-        }
-      }
+      if (dbReport)
+        sendEmail({
+          subject: `Uusia kurssisuorituksia: ${courseName}`,
+          text: 'Viikoittaisen automaattiajon tuottamat siirtotiedostot saatavilla OodiToolissa.'
+        })
     }
   } catch (error) {
     logger.error('Error processing new completions:', error)

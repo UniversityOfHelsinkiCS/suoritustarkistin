@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { Accordion, Button, Icon, Message, Table, Radio } from 'semantic-ui-react'
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
-import TabLoader from './TabLoader'
 import { sisHandleEntryDeletionAction, refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
+import sisuErrorMessages from 'Utilities/sisuErrorMessages.json'
 import Notification from 'Components/Message'
 import './reportStyles.css'
 import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
@@ -150,6 +151,17 @@ const EntryCells = ({ entry }) => {
   )
 }
 
+const parseEntryError = ({ message: error }) => {
+  try {
+    const { messageTemplate, message, path } = error
+    if (!sisuErrorMessages[messageTemplate] || !path)
+      return message
+    return `${sisuErrorMessages[messageTemplate]} in attribute ${path.split(".")[2]}`
+  } catch (e) {
+    return error.message || JSON.stringify(error)
+  }
+}
+
 const TableBody = ({ rawEntries, course }) => (
   <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => (
@@ -168,7 +180,7 @@ const TableBody = ({ rawEntries, course }) => (
           <Table.Row>
             <Table.Cell
               colSpan='15'
-              error>{`Errors from SIS: ${rawEntry.entry.errors.message}`}
+              error>{parseEntryError(rawEntry.entry.errors)}
             </Table.Cell>
           </Table.Row>}
       </React.Fragment>
@@ -315,17 +327,22 @@ const title = (batch) => {
   )
 }
 
-export default ({ reports, user }) => {
+export default withRouter(({ reports, user, match }) => {
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(false)
-  }, [])
-
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false })
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (match && reports.length) {
+      const { activeBatch } = match.params
+      if (activeBatch && loading) {
+        dispatch(openReport(activeBatch))
+        setLoading(false)
+      }
+    }
+  }, [match, reports])
 
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 
@@ -377,11 +394,9 @@ export default ({ reports, user }) => {
     <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
   </div>
 
-  if (loading) return <TabLoader />
-
   return <>
     <Notification />
     <Filters />
     <Accordion panels={panels} exclusive={false} fluid styled />
   </>
-}
+})

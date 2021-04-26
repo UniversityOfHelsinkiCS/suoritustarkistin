@@ -8,19 +8,21 @@ describe('Form validation', function() {
       }
     })
 
-    cy.request('DELETE', '/api/courses')
-    cy.request('DELETE', '/api/users')
-    cy.request('DELETE', '/api/reports')
+    cy.request('DELETE', '/api/seed/courses')
+    cy.request('DELETE', '/api/seed/users')
+    cy.request('DELETE', '/api/seed/reports')
 
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'admin',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
+      uid: 'admin11',
       isAdmin: true,
       isGrader: true
     })
-    cy.request('POST', '/api/users', {
+    cy.request('POST', '/api/seed/users', {
       name: 'grader',
       employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
+      uid: 'grader11',
       isAdmin: false,
       isGrader: true
     }).then((response) => {
@@ -54,25 +56,25 @@ describe('Form validation', function() {
         .children()
         .clear()
         .type('5.7.2019')
-  
+
       cy.get('[data-cy=graderSelection]')
         .click()
         .children()
         .contains('grader')
         .click()
-  
+
       cy.get('[data-cy=courseSelection]')
         .click()
         .children()
         .contains('avoimen kurssi (AYTKTTEST)')
         .click()
-  
+
       cy.get('[data-cy=create-report-button]').should('be.disabled')
     })
-  
+
     it('when there are missing fields', () => {
       cy.get('[data-cy=create-report-button]').should('be.disabled')
-  
+
       // missing course
       cy.get('[data-cy=pastefield]').type(
         '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
@@ -82,7 +84,7 @@ describe('Form validation', function() {
         .children()
         .clear()
         .type('5.7.2019')
-  
+
       cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=graderSelection]')
         .click()
@@ -96,7 +98,7 @@ describe('Form validation', function() {
         .contains('tkt:n kurssi (TKTTEST)')
         .click()
       cy.get('[data-cy=create-report-button]').should('not.be.disabled')
-  
+
       // missing data
       cy.get('[data-cy=pastefield]').clear()
       cy.get('[data-cy=create-report-button]').should('be.disabled')
@@ -105,7 +107,7 @@ describe('Form validation', function() {
         { delay: 1 }
       )
       cy.get('[data-cy=create-report-button]').should('not.be.disabled')
-  
+
       // missing date
       cy.get('[data-cy=dateField]')
         .children()
@@ -117,7 +119,7 @@ describe('Form validation', function() {
         .type('5.7.2019')
       cy.get('[data-cy=create-report-button]').should('not.be.disabled')
     })
-  
+
     it('when uploaded data is invalid', () => {
       cy.get('[data-cy=create-report-button]').should('be.disabled')
       cy.get('[data-cy=dragdrop]').click()
@@ -133,7 +135,7 @@ describe('Form validation', function() {
         .children()
         .contains('grader')
         .click()
-  
+
       cy.get('[data-cy=courseSelection]')
         .click()
         .children()
@@ -169,7 +171,7 @@ describe('Form validation', function() {
     cy.fixture('valid-with-dates.csv').then((content) => {
       cy.get('[data-cy=dropzone]').upload(content, 'valid-with-dates.csv')
     })
-    
+
     cy.get('[data-cy=graderSelection]')
       .click()
       .children()
@@ -187,6 +189,6 @@ describe('Form validation', function() {
     cy.contains("2.5.2020")
 
     cy.get('[data-cy=create-report-button]').should('be.enabled')
-  }) 
-  
+  })
+
 })

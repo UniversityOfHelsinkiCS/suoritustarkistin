@@ -4,6 +4,7 @@ export const possibleUsers = [
   {
     employeeNumber: 'admin',
     givenName: 'adminEtunimi',
+    uid: 'admin1',
     mail: 'grp-toska+mockadmin@helsinki.fi',
     schacDateOfBirth: undefined,
     schacPersonalUniqueCode: undefined,
@@ -12,6 +13,7 @@ export const possibleUsers = [
   {
     employeeNumber: 'staff',
     givenName: 'non-admin-staffEtunimi',
+    uid: 'staff1',
     mail: 'grp-toska+mockstaff@helsinki.fi',
     schacDateOfBirth: undefined,
     schacPersonalUniqueCode: undefined,
@@ -20,6 +22,7 @@ export const possibleUsers = [
   {
     employeeNumber: 'grader',
     givenName: 'graderEtunimi',
+    uid: 'grader1',
     mail: 'grp-toska+mockgrader@helsinki.fi',
     schacDateOfBirth: undefined,
     schacPersonalUniqueCode: undefined,

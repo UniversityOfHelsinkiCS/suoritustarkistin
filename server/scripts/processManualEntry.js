@@ -134,21 +134,11 @@ const processManualEntry = async ({
     reporterId
   })
 
-  const info = await sendEmail(
-    `Uusia kurssisuorituksia: ${course.courseCode}`,
-    `Uusi siirtotiedosto luotu OodiTooliin kurssin ${course.name} (${course.courseCode}) manuaalisesti syötetystä datasta.`
-  )
+  sendEmail({
+    subject: `Uusia kurssisuorituksia: ${course.courseCode}`,
+    text: `Uusi siirtotiedosto luotu OodiTooliin kurssin ${course.name} (${course.courseCode}) manuaalisesti syötetystä datasta.`
+  })
   logger.info({message: `New manual completions for course ${course.name} (${course.courseCode})`, courseCode: course.courseCode, amount: data.length, oodi: true})
-  if (info) {
-    info.accepted.forEach((accepted) =>
-      logger.info(`Email sent to ${accepted}.`)
-    )
-  } else if (info) {
-    info.rejected.forEach((rejected) =>
-      logger.error(`Address ${rejected} was rejected.`)
-    )
-  }
-
   return savedReport
 }
 

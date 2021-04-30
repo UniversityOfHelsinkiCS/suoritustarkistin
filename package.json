@@ -21,7 +21,8 @@
     "test:start": "cross-env NODE_ENV=test node index.js",
     "test:setup": "npx npm-run-all -s test:build db:migrate",
     "cypress:open": "npx cypress open -P ./",
-    "cypress:run": "npx cypress run -P ./"
+    "cypress:run": "npx cypress run -P ./",
+    "populate:uid": "node server/utils/populateUid.js"
   },
   "engines": {
     "node": ">=10.15"

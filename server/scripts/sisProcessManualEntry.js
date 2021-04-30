@@ -157,6 +157,17 @@ const processManualEntry = async ({
       amount: success.length,
       sis: true
     })
+    const unsent = await db.raw_entries.findAll({
+      where: {
+        '$entry.sent$': null
+      },
+      include: [
+        { model: db.entries, as: 'entry', attributes: ['sent'] }
+      ],
+      group: ['batchId', 'entry.sent'],
+      attributes: ['batchId'],
+      raw: true
+    })
     sendEmail({
       subject: `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
       attachments: [{
@@ -164,7 +175,7 @@ const processManualEntry = async ({
         path: `${process.cwd()}/client/assets/suotar.png`,
         cid: 'toskasuotarlogoustcid'
       }],
-      html: newReport(success.length, 0, originalCourse.courseCode, batchId)
+      html: newReport(success.length, unsent.length, originalCourse.courseCode, batchId)
     })
     return { message: "success", success, failed }
   } else {

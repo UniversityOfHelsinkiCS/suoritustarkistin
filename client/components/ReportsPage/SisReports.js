@@ -162,6 +162,14 @@ const parseEntryError = ({ message: error }) => {
   }
 }
 
+const MinimalExpand = ({ title, content }) => {
+  const [open, setOpen] = useState(false)
+  return <>
+    <span onClick={() => setOpen(!open)} style={{cursor: 'pointer'}}>{title} <Icon name={`triangle ${open ? 'down' : 'right'}`} /></span>
+    {open ? <p>{content}</p> : null}
+  </>
+}
+
 const TableBody = ({ rawEntries, course }) => (
   <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => (
@@ -180,7 +188,8 @@ const TableBody = ({ rawEntries, course }) => (
           <Table.Row>
             <Table.Cell
               colSpan='15'
-              error>{parseEntryError(rawEntry.entry.errors)}
+              error>
+              <MinimalExpand title={parseEntryError(rawEntry.entry.errors)} content={`Full error: ${JSON.stringify(rawEntry.entry.errors)}`} />
             </Table.Cell>
           </Table.Row>}
       </React.Fragment>

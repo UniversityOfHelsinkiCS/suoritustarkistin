@@ -32,6 +32,12 @@ const EOAI_NAMEMAP = {
 
 const BAI_CODES = ['AYTKT21028en']
 
+const OLD_BAI_CODE = 'AYTKT21028en'
+
+const BAI_INTERMEDIATE_CODE = 'AYTKT210281en'
+
+const BAI_ADVANCED_CODE = 'AYTKT210282en'
+
 const isValidStudentId = (id) => {
   if (/^0[12]\d{7}$/.test(id)) {
     // is a 9 digit number with leading 01 or 02
@@ -194,7 +200,10 @@ const isValidSchedule = (schedule) => {
 module.exports = {
   EOAI_CODES,
   EOAI_NAMEMAP,
+  OLD_BAI_CODE,
   BAI_CODES,
+  BAI_INTERMEDIATE_CODE,
+  BAI_ADVANCED_CODE,
   SIS_LANGUAGES,
   isValidStudentId,
   isValidOodiDate,

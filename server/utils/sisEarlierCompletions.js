@@ -5,7 +5,6 @@
 const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   if (!allEarlierAttainments) return true
   const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
-  
   const earlierAttainments = student ? student.attainments : undefined
   if (!earlierAttainments) return true
 
@@ -22,18 +21,57 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
   return true
 }
 
-const isImprovedTier = async (allEarlierAttainments, studentNumber, credits) => {
-  if (!allEarlierAttainments) return true
+const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber) => {
+  if (!allEarlierAttainments) return false
+  const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
 
-  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
-  const earlierAttainments = student ? student.attainments : undefined
-  if (!earlierAttainments) return true
+  // Map student's earlier attainments for old and new intermediate BAI
+  const earlierAttainments = studentsAttainments.length
+    ? studentsAttainments.reduce((attainments, pair) => attainments.concat(pair.attainments), [])
+    : undefined
 
-  const existingHigherTier = earlierAttainments.some((attainment) => attainment.credits >= Number(credits))
-  if (existingHigherTier) return false
+  // No earlier completions for old or new BAI, Intermediate can be given
+  if (!earlierAttainments) return false
 
-  return true
+  // Intermediate level already completed, no Intermediate credit can be given
+  if (earlierAttainments.some((a) => Number(a.credits) >= 1 && a.grade.passed)) {
+    return true
+  }
+
+  return false
 }
 
+const intermediateFound = (allEarlierAttainments, studentNumber) => {
+  const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
 
-module.exports = { isImprovedGrade, isImprovedTier }
+  // Map student's earlier attainments for old and new BAI
+  const earlierAttainments = studentsAttainments.length
+    ? studentsAttainments.reduce((attainments, pair) => attainments.concat(pair.attainments), [])
+    : undefined
+
+  // No earlier completions for BAI, so Advanced credit cannot be given.
+  if (!earlierAttainments) return false
+  
+  // Earlier completion with 2 credits from BAI, i.e. course fully completed, no Advanced credit should be given
+  if (earlierAttainments.some((a) => Number(a.credits) >= 2)) return false
+
+  // Earlier completion with 1 credits correctly from new or old BAI, Advanced credit can be given
+  if (earlierAttainments.some((a) => a.grade.passed && a.credits === 1)) return true
+
+  return false
+}
+
+const advancedFound = (allEarlierAttainments, studentNumber) => {
+  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierAttainments = student ? student.attainments : undefined
+
+  // No earlier completions for Advanced course, credit can be given
+  if (!earlierAttainments) return false
+
+  // Earlier completion for Advanced course, no credit can be given
+  if (earlierAttainments.some((a) => a.grade.passed && a.credits >= 1)) return true
+
+  return false
+}
+
+module.exports = { isImprovedGrade, earlierBaiCompletionFound, intermediateFound, advancedFound }

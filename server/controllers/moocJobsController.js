@@ -5,9 +5,10 @@ const {
   activateJob,
   deactivateJob
 } = require('../scripts/cronjobs')
-const { isValidJob, EOAI_CODES, BAI_CODES } = require('@root/utils/validators')
+const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
 const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
-const { processBaiEntries } = require('../scripts/sisProcessBaiEntries')
+const { processBaiIntermediateEntries } = require('../scripts/sisProcessBaiIntermediateEntries')
+const { processBaiAdvancedEntries } = require('../scripts/sisProcessBaiAdvancedEntries')
 const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
 
 const getJobs = async (req, res) => {
@@ -110,8 +111,10 @@ const sisRunJob = async (req, res) => {
 
     if (EOAI_CODES.includes(course.courseCode)) {
       result = await processEoaiEntries({ grader })
-    } else if (BAI_CODES.includes(course.courseCode)) {
-      result = await processBaiEntries({ job, course, grader })
+    } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
+      result = await processBaiIntermediateEntries({ job, course, grader })
+    } else if (BAI_ADVANCED_CODE === course.courseCode) {
+      result = await processBaiAdvancedEntries({ job, course, grader })
     } else {
       result = await processMoocEntries({ job, course, grader })
     }

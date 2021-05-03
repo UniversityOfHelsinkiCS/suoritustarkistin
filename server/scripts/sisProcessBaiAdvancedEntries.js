@@ -2,7 +2,7 @@ const moment = require('moment')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { getRegistrations } = require('../services/eduweb')
-const { getEarlierAttainments } = require('../services/importer')
+const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { intermediateFound, advancedFound } = require('../utils/sisEarlierCompletions')
@@ -71,8 +71,8 @@ const processBaiAdvancedEntries = async ({
       }
     }, [])
 
-    const intermediateAttainments = await getEarlierAttainments(intermediatePairs)
-    const advancedAttainments = await getEarlierAttainments(advancedPairs)
+    const intermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(intermediatePairs)
+    const advancedAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(advancedPairs)
 
     const batchId = `${course.courseCode}-${moment().format(
       'DD.MM.YY-HHmmss'

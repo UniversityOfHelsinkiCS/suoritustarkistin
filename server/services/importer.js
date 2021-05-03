@@ -68,7 +68,7 @@ async function resolveUser(formData) {
 
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
- * The data must be fetched in chunks of 100, since importer-api cannot handle bigger payloads. 
+ * The data must be fetched in chunks of 150, since importer-api cannot handle bigger payloads. 
  */
 const getEarlierAttainments = async (data) => {
   let allData = []
@@ -84,6 +84,23 @@ const getEarlierAttainments = async (data) => {
     throw new Error(e.toString())
   }
 }
+
+const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
+  let allData = []
+  try {
+    const chunks = _.chunk(data, 150)
+    for (const chunk of chunks) {
+      const res = await api.post(`suotar/attainments?noSubstitutions=true`, chunk)
+      allData = _.concat(allData, res.data)
+    }
+    return allData
+  } catch (e) {
+    if (e.response.data.status === 404) throw new Error(e.response.data.message)
+    throw new Error(e.toString())
+  }
+}
+
+
 
 async function getResponsibles(courseCode) {
   try {
@@ -101,6 +118,7 @@ module.exports = {
   getEnrolments,
   getGrades,
   getEarlierAttainments,
+  getEarlierAttainmentsWithoutSubstituteCourses,
   getAcceptorPersons,
   resolveUser,
   getResponsibles

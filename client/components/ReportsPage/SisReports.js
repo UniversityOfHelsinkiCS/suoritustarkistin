@@ -38,7 +38,7 @@ const getSisUnitName = (name, language) => {
     if (!parsed[language]) return parsed['fi']
     return parsed[language]
   } catch {
-    return name
+    return `${name}`
   }
 }
 

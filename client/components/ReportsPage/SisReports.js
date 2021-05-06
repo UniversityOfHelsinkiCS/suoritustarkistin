@@ -32,9 +32,14 @@ const DeleteButton = ({ id }) => {
 }
 
 const getSisUnitName = (name, language) => {
-  if (!name) return <span style={{ color: '#573a08' }}>Enrolment missing</span>
-  if (!name[language]) return name['fi']
-  return name[language]
+  try {
+    const parsed = JSON.parse(name)
+    if (!parsed) return <span style={{ color: '#573a08' }}>Enrolment missing</span>
+    if (!parsed[language]) return parsed['fi']
+    return parsed[language]
+  } catch {
+    return name
+  }
 }
 
 const getCourseName = (rawEntry, course) => {
@@ -104,7 +109,7 @@ const EntryCells = ({ entry }) => {
             data-cy={`sis-report-entry-course-${entry.id}`}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`} />
-            {getSisUnitName(JSON.parse(courseUnitRealisationName), completionLanguage)}
+            {getSisUnitName(courseUnitRealisationName, completionLanguage)}
           </Accordion.Title>
           <Accordion.Content
             data-cy={`sis-report-course-content-${entry.id}`}
@@ -156,7 +161,7 @@ const parseEntryError = ({ message: error }) => {
       return message
     return `${sisuErrorMessages[messageTemplate]} in attribute ${path.split(".")[2]}`
   } catch (e) {
-    return error.message || JSON.stringify(error)
+    return 'Click to view full error'
   }
 }
 

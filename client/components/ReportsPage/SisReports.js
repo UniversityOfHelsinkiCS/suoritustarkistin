@@ -31,10 +31,8 @@ const DeleteButton = ({ id }) => {
   )
 }
 
-const NullCell = ({ text }) => <span style={{ color: 'red' }}>{text || 'null'}</span>
-
 const getSisUnitName = (name, language) => {
-  if (!name) return <NullCell />
+  if (!name) return <span style={{ color: '#573a08' }}>Enrolment missing</span>
   if (!name[language]) return name['fi']
   return name[language]
 }
@@ -59,7 +57,7 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 `
 
 const getGrade = (gradeScaleId, gradeId, language) => {
-  if (!gradeId || !gradeScaleId || !language) return <NullCell />
+  if (!gradeId || !gradeScaleId || !language) return null
   if (gradeScaleId === "sis-0-5") return gradeId
   if (gradeScaleId === "sis-hyl-hyv") {
     const gradeMap = [
@@ -67,11 +65,11 @@ const getGrade = (gradeScaleId, gradeId, language) => {
       { en: 'Pass', fi: 'Hyv.', sv: 'G' }
     ]
     const grade = gradeMap[gradeId]
-    if (!grade) return <NullCell />
+    if (!grade) return null
     return grade[language]
   }
 
-  return <NullCell />
+  return null
 }
 
 const EntryCells = ({ entry }) => {
@@ -106,7 +104,7 @@ const EntryCells = ({ entry }) => {
             data-cy={`sis-report-entry-course-${entry.id}`}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`} />
-            {getSisUnitName(courseUnitRealisationName, completionLanguage)}
+            {getSisUnitName(JSON.parse(courseUnitRealisationName), completionLanguage)}
           </Accordion.Title>
           <Accordion.Content
             data-cy={`sis-report-course-content-${entry.id}`}
@@ -114,35 +112,35 @@ const EntryCells = ({ entry }) => {
             style={{ padding: "0.75em 1em" }}
           >
             <strong>Course unit ID</strong>
-            <p>{courseUnitId || <NullCell />}</p>
+            <p>{courseUnitId || null}</p>
             <strong>Course unit realisation ID</strong>
-            <p>{courseUnitRealisationId || <NullCell />}</p>
+            <p>{courseUnitRealisationId || null}</p>
             <strong>Assessment item ID</strong>
-            <p>{assessmentItemId || <NullCell />}</p>
+            <p>{assessmentItemId || null}</p>
             <strong>Grader ID</strong>
-            <p>{verifierPersonId || <NullCell />}</p>
+            <p>{verifierPersonId || null}</p>
             <strong>Grade scale of the course</strong>
-            <p>{gradeScaleId || <NullCell />}</p>
+            <p>{gradeScaleId || null}</p>
           </Accordion.Content>
         </Accordion>
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-personId-${entry.id}`}>
-        {personId ? personId : <NullCell />}
+        {personId ? personId : null}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionDate-${entry.id}`}>
-        {completionDate ? moment(completionDate).format("DD.MM.YYYY") : <NullCell />}
+        {completionDate ? moment(completionDate).format("DD.MM.YYYY") : null}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-completionLanguage-${entry.id}`}>
-        {completionLanguage ? completionLanguage : <NullCell />}
+        {completionLanguage ? completionLanguage : null}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-entry-grade-${entry.id}`}>
         {getGrade(gradeScaleId, gradeId, completionLanguage)}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-sent-${entry.id}`}>
-        {sent ? moment(sent).format("DD.MM.YYYY") : <NullCell text="Not sent yet" />}
+        {sent ? moment(sent).format("DD.MM.YYYY") : null}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-senderName-${entry.id}`}>
-        {sender ? sender.name : <NullCell text="Not sent yet" />}
+        {sender ? sender.name : null}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-registered-${entry.id}`}>
         {registered ? <Icon name="checkmark" color="green" /> : <Icon name="close" color="red" />}
@@ -165,7 +163,7 @@ const parseEntryError = ({ message: error }) => {
 const MinimalExpand = ({ title, content }) => {
   const [open, setOpen] = useState(false)
   return <>
-    <span onClick={() => setOpen(!open)} style={{cursor: 'pointer'}}>{title} <Icon name={`triangle ${open ? 'down' : 'right'}`} /></span>
+    <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>{title} <Icon name={`triangle ${open ? 'down' : 'right'}`} /></span>
     {open ? <p>{content}</p> : null}
   </>
 }
@@ -174,7 +172,7 @@ const TableBody = ({ rawEntries, course }) => (
   <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => (
       <React.Fragment key={`row-${rawEntry.id}`}>
-        <Table.Row>
+        <Table.Row warning={rawEntry.entry.missingEnrolment}>
           <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
@@ -239,7 +237,7 @@ const ReportTable = ({ rows, course }) => (
   rows.length && (
     <Table className="sis-report-table" style={{ padding: "0.em .78em" }}>
       <TableColumns />
-      <TableBody key={course.id} rawEntries={rows} course={course} />
+      <TableBody key={rows[0].batchId} rawEntries={rows} course={course} />
     </Table>
   )
 )
@@ -280,20 +278,25 @@ const reportContents = (report, course, dispatch, user, openAccordions) => {
 
   return (
     <Accordion.Content active={openAccordions.includes(report[0].batchId)}>
-      <p>Completions reported by <strong>{report[0].reporter ? report[0].reporter.name : "Suotar-bot"}</strong></p>
+      <p>Completions reported by <strong>{(!report[0].reporter || report[0].batchId.startsWith("limbo")) ? "Suotar-bot" : report[0].reporter.name}</strong></p>
+      {report[0].batchId.startsWith("limbo")
+        ? <Message info>
+          <p>This report contains previously reported entries for which an enrollment has been found.</p>
+        </Message>
+        : null}
       {user.adminMode && (
         <>
           <SendToSisButton
             entries={report
-              .filter(({ entry }) => !entry.sent || entry.errors)
+              .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
               .map(({ entry }) => entry.id)
             } />
           <DeleteBatchButton batchId={report[0].batchId} />
-          <a href={getCourseUnitRealisationSisuUrl(report[0].entry.courseUnitRealisationId)} target="_blank" rel="noopener noreferrer">
+          {!report[0].batchId.startsWith("limbo") ? <a href={getCourseUnitRealisationSisuUrl(report[0].entry.courseUnitRealisationId)} target="_blank" rel="noopener noreferrer">
             <Button icon>
               <Icon name="external" /> View attainments in Sisu
             </Button>
-          </a>
+          </a> : null}
           <Button
             onClick={() => dispatch(
               refreshBatchStatus(report.map(({ entry }) => entry.id))
@@ -327,10 +330,12 @@ const reportContents = (report, course, dispatch, user, openAccordions) => {
 
 const title = (batch) => {
   const [course, date, time] = batch[0].batchId.split('-')
-
+  const titleString = batch[0].batchId.startsWith("limbo")
+    ? batch[0].batchId
+    : `${course} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`
   return (
     <Accordion.Title data-cy={`sis-report-${course}`}>
-      {`${course} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`}
+      {titleString}
       <SisReportStatus batch={batch} />
     </Accordion.Title>
   )
@@ -381,7 +386,9 @@ export default withRouter(({ reports, user, match }) => {
   const panels = batchedReports
     .filter(filterBatches)
     .map((report, index) => {
-      const reportWithEntries = report.filter((e) => e && e.entry)
+      const reportWithEntries = report
+        .filter((e) => e && e.entry)
+        .sort((a, b) => a.entry.missingEnrolment - b.entry.missingEnrolment)
       if (!reportWithEntries || !reportWithEntries.length) return null
 
       const course = courses.find((c) => report[0].courseId === c.id) || placeholderCourse

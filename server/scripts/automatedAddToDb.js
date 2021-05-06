@@ -19,7 +19,7 @@ const automatedAddToDb = async (matches, course, batchId) => {
       sis: true
     })
     const checkImprovements = false
-    const [failed, success] = await processEntries(newRawEntries, checkImprovements)
+    const [failed, success] = await processEntries(newRawEntries, checkImprovements, true)
   
     if (failed.length) {
       logger.info({

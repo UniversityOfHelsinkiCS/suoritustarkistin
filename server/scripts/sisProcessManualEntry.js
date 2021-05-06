@@ -149,24 +149,13 @@ const processManualEntry = async ({
     batchId,
     sis: true
   })
-  const [failed, success] = await processEntries(newRawEntries, transaction, checkImprovements)
+  const [failed, success] = await processEntries(newRawEntries, checkImprovements)
   if (!failed.length) {
     await db.entries.bulkCreate(success, { transaction })
     logger.info({
       message: 'Entries success',
       amount: success.length,
       sis: true
-    })
-    const unsent = await db.raw_entries.findAll({
-      where: {
-        '$entry.sent$': null
-      },
-      include: [
-        { model: db.entries, as: 'entry', attributes: ['sent'] }
-      ],
-      group: ['batchId', 'entry.sent'],
-      attributes: ['batchId'],
-      raw: true
     })
     sendEmail({
       subject: `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
@@ -175,7 +164,7 @@ const processManualEntry = async ({
         path: `${process.cwd()}/client/assets/suotar.png`,
         cid: 'toskasuotarlogoustcid'
       }],
-      html: newReport(success.length, unsent.length, originalCourse.courseCode, batchId)
+      html: newReport(success.length, db.entries.getUnsentBatchCount(), originalCourse.courseCode, batchId)
     })
     return { message: "success", success, failed }
   } else {

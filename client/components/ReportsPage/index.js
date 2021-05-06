@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import RawReports from 'Components/ReportsPage/RawReports'
 import Reports from 'Components/ReportsPage/Reports'
 import SisReports from 'Components/ReportsPage/SisReports'
+import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
 import {
   getAllReportsAction,
   getUsersReportsAction
@@ -112,6 +113,21 @@ export default ({match}) => {
           <SisReports
             user={user}
             reports={sisReports.data.filter((entry) => !entry.reporterId)}
+          />
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: (
+        <Menu.Item key="sis-limbo" data-cy="sis-limbo">
+          <Icon name="sync" />
+          Enrolment limbo
+        </Menu.Item>
+      ),
+      render: () => (
+        <Tab.Pane>
+          <EnrolmentLimbo
+            rawEntries={sisReports.data.filter((rawEntry) => rawEntry.entry.missingEnrolment)}
           />
         </Tab.Pane>
       )

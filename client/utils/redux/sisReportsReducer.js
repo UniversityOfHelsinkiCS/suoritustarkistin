@@ -39,13 +39,19 @@ export const refreshBatchStatus = (entryIds) => {
   return callBuilder(route, prefix, 'post', entryIds)
 }
 
+export const refreshEnrollmentsAction = (rawEntryIds) => {
+  const route = `/refresh_sis_enrollments`
+  const prefix = 'SIS_REFRESH_ENROLLMENTS'
+  return callBuilder(route, prefix, 'post', rawEntryIds)
+}
+
 export const openReport = (id) => ({
   type: 'OPEN_REPORT',
   id
 })
 
 const setOpenAccordions = (openAccordions, id) => {
-  if(!openAccordions.includes(id)) {
+  if (!openAccordions.includes(id)) {
     return [...openAccordions, id]
   }
   return openAccordions.filter((a) => a !== id)
@@ -178,6 +184,26 @@ export default (state = { data: [], openAccordions: [] }, action) => {
       }
     }
     case 'SIS_REFRESH_BATCH_STATUS_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
+    case 'SIS_REFRESH_ENROLLMENTS_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        refreshSuccess: false,
+        error: false
+      }
+    case 'SIS_REFRESH_ENROLLMENTS_SUCCESS':
+      return {
+        ...state,
+        pending: false,
+        refreshSuccess: true,
+        error: false
+      }
+    case 'SIS_REFRESH_ENROLLMENTS_FAILURE':
       return {
         ...state,
         pending: false,

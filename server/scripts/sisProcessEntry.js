@@ -29,7 +29,7 @@ const {
  *  [failedEntries, validEntries]
  */
 
-const processEntries = async (createdEntries, checkImprovements) => {
+const processEntries = async (createdEntries, checkImprovements, requireEnrollment = false) => {
   const success = []
   const failed = []
   const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
@@ -93,11 +93,20 @@ const processEntries = async (createdEntries, checkImprovements) => {
     const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
 
     if (!filteredEnrolments || !filteredEnrolments.length) {
-      failed.push({
-        id: rawEntry.id,
-        studentNumber: rawEntry.studentNumber,
-        message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`
-      })
+      if (requireEnrollment)
+        failed.push({
+          id: rawEntry.id,
+          studentNumber: rawEntry.studentNumber,
+          message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`
+        })
+      else
+        success.push({
+          personId: student.id,
+          verifierPersonId: verifier.id,
+          rawEntryId: rawEntry.id,
+          completionDate: completionDate.format('YYYY-MM-DD'),
+          completionLanguage: rawEntry.language
+        })
       return Promise.resolve()
     }
 

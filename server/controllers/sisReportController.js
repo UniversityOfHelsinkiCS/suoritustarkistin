@@ -5,7 +5,7 @@ const Op = Sequelize.Op
 const axios = require('axios')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const { getEmployees, getAcceptorPersons } = require('../services/importer')
-
+const refreshEntries = require('../scripts/sisRefreshEntry')
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
 // otherwise use common api instance.
@@ -28,7 +28,8 @@ const sisGetAllReports = async (req, res) => {
     const allRawEntries = await db.raw_entries.findAll({
       include: [
         { model: db.entries, as: 'entry', include: ['sender'] },
-        { model: db.users, as: 'reporter' }
+        { model: db.users, as: 'reporter' },
+        { model: db.courses, as: 'course' }
       ],
       order: [['createdAt', 'DESC']]
     })
@@ -80,6 +81,20 @@ const sisDeleteBatch = async (req, res) => {
   }
 }
 
+const refreshEnrollments = async (req, res) => {
+  if (!req.user.isGrader && !req.user.isAdmin)
+    throw new Error('User is not authorized to report credits.')
+
+  try {
+    const [amount, batchId] = await refreshEntries(req.body)
+    logger.info({ message: `${amount} entries refreshed successfully.`, sis: true })
+    return res.status(200).json({ amount, batchId })
+  } catch (e) {
+    logger.error({ message: `Refreshing entries failed ${e.toString()}`, sis: true })
+    return res.status(400).json({ message: `Refreshing entries failed ${e.toString()}` })
+  }
+}
+
 /**
  * Send entries to Sisu using importer-db-api.
  * Request body should contain a list of entry ids to be sent to Sisu.
@@ -105,7 +120,7 @@ const sendToSis = async (req, res) => {
   })
   const senderId = req.user.id
 
-  const acceptors = await getAcceptorPersons(entries.map(({courseUnitRealisationId}) => courseUnitRealisationId))
+  const acceptors = await getAcceptorPersons(entries.map(({ courseUnitRealisationId }) => courseUnitRealisationId))
 
   const data = entries.map((entry) => {
     const {
@@ -260,5 +275,6 @@ module.exports = {
   sisDeleteSingleEntry,
   sisDeleteBatch,
   sendToSis,
-  refreshSisStatus
+  refreshSisStatus,
+  refreshEnrollments
 }

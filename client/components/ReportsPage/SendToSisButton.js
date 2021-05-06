@@ -16,7 +16,7 @@ export default ({ entries }) => {
       trigger={
         <Button
           positive
-          content="Send completions to SIS"
+          content="Send completions to Sisu"
           disabled={
             reports.pending || !entries.length
           }
@@ -30,7 +30,7 @@ export default ({ entries }) => {
           disabled={
             reports.pending || !entries.length
           }
-          content="Are you sure?"
+          content={`Are you sure? Sending ${entries.length} completion(s)`}
         />
       }
       on="click"

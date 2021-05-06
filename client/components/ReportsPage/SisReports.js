@@ -33,7 +33,7 @@ const DeleteButton = ({ id }) => {
 
 const getSisUnitName = (name, language) => {
   try {
-    const parsed = JSON.parse(name)
+    const parsed = typeof name === 'string' ? JSON.parse(name) : name
     if (!parsed) return <span style={{ color: '#573a08' }}>Enrolment missing</span>
     if (!parsed[language]) return parsed['fi']
     return parsed[language]

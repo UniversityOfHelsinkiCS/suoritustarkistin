@@ -72,7 +72,7 @@ async function resolveUser(formData) {
  * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads. 
  */
 const getEarlierAttainments = async (data) => {
-  logger.info({ message: `Fetching earlier attainments from importer` })
+  logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
   let allData = []
   try {
     const chunks = _.chunk(data, 50)

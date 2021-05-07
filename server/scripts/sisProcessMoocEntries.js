@@ -1,4 +1,5 @@
 const moment = require('moment')
+const db = require('@models/index')
 const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const logger = require('@utils/logger')
@@ -25,8 +26,33 @@ const processMoocEntries = async ({
   grader
 }) => {
   try {
-    const registrations = await getRegistrations(course.courseCode)
+    const credits = await db.credits.findAll({
+      where: {
+        courseId: course.courseCode
+      },
+      raw: true
+    })
+
+    const rawEntries = await db.raw_entries.findAll({
+      where: {
+        courseId: course.id
+      }
+    })
+
+    const rawRegistrations = await getRegistrations(course.courseCode)
     const completions = await getCompletions(job.slug || course.courseCode)
+    
+    const registrations = rawRegistrations.filter((registration) => {
+      const earlierCredit = credits.find(
+        (credit) =>
+          credit.studentId === registration.onro
+      )
+      const earlierEntry = rawEntries.find(
+        (entry) =>
+          entry.studentNumber === registration.onro 
+      )
+      return (!earlierCredit && !earlierEntry)
+    })
 
     const courseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {

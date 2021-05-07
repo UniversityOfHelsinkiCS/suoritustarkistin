@@ -350,7 +350,7 @@ export default withRouter(({ reports, user, match }) => {
   const [loading, setLoading] = useState(true)
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
-  const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false })
+  const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false })
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -369,14 +369,17 @@ export default withRouter(({ reports, user, match }) => {
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
   const filterBatches = (report) => {
-    if (!filters.errors && !filters.missing && !filters.notSent) return true
+    if (!filters.errors && !filters.missing && !filters.notSent && !filters.noEnrollment) return true
 
     const containsErrors = report.some(({ entry }) => (entry.errors || {}).message)
     const notSent = report.every(({ entry }) => !entry.sent)
     const missingFromSisu = report.some(({ entry }) => entry.sent && !(entry.errors || {}).message && !entry.registered)
+    const missingEnrollment = report.some(({ entry }) => entry.missingEnrolment)
     if (filters.errors && containsErrors) return true
     if (filters.missing && missingFromSisu) return true
     if (filters.notSent && notSent) return true
+    if (filters.notSent && notSent) return true
+    if (filters.noEnrollment && missingEnrollment) return true
     return false
   }
 
@@ -411,8 +414,9 @@ export default withRouter(({ reports, user, match }) => {
   const Filters = () => <div style={{ marginBottom: '2rem' }}>
     <h3>View reports with:</h3>
     <Radio label='Contains errors' style={{ margin: '0 1rem' }} checked={filters.errors} onClick={() => toggleFilter('errors')} toggle />
-    <Radio label='Sent missing from Sisu' style={{ margin: '0 1rem' }} checked={filters.missing} onClick={() => toggleFilter('missing')} toggle />
     <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
+    <Radio label='Missing enrollments' style={{ margin: '0 1rem' }} checked={filters.noEnrollment} onClick={() => toggleFilter('noEnrollment')} toggle />
+    <Radio label='Sent missing from Sisu' style={{ margin: '0 1rem' }} checked={filters.missing} onClick={() => toggleFilter('missing')} toggle />
   </div>
 
   return <>

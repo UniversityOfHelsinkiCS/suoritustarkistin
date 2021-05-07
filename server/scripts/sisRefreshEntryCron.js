@@ -20,15 +20,16 @@ const refreshEntriesCron = async () => {
     attributes: [[col("rawEntry.id"), 'id']],
     raw: true
   })
-  const rawEntryIds = rawEntries.map(({id}) => id)
+  const rawEntryIds = rawEntries.map(({ id }) => id)
   const [amount, batchId] = await refreshEntries(rawEntryIds)
   logger.info({ message: `${amount} entries refreshed successfully.`, sis: true, batchId })
 
   if (!amount) return
 
+  const unsent = await db.entries.getUnsentBatchCount()
   sendEmail({
     subject: 'Uusia suorituksia valmiina lähetettäväksi Sisuun!',
-    html: newLimboReport(amount, batchId, db.entries.getUnsentBatchCount()),
+    html: newLimboReport(amount, batchId, unsent),
     attachments: [{
       filename: 'suotar.png',
       path: `${process.cwd()}/client/assets/suotar.png`,

@@ -157,6 +157,7 @@ const processManualEntry = async ({
       amount: success.length,
       sis: true
     })
+    const unsent = await db.entries.getUnsentBatchCount()
     sendEmail({
       subject: `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
       attachments: [{
@@ -164,7 +165,7 @@ const processManualEntry = async ({
         path: `${process.cwd()}/client/assets/suotar.png`,
         cid: 'toskasuotarlogoustcid'
       }],
-      html: newReport(success.length, db.entries.getUnsentBatchCount(), originalCourse.courseCode, batchId)
+      html: newReport(success.length, unsent, originalCourse.courseCode, batchId)
     })
     return { message: "success", success, failed }
   } else {

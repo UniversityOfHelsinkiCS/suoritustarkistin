@@ -1,6 +1,7 @@
 const api = require('../config/importerApi')
 const qs = require('querystring')
 const _ = require('lodash')
+const logger = require('@utils/logger')
 
 const handleImporterApiErrors = (e) => {
   if (e.code === "EAI_AGAIN") throw new Error("Network error. Reload the page and try again")
@@ -68,12 +69,13 @@ async function resolveUser(formData) {
 
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
- * The data must be fetched in chunks of 150, since importer-api cannot handle bigger payloads. 
+ * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads. 
  */
 const getEarlierAttainments = async (data) => {
+  logger.info({ message: `Fetching earlier attainments from importer` })
   let allData = []
   try {
-    const chunks = _.chunk(data, 150)
+    const chunks = _.chunk(data, 50)
     for (const chunk of chunks) {
       const res = await api.post(`suotar/attainments`, chunk)
       allData = _.concat(allData, res.data)
@@ -85,10 +87,15 @@ const getEarlierAttainments = async (data) => {
   }
 }
 
+/**
+ * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
+ * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads. 
+ */
 const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
+  logger.info({ message: `Fetching earlier attainments from importer` })
   let allData = []
   try {
-    const chunks = _.chunk(data, 150)
+    const chunks = _.chunk(data, 50)
     for (const chunk of chunks) {
       const res = await api.post(`suotar/attainments?noSubstitutions=true`, chunk)
       allData = _.concat(allData, res.data)

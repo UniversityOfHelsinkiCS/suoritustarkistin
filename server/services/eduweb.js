@@ -1,4 +1,5 @@
 const axios = require('axios')
+const logger = require('@utils/logger')
 
 const eduwebGet = async (course) => {
   const { data } = await axios.get(`${process.env.EDUWEB_URL}${course}`, {
@@ -22,6 +23,7 @@ const getMultipleCourseRegistrations = async (courseNames) => {
 }
 
 const getRegistrations = async (course) => {
+  logger.info({ message: `Fetching registrations for course ${course} from eduweb` })
   const instances = await eduwebGet(course)
 
   const registrations = await instances.reduce(async (accPromise, instance) => {
@@ -31,6 +33,7 @@ const getRegistrations = async (course) => {
     return acc.concat(instanceRegistrations)
   }, [])
 
+  logger.info({ message: `Found total of ${registrations ? registrations.length : 0} registrations` })
   return registrations
 }
 

@@ -46,14 +46,14 @@ const SisReportStatus = ({ batch }) => {
     )
     : null
 
-  const getReadyToSisu = () => batch.every(({ entry }) => !entry.sent) && batch.some(({entry}) => !entry.missingEnrolment)
+  const getReadyToSisu = () => batch.every(({ entry }) => !entry.sent) && batch.some(({ entry }) => !entry.missingEnrolment)
     ? <Label basic color='green' pointing='left'>
       READY TO SISU
     </Label>
     : null
 
-  const batchStatus = (sent) => <span style={sent ? styles.success : styles.error}>
-    {sent ? 'SENT TO SISU' : 'NOT SENT'}
+  const batchStatus = () => <span style={sentDate ? styles.success : styles.error}>
+    {sentDate ? 'SENT TO SISU' : 'NOT SENT'}
   </span>
 
   const getDateSent = () => sentDate ? <p style={styles.info}>
@@ -62,7 +62,7 @@ const SisReportStatus = ({ batch }) => {
 
   return (
     <div>
-      {batchStatus(hasSuccessfullySentEntries)}
+      {batchStatus()}
       {getMissing()}
       {getReadyToSisu()}
       {getErrorAmount()}

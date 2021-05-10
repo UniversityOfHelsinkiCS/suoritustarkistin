@@ -13,7 +13,7 @@ import {
   sisGetUsersReportsAction
 } from 'Utilities/redux/sisReportsReducer'
 import { Menu, Icon, Tab } from 'semantic-ui-react'
-import { getAllCoursesAction } from '../../utils/redux/coursesReducer'
+import { getAllCoursesAction, getUsersCoursesAction } from '../../utils/redux/coursesReducer'
 
 export default ({match}) => {
   const dispatch = useDispatch()
@@ -29,6 +29,7 @@ export default ({match}) => {
     } else {
       dispatch(getUsersReportsAction(user.id))
       dispatch(sisGetUsersReportsAction(user.id))
+      dispatch(getUsersCoursesAction(user.id))
     }
   }, [user])
 

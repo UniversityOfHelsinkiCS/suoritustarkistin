@@ -5,6 +5,7 @@ const { EOAI_CODES, BAI_CODES } = require('@root/utils/validators')
 const processMoocCompletions = require('./processMoocCompletions')
 const processEoaiCompletions = require('./processEoaiCompletions')
 const processBaiCompletions = require('./processBaiCompletions')
+const refreshEntriesCron = require('./sisRefreshEntryCron')
 
 let cronjobs = {}
 
@@ -43,6 +44,8 @@ const initializeCronJobs = async () => {
     })
     return { ...acc, [job.id]: createdJob }
   }, {})
+
+  cronjobs["enrollment-limbo"] = cron.schedule('55 3 * * 4', refreshEntriesCron)
 }
 
 const manualRun = async (id) => {

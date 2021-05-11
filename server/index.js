@@ -1,6 +1,5 @@
 const webpack = require('webpack')
 const express = require('express')
-const bodyParser = require('body-parser')
 const path = require('path')
 const cron = require('node-cron')
 const routes = require('@utils/routes')
@@ -30,7 +29,7 @@ initializeDatabaseConnection()
       environment: process.env.NODE_ENV
     })
     app.use(Sentry.Handlers.requestHandler())
-    app.use(bodyParser.json({ limit: '5mb' }))
+    app.use(express.json({ limit: '5mb' }))
 
     /**
      * Use hot loading when in development, else serve the static content
@@ -77,7 +76,9 @@ initializeDatabaseConnection()
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
       app.use(Sentry.Handlers.errorHandler())
     }
-    app.use((err, req, res) => { res.status(500).send(err.toString()) })
+    app.use((err, req, res) => {
+      res.status(500).send(err.toString())
+    })
 
     if (!IN_MAINTENANCE)
       initializeCronJobs()

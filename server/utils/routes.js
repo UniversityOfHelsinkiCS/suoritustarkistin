@@ -37,7 +37,8 @@ const {
   sisDeleteSingleEntry,
   sisDeleteBatch,
   sendToSis,
-  refreshSisStatus
+  refreshSisStatus,
+  refreshEnrollments
 } = require('@controllers/sisReportController')
 const {
   addJob,
@@ -111,6 +112,7 @@ router.delete('/sis_reports/batch/:batchId', checkAdmin, sisDeleteBatch)
 router.post('/sis_raw_entries', checkAdmin, addRawEntries)
 router.post('/entries_to_sis', checkAdmin, sendToSis)
 router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
+router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
 
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)

@@ -125,13 +125,13 @@ export default (state = null, action) => {
           header: 'New report created!',
           type: 'positive',
           content: 'You can check it on the View reports -page'
-        }  
+        }
       }
       return {
         header: 'No report created',
         type: 'neutral',
         content: 'There were no new completions to be reported'
-      }  
+      }
     }
     case 'SIS_RUN_JOB_FAILURE': {
       if (action.error) {
@@ -150,7 +150,7 @@ export default (state = null, action) => {
     case 'CREATE_KURKI_REPORT_SUCCESS':
       return {
         header: 'New report created!',
-        content:'You can check it on the View reports -page',
+        content: 'You can check it on the View reports -page',
         type: 'positive'
       }
     case 'CREATE_KURKI_REPORT_FAILURE':
@@ -158,6 +158,18 @@ export default (state = null, action) => {
         header: 'Creating a new report failed!',
         content:
           `${action.error}`,
+        type: 'negative'
+      }
+    case 'SIS_REFRESH_ENROLLMENTS_SUCCESS':
+      return {
+        header: 'Entries refreshed successfully!',
+        content: `${action.response.amount} new enrollments found${action.response.amount ? `, a new batch ${action.response.batchId} created` : ''}.`,
+        type: 'positive'
+      }
+    case 'SIS_REFRESH_ENROLLMENTS_FAILURE':
+      return {
+        header: 'Failed to refresh entries!',
+        content: action.error.message,
         type: 'negative'
       }
     default:

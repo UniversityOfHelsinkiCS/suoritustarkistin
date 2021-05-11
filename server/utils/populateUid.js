@@ -1,12 +1,19 @@
-const api = require('../config/importerApi')
 const db = require('../models/index')
 const logger = require('./logger')
 const { Op } = require("sequelize")
+const axios = require('axios')
 
-const getUid = async ({ email, employeeId }) => {
+const api = axios.create({
+  headers: {
+    token: process.env.IMPORTER_DB_API_TOKEN || ''
+  },
+  baseURL: process.env.IMPORTER_DB_API_URL
+})
+
+const getUid = async ({ email }) => {
   try {
-    const userData = { email, employeeId }
-    const { data } = await api.post('/suotar/resolve_user', userData)
+    const userData = { email }
+    const { data } = await api.post('suotar/resolve_user', userData)
     return data.eduPersonPrincipalName.split('@')[0]
   } catch (e) {
     return null

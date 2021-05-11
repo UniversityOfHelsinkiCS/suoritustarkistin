@@ -23,8 +23,8 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy="sis-report-completionDate-1').should('contain', "30.12.2020")
     cy.get('[data-cy="sis-report-completionLanguage-1').should('contain', "fi")
     cy.get('[data-cy="sis-report-entry-grade-1').should('contain', "1")
-    cy.get('[data-cy="sis-report-sent-1').should('contain', "Not sent yet")
-    cy.get('[data-cy="sis-report-senderName-1').should('contain', "Not sent yet")
+    cy.get('[data-cy="sis-report-sent-1').should('be.empty')
+    cy.get('[data-cy="sis-report-senderName-1').should('be.empty')
 
     cy.get('[data-cy=sis-report-entry-course-1').should('contain', 'Sis Valid course 1 - fi').click()
 

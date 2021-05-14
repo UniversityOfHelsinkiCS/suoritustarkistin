@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { Accordion, Button, Icon, Message, Radio } from 'semantic-ui-react'
+import { Accordion, Button, Icon, Message } from 'semantic-ui-react'
 
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import SisReportStatus from './SisReportStatus'
 import ReportTable from './ReportTable'
+import Filters, { filterBatches } from './Filters'
 import { refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 
@@ -95,7 +96,7 @@ const reportContents = (report, course, dispatch, user, openAccordions) => {
           <p>This report contains previously reported entries for which an enrollment has been found.</p>
         </Message>
         : null}
-      {!report[0].batchId.startsWith("limbo") && report.some(({entry}) => entry.missingEnrolment)
+      {!report[0].batchId.startsWith("limbo") && report.some(({ entry }) => entry.missingEnrolment)
         ? <Message info>
           <p>Completions with yellow background is missing enrollment and will not be sent to Sisu. When an enrollment is found for the entry, it will be sent to Sisu.</p>
         </Message>
@@ -150,7 +151,7 @@ export default withRouter(({ reports, user, match }) => {
   const [loading, setLoading] = useState(true)
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
-  const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false })
+  const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false, search: '' })
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -168,23 +169,8 @@ export default withRouter(({ reports, user, match }) => {
   const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
-  const filterBatches = (report) => {
-    if (!filters.errors && !filters.missing && !filters.notSent && !filters.noEnrollment) return true
-
-    const containsErrors = report.some(({ entry }) => (entry.errors || {}).message)
-    const notSent = report.every(({ entry }) => !entry.sent)
-    const missingFromSisu = report.some(({ entry }) => entry.sent && !(entry.errors || {}).message && !entry.registered)
-    const missingEnrollment = report.some(({ entry }) => entry.missingEnrolment)
-    if (filters.errors && containsErrors) return true
-    if (filters.missing && missingFromSisu) return true
-    if (filters.notSent && notSent) return true
-    if (filters.notSent && notSent) return true
-    if (filters.noEnrollment && missingEnrollment) return true
-    return false
-  }
-
   const panels = batchedReports
-    .filter(filterBatches)
+    .filter((report) => filterBatches(report, filters))
     .map((report, index) => {
       const reportWithEntries = report
         .filter((e) => e && e.entry)
@@ -201,19 +187,9 @@ export default withRouter(({ reports, user, match }) => {
       }
     })
 
-  const toggleFilter = (name) => setFilters({ ...filters, [name]: !filters[name] })
-
-  const Filters = () => <div style={{ marginBottom: '2rem' }}>
-    <h3>View reports with:</h3>
-    <Radio label='Contains errors' style={{ margin: '0 1rem' }} checked={filters.errors} onClick={() => toggleFilter('errors')} toggle />
-    <Radio label='Not sent to Sisu' style={{ margin: '0 1rem' }} checked={filters.notSent} onClick={() => toggleFilter('notSent')} toggle />
-    <Radio label='Missing enrollments' style={{ margin: '0 1rem' }} checked={filters.noEnrollment} onClick={() => toggleFilter('noEnrollment')} toggle />
-    <Radio label='Sent missing from Sisu' style={{ margin: '0 1rem' }} checked={filters.missing} onClick={() => toggleFilter('missing')} toggle />
-  </div>
-
   return <>
     <Notification />
-    <Filters />
+    <Filters filters={filters} setFilters={setFilters} />
     <Accordion panels={panels} exclusive={false} fluid styled />
   </>
 })

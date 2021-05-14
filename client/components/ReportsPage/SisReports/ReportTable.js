@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Accordion, Button, Icon, Table } from 'semantic-ui-react'
+import { Accordion, Button, Icon, Table, Popup } from 'semantic-ui-react'
 
 import { EOAI_CODES, EOAI_NAMEMAP } from '../../../../utils/validators'
 import moment from 'moment'
@@ -36,7 +36,7 @@ const TableColumns = ({ allowDelete }) => (
       <Table.HeaderCell>Grade</Table.HeaderCell>
       <Table.HeaderCell>Date sent</Table.HeaderCell>
       <Table.HeaderCell>Sender name</Table.HeaderCell>
-      <Table.HeaderCell>In Sisu</Table.HeaderCell>
+      <Popup content='Is the attainment successfully registered in Sisu' trigger={<Table.HeaderCell>In Sisu</Table.HeaderCell>} />
       {allowDelete
         ? <Table.HeaderCell>Delete</Table.HeaderCell>
         : null}

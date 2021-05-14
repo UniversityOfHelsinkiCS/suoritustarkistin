@@ -190,6 +190,6 @@ export default withRouter(({ reports, user, match }) => {
   return <>
     <Notification />
     <Filters filters={filters} setFilters={setFilters} />
-    <Accordion panels={panels} exclusive={false} fluid styled />
+    <Accordion panels={panels} exclusive={false} data-cy="sis-reports-list" fluid styled />
   </>
 })

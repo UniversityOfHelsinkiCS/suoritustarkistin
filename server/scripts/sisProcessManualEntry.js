@@ -78,7 +78,7 @@ const processManualEntry = async ({
       where: {
         [Op.and]: [
           { courseCode: originalCourse.courseCode },
-          { autoSeparate: !true }
+          { autoSeparate: true }
         ]
       }
     })

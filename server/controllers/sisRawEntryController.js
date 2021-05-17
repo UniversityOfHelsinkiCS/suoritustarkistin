@@ -34,8 +34,8 @@ const addRawEntries = async (req, res) => {
     if (result.message === "success") {
       await transaction.commit()
       logger.info({ message: 'Report of new completions created successfully.', sis: true })
-      const unsent = await db.entries.getUnsentBatchCount()
-      if (await shouldSendEmail(result.batchId))
+      if (await shouldSendEmail(result.batchId)) {
+        const unsent = await db.entries.getUnsentBatchCount()
         sendEmail({
           subject: `Uusia kurssisuorituksia: ${result.courseCode}`,
           attachments: [{
@@ -45,6 +45,7 @@ const addRawEntries = async (req, res) => {
           }],
           html: newReport(result.success.length, unsent, result.courseCode, result.batchId)
         })
+      }
       return res.status(200).json({ message: 'report created successfully' })
     } else {
       await transaction.rollback()
@@ -59,8 +60,7 @@ const addRawEntries = async (req, res) => {
 async function shouldSendEmail(batchId) {
   const rawEntries = await db.raw_entries.findAll({
     where: { batchId },
-    include: [{ model: db.entries, as: 'entry' }],
-    raw: true
+    include: [{ model: db.entries, as: 'entry' }]
   })
   return rawEntries.some(({ entry }) => !entry.missingEnrolment)
 }

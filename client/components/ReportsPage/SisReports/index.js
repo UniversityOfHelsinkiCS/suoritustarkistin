@@ -15,13 +15,6 @@ import Notification from 'Components/Message'
 import './reportStyles.css'
 
 
-const PLACEHOLDER_COURSE = {
-  id: 'COURSE DELETED',
-  name: 'COURSE DELETED',
-  courseCode: 'COURSE DELETED',
-  language: 'COURSE DELETED',
-  credits: 'COURSE DELETED'
-}
 
 const SisSuccessMessage = () => <Message success>
   <Message.Header>All entries sent successfully to Sisu</Message.Header>
@@ -33,7 +26,7 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 /teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
 `
 
-const reportContents = (report, course, dispatch, user, openAccordions) => {
+const reportContents = (report, dispatch, courses, user, openAccordions) => {
   if (!report) return null
 
   const batchSent = report.some(({ entry }) => entry.sent)
@@ -48,7 +41,7 @@ const reportContents = (report, course, dispatch, user, openAccordions) => {
       <Accordion.Content>
         <ReportTable
           rows={entriesWithoutErrors}
-          course={course}
+          courses={courses}
           allowDelete={user.adminMode} />
       </Accordion.Content>
     )
@@ -63,7 +56,7 @@ const reportContents = (report, course, dispatch, user, openAccordions) => {
         <Accordion.Content>
           <ReportTable
             rows={entriesNotSentOrErroneous}
-            course={course}
+            courses={courses}
             allowDelete={user.adminMode}
           />
         </Accordion.Content>
@@ -121,11 +114,11 @@ const reportContents = (report, course, dispatch, user, openAccordions) => {
         !batchSent && !reportContainsErrors
           ? <ReportTable
             rows={report}
-            course={course}
+            courses={courses}
             allowDelete={user.adminMode}
           />
           : <Accordion.Accordion
-            data-cy={`sis-entries-panel-${course.courseCode}`}
+            data-cy={`sis-entries-panel-${report[0].batchId}`}
             panels={panels}
             exclusive={false}
           />
@@ -177,12 +170,10 @@ export default withRouter(({ reports, user, match }) => {
         .sort((a, b) => a.entry.missingEnrolment - b.entry.missingEnrolment)
       if (!reportWithEntries || !reportWithEntries.length) return null
 
-      const course = courses.find((c) => report[0].courseId === c.id) || PLACEHOLDER_COURSE
-
       return {
         key: `panel-${index}`,
         title: title(reportWithEntries),
-        content: reportContents(reportWithEntries, course, dispatch, user, openAccordions),
+        content: reportContents(reportWithEntries, dispatch, courses, user, openAccordions),
         onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
       }
     })

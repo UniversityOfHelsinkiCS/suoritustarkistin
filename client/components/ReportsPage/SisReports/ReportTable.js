@@ -7,12 +7,19 @@ import moment from 'moment'
 import sisuErrorMessages from 'Utilities/sisuErrorMessages.json'
 import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 
+const PLACEHOLDER_COURSE = {
+  id: 'COURSE DELETED',
+  name: 'COURSE DELETED',
+  courseCode: 'COURSE DELETED',
+  language: 'COURSE DELETED',
+  credits: 'COURSE DELETED'
+}
 
-export default ({ rows, course, allowDelete }) => (
+export default ({ rows, courses, allowDelete }) => (
   rows.length && (
     <Table className="sis-report-table">
       <TableColumns allowDelete={allowDelete} />
-      <TableBody key={rows[0].batchId} rawEntries={rows} course={course} allowDelete={allowDelete} />
+      <TableBody key={rows[0].batchId} rawEntries={rows} courses={courses} allowDelete={allowDelete} />
     </Table>
   )
 )
@@ -44,10 +51,11 @@ const TableColumns = ({ allowDelete }) => (
   </Table.Header>
 )
 
-const TableBody = ({ rawEntries, course, allowDelete }) => (
+const TableBody = ({ rawEntries, courses, allowDelete }) => (
   <Table.Body data-cy="sis-report-table">
-    {rawEntries.map((rawEntry) => (
-      <React.Fragment key={`row-${rawEntry.id}`}>
+    {rawEntries.map((rawEntry) => {
+      const course = courses.find((c) => rawEntry.courseId === c.id) || PLACEHOLDER_COURSE
+      return <React.Fragment key={`row-${rawEntry.id}`}>
         <Table.Row warning={rawEntry.entry.missingEnrolment}>
           <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
@@ -69,7 +77,7 @@ const TableBody = ({ rawEntries, course, allowDelete }) => (
             </Table.Cell>
           </Table.Row>}
       </React.Fragment>
-    ))}
+    })}
   </Table.Body>
 )
 

@@ -1,5 +1,6 @@
-describe('Submitting data creates a valid report into database', function() {
-  before(function() {
+describe('Submitting data creates a valid report into database', function () {
+
+  before(function () {
     cy.request('DELETE', '/api/seed/courses')
     cy.request('DELETE', '/api/seed/users')
     cy.request('DELETE', '/api/seed/reports')
@@ -58,42 +59,56 @@ describe('Submitting data creates a valid report into database', function() {
   })
 
   it('Grader can create reports', () => {
+    cy.fixture('sis/raw-entries-add.json').as('addRawEntriesJSON');
+    cy.server()
+    cy.route('POST', 'http://localhost:8000/api/sis_raw_entries', '@addRawEntriesJSON').as('addRawEntries')
+
     cy.asUser().visit('')
-    cy.get('[data-cy=create-report-button]').should('be.disabled')
-    cy.get('[data-cy=pastefield]').type(
+    cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
+    cy.get('[data-cy=sisPastefield]').type(
       '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi'
     )
-    cy.get('[data-cy=dateField] input')
-      .clear()
-      .type('5.7.2019')
+    cy.get('#sisDatePicker').clear().type('30.12.2020')
 
-    cy.get('[data-cy=courseSelection]')
+    cy.get('[data-cy=sisGraderSelection]')
+      .click()
+      .children()
+      .should('not.contain', 'admin')
+      .contains('user')
+      .click()
+
+    cy.get('[data-cy=sisCourseSelection]')
       .click()
       .children()
       .contains('E2E')
       .click()
 
-    cy.get('[data-cy=create-report-button]')
+    cy.get('[data-cy=sis-create-report-button]')
       .should('not.be.disabled')
       .click()
 
-    cy.get('[data-cy=confirm-sending-button]')
+    cy.get('[data-cy=sis-confirm-sending-button]')
       .should('be.visible')
       .click()
 
-    cy.get('[data-cy=create-report-button]')
-      .should('be.disabled')
+
   })
 
 
 
   it('Grader can view created report', () => {
+    cy.fixture('sis/raw-entries-after.json').as('updatedRawEntriesJSON');
+
+    cy.server()
+    cy.route('GET', 'http://localhost:8000/api/users/*/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
     cy.asUser().visit('')
     cy.get('[data-cy=nav-reports]').click()
-    cy.get('[data-cy=raw-reports-tab]').click()
-    cy.get('[data-cy=report-not-downloaded]')
-    cy.get('[data-cy=raw-reports]').contains(
-      '011100009##1#TKT20042#E2E Testaus#5.7.2019#0#Hyv.#106##321#2#H523#####1,5'
-    )
+    cy.wait('@getUpdatedEntries')
+    cy.wait(2000)
+
+    cy.get('[data-cy=sis-reports-tab]').click()
+    cy.get('[data-cy=sis-report-TKT10001]').should('be.visible')
+    cy.get('[data-cy=sis-report-TKT10002]').should('be.visible')
+
   })
 })

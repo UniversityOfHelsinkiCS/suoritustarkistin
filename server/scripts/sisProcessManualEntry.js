@@ -9,8 +9,6 @@ const {
 const { processEntries } = require('./sisProcessEntry')
 const { getRegistrations } = require('../services/eduweb')
 const logger = require('@utils/logger')
-const sendEmail = require('../utils/sendEmail')
-const { newReport } = require('../utils/emailFactory')
 
 
 const LANGUAGES = ["fi", "sv", "en"]
@@ -78,7 +76,7 @@ const processManualEntry = async ({
       where: {
         [Op.and]: [
           { courseCode: originalCourse.courseCode },
-          { autoSeparate: !true }
+          { autoSeparate: true }
         ]
       }
     })
@@ -157,19 +155,9 @@ const processManualEntry = async ({
       amount: success.length,
       sis: true
     })
-    const unsent = await db.entries.getUnsentBatchCount()
-    sendEmail({
-      subject: `Uusia kurssisuorituksia: ${originalCourse.courseCode}`,
-      attachments: [{
-        filename: 'suotar.png',
-        path: `${process.cwd()}/client/assets/suotar.png`,
-        cid: 'toskasuotarlogoustcid'
-      }],
-      html: newReport(success.length, unsent, originalCourse.courseCode, batchId)
-    })
-    return { message: "success", success, failed }
+    return { message: "success", success, failed, batchId, courseCode: originalCourse.courseCode }
   } else {
-    return { message: "error", success, failed }
+    return { message: "error", success, failed, batchId, courseCode: originalCourse.courseCode }
   }
 }
 

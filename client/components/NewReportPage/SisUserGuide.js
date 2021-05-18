@@ -40,7 +40,7 @@ const DetailedInstructions = () => (
       </List.Item>
       <List.Item>
         <p style={instruction}>Credits</p>
-        You can define the amount of credits for each student separately or use the course default grade amount.
+        You can define the amount of credits for each student separately or use the course default credit amount.
       </List.Item>
       <List.Item>
         <p style={instruction}>Language</p>
@@ -95,7 +95,12 @@ export default () => (
         <List.Item>011100009</List.Item>
         <List.Item>011110002;;;fi;25.7.2019</List.Item>
       </List>
-      Only student number and grade are mandatory, rest of the details will be filled with defaults, if nothing is picked.
+      <p>
+        <b>
+          If Suotar says that some student is lacking registration for the course, Suotar will
+          "remember" this completion and add it automatically to the student, once they have registered to the course.
+        </b>
+      </p>
       <p>
         If you cannot find the right grader or course, please contact grp-toska@helsinki.fi to get it added.
       </p>

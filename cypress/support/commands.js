@@ -75,6 +75,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
 
   cy.request('POST', '/api/seed/users', {
     name: 'user',
+    uid: 'user-321',
     employeeId: 321,
     isAdmin: false,
     isGrader: false,
@@ -83,7 +84,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
   cy.request('POST', '/api/seed/users', {
     name: 'grader',
     employeeId: 111,
-    uid: 'grader1',
+    uid: 'grader-1',
     isAdmin: false,
     isGrader: true,
   })
@@ -116,7 +117,7 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
   cy.request('POST', '/api/seed/users', {
     name: 'admin',
     employeeId: 123,
-    uid: 'admin1',
+    uid: 'admin-123',
     isAdmin: true,
     isGrader: false,
   })

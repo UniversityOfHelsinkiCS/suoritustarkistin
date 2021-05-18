@@ -7,21 +7,21 @@ describe("Permissions", () => {
     cy.request('POST', '/api/seed/users', {
       name: 'admin',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
-      uid: 'uid1',
+      uid: 'admin-1',
       isAdmin: true,
       isGrader: false
     })
     cy.request('POST', '/api/seed/users', {
       name: 'grader',
       employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
-      uid: 'uid2',
+      uid: 'grader-1',
       isAdmin: false,
       isGrader: true
     })
     cy.request('POST', '/api/seed/users', {
       name: 'user',
       employeeId: Cypress.env('USER_EMPLOYEE_NUMBER'),
-      uid: 'uid3',
+      uid: 'user-1',
       isAdmin: false,
       isGrader: false
     })
@@ -31,6 +31,7 @@ describe("Permissions", () => {
     cy.request('POST', '/api/seed/users', {
       name: 'employeeIsGraderFalse',
       employeeId: 'employeeIsGraderFalse',
+      uid: 'user-2',
       isAdmin: false,
       isGrader: false
     })

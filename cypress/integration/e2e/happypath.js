@@ -7,12 +7,14 @@ describe('Submitting data creates a valid report into database', function () {
 
     cy.request('POST', '/api/seed/users', {
       name: 'admin',
+      uid: 'admin-1',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: false
     })
     cy.request('POST', '/api/seed/users', {
       name: 'user',
+      uid: 'user-1',
       employeeId: Cypress.env('USER_EMPLOYEE_NUMBER'),
       isAdmin: false,
       isGrader: false

@@ -22,7 +22,6 @@ export default () => {
 
   useEffect(() => {
     if (user.adminMode) {
-      dispatch(getAllReportsAction())
       dispatch(getAllCoursesAction())
       dispatch(sisGetAllReportsAction())
     } else {
@@ -30,6 +29,12 @@ export default () => {
       dispatch(getUsersCoursesAction(user.id))
     }
   }, [user])
+
+  const handleTabChange = (_, { activeIndex }) => {
+    // Fetch old reports only if tab is opened
+    if (user.adminMode && activeIndex > 2)
+      dispatch(getAllReportsAction())
+  }
 
   let panes = [
     {
@@ -40,7 +45,7 @@ export default () => {
         </Menu.Item>
       ),
       render: () => (
-        <Tab.Pane>
+        <Tab.Pane loading={sisReports ? sisReports.pending : true}>
           <SisReports
             user={user}
             reports={sisReports.data.filter((entry) => entry.reporterId)}
@@ -59,7 +64,7 @@ export default () => {
         </Menu.Item>
       ),
       render: () => (
-        <Tab.Pane>
+        <Tab.Pane loading={sisReports ? sisReports.pending : true}>
           <SisReports
             user={user}
             reports={sisReports.data.filter((entry) => !entry.reporterId)}
@@ -75,7 +80,7 @@ export default () => {
         </Menu.Item>
       ),
       render: () => (
-        <Tab.Pane>
+        <Tab.Pane loading={sisReports ? sisReports.pending : true}>
           <EnrolmentLimbo
             rawEntries={sisReports.data.filter((rawEntry) => rawEntry.entry.missingEnrolment)}
           />
@@ -134,5 +139,5 @@ export default () => {
     ]
   }
 
-  return <Tab panes={panes} />
+  return <Tab panes={panes} onTabChange={handleTabChange} />
 }

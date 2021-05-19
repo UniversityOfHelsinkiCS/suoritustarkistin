@@ -7,10 +7,10 @@ export const filterBatches = (report, filters) => {
   let match = false
   if (!filters.errors && !filters.missing && !filters.notSent && !filters.noEnrollment) match = true
 
-  const containsErrors = report.some(({ entry }) => (entry.errors || {}).message)
-  const notSent = report.every(({ entry }) => !entry.sent)
-  const missingFromSisu = report.some(({ entry }) => entry.sent && !(entry.errors || {}).message && !entry.registered)
-  const missingEnrollment = report.some(({ entry }) => entry.missingEnrolment)
+  const containsErrors = report.some(({ entry }) => (!entry || ((entry.errors || {}).message)))
+  const notSent = report.every(({ entry }) => !entry || !entry.sent)
+  const missingFromSisu = report.some(({ entry }) => (!entry || (entry.sent && !(entry.errors || {}).message && !entry.registered)))
+  const missingEnrollment = report.some(({ entry }) => !entry || entry.missingEnrolment)
   if (filters.errors && containsErrors) match = true
   if (filters.missing && missingFromSisu) match = true
   if (filters.notSent && notSent) match = true

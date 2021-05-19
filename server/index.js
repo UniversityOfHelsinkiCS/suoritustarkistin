@@ -85,17 +85,9 @@ initializeDatabaseConnection()
 
     const now = () => new Date(Date.now())
 
-    if (process.argv[2] && process.argv[2] === 'checkoodi') {
-      const timestamp = now()
-      logger.info(
-        `${timestamp.toLocaleString()} manual run: Checking oodi entries.`
-      )
-      checkOodiEntries()
-    }
-
     const STAGING = process.env.NODE_ENV === 'staging'
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING) {
-      cron.schedule('30 11 * * 5', () => {
+      cron.schedule('15 12 * * 3', () => {
         const timestamp = now()
         logger.info(
           `${timestamp.toLocaleString()} node-cron: Checking oodi entries.`

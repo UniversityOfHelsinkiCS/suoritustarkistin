@@ -1,7 +1,7 @@
 const moment = require('moment')
 const logger = require('@utils/logger')
-const { sisIsValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
-const { getCompletions } = require('../services/kurki')
+const { SIS_LANGUAGES, sisIsValidGrade } = require('@root/utils/validators')
+const { getCompletions, postTransferredId } = require('../services/kurki')
 const { getEarlierAttainments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
@@ -27,7 +27,7 @@ const processKurkiEntries = async ({
     const completions = await getCompletions(kurkiId)
 
     if (!completions) {
-      logger.error({ message: `No completions were found for the course ${kurkiId}`, sis:true })
+      logger.error({ message: `No frozen completions were found for the course ${kurkiId}`, sis:true })
       return { message: `No frozen completions were found for the course ${kurkiId}`}
     }
 
@@ -49,9 +49,11 @@ const processKurkiEntries = async ({
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
-
         if (!sisIsValidGrade(completion.grade)) {
-          logger.error({ message: `Invalid grade: ${completion.grade}`, sis: true })
+          logger.error({
+            message: `Invalid grade for student ${completion.studentNumber}: ${completion.grade}`,
+            sis: true
+          })
           return matches
         }
 
@@ -84,11 +86,16 @@ const processKurkiEntries = async ({
       sis: true
     })
   
-    const result = await automatedAddToDb(matches, course, batchId)
+    let result = await automatedAddToDb(matches, course, batchId)
+
+    if (result.message === "success") {
+      result = await postTransferredId(kurkiId)
+    }
+
     return result
   } catch (error) {
-    logger.error(`Error processing new completions: ${error.message}`)
-    return { message: `Error processing new completions: ${error.message}` }
+    logger.error({ message: `Error processing new completions: ${error.message}`, sis: true })
+    return { message: `Error processing new completions: ${error.message}`}
   }
 }
 

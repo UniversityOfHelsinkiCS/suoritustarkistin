@@ -32,7 +32,7 @@ const addKurkiRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'Course details missing' })
     }
 
-    const courseCode = kurkiId.split('.')[0]
+    const courseCode = `TKT${kurkiId.split('.')[0]}`
 
     let course = await db.courses.findOne({
       where: {
@@ -65,7 +65,7 @@ const addKurkiRawEntries = async (req, res) => {
     if (result.message === "success" || result.message === "no new entries") {
       return res.status(200).json({ message: result.message })
     }
-    logger.error(result.message)
+    logger.error({ message: result.message, sis: true })
     return res.status(500).json({ error: result.message })
   } catch (e) {
     logger.error(e.message)

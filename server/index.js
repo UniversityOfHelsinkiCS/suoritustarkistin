@@ -94,8 +94,8 @@ initializeDatabaseConnection()
     }
 
     const STAGING = process.env.NODE_ENV === 'staging'
-    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
-      cron.schedule('0 5 * * 5', () => {
+    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING) {
+      cron.schedule('30 11 * * 5', () => {
         const timestamp = now()
         logger.info(
           `${timestamp.toLocaleString()} node-cron: Checking oodi entries.`
@@ -104,11 +104,11 @@ initializeDatabaseConnection()
       })
     }
 
-    // To be changed when Sisu is master
-    if (STAGING && !IN_MAINTENANCE)
+    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
       cron.schedule('0 0 * * *', () => {
         checkAllEntriesFromSisu()
       })
+    }
 
     app.listen(PORT, () => {
       logger.info(`Started on port ${PORT} with environment ${process.env.NODE_ENV}`)

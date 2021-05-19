@@ -57,7 +57,7 @@ const automatedAddToDb = async (matches, course, batchId) => {
   } catch (error) {
     transaction.rollback()
     logger.error(`Error processing new completions: ${error.message}`)
-    return { message: error.message }
+    return { message: `Error processing new completions: ${error.message}` }
   }
 }
 

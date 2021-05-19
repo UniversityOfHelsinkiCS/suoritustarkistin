@@ -26,6 +26,11 @@ const processKurkiEntries = async ({
   try {
     const completions = await getCompletions(kurkiId)
 
+    if (!completions) {
+      logger.error({ message: `No completions were found for the course ${kurkiId}`, sis:true })
+      return { message: `No frozen completions were found for the course ${kurkiId}`}
+    }
+
     const courseStudentPairs = completions.reduce((pairs, completion) => {
       if (completion && completion.studentNumber) {
         return pairs.concat({ courseCode: course.courseCode, studentNumber: completion.studentNumber })
@@ -83,7 +88,7 @@ const processKurkiEntries = async ({
     return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)
-    return { message: error.message }
+    return { message: `Error processing new completions: ${error.message}` }
   }
 }
 

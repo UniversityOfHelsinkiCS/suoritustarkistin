@@ -55,9 +55,14 @@ const automatedAddToDb = async (matches, course, batchId) => {
     logger.info('Job run ended successfully, no new entries created')
     return { message: "no new entries" }
   } catch (error) {
-    transaction.rollback()
+    await transaction.rollback()
+    await db.raw_entries.destroy({
+      where: {
+        batchId: batchId
+      }
+    })
     logger.error(`Error processing new completions: ${error.message}`)
-    return { message: error.message }
+    return { message: `Error processing new completions: ${error.message}` }
   }
 }
 

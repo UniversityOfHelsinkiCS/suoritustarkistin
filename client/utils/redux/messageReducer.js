@@ -148,10 +148,17 @@ export default (state = null, action) => {
       }
     }
     case 'CREATE_KURKI_REPORT_SUCCESS':
+      if (action.response.message == "success") {
+        return {
+          header: 'New report created!',
+          type: 'positive',
+          content: 'You can check it on the View reports -page'
+        }
+      }
       return {
-        header: 'New report created!',
-        content: 'You can check it on the View reports -page',
-        type: 'positive'
+        header: 'No report created',
+        type: 'neutral',
+        content: 'There were no new valid completions to be reported'
       }
     case 'CREATE_KURKI_REPORT_FAILURE':
       return {

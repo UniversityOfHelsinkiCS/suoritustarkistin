@@ -32,7 +32,7 @@ const addKurkiRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'Course details missing' })
     }
 
-    const courseCode = `TKT${kurkiId.split('.')[0]}`
+    const courseCode = kurkiId.split('.')[0]
 
     let course = await db.courses.findOne({
       where: {

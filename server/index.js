@@ -15,7 +15,6 @@ const { requestLogger, parseUser, currentUser } = require('./utils/middleware')
 const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
-const checkOodiEntries = require('./scripts/checkOodiEntries')
 const { checkAllEntriesFromSisu } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
 
@@ -83,18 +82,7 @@ initializeDatabaseConnection()
     if (!IN_MAINTENANCE)
       initializeCronJobs()
 
-    const now = () => new Date(Date.now())
-
     const STAGING = process.env.NODE_ENV === 'staging'
-    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING) {
-      cron.schedule('15 12 * * 3', () => {
-        const timestamp = now()
-        logger.info(
-          `${timestamp.toLocaleString()} node-cron: Checking oodi entries.`
-        )
-        checkOodiEntries()
-      })
-    }
 
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
       cron.schedule('0 0 * * *', () => {

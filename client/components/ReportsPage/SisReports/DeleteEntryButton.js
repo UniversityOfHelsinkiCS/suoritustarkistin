@@ -1,16 +1,15 @@
 import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { sisHandleBatchDeletionAction, openReport } from 'Utilities/redux/sisReportsReducer'
+import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 
-export default ({ batchId }) => {
+export default ({ rawEntryId, batchId }) => {
   const [open, setOpen] = useState(false)
   const dispatch = useDispatch()
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
 
-  const deleteBatch = () => {
-    dispatch(sisHandleBatchDeletionAction(batchId))
-    dispatch(openReport(batchId))
+  const deleteEntry = () => {
+    dispatch(sisHandleEntryDeletionAction(rawEntryId))
   }
 
   return (
@@ -19,7 +18,8 @@ export default ({ batchId }) => {
       trigger={
         <Button
           negative
-          content="Delete completions"
+          content="Delete"
+          data-cy={`sis-report-entry-delete-button-${rawEntryId}`}
           disabled={!batchId}
           onClick={() => setOpen(true)}
         />
@@ -34,14 +34,14 @@ export default ({ batchId }) => {
             </strong>
           </p>
           <p style={{ padding: '5px 2px' }}>
-              Please note that deleting the completion-report here, will not affect completions already sent to SIS.
+              Please note that deleting the completion here, will not affect completions already sent to SIS.
           </p>
           <Button
             style={{ margin: '5px 2px' }}
             negative
-            data-cy={`delete-batch-${batchId}`}
-            onClick={deleteBatch}
-            disabled={!batchId}
+            data-cy={`sis-report-entry-confirm-button-${rawEntryId}`}
+            onClick={deleteEntry}
+            disabled={!rawEntryId}
             content="Yes, delete completions"
           />
         </div>

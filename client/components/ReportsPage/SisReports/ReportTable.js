@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { Accordion, Button, Icon, Table, Popup } from 'semantic-ui-react'
+import { Accordion, Icon, Table, Popup } from 'semantic-ui-react'
 
 import { EOAI_CODES, EOAI_NAMEMAP } from '../../../../utils/validators'
 import moment from 'moment'
 import sisuErrorMessages from 'Utilities/sisuErrorMessages.json'
-import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
+import DeleteEntryButton from './DeleteEntryButton'
 
 const PLACEHOLDER_COURSE = {
   id: 'COURSE DELETED',
@@ -64,7 +63,7 @@ const TableBody = ({ rawEntries, courses, allowDelete }) => (
           <EntryCells entry={rawEntry.entry} />
           {allowDelete
             ? <Table.Cell>
-              <DeleteButton id={rawEntry.id} />
+              <DeleteEntryButton rawEntryId={rawEntry.id} batchId={rawEntry.batchId} />
             </Table.Cell>
             : null}
         </Table.Row>
@@ -176,19 +175,6 @@ const MinimalExpand = ({ title, content }) => {
     <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>{title} <Icon name={`triangle ${open ? 'down' : 'right'}`} /></span>
     {open ? <p>{content}</p> : null}
   </>
-}
-
-const DeleteButton = ({ id }) => {
-  const dispatch = useDispatch()
-  return (
-    <Button
-      data-cy={`sis-report-entry-delete-button-${id}`}
-      color="red"
-      onClick={() => dispatch(sisHandleEntryDeletionAction(id))}
-    >
-      Delete
-    </Button>
-  )
 }
 
 const getSisUnitName = (name, language) => {

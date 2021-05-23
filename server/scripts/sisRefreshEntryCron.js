@@ -7,7 +7,7 @@ const { newLimboReport } = require('../utils/emailFactory')
 
 
 const refreshEntriesCron = async () => {
-  logger.info({ message: `Refreshing entries automatically`, sis: true })
+  logger.info({ message: `Refreshing entries automatically` })
   const rawEntries = await db.entries.findAll({
     where: {
       [Op.or]: [
@@ -22,7 +22,7 @@ const refreshEntriesCron = async () => {
   })
   const rawEntryIds = rawEntries.map(({ id }) => id)
   const [amount, batchId] = await refreshEntries(rawEntryIds)
-  logger.info({ message: `${amount} entries refreshed successfully.`, sis: true, batchId })
+  logger.info({ message: `${amount} entries refreshed successfully.`, batchId })
 
   if (!amount) return
 

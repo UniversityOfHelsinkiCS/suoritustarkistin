@@ -43,7 +43,7 @@ const refreshEntries = async (rawEntryIds) => {
     return [newEntriesWithEnrollment.length, batchId]
   } catch (e) {
     transaction.rollback()
-    logger.error({ message: `Refreshing entries failed ${e.toString()}`, sis: true })
+    logger.error({ message: `Refreshing entries failed ${e.toString()}` })
     throw e
   }
 }

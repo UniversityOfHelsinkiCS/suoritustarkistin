@@ -14,12 +14,9 @@ import Notification from 'Components/Message'
 
 import './reportStyles.css'
 
-
-
 const SisSuccessMessage = () => <Message success>
   <Message.Header>All entries sent successfully to Sisu</Message.Header>
 </Message>
-
 
 const getCourseUnitRealisationSisuUrl = (realisation) => `
   https://sis-helsinki${process.env.NODE_ENV === 'staging' ? '-test' : ''}.funidata.fi

@@ -15,13 +15,12 @@ const checkEntries = async (entries) => {
     const amountUpdated = await markAsRegistered(registeredEntries)
     logger.info({ 
       message: `Checked total ${entries.length} entries, found ${amountUpdated} new registrations.`,
-      sis: true,
       newRegistrations: registeredEntries.length, 
       missingRegistrations: (entries.length - registeredEntries.length) 
     })
     return true
   } catch (e) {
-    logger.error({ message: 'Failed to check Sisu entries', error: e.toString(), sis: true })
+    logger.error({ message: 'Failed to check Sisu entries', error: e.toString() })
     return false
   }
 }

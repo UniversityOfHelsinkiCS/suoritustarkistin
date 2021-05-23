@@ -87,10 +87,10 @@ const refreshEnrollments = async (req, res) => {
 
   try {
     const [amount, batchId] = await refreshEntries(req.body)
-    logger.info({ message: `${amount} entries refreshed successfully.`, sis: true })
+    logger.info({ message: `${amount} entries refreshed successfully.` })
     return res.status(200).json({ amount, batchId })
   } catch (e) {
-    logger.error({ message: `Refreshing entries failed ${e.toString()}`, sis: true })
+    logger.error({ message: `Refreshing entries failed ${e.toString()}` })
     return res.status(400).json({ message: `Refreshing entries failed ${e.toString()}` })
   }
 }
@@ -152,18 +152,18 @@ const sendToSis = async (req, res) => {
 
   let status = 200
   try {
-    logger.info({ message: 'Sending entries to Sisu', amount: data.length, sis: true, user: req.user.name, payload: JSON.stringify(data) })
+    logger.info({ message: 'Sending entries to Sisu', amount: data.length, user: req.user.name, payload: JSON.stringify(data) })
     await api.post('suotar/', data)
     await updateSuccess(entryIds, senderId)
-    logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, sis: true })
+    logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length })
   } catch (e) {
     status = 400
     const payload = JSON.stringify(data)
     const errorMessage = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
-    logger.error({ message: 'Error when sending entries to Sisu', sis: true, errorMessage, payload })
+    logger.error({ message: 'Error when sending entries to Sisu', errorMessage, payload })
     if (!isValidSisuError(e.response)) {
-      logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name, sis: true })
-      return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, sis: true, user: req.user.name })
+      logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name })
+      return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, user: req.user.name })
     }
     const failedEntries = await writeErrorsToEntries(e.response, data, entries, senderId)
 
@@ -172,7 +172,7 @@ const sendToSis = async (req, res) => {
       .filter(({ id }) => !failedEntries.includes(id))
       .map((entry) => entry.id)
     await updateSuccess(successEntryIds, senderId)
-    logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name, sis: true })
+    logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, successAmount: successEntryIds.length, user: req.user.name })
   }
 
   const updatedWithRawEntries = await db.raw_entries.findAll({

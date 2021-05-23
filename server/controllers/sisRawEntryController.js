@@ -19,7 +19,7 @@ const addRawEntries = async (req, res) => {
 
     const { courseId, graderId, date, data } = req.body
     if (!courseId || !graderId || !date || !data) {
-      logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date, sis: true })
+      logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
       return res.status(400).json({ error: 'invalid form values' })
     }
 
@@ -33,7 +33,7 @@ const addRawEntries = async (req, res) => {
 
     if (result.message === "success") {
       await transaction.commit()
-      logger.info({ message: 'Report of new completions created successfully.', sis: true })
+      logger.info({ message: 'Report of new completions created successfully.' })
       if (await shouldSendEmail(result.batchId)) {
         const unsent = await db.entries.getUnsentBatchCount()
         sendEmail({
@@ -49,7 +49,7 @@ const addRawEntries = async (req, res) => {
       return res.status(200).json({ message: 'report created successfully' })
     } else {
       await transaction.rollback()
-      logger.error({ message: `Processing new completions failed`, sis: true })
+      logger.error({ message: `Processing new completions failed` })
       return res.status(400).json({ message: "Processing new completions failed", failed: result.failed })
     }
   } catch (error) {

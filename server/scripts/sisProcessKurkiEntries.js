@@ -27,7 +27,7 @@ const processKurkiEntries = async ({
     const completions = await getCompletions(kurkiId)
 
     if (!completions) {
-      logger.error({ message: `No frozen completions were found for the course ${kurkiId}`, sis:true })
+      logger.error({ message: `No frozen completions were found for the course ${kurkiId}` })
       return { message: `No frozen completions were found for the course ${kurkiId}`}
     }
 
@@ -50,10 +50,7 @@ const processKurkiEntries = async ({
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
         if (!sisIsValidGrade(completion.grade)) {
-          logger.error({
-            message: `Invalid grade for student ${completion.studentNumber}: ${completion.grade}`,
-            sis: true
-          })
+          logger.error({ message: `Invalid grade for student ${completion.studentNumber}: ${completion.grade}` })
           return matches
         }
 
@@ -81,10 +78,7 @@ const processKurkiEntries = async ({
       },
       []
     )
-    logger.info({
-      message: `${course.courseCode}: Found ${matches.length} new completions.`,
-      sis: true
-    })
+    logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
   
     let result = await automatedAddToDb(matches, course, batchId)
 
@@ -94,7 +88,7 @@ const processKurkiEntries = async ({
 
     return result
   } catch (error) {
-    logger.error({ message: `Error processing new completions: ${error.message}`, sis: true })
+    logger.error({ message: `Error processing new completions: ${error.message}` })
     return { message: `Error processing new completions: ${error.message}`}
   }
 }

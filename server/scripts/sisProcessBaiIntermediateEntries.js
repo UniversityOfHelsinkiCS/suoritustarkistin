@@ -111,10 +111,7 @@ const processBaiIntermediateEntries = async ({
       []
     )
 
-    logger.info({
-      message: `${course.courseCode}: Found ${matches.length} new completions.`,
-      sis: true
-    })
+    logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
 
     const result = await automatedAddToDb(matches, course, batchId)
     return result

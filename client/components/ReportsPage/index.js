@@ -32,7 +32,7 @@ export default () => {
 
   const handleTabChange = (_, { activeIndex }) => {
     // Fetch old reports only if tab is opened
-    if (user.adminMode && activeIndex > 2)
+    if (user.adminMode && activeIndex > 2 && !reports.data.length)
       dispatch(getAllReportsAction())
   }
 

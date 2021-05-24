@@ -23,6 +23,8 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'invalid form values' })
     }
 
+    logger.info({ message: 'Raw sis entries', data: JSON.stringify(req.body) })
+
     const result = await processManualEntry({
       graderId,
       reporterId: req.user.id,

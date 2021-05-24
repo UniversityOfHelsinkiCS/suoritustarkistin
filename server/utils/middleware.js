@@ -2,6 +2,7 @@ const { inProduction } = require('./common')
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const sendNewUserEmail = require('./sendNewUserEmail')
+const Sentry = require('@sentry/node')
 
 const parseUser = async (req, res, next) => {
   if (req.headers.employeenumber) {
@@ -91,6 +92,17 @@ const notInProduction = (req, res, next) => {
   }
 }
 
+const errorMiddleware =  (error, req, res, next) => {
+  logger.error(`${error.message} ${error.name} ${error.stack}`)
+  Sentry.captureException(error)
+
+  if (res.headersSent)
+    return next(error)
+
+  return res.status(500).send(error.message)
+}
+
+
 const requestLogger = (req, res, next) => {
   logger.info(`Method: ${req.method}`)
   logger.info(`Path: ${req.path}`)
@@ -108,5 +120,6 @@ module.exports = {
   checkGrader,
   checkAdmin,
   checkIdMatch,
-  currentUser
+  currentUser,
+  errorMiddleware
 }

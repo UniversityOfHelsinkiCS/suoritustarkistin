@@ -58,6 +58,7 @@ const processKurkiEntries = async ({
 
         if (completion && completion.studentNumber) {
           if (!isImprovedGrade(earlierAttainments, completion.studentNumber, completion.grade)) {
+            logger.info({ message: `Student ${completion.studentNumber} already has a higher grade for the course`})
             return matches
           } else {
             return matches.concat({

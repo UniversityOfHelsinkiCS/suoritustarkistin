@@ -93,15 +93,18 @@ const notInProduction = (req, res, next) => {
 }
 
 const errorMiddleware = (req, res) => {
-  const { statusCode, body } = res
+  const { statusCode } = res
   if (statusCode < 400)
     return
 
   const { originalUrl, method, query } = req
-  const message = `Response ${originalUrl} failed with status code ${statusCode}`
+  const { body } = res.req // res.req :wat:
+
+  const errorMsg = body.error || ''
+  const message = `Response ${originalUrl} failed with status code ${statusCode} - ${errorMsg}`
   logger.info({ originalUrl, body, method, query, message })
   Sentry.withScope((scope) => {
-    scope.setUser(req.user)
+    scope.setUser(req.user ? req.user.get({ plain: true }) : null)
     scope.setExtras({
       originalUrl, body, method, query
     })

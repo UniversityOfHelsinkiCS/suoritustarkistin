@@ -36,20 +36,20 @@ export default () => {
       )
     },
     {
-    menuItem: (
-      <Menu.Item key="mooc-jobs" data-cy="mooc-jobs-tab">
-        <Icon name="file alternate outline" />
+      menuItem: (
+        <Menu.Item key="mooc-jobs" data-cy="mooc-jobs-tab">
+          <Icon name="file alternate outline" />
           Mooc
-      </Menu.Item>
-    ),
-    render: () => (
-      <Tab.Pane>
-        <NewJob />
-        <Message />
-        <JobsTable />
-      </Tab.Pane>
-    )
-  }]
+        </Menu.Item>
+      ),
+      render: () => (
+        <Tab.Pane>
+          <NewJob />
+          <Message />
+          <JobsTable />
+        </Tab.Pane>
+      )
+    }]
 
   return <Tab data-cy="automated-reports-tab" panes={panes} />
 }

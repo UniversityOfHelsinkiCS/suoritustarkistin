@@ -106,7 +106,12 @@ const getGradeCell = (grade) => {
       </Table.Cell>
     )
   }
-  return <Table.Cell style={validStyle}>Hyv.</Table.Cell>
+  return (
+    <Table.Cell style={invalidStyle}>
+      <Icon name="ban" />
+      Add grade
+    </Table.Cell>
+  )
 }
 
 const getCreditCell = (credits, course) => {

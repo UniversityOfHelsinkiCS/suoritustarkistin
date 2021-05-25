@@ -3,6 +3,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
 const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
+const { v4: uuidv4 } = require('uuid')
 const {
   getEmployees,
   getStudents,
@@ -101,6 +102,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
         })
       else
         success.push({
+          id: generateEntryId(),
           personId: student.id,
           verifierPersonId: verifier.id,
           rawEntryId: rawEntry.id,
@@ -145,6 +147,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
           }
           success.push({
             ...e,
+            id: generateEntryId(),
             verifierPersonId: verifier.id,
             rawEntryId: rawEntry.id,
             gradeId: grade.localId,
@@ -215,6 +218,10 @@ const getCourses = async (rawEntries) => {
     },
     raw: true
   })
+}
+
+function generateEntryId() {
+  return `hy-kur-${uuidv4()}`
 }
 
 

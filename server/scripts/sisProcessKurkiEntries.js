@@ -5,6 +5,7 @@ const { getCompletions, postTransferredId } = require('../services/kurki')
 const { getEarlierAttainments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
+const { inProduction } = require('@utils/common')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.language
@@ -83,7 +84,7 @@ const processKurkiEntries = async ({
   
     let result = await automatedAddToDb(matches, course, batchId)
 
-    if (result.message === "success") {
+    if (result.message === "success" && inProduction) {
       result = await postTransferredId(kurkiId)
     }
 

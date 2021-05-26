@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { Accordion, Button, Icon, Message } from 'semantic-ui-react'
+import { Accordion, Button, Icon, Message, Segment } from 'semantic-ui-react'
 
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
@@ -23,7 +23,7 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 /teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
 `
 
-const reportContents = (report, dispatch, courses, user, openAccordions) => {
+const reportContents = (report, dispatch, courses, user, openAccordions, batchLoading) => {
   if (!report) return null
 
   const batchSent = report.some(({ entry }) => entry.sent)
@@ -80,46 +80,48 @@ const reportContents = (report, dispatch, courses, user, openAccordions) => {
 
   return (
     <Accordion.Content active={openAccordions.includes(report[0].batchId)}>
-      <p>Completions reported by <strong>{(!report[0].reporter || report[0].batchId.startsWith("limbo")) ? "Suotar-bot" : report[0].reporter.name}</strong></p>
-      {report[0].batchId.startsWith("limbo")
-        ? <Message info>
-          <p>This report contains previously reported entries for which an enrollment has been found.</p>
-        </Message>
-        : null}
-      {!report[0].batchId.startsWith("limbo") && report.some(({ entry }) => entry.missingEnrolment)
-        ? <Message info>
-          <p>Completions with yellow background is missing enrollment and will not be sent to Sisu. When an enrollment is found for the entry, it will be sent to Sisu.</p>
-        </Message>
-        : null}
+      <Segment loading={openAccordions.includes(report[0].batchId) && batchLoading} style={{ margin: 0, padding: 0 }} basic>
+        <p>Completions reported by <strong>{(!report[0].reporter || report[0].batchId.startsWith("limbo")) ? "Suotar-bot" : report[0].reporter.name}</strong></p>
+        {report[0].batchId.startsWith("limbo")
+          ? <Message info>
+            <p>This report contains previously reported entries for which an enrollment has been found.</p>
+          </Message>
+          : null}
+        {!report[0].batchId.startsWith("limbo") && report.some(({ entry }) => entry.missingEnrolment)
+          ? <Message info>
+            <p>Completions with yellow background is missing enrollment and will not be sent to Sisu. When an enrollment is found for the entry, it will be sent to Sisu.</p>
+          </Message>
+          : null}
 
-      {user.adminMode && (
-        <>
-          <SendToSisButton
-            entries={report
-              .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
-              .map(({ entry }) => entry.id)
-            } />
-          <DeleteBatchButton batchId={report[0].batchId} />
-          <ViewAttainmentsInSisu rawEntry={report[0]} />
-          <RefreshBatch report={report} />
-        </>
-      )}
+        {user.adminMode && (
+          <>
+            <SendToSisButton
+              entries={report
+                .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
+                .map(({ entry }) => entry.id)
+              } />
+            <DeleteBatchButton batchId={report[0].batchId} />
+            <ViewAttainmentsInSisu rawEntry={report[0]} />
+            <RefreshBatch report={report} />
+          </>
+        )}
 
-      {batchSent && !reportContainsErrors && <SisSuccessMessage />}
+        {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 
-      { // Display accordion only when batch contains sent entries or entries with errors
-        !batchSent && !reportContainsErrors
-          ? <ReportTable
-            rows={report}
-            courses={courses}
-            allowDelete={user.adminMode}
-          />
-          : <Accordion.Accordion
-            data-cy={`sis-entries-panel-${report[0].batchId}`}
-            panels={panels}
-            exclusive={false}
-          />
-      }
+        { // Display accordion only when batch contains sent entries or entries with errors
+          !batchSent && !reportContainsErrors
+            ? <ReportTable
+              rows={report}
+              courses={courses}
+              allowDelete={user.adminMode}
+            />
+            : <Accordion.Accordion
+              data-cy={`sis-entries-panel-${report[0].batchId}`}
+              panels={panels}
+              exclusive={false}
+            />
+        }
+      </Segment>
     </Accordion.Content>
   )
 }
@@ -141,6 +143,7 @@ export default withRouter(({ reports, user, match }) => {
   const [loading, setLoading] = useState(true)
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
+  const batchLoading = useSelector((state) => state.sisReports.batchLoading)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false, search: '' })
   const dispatch = useDispatch()
 
@@ -170,7 +173,7 @@ export default withRouter(({ reports, user, match }) => {
       return {
         key: `panel-${index}`,
         title: title(reportWithEntries),
-        content: reportContents(reportWithEntries, dispatch, courses, user, openAccordions),
+        content: reportContents(reportWithEntries, dispatch, courses, user, openAccordions, batchLoading),
         onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
       }
     })

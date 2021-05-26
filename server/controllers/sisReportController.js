@@ -1,11 +1,14 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const Sequelize = require('sequelize')
-const Op = Sequelize.Op
 const axios = require('axios')
+const Sentry = require('@sentry/node')
+
 const { checkEntries } = require('../scripts/checkSisEntries')
 const { getEmployees, getAcceptorPersons } = require('../services/importer')
 const refreshEntries = require('../scripts/sisRefreshEntry')
+
+const Op = Sequelize.Op
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
 // otherwise use common api instance.
@@ -135,6 +138,8 @@ const sendToSis = async (req, res) => {
     const payload = JSON.stringify(data)
     const errorMessage = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
     logger.error({ message: 'Error when sending entries to Sisu', errorMessage, payload })
+    sendSentryMessage('Sending entries to Sisu failed', req.user, { errorMessage, payload: data })
+
     if (!isValidSisuError(e.response)) {
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: req.user.name })
       return res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, user: req.user.name })
@@ -267,7 +272,6 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
   }
 })
 
-
 const updateSuccess = async (entryIds, senderId) =>
   await db.entries.update({
     sent: new Date(),
@@ -279,6 +283,11 @@ const updateSuccess = async (entryIds, senderId) =>
     }
   })
 
+const sendSentryMessage = (title, user, extras) => Sentry.withScope((scope) => {
+  scope.setUser((user && user.get) ? user.get({ plain: true }) : user)
+  scope.setExtras({ ...extras })
+  Sentry.captureMessage(title)
+})
 
 module.exports = {
   sisGetAllReports,

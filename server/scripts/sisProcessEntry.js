@@ -26,13 +26,14 @@ const {
  *  4. Mankel again the enrolments to get Suotar entries
  *  5. Resolve all nested promises ??
  *
- * Returns list with two elements:
- *  [failedEntries, validEntries]
+ * Returns list with three elements:
+ *  [failedEntries, validEntries, isMissingEnrollment]
  */
 
 const processEntries = async (createdEntries, checkImprovements, requireEnrollment = false) => {
   const success = []
   const failed = []
+  let isMissingEnrollment = false
   const graderIds = new Set(createdEntries.map((rawEntry) => rawEntry.graderId))
   const graders = await db.users.findAll({
     where: {
@@ -100,7 +101,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
           studentNumber: rawEntry.studentNumber,
           message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`
         })
-      else
+      else {
         success.push({
           id: generateEntryId(),
           personId: student.id,
@@ -109,6 +110,8 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
           completionDate: completionDate.format('YYYY-MM-DD'),
           completionLanguage: rawEntry.language
         })
+        isMissingEnrollment = true
+      }
       return Promise.resolve()
     }
 
@@ -160,7 +163,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
     return Promise.resolve()
   }))
 
-  return [failed, success]
+  return [failed, success, isMissingEnrollment]
 }
 
 /**

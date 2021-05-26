@@ -48,7 +48,7 @@ const addRawEntries = async (req, res) => {
           html: newReport(result.success.length, unsent, result.courseCode, result.batchId)
         })
       }
-      return res.status(200).json({ message: 'report created successfully' })
+      return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment  })
     } else {
       await transaction.rollback()
       logger.error({ message: `Processing new completions failed` })

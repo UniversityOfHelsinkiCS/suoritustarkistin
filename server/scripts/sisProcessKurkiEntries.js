@@ -5,7 +5,7 @@ const { getCompletions, postTransferredId } = require('../services/kurki')
 const { getEarlierAttainments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { inProduction } = require('@utils/common')
+const { inProduction } = require('@utils/common')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.language

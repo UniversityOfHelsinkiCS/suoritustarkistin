@@ -1,12 +1,12 @@
-const logger = require('@utils/logger')
-const db = require('../models/index')
 const Sequelize = require('sequelize')
 const axios = require('axios')
-const Sentry = require('@sentry/node')
 
+const db = require('../models/index')
+const logger = require('@utils/logger')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const { getEmployees, getAcceptorPersons } = require('../services/importer')
 const refreshEntries = require('../scripts/sisRefreshEntry')
+const { sendSentryMessage } = require('@utils/sentry')
 
 const Op = Sequelize.Op
 
@@ -282,12 +282,6 @@ const updateSuccess = async (entryIds, senderId) =>
       id: { [Op.in]: entryIds }
     }
   })
-
-const sendSentryMessage = (title, user, extras) => Sentry.withScope((scope) => {
-  scope.setUser((user && user.get) ? user.get({ plain: true }) : user)
-  scope.setExtras({ ...extras })
-  Sentry.captureMessage(title)
-})
 
 module.exports = {
   sisGetAllReports,

@@ -4,6 +4,7 @@ const { Op, col } = require("sequelize")
 const logger = require('@utils/logger')
 const sendEmail = require('../utils/sendEmail')
 const { newLimboReport } = require('../utils/emailFactory')
+const { sendSentryMessage } = require('@utils/sentry')
 
 
 const refreshEntriesCron = async () => {
@@ -25,6 +26,7 @@ const refreshEntriesCron = async () => {
   logger.info({ message: `${amount} entries refreshed successfully.`, batchId })
 
   if (!amount) return
+  sendSentryMessage(`${amount} new enrollments found. New batch created with id ${batchId}`)
 
   const unsent = await db.entries.getUnsentBatchCount()
   sendEmail({

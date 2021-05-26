@@ -203,7 +203,7 @@ export default ({ close, user }) => {
             data-cy="add-user-confirm"
             positive
             control={Button}
-            content="Add user"
+            content={user ? 'Edit user' : 'Add user'}
             disabled={!validate() || data.pending}
             onClick={handleSubmit}
           />

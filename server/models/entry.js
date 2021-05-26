@@ -3,6 +3,10 @@ module.exports = (sequelize, DataTypes) => {
   const Entry = sequelize.define(
     'entries',
     {
+      id: {
+        type: DataTypes.STRING,
+        primaryKey: true
+      },
       personId: DataTypes.STRING,
       verifierPersonId: DataTypes.STRING,
       courseUnitRealisationId: DataTypes.STRING,

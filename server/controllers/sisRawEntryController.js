@@ -23,6 +23,8 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'invalid form values' })
     }
 
+    logger.info({ message: 'Raw sis entries', data: JSON.stringify(req.body) })
+
     const result = await processManualEntry({
       graderId,
       reporterId: req.user.id,
@@ -46,7 +48,7 @@ const addRawEntries = async (req, res) => {
           html: newReport(result.success.length, unsent, result.courseCode, result.batchId)
         })
       }
-      return res.status(200).json({ message: 'report created successfully' })
+      return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment  })
     } else {
       await transaction.rollback()
       logger.error({ message: `Processing new completions failed` })

@@ -7,44 +7,20 @@ export default () => {
   const dispatch = useDispatch()
   const message = useSelector((state) => state.message)
 
+  const resolveColor = (type) => {
+    if (!type) return 'blue'
+    if (type === 'positive') return 'green'
+    if (type === 'negative') return 'red'
+    return type
+  }
+
   if (!message) return null
 
-  if (message.type === 'positive') {
-    setTimeout(() => {
-      dispatch(clearMessageAction())
-    }, 8000)
-    return (
-      <Message
-        data-cy="positive-message"
-        positive
-        onDismiss={() => dispatch(clearMessageAction())}
-        header={message.header}
-        content={message.content}
-      />
-    )
-  }
-
-  if (message.type === 'negative' || message.type === 'neutral') {
-    return (
-      <Message
-        data-cy="negative-message"
-        color={message.type === 'negative' ? 'red' : 'blue'}
-        onDismiss={() => dispatch(clearMessageAction())}
-        header={message.header}
-        content={message.content}
-      />
-    )
-  }
-
-  setTimeout(() => {
-    dispatch(clearMessageAction())
-  }, 8000)
-  return (
-    <Message
-      info
-      onDismiss={() => dispatch(clearMessageAction())}
-      header={message.header}
-      content={message.content}
-    />
-  )
+  return <Message
+    data-cy="positive-message"
+    color={resolveColor(message.type)}
+    onDismiss={() => dispatch(clearMessageAction())}
+    header={message.header}
+    content={message.content}
+  />
 }

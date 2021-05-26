@@ -78,6 +78,16 @@ export default (state = null, action) => {
         type: 'negative'
       }
     case 'SIS_POST_RAW_ENTRIES_SUCCESS':
+      if (action.response.isMissingEnrollment)
+        return {
+          header: 'Report sent with missing enrollments',
+          content: `
+          Course completions have now been sent for reporting.
+          You can see the created report on the "View reports" -page.
+          Note that some of the completions is missing enrolment and won't be registered to Sisu before student is enrolled.
+          `,
+          type: 'orange'
+        }
       return {
         header: 'Report sent!',
         content:

@@ -41,7 +41,7 @@ describe('SIS form validation', () => {
   
       // missing course
       cy.get('[data-cy=sisPastefield]').type(
-        '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
+        '010000003;2;5;fi\n011000002;2;2,0\n011100009;2\n011110002;2;;fi',
         { delay: 1 }
       )
       cy.get('#sisDatePicker')
@@ -66,7 +66,7 @@ describe('SIS form validation', () => {
       cy.get('[data-cy=sisPastefield]').clear()
       cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
       cy.get('[data-cy=sisPastefield]').type(
-        '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi',
+        '010000003;2;5;fi\n011000002;2;2,0\n011100009;2\n011110002;2;;fi',
         { delay: 1 }
       )
       cy.get('[data-cy=sis-create-report-button]').should('not.be.disabled')

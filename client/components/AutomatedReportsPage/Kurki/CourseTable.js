@@ -33,11 +33,14 @@ const CourseTable = () => {
           <Grid.Column width={5}>
             <Header as="h4">Course name</Header>
           </Grid.Column>
-          <Grid.Column width={4}>
+          <Grid.Column width={2}>
             <Header as="h4">Grader</Header>
           </Grid.Column>
           <Grid.Column width={2}>
             <Header as="h4">Start date</Header>
+          </Grid.Column>
+          <Grid.Column width={2}>
+            <Header as="h4">End date</Header>
           </Grid.Column>
           <Grid.Column width={3} />
         </Grid.Row>
@@ -45,8 +48,9 @@ const CourseTable = () => {
           <Grid.Row key={course.id}>
             <Grid.Column width={2}>{course.id.split(".")[0]}</Grid.Column>
             <Grid.Column width={5}>{course.name}</Grid.Column>
-            <Grid.Column width={4}>{course.ownerId}</Grid.Column>
+            <Grid.Column width={2}>{course.ownerId}</Grid.Column>
             <Grid.Column width={2}>{moment(course.startDate).format("DD.MM.YYYY")}</Grid.Column>
+            <Grid.Column width={2}>{moment(course.finishDate).format("DD.MM.YYYY")}</Grid.Column>
             <Grid.Column width={3}>
               <Button
                 color="blue"

@@ -68,7 +68,7 @@ describe('Submitting data creates a valid report into database', function () {
     cy.asUser().visit('')
     cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
     cy.get('[data-cy=sisPastefield]').type(
-      '010000003;2;5;fi\n011000002;;2,0\n011100009\n011110002;;;fi'
+      '010000003;2;5;fi\n011000002;3;2,0\n011100009;4\n011110002;5;;fi'
     )
     cy.get('#sisDatePicker').clear().type('30.12.2020')
 

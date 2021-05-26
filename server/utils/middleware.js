@@ -2,6 +2,7 @@ const { inProduction } = require('./common')
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const sendNewUserEmail = require('./sendNewUserEmail')
+const Sentry = require('@sentry/node')
 
 const parseUser = async (req, res, next) => {
   if (req.headers.employeenumber) {
@@ -91,6 +92,27 @@ const notInProduction = (req, res, next) => {
   }
 }
 
+const errorMiddleware = (req, res) => {
+  const { statusCode } = res
+  if (statusCode < 400)
+    return
+
+  const { originalUrl, method, query } = req
+  const { body } = res.req // res.req :wat:
+
+  const errorMsg = body.error || ''
+  const message = `Response ${originalUrl} failed with status code ${statusCode} - ${errorMsg}`
+  logger.info({ originalUrl, body, method, query, message })
+  Sentry.withScope((scope) => {
+    scope.setUser(req.user ? req.user.get({ plain: true }) : null)
+    scope.setExtras({
+      originalUrl, body, method, query
+    })
+    Sentry.captureMessage(message)
+  })
+}
+
+
 const requestLogger = (req, res, next) => {
   logger.info(`Method: ${req.method}`)
   logger.info(`Path: ${req.path}`)
@@ -108,5 +130,6 @@ module.exports = {
   checkGrader,
   checkAdmin,
   checkIdMatch,
-  currentUser
+  currentUser,
+  errorMiddleware
 }

@@ -106,18 +106,21 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         data: state.data.filter((e) => e.id != action.response.id),
         pending: false,
+        singleBatchPending: false,
         error: false
       }
     case 'SIS_DELETE_SINGLE_ENTRY_ATTEMPT':
       return {
         ...state,
-        pending: true,
+        pending: false,
+        singleBatchPending: true,
         error: false
       }
     case 'SIS_DELETE_SINGLE_ENTRY_FAILURE':
       return {
         ...state,
         pending: false,
+        singleBatchPending: false,
         error: true
       }
     case 'SIS_DELETE_BATCH_SUCCESS':
@@ -143,7 +146,8 @@ export default (state = { data: [], openAccordions: [] }, action) => {
     case 'SIS_POST_ENTRIES_TO_SIS_ATTEMPT':
       return {
         ...state,
-        pending: true,
+        singleBatchPending: true,
+        pending: false,
         error: false
       }
     case 'SIS_POST_ENTRIES_TO_SIS_FAILURE': {
@@ -158,6 +162,7 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         data,
         pending: false,
+        singleBatchPending: false,
         error: true
       }
     }
@@ -169,9 +174,17 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         data,
         pending: false,
+        singleBatchPending: false,
         error: false
       }
     }
+    case 'SIS_REFRESH_BATCH_STATUS_ATTEMPT':
+      return {
+        ...state,
+        pending: false,
+        singleBatchPending: true,
+        error: false
+      }
     case 'SIS_REFRESH_BATCH_STATUS_SUCCESS': {
       const updatedIds = action.response.map(({ id }) => id)
       const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
@@ -180,6 +193,7 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         data,
         pending: false,
+        singleBatchPending: false,
         error: false
       }
     }
@@ -187,6 +201,7 @@ export default (state = { data: [], openAccordions: [] }, action) => {
       return {
         ...state,
         pending: false,
+        singleBatchPending: false,
         error: true
       }
     case 'SIS_REFRESH_ENROLLMENTS_ATTEMPT':

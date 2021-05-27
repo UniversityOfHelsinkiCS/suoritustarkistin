@@ -7,6 +7,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { advancedFound } = require('../utils/sisEarlierCompletions')
 const { OLD_BAI_CODE, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
+// const { getTestRegistrations, getTestCompletions } = require('../utils/testdataForMoocScripts')
 
 const processBaiAdvancedEntries = async ({
   job,
@@ -42,7 +43,6 @@ const processBaiAdvancedEntries = async ({
     const registrations = await getRegistrations(course.courseCode)
     const rawCompletions = await getCompletions(job.slug || course.courseCode)
 
-    // If a completion with the same ID is found in Suotar, it can be instantly ignored
     const completions = rawCompletions.filter((completion) => {
       if (!completion.tier === Number(3)) return false
 
@@ -51,6 +51,9 @@ const processBaiAdvancedEntries = async ({
           credit.completionId === completion.id ||
           credit.moocId === completion.user_upstream_id
       )
+
+      const previousIntermediateCredit = previousCredits.filter((credit) => credit.tier === 2)
+      const previousAdvancedCredit = previousCredits.filter((credit) => credit.tier === 3)
 
       const previousAdvancedEntries = advancedRawEntries.filter(
         (entry) =>
@@ -64,7 +67,11 @@ const processBaiAdvancedEntries = async ({
           entry.moocUserId === completion.user_upstream_id
       )
 
-      return (previousIntermediateEntries.length !== 0 && previousAdvancedEntries.length === 0 && previousCredits.length === 0)
+      return (
+        (previousIntermediateEntries.length !== 0 || previousIntermediateCredit.length !== 0)
+        && previousAdvancedEntries.length === 0
+        && previousAdvancedCredit.length === 0
+      )
     })
 
     const oldBaiPairs = registrations.reduce((pairs, registration) => {

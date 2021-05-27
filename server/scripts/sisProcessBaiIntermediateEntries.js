@@ -7,6 +7,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const { earlierBaiCompletionFound } = require('../utils/sisEarlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { OLD_BAI_CODE } = require('@root/utils/validators')
+// const { getTestCompletions, getTestRegistrations } = require('../utils/testdataForMoocScripts')
 
 const processBaiIntermediateEntries = async ({
   job,
@@ -34,12 +35,12 @@ const processBaiIntermediateEntries = async ({
     })
 
     const registrations = await getRegistrations(course.courseCode)
-    const rawCompletions = await getCompletions(job.slug || course.courseCode) // Change this, depending on the mooc-slug / course code
+    const rawCompletions = await getCompletions(job.slug || course.courseCode)
 
     // If a completion with same or more credits if found, the new 
     // completion won't replace it
     const completions = rawCompletions.filter((completion) => {
-      if (!Number(completion.tier) === 2 && !Number(completion.tier === 3)) return false 
+      if (Number(completion.tier) <= 1) return false 
 
       const previousCredits = rawCredits.filter(
         (credit) =>
@@ -55,7 +56,7 @@ const processBaiIntermediateEntries = async ({
       return (previousCredits.length === 0 && previousEntries.length === 0)
     })
 
-    const courseStudentPairs = registrations.reduce((pairs, registration) => {
+    const intermediateStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
       } else {
@@ -63,7 +64,7 @@ const processBaiIntermediateEntries = async ({
       }
     }, [])
 
-    const oldCourseStudentPairs = registrations.reduce((pairs, registration) => {
+    const oldBaiCourseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: oldBaiCourse.courseCode, studentNumber: registration.onro })
       } else {
@@ -71,8 +72,9 @@ const processBaiIntermediateEntries = async ({
       }
     }, [])
 
-    const allCourseStudentPairs = courseStudentPairs.concat(oldCourseStudentPairs)
-    const earlierAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(allCourseStudentPairs)
+    const intermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(intermediateStudentPairs)
+    const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiCourseStudentPairs)
+    const earlierAttainments = intermediateAttainments.concat(oldBaiAttainments)
 
     const batchId = `${course.courseCode}-${moment().format(
       'DD.MM.YY-HHmmss'
@@ -90,6 +92,7 @@ const processBaiIntermediateEntries = async ({
         )
         if (registration && registration.onro) {
           if (await earlierBaiCompletionFound(earlierAttainments, registration.onro)) {
+            logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
             return matches
           } else {
             return matches.concat({

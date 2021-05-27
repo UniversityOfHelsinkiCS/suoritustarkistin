@@ -62,6 +62,8 @@ const processMoocEntries = async ({
       }
     }, [])
 
+    logger.info({ message: `Found ${courseStudentPairs.length} students with no earlier completion in Suotar database` })
+
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
     const batchId = `${course.courseCode}-${moment().format(

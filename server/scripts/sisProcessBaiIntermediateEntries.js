@@ -39,6 +39,8 @@ const processBaiIntermediateEntries = async ({
     // If a completion with same or more credits if found, the new 
     // completion won't replace it
     const completions = rawCompletions.filter((completion) => {
+      if (!Number(completion.tier) === 2 && !Number(completion.tier === 3)) return false 
+
       const previousCredits = rawCredits.filter(
         (credit) =>
           credit.completionId === completion.id ||
@@ -94,7 +96,7 @@ const processBaiIntermediateEntries = async ({
               studentNumber: registration.onro,
               batchId: batchId,
               grade: "Hyv.",
-              credits: completion.credits, // Or possibly 1, depending on how the mooc-endpoint is created
+              credits: 1,
               language: 'en',
               attainmentDate: completion.completion_date || date,
               graderId: grader.id,

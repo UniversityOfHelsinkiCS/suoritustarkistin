@@ -4,7 +4,7 @@ const sendSentryMessage = (title, user, extras) => Sentry.withScope((scope) => {
   if (user)
     scope.setUser(user.get ? user.get({ plain: true }) : user)
   if (extras)
-    scope.setExtras({ ...extras })
+    scope.setExtras(JSON.stringify(extras))
   Sentry.captureMessage(title)
 })
 

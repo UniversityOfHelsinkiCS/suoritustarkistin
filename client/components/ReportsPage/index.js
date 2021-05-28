@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import RawReports from 'Components/ReportsPage/RawReports'
 import Reports from 'Components/ReportsPage/Reports'
@@ -9,12 +9,15 @@ import {
 } from 'Utilities/redux/reportsReducer'
 import {
   sisGetAllReportsAction,
-  sisGetUsersReportsAction
+  sisGetUsersReportsAction,
+  openReport
 } from 'Utilities/redux/sisReportsReducer'
 import { Menu, Icon, Tab } from 'semantic-ui-react'
 import { getAllCoursesAction, getUsersCoursesAction } from '../../utils/redux/coursesReducer'
 
-export default () => {
+export default ({ match }) => {
+  const [activeTab, setActiveTab] = useState(0)
+  const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
   const reports = useSelector((state) => state.reports)
@@ -30,8 +33,24 @@ export default () => {
     }
   }, [user])
 
+  useEffect(() => {
+    if (match && match.params && loading && sisReports.data.length) {
+      const { activeBatch } = match.params
+      if (activeBatch) {
+        setLoading(false)
+        dispatch(openReport(activeBatch))
+        const isAutoReport = sisReports.data
+          .filter((r) => r.batchId === activeBatch)
+          .some((r) => !r.reporterId)
+        if (isAutoReport)
+          setActiveTab(1)
+      }
+    }
+  }, [match.params, sisReports.data, loading])
+
   const handleTabChange = (_, { activeIndex }) => {
     // Fetch old reports only if tab is opened
+    setActiveTab(activeIndex)
     if (user.adminMode && activeIndex > 2 && !reports.data.length)
       dispatch(getAllReportsAction())
   }
@@ -139,5 +158,5 @@ export default () => {
     ]
   }
 
-  return <Tab panes={panes} onTabChange={handleTabChange} />
+  return <Tab panes={panes} onTabChange={handleTabChange} activeIndex={activeTab} />
 }

@@ -1,6 +1,9 @@
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./sisProcessEntry')
+const sendEmail = require('../utils/sendEmail')
+const { newAutoReport } = require('../utils/emailFactory')
+const { sendSentryMessage } = require('@utils/sentry')
 
 const automatedAddToDb = async (matches, course, batchId) => {
   const transaction = await db.sequelize.transaction()
@@ -19,7 +22,7 @@ const automatedAddToDb = async (matches, course, batchId) => {
     })
     const checkImprovements = false
     const [failed, success] = await processEntries(newRawEntries, checkImprovements, true)
-  
+
     if (failed.length) {
       logger.info({ message: `${failed.length} entries failed` })
       for (const failedEntry of failed) {
@@ -31,11 +34,21 @@ const automatedAddToDb = async (matches, course, batchId) => {
         })
       }
     }
-  
+
     if (success && success.length) {
       await db.entries.bulkCreate(success, { transaction })
       logger.info({ message: `${success.length} new entries created`, amount: success.length })
-      transaction.commit()
+      await transaction.commit()
+      const unsent = await db.entries.getUnsentBatchCount()
+      sendEmail({
+        subject: 'Uusia automaattisesti luotuja suorituksia valmiina lähetettäväksi Sisuun!',
+        html: newAutoReport(success, unsent, course.courseCode,batchId),
+        attachments: [{
+          filename: 'suotar.png',
+          path: `${process.cwd()}/client/assets/suotar.png`,
+          cid: 'toskasuotarlogoustcid'
+        }]
+      })
       return { message: "success" }
     }
 
@@ -50,6 +63,7 @@ const automatedAddToDb = async (matches, course, batchId) => {
       }
     })
     logger.error(`Error processing new completions: ${error.message}`)
+    sendSentryMessage(`Error processing new completions: ${error.message}`, null, error)
     return { message: `Error processing new completions: ${error.message}` }
   }
 }

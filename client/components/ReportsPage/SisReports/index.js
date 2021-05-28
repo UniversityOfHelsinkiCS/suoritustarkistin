@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -139,23 +139,13 @@ const title = (batch) => {
   )
 }
 
-export default withRouter(({ reports, user, match }) => {
-  const [loading, setLoading] = useState(true)
+export default withRouter(({ reports, user }) => {
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const batchLoading = useSelector((state) => state.sisReports.batchLoading)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false, search: '' })
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    if (match && reports.length) {
-      const { activeBatch } = match.params
-      if (activeBatch && loading) {
-        dispatch(openReport(activeBatch))
-        setLoading(false)
-      }
-    }
-  }, [match, reports])
 
   if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
 

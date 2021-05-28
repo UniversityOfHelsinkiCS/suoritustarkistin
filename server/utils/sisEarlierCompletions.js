@@ -61,15 +61,18 @@ const intermediateFound = (allEarlierAttainments, studentNumber) => {
   return false
 }
 
-const advancedFound = (allEarlierAttainments, studentNumber) => {
-  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
-  const earlierAttainments = student ? student.attainments : undefined
-
-  // No earlier completions for Advanced course, credit can be given
-  if (!earlierAttainments) return false
+const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber) => {
+  const advancedStudent = advancedAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierAdvancedAttainments = advancedStudent ? advancedStudent.attainments : undefined
 
   // Earlier completion for Advanced course, no credit can be given
-  if (earlierAttainments.some((a) => a.grade.passed && a.credits >= 1)) return true
+  if (earlierAdvancedAttainments && earlierAdvancedAttainments.some((a) => a.grade.passed && a.credits >= 1)) return true
+
+  const baiStudent = oldBaiAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierBaiAttainments = baiStudent ? baiStudent.attainments : undefined
+
+  // Earlier 2 credit completion for old Building AI -course, no new credits can be given
+  if (earlierBaiAttainments && earlierBaiAttainments.some((a) => a.grade.passed && a.credits >= 2)) return true
 
   return false
 }

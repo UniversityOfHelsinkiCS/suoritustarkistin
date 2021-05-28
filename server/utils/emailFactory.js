@@ -127,7 +127,7 @@ const Template = (content, title) => `
 </html>
 `
 
-const newReport = (amount, unsentAmount, courseCode, batchId) => Template(
+const ReportTemplate = (title, amount, unsentAmount, courseCode, batchId) => Template(
   `
 <tr>
   <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
@@ -158,7 +158,11 @@ const newReport = (amount, unsentAmount, courseCode, batchId) => Template(
     </table>
   </td>
 </tr>
-`, `Uusia suorituksia kurssille ${courseCode}!`)
+`, title)
+
+const newReport = (amount, unsentAmount, courseCode, batchId) => ReportTemplate(`Uusia suorituksia kurssille ${courseCode}!`, amount, unsentAmount, courseCode, batchId)
+
+const newAutoReport = (amount, unsentAmount, courseCode, batchId) => ReportTemplate(`Uusia automaattisesti luotuja suorituksia kurssille ${courseCode}!`, amount, unsentAmount, courseCode, batchId)
 
 const newLimboReport = (amount, batchId, unsentAmount) => Template(
   `
@@ -253,4 +257,4 @@ const newUserForAdmin = (name, email) => Template(`
   </td>
 </tr>`, 'New user in Suotar 👀')
 
-module.exports = { newReport, newUserForAdmin, forNewUser, newLimboReport }
+module.exports = { newReport, newUserForAdmin, forNewUser, newLimboReport, newAutoReport }

@@ -73,6 +73,7 @@ async function resolveUser(formData) {
  */
 const getEarlierAttainments = async (data) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
+  if (!data) return []
   let allData = []
   try {
     const chunks = _.chunk(data, 50)
@@ -83,7 +84,7 @@ const getEarlierAttainments = async (data) => {
     return allData
   } catch (e) {
     if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error(e.toString())
+    throw new Error("Error fetching earlier attainments from importer")
   }
 }
 
@@ -92,7 +93,8 @@ const getEarlierAttainments = async (data) => {
  * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads. 
  */
 const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
-  logger.info({ message: `Fetching earlier attainments from importer` })
+  logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
+  if (!data) return []
   let allData = []
   try {
     const chunks = _.chunk(data, 50)
@@ -103,7 +105,7 @@ const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
     return allData
   } catch (e) {
     if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error(e.toString())
+    throw new Error("Error fetching earlier attainments from importer")
   }
 }
 

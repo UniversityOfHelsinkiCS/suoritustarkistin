@@ -5,8 +5,9 @@ const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { intermediateFound, advancedFound } = require('../utils/sisEarlierCompletions')
+const { advancedFound } = require('../utils/sisEarlierCompletions')
 const { OLD_BAI_CODE, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
+// const { getTestRegistrations, getTestCompletions } = require('../utils/testdataForMoocScripts')
 
 const processBaiAdvancedEntries = async ({
   job,
@@ -14,49 +15,69 @@ const processBaiAdvancedEntries = async ({
   grader
 }) => {
   try {
-    const oldBaiCourse = await db.courses.findOne({
+    const intermediateCourse = await db.courses.findOne({
       where: {
-        courseCode: OLD_BAI_CODE
+        courseCode: BAI_INTERMEDIATE_CODE
       }
     })
 
     const rawCredits = await db.credits.findAll({
       where: {
-        courseId: [course.courseCode, OLD_BAI_CODE]
+        courseId: OLD_BAI_CODE
       },
       raw: true
     })
 
-    const rawEntries = await db.raw_entries.findAll({ 
+    const advancedRawEntries = await db.raw_entries.findAll({ 
       where: {
-        courseId: [course.id, oldBaiCourse.id]
+        courseId: course.id
+      }
+    })
+    
+    const intermediateRawEntries = await db.raw_entries.findAll({
+      where: {
+        courseId: intermediateCourse.id
       }
     })
 
     const registrations = await getRegistrations(course.courseCode)
-    const rawCompletions = await getCompletions(job.slug || course.courseCode) // Change this, depending on the mooc-slug / course code
+    const rawCompletions = await getCompletions(job.slug || course.courseCode)
 
-    // If a completion with the same ID is found in Suotar, it can be instantly ignored
     const completions = rawCompletions.filter((completion) => {
+      if (!completion.tier === Number(3)) return false
+
       const previousCredits = rawCredits.filter(
         (credit) =>
           credit.completionId === completion.id ||
           credit.moocId === completion.user_upstream_id
       )
-      const previousEntries = rawEntries.filter(
+
+      const previousIntermediateCredit = previousCredits.filter((credit) => credit.tier === 2)
+      const previousAdvancedCredit = previousCredits.filter((credit) => credit.tier === 3)
+
+      const previousAdvancedEntries = advancedRawEntries.filter(
         (entry) =>
           entry.moocCompletionId === completion.id ||
           entry.moocUserId === completion.user_upstream_id
       )
 
-      return (previousCredits.length === 0 && previousEntries.length === 0)
+      const previousIntermediateEntries = intermediateRawEntries.filter(
+        (entry) =>
+          entry.moocCompletionId === completion.id ||
+          entry.moocUserId === completion.user_upstream_id
+      )
+
+      return (
+        (previousIntermediateEntries.length !== 0 || previousIntermediateCredit.length !== 0)
+        && previousAdvancedEntries.length === 0
+        && previousAdvancedCredit.length === 0
+      )
     })
 
-    const intermediatePairs = registrations.reduce((pairs, registration) => {
+    const oldBaiPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat(
           { courseCode: OLD_BAI_CODE, studentNumber: registration.onro },
-          { courseCode: BAI_INTERMEDIATE_CODE, studentNumber: registration.onro }
         )
       } else {
         return pairs
@@ -71,7 +92,7 @@ const processBaiAdvancedEntries = async ({
       }
     }, [])
 
-    const intermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(intermediatePairs)
+    const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiPairs)
     const advancedAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(advancedPairs)
 
     const batchId = `${course.courseCode}-${moment().format(
@@ -89,15 +110,12 @@ const processBaiAdvancedEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-          if (
-            await intermediateFound(intermediateAttainments, registration.onro) 
-            && await !advancedFound(advancedAttainments, registration.onro)
-          ) {
+          if (await !advancedFound(advancedAttainments, oldBaiAttainments, registration.onro)) {
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
               grade: "Hyv.",
-              credits: completion.credits, // Or possibly 1, depending on how the mooc-endpoint is created
+              credits: 1,
               language: 'en',
               attainmentDate: completion.completion_date || date,
               graderId: grader.id,

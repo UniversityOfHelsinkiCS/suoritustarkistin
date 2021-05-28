@@ -44,7 +44,7 @@ workflows:
             - cypress/run
           image: $DOCKER_USER/$CIRCLE_PROJECT_REPONAME
           tag: 'staging'
-          extra_build_args: '--build-arg BASE_PATH=/suoritustarkistin/ --build-arg NODE_ENV=staging'
+          extra_build_args: '--build-arg BASE_PATH=/staging/suoritustarkistin/ --build-arg NODE_ENV=staging'
           after_build:
             - run:
                 name: Notify

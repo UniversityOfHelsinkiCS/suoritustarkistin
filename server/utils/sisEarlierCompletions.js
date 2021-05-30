@@ -1,21 +1,45 @@
+const moment = require("moment")
+
 /**
  * Return true if given grade is valid for student. That is, the student does not
  * already have a higher grade for the course, or for it's substitutions.
 **/
-const isImprovedGrade = (allEarlierAttainments, studentNumber, grade) => {
+const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, newDate) => {
   if (!allEarlierAttainments) return true
   const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
   const earlierAttainments = student ? student.attainments : undefined
   if (!earlierAttainments) return true
 
+  const formattedDate = moment(newDate).format('YYYY-MM-DD')
+
   if ([0,1,2,3,4,5].includes(Number(grade))) {
-    const existingBetterGrade = earlierAttainments.some((attainment) => attainment.grade.numericCorrespondence >= Number(grade))
-    if (existingBetterGrade) return false
+    // If the grade is better, no matter the date, the credits are given
+    const existingBetterGrade = earlierAttainments.some((attainment) => attainment.grade.numericCorrespondence > Number(grade))
+
+    // If the grade is the same, but date is older than some other attainment, no new credits are given
+    const existingNewerDate = earlierAttainments.some((attainment) => {
+      return attainment.grade.numericCorrespondence === Number(grade) && (moment(attainment.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
+    })
+    let newerFailed = false
+
+    // If the grade is 0, there is no numeric correspondence, so checking needs to be done with the passed-attribute
+    if (Number(grade) === 0) {
+      newerFailed = earlierAttainments.some((attainment) => !attainment.grade.passed && (moment(attainment.attainmentDate).format('YYYY-MM-DD') >= formattedDate))
+    }
+    if (existingBetterGrade || existingNewerDate || newerFailed) return false
   }
 
   if (['Hyl.', 'Hyv.'].includes(grade)) {
-    const existingPassedAttainment = earlierAttainments.some((attainment) => attainment.grade.passed)
-    if (existingPassedAttainment) return false
+    // If the grade is the same, but date is older than some other attainment, no new credits are given
+    const existingPassedAttainment = earlierAttainments.some((attainment) => {
+      return attainment.grade.passed && (moment(attainment.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
+    })
+
+    let newerFailed = false
+    if (grade === "Hyl.") {
+      newerFailed = earlierAttainments.some((attainment) => !attainment.grade.passed && (moment(attainment.attainmentDate).format('YYYY-MM-DD') >= formattedDate))
+    }
+    if (existingPassedAttainment || newerFailed) return false
   }
 
   return true

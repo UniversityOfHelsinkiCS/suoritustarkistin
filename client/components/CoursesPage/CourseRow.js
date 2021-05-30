@@ -25,18 +25,13 @@ export default ({ course, graders }) => {
       <Grid.Column width={2}>{course.courseCode}</Grid.Column>
       <Grid.Column width={1}>{course.language}</Grid.Column>
       <Grid.Column width={1}>{course.credits}</Grid.Column>
-      <Grid.Column width={3}>{getGradersNames()}</Grid.Column>
-      <Grid.Column textAlign="center" width={2}>
-        {course.isMooc ? (
-          <Icon name="check" color="green" size="large" />
-        ) : null}
-      </Grid.Column>
+      <Grid.Column width={4}>{getGradersNames()}</Grid.Column>
       <Grid.Column textAlign="center" width={2}>
         {course.autoSeparate ? (
           <Icon name="check" color="green" size="large" />
         ) : null}
       </Grid.Column>
-      <Grid.Column width={2}>
+      <Grid.Column width={3}>
         <EditCourse course={course} />
         <Button
           color="red"

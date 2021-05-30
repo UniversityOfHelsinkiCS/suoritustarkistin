@@ -26,16 +26,13 @@ export default () => {
           <Grid.Column width={1}>
             <Header as="h4">Credit amount</Header>
           </Grid.Column>
-          <Grid.Column width={3}>
+          <Grid.Column width={4}>
             <Header as="h4">Graders</Header>
-          </Grid.Column>
-          <Grid.Column width={2}>
-            <Header as="h4">Email magic</Header>
           </Grid.Column>
           <Grid.Column width={2}>
             <Header as="h4">Combo course</Header>
           </Grid.Column>
-          <Grid.Column width={2} />
+          <Grid.Column width={3} />
         </Grid.Row>
         {_.sortBy(courses, 'name').map((c) => (
           <CourseRow course={c} graders={graders} key={c.id} />

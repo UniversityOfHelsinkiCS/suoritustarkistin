@@ -58,6 +58,10 @@ const processKurkiEntries = async ({
         const language = selectLanguage(completion, course)
 
         if (completion && completion.studentNumber) {
+          if (completion.grade === "-") {
+            logger.info({ message: `Student ${completion.studentNumber} did not finish the course and has grade -`})
+            return matches
+          }
           if (!isImprovedGrade(earlierAttainments, completion.studentNumber, completion.grade, completion.courseFinishDate)) {
             logger.info({ message: `Student ${completion.studentNumber} already has a higher grade for the course`})
             return matches

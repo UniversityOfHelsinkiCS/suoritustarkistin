@@ -30,7 +30,7 @@ const TableColumns = ({ allowDelete }) => (
       <Table.HeaderCell>Course name</Table.HeaderCell>
       <Table.HeaderCell>Student number</Table.HeaderCell>
       <Table.HeaderCell>Credits</Table.HeaderCell>
-      <Table.HeaderCell>Course Unit</Table.HeaderCell>
+      <Table.HeaderCell colSpan='2'>Course Unit</Table.HeaderCell>
       <Table.HeaderCell>Student ID</Table.HeaderCell>
       <Table.HeaderCell>Completion date</Table.HeaderCell>
       <Table.HeaderCell>Language</Table.HeaderCell>

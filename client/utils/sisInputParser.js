@@ -26,7 +26,8 @@ const formatDate = (date) => {
   if (sisIsDateObject(date) && sisIsValidDate(date)) return date
   if (!sisIsDateObject(date) && isValidOodiDate(date)) {
     const parts = date.split('.')
-    const newDay = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
+    // Use 12 PM to avoid off by one day -errors in frontend
+    const newDay = new Date(parts[2], Number(parts[1])-1, parts[0], 12)
     return newDay
   }
   return date.trim()

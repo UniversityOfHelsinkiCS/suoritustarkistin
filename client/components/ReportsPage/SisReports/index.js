@@ -60,7 +60,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
       )
     })
 
-  const ViewAttainmentsInSisu = ({ rawEntry }) => rawEntry.batchId.startsWith("limbo")
+  const ViewAttainmentsInSisu = ({ rawEntry }) => !rawEntry.batchId.startsWith("limbo")
     ? <a href={getCourseUnitRealisationSisuUrl(rawEntry.entry.courseUnitRealisationId)} target="_blank" rel="noopener noreferrer">
       <Button icon>
         <Icon name="external" /> View attainments in Sisu

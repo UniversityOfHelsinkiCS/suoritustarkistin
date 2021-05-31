@@ -1,6 +1,6 @@
 const SUOTAR_URL = process.env.NODE_ENV === 'production'
-  ? 'https://study.cs.helsinki.fi/suoritustarkistin'
-  : 'https://opetushallinto.cs.helsinki.fi/suoritustarkistin'
+  ? 'https://opetushallinto.cs.helsinki.fi/suoritustarkistin'
+  : 'https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin'
 
 const Template = (content, title) => `
 <!doctype html>
@@ -135,7 +135,7 @@ const ReportTemplate = (title, amount, unsentAmount, courseCode, batchId) => Tem
       <tr>
         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
           <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><b>Uusia suorituksia kurssille ${courseCode}!</b></p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Uusi raportti luotu kurssille ${courseCode} manuaalisesti syötetystä datasta. Raportti sisältää ${amount > 1 ? `${amount} suoritusta` : 'yhden suorituksen'}.</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Uusi raportti luotu kurssille ${courseCode}, raportti sisältää ${amount > 1 ? `${amount} suoritusta` : 'yhden suorituksen'}.</p>
           <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
             <tbody>
               <tr>

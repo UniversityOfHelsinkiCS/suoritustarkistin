@@ -147,7 +147,7 @@ const title = (batch) => {
 export default withRouter(({ reports, user }) => {
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
-  const batchLoading = useSelector((state) => state.sisReports.batchLoading)
+  const batchLoading = useSelector((state) => state.sisReports.singleBatchPending)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false, search: '' })
   const dispatch = useDispatch()
 

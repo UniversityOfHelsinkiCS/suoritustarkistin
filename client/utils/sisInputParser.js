@@ -23,7 +23,11 @@ const markDuplicates = (data) => {
 
 const formatDate = (date) => {
   if (!date) return undefined
-  if (sisIsDateObject(date) && sisIsValidDate(date)) return date
+  if (sisIsDateObject(date) && sisIsValidDate(date)) {
+    // Use 12 PM to avoid off by one day -errors in frontend
+    const newDay = new Date(date.getYear(), date.getMonth()+1, date.getDate(), 12)
+    return newDay
+  }
   if (!sisIsDateObject(date) && isValidOodiDate(date)) {
     const parts = date.split('.')
     // Use 12 PM to avoid off by one day -errors in frontend

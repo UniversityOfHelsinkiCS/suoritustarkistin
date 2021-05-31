@@ -18,7 +18,7 @@ const addRawEntries = async (req, res) => {
     }
 
     const { courseId, graderId, date, data } = req.body
-    if (!courseId || !graderId || !date || !data) {
+    if (!courseId || !graderId || !data) {
       logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
       return res.status(400).json({ error: 'invalid form values' })
     }
@@ -29,7 +29,7 @@ const addRawEntries = async (req, res) => {
       graderId,
       reporterId: req.user.id,
       courseId,
-      date,
+      date: date ? date: new Date(),
       data
     }, transaction)
 

@@ -64,7 +64,7 @@ export default () => {
     setShowingDate(date)
     // Send the date as a mid-day object to avoid one day off -errors
     const newDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12)
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, date: newDay }))
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, date: newDay ? newDay : new Date()}))
   }
 
   const handleCourseSelection = (e, data) => {

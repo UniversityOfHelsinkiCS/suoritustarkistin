@@ -161,13 +161,13 @@ const sisIsValidLanguage = (language) => {
   return (SIS_LANGUAGES.includes(language))
 }
 
-const sisIsValidRow = (row) => {
+const sisIsValidRow = (row, date) => {
   if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
   if (!row.grade || (row.grade && !sisIsValidGrade(row.grade))) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
   if (row.language && !sisIsValidLanguage(row.language)) return false
-  if (row.attainmentDate && !sisIsValidDate(row.attainmentDate)) return false
+  if ((row.attainmentDate && !sisIsValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !sisIsValidDate(date))) return false
   return true
 }
 
@@ -175,10 +175,9 @@ const sisAreValidNewRawEntries = (rawEntries) => {
   if (!rawEntries) return false
   if (!rawEntries.graderId || !rawEntries.courseId) return false
   if (!rawEntries.data) return false
-  if (!sisIsValidDate(rawEntries.date)) return false
   let allRowsValid = true
   rawEntries.data.forEach((row) => {
-    if (!sisIsValidRow(row)) {
+    if (!sisIsValidRow(row, rawEntries.date)) {
       allRowsValid = false
     }
   })

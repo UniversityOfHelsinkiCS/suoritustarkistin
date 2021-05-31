@@ -5,7 +5,7 @@ const sendEmail = require('../utils/sendEmail')
 const { newAutoReport } = require('../utils/emailFactory')
 const { sendSentryMessage } = require('@utils/sentry')
 
-const automatedAddToDb = async (matches, course, batchId) => {
+const automatedAddToDb = async (matches, course, batchId, sendMail = true) => {
   const transaction = await db.sequelize.transaction()
 
   if (!matches.length) {
@@ -35,26 +35,30 @@ const automatedAddToDb = async (matches, course, batchId) => {
       }
     }
 
-    if (success && success.length) {
-      await db.entries.bulkCreate(success, { transaction })
-      logger.info({ message: `${success.length} new entries created`, amount: success.length })
-      await transaction.commit()
+    if (!success || !success.length) {
+      await transaction.rollback()
+      logger.info('Job run ended successfully, no new entries created')
+      return { message: "no new entries" }
+    }
+
+    await db.entries.bulkCreate(success, { transaction })
+    logger.info({ message: `${success.length} new entries created`, amount: success.length })
+    await transaction.commit()
+
+    if (sendMail) {
       const unsent = await db.entries.getUnsentBatchCount()
       sendEmail({
         subject: 'Uusia automaattisesti luotuja suorituksia valmiina lähetettäväksi Sisuun!',
-        html: newAutoReport(success, unsent, course.courseCode,batchId),
+        html: newAutoReport(success, unsent, course.courseCode, batchId),
         attachments: [{
           filename: 'suotar.png',
           path: `${process.cwd()}/client/assets/suotar.png`,
           cid: 'toskasuotarlogoustcid'
         }]
       })
-      return { message: "success" }
     }
 
-    await transaction.rollback()
-    logger.info('Job run ended successfully, no new entries created')
-    return { message: "no new entries" }
+    return { message: "success" }
   } catch (error) {
     await transaction.rollback()
     await db.raw_entries.destroy({

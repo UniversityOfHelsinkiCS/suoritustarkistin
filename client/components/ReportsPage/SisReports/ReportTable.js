@@ -15,12 +15,12 @@ const PLACEHOLDER_COURSE = {
 }
 
 export default ({ rows, courses, allowDelete }) => (
-  rows.length && (
+  rows.length ? (
     <Table className="sis-report-table">
       <TableColumns allowDelete={allowDelete} />
       <TableBody key={rows[0].batchId} rawEntries={rows} courses={courses} allowDelete={allowDelete} />
     </Table>
-  )
+  ) : null
 )
 
 const TableColumns = ({ allowDelete }) => (

@@ -1,4 +1,4 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -31,18 +31,22 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
   const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors)
   const entriesNotSentOrErroneous = report.filter(({ entry }) => entry.errors || !entry.sent)
 
-  const panels = [{
-    key: 'entries-without-errors',
-    title: 'Successfully sent entries',
-    content: (
-      <Accordion.Content>
-        <ReportTable
-          rows={entriesWithoutErrors}
-          courses={courses}
-          allowDelete={user.adminMode} />
-      </Accordion.Content>
-    )
-  }]
+  const panels = []
+
+  if (entriesWithoutErrors.length)
+    panels.push({
+      key: 'entries-without-errors',
+      title: 'Successfully sent entries',
+      content: (
+        <Accordion.Content>
+          <ReportTable
+            rows={entriesWithoutErrors}
+            courses={courses}
+            allowDelete={false} // Never allow delete for successfully sent entries
+          />
+        </Accordion.Content>
+      )
+    })
 
   if (reportContainsErrors)
     panels.unshift({
@@ -100,7 +104,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
                 .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
                 .map(({ entry }) => entry.id)
               } />
-            <DeleteBatchButton batchId={report[0].batchId} />
+            {!batchSent ? <DeleteBatchButton batchId={report[0].batchId} /> : null}
             <ViewAttainmentsInSisu rawEntry={report[0]} />
             <RefreshBatch report={report} />
           </>
@@ -113,7 +117,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
             ? <ReportTable
               rows={report}
               courses={courses}
-              allowDelete={user.adminMode}
+              allowDelete={user.adminMode && !batchSent}
             />
             : <Accordion.Accordion
               data-cy={`sis-entries-panel-${report[0].batchId}`}

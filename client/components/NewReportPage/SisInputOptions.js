@@ -40,7 +40,7 @@ const formatCoursesForSelection = (data) => {
 
 export default () => {
   const dispatch = useDispatch()
-  const [showingDate, setShowingDate] = useState(new Date())
+  const [showingDate, setShowingDate] = useState()
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)

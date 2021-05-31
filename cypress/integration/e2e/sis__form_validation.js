@@ -74,9 +74,6 @@ describe('SIS form validation', () => {
       // missing date
       cy.get('#sisDatePicker')
         .clear()
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
-      cy.get('#sisDatePicker')
-        .clear()
         .type('21.21.2021')
       cy.get('[data-cy=sis-create-report-button]').should('not.be.disabled')
     })  

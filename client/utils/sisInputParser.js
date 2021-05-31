@@ -32,6 +32,14 @@ const formatDate = (date) => {
   return date.trim()
 }
 
+const formatGrade = (grade) => {
+  if (!grade) return undefined
+  const trimmedGrade = grade.trim()
+  if (trimmedGrade === 'Hyv' || trimmedGrade === 'hyv' || trimmedGrade === 'hyv.') return 'Hyv.'
+  if (trimmedGrade === 'Hyl' || trimmedGrade === 'hyl' || trimmedGrade === 'hyl.') return 'Hyl.'
+  return trimmedGrade
+}
+
 export const parseCSV = (string) => {
 
   const addLeadingZero = (studentnumber) => {
@@ -44,7 +52,7 @@ export const parseCSV = (string) => {
     return {
       studentId: addLeadingZero(splitRow[0]).trim(),
       batchId: '',
-      grade: splitRow[1] && splitRow[1].trim(),
+      grade: formatGrade(splitRow[1]),
       credits: splitRow[2] && splitRow[2].trim(),
       language: splitRow[3] && splitRow[3].trim(),
       attainmentDate: formatDate(splitRow[4]),

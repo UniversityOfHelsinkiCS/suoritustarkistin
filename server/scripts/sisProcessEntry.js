@@ -69,7 +69,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
     const completionDate = moment(rawEntry.attainmentDate)
     const course = courses.find((c) => c.id === rawEntry.courseId)
     const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
-    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade)
+    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade, completionDate)
 
     if (!student) {
       failed.push({

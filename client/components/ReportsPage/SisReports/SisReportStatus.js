@@ -61,7 +61,7 @@ const SisReportStatus = ({ batch }) => {
   </p> : null
 
   return (
-    <div>
+    <div style={{ marginTop: "6px" }}>
       {batchStatus()}
       {getMissing()}
       {getReadyToSisu()}

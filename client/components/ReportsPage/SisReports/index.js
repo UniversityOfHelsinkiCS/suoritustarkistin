@@ -131,12 +131,13 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
 }
 
 const title = (batch) => {
-  const [course, date, time] = batch[0].batchId.split('-')
+  const [courseCode, date, time] = batch[0].batchId.split('-')
+  const courseName = batch[0].course ? batch[0].course.name : ''
   const titleString = batch[0].batchId.startsWith("limbo")
     ? batch[0].batchId
-    : `${course} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`
+    : `${courseName} - ${courseCode} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`
   return (
-    <Accordion.Title data-cy={`sis-report-${course}`}>
+    <Accordion.Title data-cy={`sis-report-${courseCode}`}>
       {titleString}
       <SisReportStatus batch={batch} />
     </Accordion.Title>

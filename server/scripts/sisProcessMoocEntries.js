@@ -88,7 +88,7 @@ const processMoocEntries = async ({
         )
 
         if (registration && registration.onro) {
-          if (completion.grade && !isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade || "Hyv.")) {
             return matches
           } else {
             return matches.concat({

@@ -63,7 +63,10 @@ export default () => {
   const handleDateSelection = (date) => {
     setShowingDate(date)
     // Send the date as a mid-day object to avoid one day off -errors
-    const newDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12)
+    let newDay = null
+    if (date) {
+      newDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12)
+    }
     dispatch(setNewRawEntriesAction({ ...newRawEntries, date: newDay ? newDay : new Date()}))
   }
 

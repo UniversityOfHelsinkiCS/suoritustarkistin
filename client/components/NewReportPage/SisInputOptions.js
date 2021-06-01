@@ -40,7 +40,7 @@ const formatCoursesForSelection = (data) => {
 
 export default () => {
   const dispatch = useDispatch()
-  const [showingDate, setShowingDate] = useState(new Date())
+  const [showingDate, setShowingDate] = useState()
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
@@ -62,7 +62,12 @@ export default () => {
 
   const handleDateSelection = (date) => {
     setShowingDate(date)
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, date }))
+    // Send the date as a mid-day object to avoid one day off -errors
+    let newDay = null
+    if (date) {
+      newDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12)
+    }
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, date: newDay ? newDay : new Date()}))
   }
 
   const handleCourseSelection = (e, data) => {

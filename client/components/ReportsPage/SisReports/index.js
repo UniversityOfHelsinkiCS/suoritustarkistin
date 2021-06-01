@@ -1,4 +1,4 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -31,18 +31,22 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
   const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors)
   const entriesNotSentOrErroneous = report.filter(({ entry }) => entry.errors || !entry.sent)
 
-  const panels = [{
-    key: 'entries-without-errors',
-    title: 'Successfully sent entries',
-    content: (
-      <Accordion.Content>
-        <ReportTable
-          rows={entriesWithoutErrors}
-          courses={courses}
-          allowDelete={user.adminMode} />
-      </Accordion.Content>
-    )
-  }]
+  const panels = []
+
+  if (entriesWithoutErrors.length)
+    panels.push({
+      key: 'entries-without-errors',
+      title: 'Successfully sent entries',
+      content: (
+        <Accordion.Content>
+          <ReportTable
+            rows={entriesWithoutErrors}
+            courses={courses}
+            allowDelete={false} // Never allow delete for successfully sent entries
+          />
+        </Accordion.Content>
+      )
+    })
 
   if (reportContainsErrors)
     panels.unshift({
@@ -60,7 +64,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
       )
     })
 
-  const ViewAttainmentsInSisu = ({ rawEntry }) => rawEntry.batchId.startsWith("limbo")
+  const ViewAttainmentsInSisu = ({ rawEntry }) => !rawEntry.batchId.startsWith("limbo")
     ? <a href={getCourseUnitRealisationSisuUrl(rawEntry.entry.courseUnitRealisationId)} target="_blank" rel="noopener noreferrer">
       <Button icon>
         <Icon name="external" /> View attainments in Sisu
@@ -100,7 +104,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
                 .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
                 .map(({ entry }) => entry.id)
               } />
-            <DeleteBatchButton batchId={report[0].batchId} />
+            {!batchSent ? <DeleteBatchButton batchId={report[0].batchId} /> : null}
             <ViewAttainmentsInSisu rawEntry={report[0]} />
             <RefreshBatch report={report} />
           </>
@@ -113,7 +117,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
             ? <ReportTable
               rows={report}
               courses={courses}
-              allowDelete={user.adminMode}
+              allowDelete={user.adminMode && !batchSent}
             />
             : <Accordion.Accordion
               data-cy={`sis-entries-panel-${report[0].batchId}`}
@@ -127,12 +131,13 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
 }
 
 const title = (batch) => {
-  const [course, date, time] = batch[0].batchId.split('-')
+  const [courseCode, date, time] = batch[0].batchId.split('-')
+  const courseName = batch[0].course ? batch[0].course.name : ''
   const titleString = batch[0].batchId.startsWith("limbo")
     ? batch[0].batchId
-    : `${course} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`
+    : `${courseName} - ${courseCode} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`
   return (
-    <Accordion.Title data-cy={`sis-report-${course}`}>
+    <Accordion.Title data-cy={`sis-report-${courseCode}`}>
       {titleString}
       <SisReportStatus batch={batch} />
     </Accordion.Title>
@@ -142,7 +147,7 @@ const title = (batch) => {
 export default withRouter(({ reports, user }) => {
   const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
-  const batchLoading = useSelector((state) => state.sisReports.batchLoading)
+  const batchLoading = useSelector((state) => state.sisReports.singleBatchPending)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false, search: '' })
   const dispatch = useDispatch()
 

@@ -86,7 +86,7 @@ const processKurkiEntries = async ({
     )
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
   
-    let result = await automatedAddToDb(matches, course, batchId)
+    let result = await automatedAddToDb(matches, course, batchId, false)
 
     if (result.message === "success" && inProduction) {
       result = await postTransferredId(kurkiId)

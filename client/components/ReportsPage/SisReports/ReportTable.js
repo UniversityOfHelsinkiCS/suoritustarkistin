@@ -15,12 +15,12 @@ const PLACEHOLDER_COURSE = {
 }
 
 export default ({ rows, courses, allowDelete }) => (
-  rows.length && (
+  rows.length ? (
     <Table className="sis-report-table">
       <TableColumns allowDelete={allowDelete} />
       <TableBody key={rows[0].batchId} rawEntries={rows} courses={courses} allowDelete={allowDelete} />
     </Table>
-  )
+  ) : null
 )
 
 const TableColumns = ({ allowDelete }) => (
@@ -30,12 +30,7 @@ const TableColumns = ({ allowDelete }) => (
       <Table.HeaderCell>Course name</Table.HeaderCell>
       <Table.HeaderCell>Student number</Table.HeaderCell>
       <Table.HeaderCell>Credits</Table.HeaderCell>
-      <Table.HeaderCell
-        style={{ borderLeft: "2px solid gray" }}
-        colSpan='2'
-      >
-        Course Unit
-      </Table.HeaderCell>
+      <Table.HeaderCell colSpan='2'>Course Unit</Table.HeaderCell>
       <Table.HeaderCell>Student ID</Table.HeaderCell>
       <Table.HeaderCell>Completion date</Table.HeaderCell>
       <Table.HeaderCell>Language</Table.HeaderCell>
@@ -103,7 +98,6 @@ const EntryCells = ({ entry }) => {
       <Table.Cell
         data-cy={`sis-report-courseUnitRealisationName-${entry.id}`}
         colSpan='2'
-        style={{ borderLeft: "2px solid gray" }}
       >
         <Accordion className="sis-report-table-accordion" >
           <Accordion.Title

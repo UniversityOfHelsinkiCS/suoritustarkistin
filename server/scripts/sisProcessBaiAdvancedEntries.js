@@ -110,7 +110,11 @@ const processBaiAdvancedEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-          if (await !advancedFound(advancedAttainments, oldBaiAttainments, registration.onro)) {
+          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro)) {
+            return matches
+          } else if (matches.some((c) => c.studentNumber === registration.onro)) {
+            return matches
+          } else {
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
@@ -123,9 +127,7 @@ const processBaiAdvancedEntries = async ({
               courseId: course.id,
               moocUserId: completion.user_upstream_id,
               moocCompletionId: completion.id
-            })            
-          } else {
-            return matches
+            })
           }
         } else {
           return matches

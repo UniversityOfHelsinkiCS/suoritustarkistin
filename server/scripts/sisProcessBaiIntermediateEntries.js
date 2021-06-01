@@ -93,6 +93,7 @@ const processBaiIntermediateEntries = async ({
         if (registration && registration.onro) {
           if (await earlierBaiCompletionFound(earlierAttainments, registration.onro)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
+          } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches
           } else {
             return matches.concat({

@@ -28,7 +28,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
 
   const batchSent = report.some(({ entry }) => entry.sent)
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
-  const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors)
+  const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors && entry.sent)
   const entriesNotSentOrErroneous = report.filter(({ entry }) => entry.errors || !entry.sent)
 
   const panels = []
@@ -113,7 +113,7 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
         {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 
         { // Display accordion only when batch contains sent entries or entries with errors
-          !batchSent && !reportContainsErrors
+          !batchSent
             ? <ReportTable
               rows={report}
               courses={courses}

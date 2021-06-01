@@ -75,7 +75,7 @@ const processMoocEntries = async ({
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
 
-        if (!sisIsValidGrade(completion.grade)) {
+        if (completion.grade && !sisIsValidGrade(completion.grade)) {
           return matches
         }
 
@@ -88,13 +88,13 @@ const processMoocEntries = async ({
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
+          if (completion.grade && !isImprovedGrade(earlierAttainments, registration.onro, completion.grade)) {
             return matches
           } else {
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: completion.grade,
+              grade: completion.grade || "Hyv.",
               credits: course.credits,
               language: language,
               attainmentDate: completion.completion_date || date,

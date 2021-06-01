@@ -49,7 +49,6 @@ describe('SIS form validation', () => {
         .clear()
         .type('12.7.2020')
   
-      cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
       cy.get('[data-cy=sisGraderSelection]')
         .click()
         .children()

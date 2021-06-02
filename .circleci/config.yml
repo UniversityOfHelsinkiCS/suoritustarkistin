@@ -29,7 +29,15 @@ jobs:
           sentry-cli releases set-commits --auto $SENTRY_RELEASE
           sentry-cli releases files $SENTRY_RELEASE upload /dist/main.js '~/main.js'
           sentry-cli releases finalize $SENTRY_RELEASE
-
+  notify:
+    docker:
+      - image: circleci/node:4.8.2
+    steps:
+      - run:
+          name: Notify
+          command: |
+            curl --silent -X POST -H 'Content-type: application/json' --data "{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Cypress tests failed :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, your tests failed on branch ${CIRCLE_BRANCH}."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_=${CIRCLE_BUILD_NUM}","alt_text":"cat failing"}}]}" ${SLACKBOT_URL}
+          when: on_fail    
 workflows:
   build-test-deploy:
     jobs:
@@ -45,6 +53,7 @@ workflows:
                 command: |
                   curl --silent -X POST -H 'Content-type: application/json' --data "{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Cypress tests failed :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, your tests failed on branch ${CIRCLE_BRANCH}."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_=${CIRCLE_BUILD_NUM}","alt_text":"cat failing"}}]}" ${SLACKBOT_URL}
                 when: on_fail
+      - notify
       - dockerhub/publish:
           requires:
             - cypress/run

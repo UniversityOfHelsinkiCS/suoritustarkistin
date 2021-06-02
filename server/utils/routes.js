@@ -22,10 +22,8 @@ const {
 const {
   addReport,
   getReportList,
-  getNewReportList,
   getReports,
   getUsersReports,
-  getSingleReport,
   deleteAllReports
 } = require('@controllers/reportController')
 const {
@@ -57,12 +55,13 @@ const {
   getCourseRegistrations
 } = require('@controllers/registrationController')
 const { login, logout } = require('@controllers/loginController')
+
 const {
-  notInProduction,
-  checkSuotarToken,
   checkAdmin,
-  checkIdMatch
-} = require('./middleware')
+  checkIdMatch,
+  notInProduction,
+  deleteSingleEntry
+} = require('./permissions')
 
 const router = Router()
 
@@ -101,13 +100,11 @@ router.get('/users/:id/reports', checkIdMatch, getUsersReports)
 router.get('/users/:id/sis_reports', checkIdMatch, sisGetUsersReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
-router.get('/reports/undownloaded', checkSuotarToken, getNewReportList)
-router.get('/reports/:id', checkSuotarToken, getSingleReport)
 router.post('/reports', addReport)
 router.get('/reports', checkAdmin, getReports)
 
 router.get('/sis_reports', checkAdmin, sisGetAllReports)
-router.delete('/sis_reports/:id', checkAdmin, sisDeleteSingleEntry)
+router.delete('/sis_reports/:id', deleteSingleEntry, sisDeleteSingleEntry)
 router.delete('/sis_reports/batch/:batchId', checkAdmin, sisDeleteBatch)
 router.post('/sis_raw_entries', addRawEntries)
 router.post('/entries_to_sis', checkAdmin, sendToSis)

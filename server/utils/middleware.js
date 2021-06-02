@@ -49,49 +49,6 @@ const currentUser = async (req, res, next) => {
   next()
 }
 
-const checkGrader = (req, res, next) => {
-  if (req.user.isGrader || req.user.isAdmin) {
-    next()
-  } else {
-    res.status(401).json({ error: 'Unauthorized access.' }).end()
-  }
-}
-
-const checkAdmin = (req, res, next) => {
-  if (req.user.isAdmin) {
-    next()
-  } else {
-    res.status(401).json({ error: 'Unauthorized access.' }).end()
-  }
-}
-
-const checkIdMatch = (req, res, next) => {
-  if (Number(req.params.id) === req.user.id) {
-    next()
-  } else {
-    res.status(401).json({ error: 'Unauthorized: User id mismatch.' }).end()
-  }
-}
-
-const checkSuotarToken = (req, res, next) => {
-  if (req.headers.authorization === process.env.SUOTAR_TOKEN) {
-    next()
-  } else {
-    return res.status(401).json({ error: 'Invalid token.' }).end()
-  }
-}
-
-const notInProduction = (req, res, next) => {
-  if (!inProduction) {
-    next()
-  } else {
-    logger.error(
-      `Test-only route (${req.method} ${req.url}) was requested while in production mode.`
-    )
-    return res.status(404).end()
-  }
-}
-
 const errorMiddleware = (req, res) => {
   const { statusCode } = res
   if (statusCode < 400)
@@ -123,13 +80,8 @@ const requestLogger = (req, res, next) => {
 }
 
 module.exports = {
-  checkSuotarToken,
-  notInProduction,
   requestLogger,
   parseUser,
-  checkGrader,
-  checkAdmin,
-  checkIdMatch,
   currentUser,
   errorMiddleware
 }

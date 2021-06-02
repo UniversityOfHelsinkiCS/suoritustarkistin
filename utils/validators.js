@@ -113,6 +113,11 @@ const areValidGraders = (graders) => {
   return true
 }
 
+const isValidGradeScale = (gradeScale) => {
+  if (gradeScale && !['sis-0-5', 'sis-hyl-hyv'].includes(gradeScale)) return false
+  return true
+}
+
 const isValidCourse = (course) => {
   if (course.autoSeparate && !isValidHYCourseCode(course.courseCode))
     return false
@@ -127,6 +132,7 @@ const isValidCourse = (course) => {
   if (!isValidLanguage(course.language)) return false
   if (!isValidCreditAmount(course.credits)) return false
   if (!areValidGraders(course.graders)) return false
+  if (!isValidGradeScale(course.gradeScale)) return false
   return true
 }
 

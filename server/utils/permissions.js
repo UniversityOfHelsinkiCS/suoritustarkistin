@@ -4,19 +4,19 @@ const db = require('../models/index')
 
 const checkGrader = (req, res, next) => permissionClass(
   req, res, next,
-  (req) => req.user.isGrader || req.user.isAdmin,
+  (req) => req.user && (req.user.isGrader || req.user.isAdmin),
   'Unauthorized access'
 )
 
 const checkAdmin = (req, res, next) => permissionClass(
   req, res, next,
-  (req) => req.user.isAdmin,
+  (req) => req.user && req.user.isAdmin,
   'Unauthorized access'
 )
 
 const checkIdMatch = (req, res, next) => permissionClass(
   req, res, next,
-  (req) => Number(req.params.id) === req.user.id,
+  (req) => req.user && Number(req.params.id) === req.user.id,
   'Unauthorized: User id mismatch'
 )
 

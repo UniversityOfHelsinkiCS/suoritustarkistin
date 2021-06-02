@@ -165,7 +165,7 @@ describe("Permissions", () => {
       url: 'api/sis_reports',
       failOnStatusCode: false
     }).then((response) => {
-      expect(response.status).to.eq(500)
+      expect(response.status).to.eq(401)
     })
   })
 
@@ -180,7 +180,7 @@ describe("Permissions", () => {
       url: 'api/sis_reports',
       failOnStatusCode: false
     }).then((response) => {
-      expect(response.status).to.eq(500)
+      expect(response.status).to.eq(401)
     })
   })
 

@@ -65,7 +65,7 @@ export default () => {
     // Send the date as a mid-day object to avoid one day off -errors
     let newDay = null
     if (date) {
-      newDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12)
+      newDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 6)
     }
     dispatch(setNewRawEntriesAction({ ...newRawEntries, date: newDay ? newDay : new Date()}))
   }

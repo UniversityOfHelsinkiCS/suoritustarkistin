@@ -133,6 +133,7 @@ const sendToSis = async (req, res) => {
     await api.post('suotar/', data)
     await updateSuccess(entryIds, senderId)
     logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length })
+    sendSentryMessage(`${data.length} entries sent successfully to Sisu!`, req.user)
   } catch (e) {
     status = 400
     const payload = JSON.stringify(data)
@@ -157,9 +158,11 @@ const sendToSis = async (req, res) => {
         await api.post('suotar/', payload)
         await updateSuccess(successEntries.map(({ id }) => id), senderId)
         logger.info({ message: 'All entries sent successfully to Sisu round two', successAmount: data.length })
+        sendSentryMessage(`${data.length} entries sent successfully to Sisu! (Round 2)`, req.user)
       } catch (e) {
         const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
         logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })
+        sendSentryMessage(`Sending entries to Sisu failed! (Round 2)`, req.user, { payload, errorMessage: err })
       }
     }
   }
@@ -213,18 +216,7 @@ const isValidSisuError = (response) => {
 
 const parseSisuErrors = ({ failingIds, violations }) => {
   if (!failingIds || !violations) return null
-  const identifiableViolations = failingIds.filter((id) => id !== "non-identifiable")
-  return identifiableViolations
-  // const errors = Array(identifiableViolations.length).fill(undefined)
-  // identifiableViolations
-  //   .forEach((id) => {
-  //     // path is like importActiveAttainments.attainments[1].personId
-  //     // where we want to obtain the index (attainments[index]) so we can
-  //     // specify which entry the violation is related to
-  //     const index = violations[id][0].path.split(".")[1].substr(-2, 1)
-  //     errors[index] = violations[id].map((violation) => JSON.stringify(violation))
-  //   })
-  // return errors
+  return failingIds.filter((id) => id !== "non-identifiable")
 }
 
 const writeErrorsToEntries = async ({ data }, senderId) => {

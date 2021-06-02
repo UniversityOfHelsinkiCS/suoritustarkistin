@@ -49,7 +49,7 @@ const automatedAddToDb = async (matches, course, batchId, sendMail = true) => {
       const unsent = await db.entries.getUnsentBatchCount()
       sendEmail({
         subject: 'Uusia automaattisesti luotuja suorituksia valmiina lähetettäväksi Sisuun!',
-        html: newAutoReport(success, unsent, course.courseCode, batchId),
+        html: newAutoReport(success.length, unsent, course.courseCode, batchId),
         attachments: [{
           filename: 'suotar.png',
           path: `${process.cwd()}/client/assets/suotar.png`,

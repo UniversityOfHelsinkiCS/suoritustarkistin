@@ -36,7 +36,12 @@ const addRawEntries = async (req, res) => {
     if (result.message === "success") {
       await transaction.commit()
       logger.info({ message: 'Report of new completions created successfully.' })
-      if (await shouldSendEmail(result.batchId)) {
+      const rawEntries = await db.raw_entries.findAll({
+        where: { batchId: result.batchId },
+        include: [{ model: db.entries, as: 'entry' }]
+      })
+      const withEnrollment = rawEntries.filter(({ entry }) => !entry.missingEnrolment).length
+      if (withEnrollment) {
         const unsent = await db.entries.getUnsentBatchCount()
         sendEmail({
           subject: `Uusia kurssisuorituksia: ${result.courseCode}`,
@@ -45,7 +50,7 @@ const addRawEntries = async (req, res) => {
             path: `${process.cwd()}/client/assets/suotar.png`,
             cid: 'toskasuotarlogoustcid'
           }],
-          html: newReport(result.success.length, unsent, result.courseCode, result.batchId)
+          html: newReport(withEnrollment, unsent, result.courseCode, result.batchId)
         })
       }
       return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment  })
@@ -57,14 +62,6 @@ const addRawEntries = async (req, res) => {
   } catch (error) {
     handleDatabaseError(res, error)
   }
-}
-
-async function shouldSendEmail(batchId) {
-  const rawEntries = await db.raw_entries.findAll({
-    where: { batchId },
-    include: [{ model: db.entries, as: 'entry' }]
-  })
-  return rawEntries.some(({ entry }) => !entry.missingEnrolment)
 }
 
 module.exports = {

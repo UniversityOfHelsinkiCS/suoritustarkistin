@@ -48,9 +48,10 @@ module.exports = (sequelize, DataTypes) => {
       SELECT raw_entries."batchId"
         FROM entries
         INNER JOIN raw_entries ON raw_entries.id=entries."rawEntryId"
-        WHERE "courseUnitId" IS NULL
-          OR "courseUnitRealisationId" IS NULL
-          OR "assessmentItemId" IS NULL
+        WHERE "courseUnitId" IS NOT NULL
+          AND "courseUnitRealisationId" IS NOT NULL
+          AND "assessmentItemId" IS NOT NULL
+          AND sent IS NULL
         GROUP BY raw_entries."batchId"
     ) as dummy`)
     return result[0][0].count

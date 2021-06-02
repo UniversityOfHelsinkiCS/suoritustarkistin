@@ -6,7 +6,21 @@ const inProduction = process.env.NODE_ENV === 'production' || process.env.NODE_E
 const inDevelopment = process.env.NODE_ENV === 'development'
 const inTest = process.env.NODE_ENV === 'test'
 
+const gradeScales = [
+  {
+    key: "sis-0-5",
+    value: "sis-0-5",
+    text: "sis-0-5"
+  },
+  {
+    key: "sis-hyl-hyv",
+    value: "sis-hyl-hyv",
+    text: "sis-hyl-hyv"
+  }
+]
+
 module.exports = {
+  gradeScales,
   inProduction,
   inDevelopment,
   inTest

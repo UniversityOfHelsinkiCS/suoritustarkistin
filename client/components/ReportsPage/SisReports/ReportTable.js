@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Accordion, Icon, Table, Popup } from 'semantic-ui-react'
+import { useSelector } from 'react-redux'
 
 import { EOAI_CODES, EOAI_NAMEMAP } from '../../../../utils/validators'
 import moment from 'moment'
@@ -14,14 +15,26 @@ const PLACEHOLDER_COURSE = {
   credits: 'COURSE DELETED'
 }
 
-export default ({ rows, courses, allowDelete }) => (
-  rows.length ? (
-    <Table className="sis-report-table">
-      <TableColumns allowDelete={allowDelete} />
-      <TableBody key={rows[0].batchId} rawEntries={rows} courses={courses} allowDelete={allowDelete} />
-    </Table>
-  ) : null
-)
+const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
+  const { entry, graderId } = rawEntry
+  if (entry.sent) return false
+  if (isAdmin) return true
+  if (graderId === userId && entry.missingEnrolment) return true
+  return false
+}
+
+export default ({ rows, courses }) => {
+  const user = useSelector((state) => state.user.data)
+
+  if (!rows.length)
+    return null
+
+  const includeDelete = rows.some((r) => allowDelete(user, r))
+  return <Table className="sis-report-table">
+    <TableColumns allowDelete={includeDelete} />
+    <TableBody key={rows[0].batchId} rawEntries={rows} courses={courses} />
+  </Table>
+}
 
 const TableColumns = ({ allowDelete }) => (
   <Table.Header>
@@ -45,8 +58,10 @@ const TableColumns = ({ allowDelete }) => (
   </Table.Header>
 )
 
-const TableBody = ({ rawEntries, courses, allowDelete }) => (
-  <Table.Body data-cy="sis-report-table">
+const TableBody = ({ rawEntries, courses }) => {
+  const user = useSelector((state) => state.user.data)
+
+  return <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => {
       const course = courses.find((c) => rawEntry.courseId === c.id) || PLACEHOLDER_COURSE
       return <React.Fragment key={`row-${rawEntry.id}`}>
@@ -56,7 +71,7 @@ const TableBody = ({ rawEntries, courses, allowDelete }) => (
           <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
           <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
           <EntryCells entry={rawEntry.entry} />
-          {allowDelete
+          {allowDelete(user, rawEntry)
             ? <Table.Cell>
               <DeleteEntryButton rawEntryId={rawEntry.id} batchId={rawEntry.batchId} />
             </Table.Cell>
@@ -73,7 +88,7 @@ const TableBody = ({ rawEntries, courses, allowDelete }) => (
       </React.Fragment>
     })}
   </Table.Body>
-)
+}
 
 const EntryCells = ({ entry }) => {
   const [open, setOpen] = useState(false)

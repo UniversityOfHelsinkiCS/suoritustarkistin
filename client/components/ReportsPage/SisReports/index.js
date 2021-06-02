@@ -159,6 +159,7 @@ export default withRouter(({ reports, user }) => {
 
   const panels = batchedReports
     .filter((report) => filterBatches(report, filters))
+    .sort((a, b) => new Date(b[0].updatedAt) - new Date(a[0].updatedAt))
     .map((report, index) => {
       const reportWithEntries = report
         .filter((e) => e && e.entry)

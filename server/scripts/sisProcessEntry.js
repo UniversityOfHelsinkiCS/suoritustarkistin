@@ -92,9 +92,9 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
     const enrolmentsByPersonAndCourse = enrolments
       .find((e) => e.personId === student.id && e.code === course.courseCode)
 
-    const filteredEnrolments = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
+    const filteredEnrolment = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
 
-    if (!filteredEnrolments || !filteredEnrolments.length) {
+    if (!filteredEnrolment) {
       if (requireEnrollment)
         failed.push({
           id: rawEntry.id,
@@ -115,51 +115,45 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
       return Promise.resolve()
     }
 
-    if (!validateCredits(filteredEnrolments, parseFloat(rawEntry.credits))) {
+    if (!validateCredits(filteredEnrolment, parseFloat(rawEntry.credits))) {
       failed.push({
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,
-        message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolments[0].credits.min} to ${filteredEnrolments[0].credits.max}`
+        message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolment.credits.min} to ${filteredEnrolment.credits.max}`
       })
       return Promise.resolve()
     }
 
     // Create here the acual attainments for Sisu
-    await Promise.all(
-      filteredEnrolments
-        .map(async (e) => {
-          const grade = mapGrades(gradeScales, e.gradeScaleId, rawEntry)
-          if (!grade) {
-            failed.push({
-              id: rawEntry.id,
-              studentNumber: rawEntry.studentNumber,
-              message: `
+    const grade = mapGrades(gradeScales, filteredEnrolment.gradeScaleId, rawEntry)
+    if (!grade) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `
                 Invalid grade "${rawEntry.grade}" for course "${course.courseCode}".
-                Available grades are: ${gradeScales[e.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
+                Available grades are: ${gradeScales[filteredEnrolment.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
               `
-            })
-            return Promise.resolve()
-          }
-          if (checkImprovements === true && !improvedGrade) {
-            failed.push({
-              id: rawEntry.id,
-              studentNumber: rawEntry.studentNumber,
-              message: `Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`
-            })
-            return Promise.resolve()
-          }
-          success.push({
-            ...e,
-            id: generateEntryId(),
-            verifierPersonId: verifier.id,
-            rawEntryId: rawEntry.id,
-            gradeId: grade.localId,
-            completionDate: completionDate.format('YYYY-MM-DD'),
-            completionLanguage: rawEntry.language
-          })
-          return Promise.resolve()
-        })
-    )
+      })
+      return Promise.resolve()
+    }
+    if (checkImprovements === true && !improvedGrade) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`
+      })
+      return Promise.resolve()
+    }
+    success.push({
+      ...filteredEnrolment,
+      id: generateEntryId(),
+      verifierPersonId: verifier.id,
+      rawEntryId: rawEntry.id,
+      gradeId: grade.localId,
+      completionDate: completionDate.format('YYYY-MM-DD'),
+      completionLanguage: rawEntry.language
+    })
     return Promise.resolve()
   }))
 
@@ -167,24 +161,14 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
 }
 
 /**
- * Find the best matching enrollment. That is an enrolment where the course unit realisation's start
- * date is *before* current date and with the greatest end date. That yields us the enrollment
- * with course unit currently active, or the closest already ended realisation.
+ * Find the best matching enrollment. That is:
+ *  1. Realisation where completion date is within of activity period
+ *  2. Already ended realisation closest to completion date by activity period end
+ *  3. Closest upcoming realisation compared to completion date
+ * Note: Upcoming realisations (not started based on current date) is never accepted!
  */
 const filterEnrolments = (completionDate, { enrolments }) => {
-  if (!enrolments) return null
-  const now = moment()
-  const sortedEnrolments = enrolments
-    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(now))
-    .sort(
-      (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate.endDate)
-        .diff(moment(a.courseUnitRealisation.activityPeriod.endDate.endDate))
-    )
-  if (!sortedEnrolments || !sortedEnrolments.length) return null
-  const properEnrolments = sortedEnrolments.filter(
-    (e) => e.courseUnitRealisationId === sortedEnrolments[0].courseUnitRealisationId
-  )
-  return properEnrolments.map(({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, courseUnit, courseUnitRealisation }) => ({
+  const enrollmentToObject = ({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, courseUnit, courseUnitRealisation }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: courseUnit.gradeScaleId,
     credits: courseUnit.credits,
@@ -192,12 +176,40 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     courseUnitRealisationId,
     courseUnitId,
     personId
-  }))
+  })
+
+  if (!enrolments) return null
+  const now = moment()
+  const filteredEnrolments = enrolments
+    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(now))
+
+  if (!filteredEnrolments.length) return null
+
+  // Get enrollments for realisations already ended or currently active based on completion date
+  const activeOrPastByCompletionDate = filteredEnrolments
+    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(completionDate))
+    .sort(
+      (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate)
+        .diff(moment(a.courseUnitRealisation.activityPeriod.endDate))
+    )
+
+  if (activeOrPastByCompletionDate.length)
+    return enrollmentToObject(activeOrPastByCompletionDate[0])
+
+  // Get nearest realisation after completion date
+  const futureRelisationsByCompletionDate = filteredEnrolments
+    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isAfter(completionDate))
+    .sort(
+      (a, b) => moment(a.courseUnitRealisation.activityPeriod.startDate)
+        .diff(moment(b.courseUnitRealisation.activityPeriod.startDate))
+    )
+
+  if (futureRelisationsByCompletionDate.length)
+    return enrollmentToObject(futureRelisationsByCompletionDate[0])
+  return null
 }
 
-const validateCredits = (enrolments, targetCredits) => {
-  return enrolments.some(({ credits }) => targetCredits >= credits.min && targetCredits <= credits.max)
-}
+const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
 
 const mapGrades = (gradeScales, id, rawEntry) => {
   let grade = rawEntry.grade

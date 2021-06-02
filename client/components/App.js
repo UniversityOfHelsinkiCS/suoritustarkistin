@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { loginAction, pingAction } from 'Utilities/redux/userReducer'
 import { getStatus } from 'Utilities/redux/systemStatusReducer'
 import NavBar from 'Components/NavBar'
@@ -8,17 +9,22 @@ import Footer from 'Components/Footer'
 import MaintenanceView, { MaintenanceMessage } from 'Components/MaintenanceView'
 import { Header } from 'semantic-ui-react'
 
-export default () => {
+export default withRouter(({history}) => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
   const systemStatus = useSelector((state) => state.systemStatus)
+  const [redirected, setRedirected] = useState(false)
+
+  useEffect(() => {
+    if(user.data.isAdmin && !redirected && process.env.NODE_ENV === 'production') {
+      setRedirected(true)
+      history.push('/reports')
+    }
+  }, [redirected, user, history])
 
   useEffect(() => {
     dispatch(getStatus())
     dispatch(loginAction())
-  }, [])
-
-  useEffect(() => {
     setInterval(() => {
       dispatch(pingAction())
     }, 60 * 1000) // One minute
@@ -52,4 +58,4 @@ export default () => {
       <Footer />
     </div>
   )
-}
+})

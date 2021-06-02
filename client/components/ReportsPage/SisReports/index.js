@@ -48,11 +48,11 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
       )
     })
 
-  if (reportContainsErrors)
+  if (entriesNotSentOrErroneous.length)
     panels.unshift({
       active: true,
       key: 'entries-with-errors',
-      title: 'Entries with errors',
+      title: 'Entries with errors or missing enrollment',
       content: (
         <Accordion.Content>
           <ReportTable

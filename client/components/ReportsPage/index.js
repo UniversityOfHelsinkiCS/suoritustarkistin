@@ -24,10 +24,10 @@ export default ({ match }) => {
   const sisReports = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    if (user.adminMode && !sisReports.data.length) {
+    if (user.adminMode) {
       dispatch(getAllCoursesAction())
       dispatch(sisGetAllReportsAction())
-    } else if (!user.adminMode && !sisReports.data.length) {
+    } else {
       dispatch(sisGetUsersReportsAction(user.id))
       dispatch(getUsersCoursesAction(user.id))
     }

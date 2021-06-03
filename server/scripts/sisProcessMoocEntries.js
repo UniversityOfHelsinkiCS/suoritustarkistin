@@ -78,7 +78,6 @@ const processMoocEntries = async ({
     )}`
     const date = new Date()
 
-
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
@@ -103,23 +102,23 @@ const processMoocEntries = async ({
           }
           if (!isImprovedGrade(earlierAttainments, registration.onro, grade)) {
             return matches
-          } else if (matches.some((c) => c.studentNumber === registration.onro)) {
-            return matches
-          } else {
-            return matches.concat({
-              studentNumber: registration.onro,
-              batchId: batchId,
-              grade: grade,
-              credits: course.credits,
-              language: language,
-              attainmentDate: completion.completion_date || date,
-              graderId: grader.id,
-              reporterId: null,
-              courseId: course.id,
-              moocUserId: completion.user_upstream_id,
-              moocCompletionId: completion.id
-            })
           }
+          if (matches.some((c) => c.studentNumber === registration.onro)) {
+            return matches
+          }
+          return matches.concat({
+            studentNumber: registration.onro,
+            batchId: batchId,
+            grade: grade,
+            credits: course.credits,
+            language: language,
+            attainmentDate: completion.completion_date || date,
+            graderId: grader.id,
+            reporterId: null,
+            courseId: course.id,
+            moocUserId: completion.user_upstream_id,
+            moocCompletionId: completion.id
+          })
         } else {
           return matches
         }

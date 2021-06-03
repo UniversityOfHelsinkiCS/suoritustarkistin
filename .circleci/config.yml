@@ -47,13 +47,6 @@ workflows:
           build: npm run test:setup
           start: npm run test:start
           wait-on: 'http-get://localhost:8000'
-          post-steps:
-            - run:
-                name: Notify
-                command: |
-                  curl --silent -X POST -H 'Content-type: application/json' --data "{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Cypress tests failed :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, your tests failed on branch ${CIRCLE_BRANCH}."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_=${CIRCLE_BUILD_NUM}","alt_text":"cat failing"}}]}" ${SLACKBOT_URL}
-                when: on_fail
-      - notify
       - dockerhub/publish:
           requires:
             - cypress/run

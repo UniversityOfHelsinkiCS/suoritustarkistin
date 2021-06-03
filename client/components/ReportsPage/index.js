@@ -56,7 +56,7 @@ export default ({ match }) => {
   }
 
   const manualReportsCount = new Set(sisReports.data
-    .filter((entry) => entry.reporterId && !entry.entry.sent)
+    .filter((entry) => entry.reporterId && !entry.entry.sent && !entry.entry.missingEnrolment)
     .map((entry) => entry.batchId)).size
   let panes = [
     {
@@ -81,7 +81,7 @@ export default ({ match }) => {
 
   if (user.adminMode) {
     const autoReportsCount = new Set(sisReports.data
-      .filter((entry) => !entry.reporterId && !entry.entry.sent)
+      .filter((entry) => !entry.reporterId && !entry.entry.sent && !entry.entry.missingEnrolment)
       .map((entry) => entry.batchId)).size
     panes = [...panes, {
       menuItem: (

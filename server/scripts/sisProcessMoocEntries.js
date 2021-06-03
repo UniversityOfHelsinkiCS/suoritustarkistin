@@ -20,6 +20,13 @@ const selectLanguage = (completion, course) => {
   return completionLanguage
 }
 
+const defineGrade = (completion, course) => {
+  const grade = completion.grade
+  if (!grade && course.gradeScale === "sis-hyl-hyv") return "Hyv."
+  if (!grade && course.gradeScale === "sis-0-5") return null
+  return grade
+}
+
 const processMoocEntries = async ({
   job,
   course,
@@ -71,6 +78,7 @@ const processMoocEntries = async ({
     )}`
     const date = new Date()
 
+
     const matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
@@ -88,7 +96,12 @@ const processMoocEntries = async ({
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade || "Hyv.")) {
+          const grade = defineGrade(completion, course)
+
+          if (!grade) {
+            return matches
+          }
+          if (!isImprovedGrade(earlierAttainments, registration.onro, grade)) {
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches
@@ -96,7 +109,7 @@ const processMoocEntries = async ({
             return matches.concat({
               studentNumber: registration.onro,
               batchId: batchId,
-              grade: completion.grade || "Hyv.",
+              grade: grade,
               credits: course.credits,
               language: language,
               attainmentDate: completion.completion_date || date,

@@ -24,6 +24,7 @@ const defineGrade = (completion, course) => {
   const grade = completion.grade
   if (!grade && course.gradeScale === "sis-hyl-hyv") return "Hyv."
   if (!grade && course.gradeScale === "sis-0-5") return null
+  if (!grade && !course.gradeScale) return "Hyv."
   return grade
 }
 

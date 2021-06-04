@@ -84,12 +84,11 @@ const checkRegisteredForMooc = async () => {
 
     logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
 
-    if (completionStudentPairs.length) {
+    if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
       const result = await postRegistrations(completionStudentPairs)
       if (result === 'OK') {
         await markAsRegisteredToMooc(completionStudentPairs)
       }
-      logger.info(`points.mooc.fi response: ${result}`)
     }
 
   } catch (error) {

@@ -18,6 +18,7 @@ import {
   isValidCreditAmount,
   isValidLanguage
 } from 'Root/utils/validators'
+import { gradeScales } from 'Root/utils/common'
 
 export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
@@ -97,6 +98,13 @@ export default ({ close: closeModal }) => {
           value={data.credits || ''}
           onChange={(e) => setData({ ...data, credits: e.target.value })}
           icon={isValidCreditAmount(data.credits) ? 'check' : 'times'}
+        />
+        <Form.Dropdown
+          label="Grade scale"
+          selection
+          options={gradeScales}
+          value={data.gradeScale}
+          onChange={(e, { value }) => setData({ ...data, gradeScale: value })}
         />
         <Form.Dropdown
           data-cy="add-course-grader"

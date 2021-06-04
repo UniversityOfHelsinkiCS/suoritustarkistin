@@ -20,6 +20,14 @@ const selectLanguage = (completion, course) => {
   return completionLanguage
 }
 
+const defineGrade = (completion, course) => {
+  const grade = completion.grade
+  if (!grade && course.gradeScale === "sis-hyl-hyv") return "Hyv."
+  if (!grade && course.gradeScale === "sis-0-5") return null
+  if (!grade && !course.gradeScale) return "Hyv."
+  return grade
+}
+
 const processMoocEntries = async ({
   job,
   course,
@@ -88,25 +96,30 @@ const processMoocEntries = async ({
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, completion.grade || "Hyv.")) {
+          const grade = defineGrade(completion, course)
+
+          if (!grade) {
             return matches
-          } else if (matches.some((c) => c.studentNumber === registration.onro)) {
-            return matches
-          } else {
-            return matches.concat({
-              studentNumber: registration.onro,
-              batchId: batchId,
-              grade: completion.grade || "Hyv.",
-              credits: course.credits,
-              language: language,
-              attainmentDate: completion.completion_date || date,
-              graderId: grader.id,
-              reporterId: null,
-              courseId: course.id,
-              moocUserId: completion.user_upstream_id,
-              moocCompletionId: completion.id
-            })
           }
+          if (!isImprovedGrade(earlierAttainments, registration.onro, grade)) {
+            return matches
+          }
+          if (matches.some((c) => c.studentNumber === registration.onro)) {
+            return matches
+          }
+          return matches.concat({
+            studentNumber: registration.onro,
+            batchId: batchId,
+            grade: grade,
+            credits: course.credits,
+            language: language,
+            attainmentDate: completion.completion_date || date,
+            graderId: grader.id,
+            reporterId: null,
+            courseId: course.id,
+            moocUserId: completion.user_upstream_id,
+            moocCompletionId: completion.id
+          })
         } else {
           return matches
         }

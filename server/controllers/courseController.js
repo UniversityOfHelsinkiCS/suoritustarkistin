@@ -15,7 +15,8 @@ const cleanCourses = (courses) => {
     credits: course.credits,
     isMooc: course.isMooc,
     autoSeparate: course.autoSeparate,
-    graders: course.graders
+    graders: course.graders,
+    gradeScale: course.gradeScale
   }))
 }
 

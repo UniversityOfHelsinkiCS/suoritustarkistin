@@ -87,7 +87,7 @@ initializeDatabaseConnection()
       res.status(500).send(err.toString())
     })
 
-    if (!IN_MAINTENANCE)
+    if (!IN_MAINTENANCE && inProduction)
       initializeCronJobs()
 
     const STAGING = process.env.NODE_ENV === 'staging'

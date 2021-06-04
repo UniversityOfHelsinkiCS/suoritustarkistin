@@ -1,3 +1,5 @@
+set -e
+
 if [ -z "$1" ]
   then
     echo "No db dump specified. Usage ./restore-db.sh db-to-restore.sql"

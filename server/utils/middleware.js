@@ -59,11 +59,11 @@ const errorMiddleware = (req, res) => {
 
   const errorMsg = body.error || ''
   const message = `Response ${originalUrl} failed with status code ${statusCode} - ${errorMsg}`
-  logger.info({ originalUrl, body, method, query, message })
+  logger.info({ originalUrl, body: JSON.stringify(body), method, query, message })
   Sentry.withScope((scope) => {
     scope.setUser(req.user ? req.user.get({ plain: true }) : null)
     scope.setExtras({
-      originalUrl, body, method, query
+      originalUrl, body: JSON.stringify(body), method, query
     })
     Sentry.captureMessage(message)
   })

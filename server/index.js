@@ -16,7 +16,7 @@ const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
 const { checkAllEntriesFromSisu, checkRegisteredForMooc } = require('./scripts/checkSisEntries')
-const { initializeCronJobs } = require('./scripts/cronjobs')
+const { initializeCronJobs } = require('./scripts/sisCronjobs')
 
 const { IN_MAINTENANCE } = process.env
 

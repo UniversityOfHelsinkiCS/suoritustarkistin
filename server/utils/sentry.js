@@ -1,4 +1,5 @@
 const Sentry = require('@sentry/node')
+const logger = require('@utils/logger')
 
 const sendSentryMessage = (title, user, extras) => Sentry.withScope((scope) => {
   if (user)
@@ -6,6 +7,7 @@ const sendSentryMessage = (title, user, extras) => Sentry.withScope((scope) => {
   if (extras)
     scope.setExtras(JSON.stringify(extras))
   Sentry.captureMessage(title)
+  logger.info({ message: `Sentry: ${title}`, user, extras })
 })
 
 module.exports = { sendSentryMessage }

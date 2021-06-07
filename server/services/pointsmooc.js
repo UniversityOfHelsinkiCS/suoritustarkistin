@@ -13,7 +13,7 @@ const postRegistrations = async (completionAndStudentIdList) => {
   try {
     logger.info({ message: 'Posting completion registrations to mooc'})
     const response = await moocApi.post(`/register-completions`, { completions: completionAndStudentIdList })
-    logger.info({ message: `mooc-api response: ${response}`})
+    logger.info({ message: `mooc-api response: ${response.statusText}`})
     return response.statusText
   } catch (error) {
     logger.error(

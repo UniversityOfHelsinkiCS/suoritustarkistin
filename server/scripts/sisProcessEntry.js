@@ -4,15 +4,12 @@ const Op = Sequelize.Op
 const moment = require('moment')
 const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
 const { v4: uuidv4 } = require('uuid')
-const _ = require('lodash')
-
 const {
   getEmployees,
   getStudents,
   getGrades,
   getEnrolments,
-  getEarlierAttainments,
-  getSubstitutions
+  getEarlierAttainments
 } = require('../services/importer')
 
 /**
@@ -58,12 +55,9 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
   })
   const earlierAttainments = checkImprovements === true ? await getEarlierAttainments(courseStudentPairs) : []
 
-  const substitutions = await getSubstitutions(courses.map((c) => c.courseCode))
-
-  const studentCourseCodePairs = _.flatten(createdEntries.map((rawEntry) => {
-    const codes = substitutions[courses.find((course) => course.id === rawEntry.courseId).courseCode]
-    const personId = (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id
-    return codes.map((code) => ({ code, personId }))
+  const studentCourseCodePairs = createdEntries.map((rawEntry) => ({
+    personId: (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id,
+    code: courses.find((course) => course.id === rawEntry.courseId).courseCode
   }))
   const enrolments = await getEnrolments(studentCourseCodePairs)
 
@@ -95,9 +89,8 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
       return Promise.resolve()
     }
 
-    const enrolmentsByPersonAndCourse = _.flatten(enrolments
-      .filter((e) => e.personId === student.id && substitutions[course.courseCode].includes(e.code))
-      .map((e) => e.enrolments))
+    const enrolmentsByPersonAndCourse = enrolments
+      .find((e) => e.personId === student.id && e.code === course.courseCode)
 
     const filteredEnrolment = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
 
@@ -174,7 +167,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
  *  3. Closest upcoming realisation compared to completion date
  * Note: Upcoming realisations (not started based on current date) is never accepted!
  */
-const filterEnrolments = (completionDate, enrolments) => {
+const filterEnrolments = (completionDate, { enrolments }) => {
   const enrollmentToObject = ({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, courseUnit, courseUnitRealisation }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: courseUnit.gradeScaleId,

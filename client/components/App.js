@@ -16,7 +16,7 @@ export default withRouter(({history}) => {
   const [redirected, setRedirected] = useState(false)
 
   useEffect(() => {
-    if(user && user.data && user.data.isAdmin && !redirected && process.env.NODE_ENV === 'production') {
+    if(user && user.data && user.data.isAdmin && !redirected && process.env.NODE_ENV === 'production' && history.location.pathname === '/suoritustarkistin') {
       setRedirected(true)
       history.push('/reports')
     }

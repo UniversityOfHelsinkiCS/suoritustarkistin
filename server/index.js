@@ -16,7 +16,7 @@ const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
 const { checkAllEntriesFromSisu, checkRegisteredForMooc } = require('./scripts/checkSisEntries')
-const { initializeCronJobs } = require('./scripts/cronjobs')
+const { initializeCronJobs } = require('./scripts/sisCronjobs')
 
 const { IN_MAINTENANCE } = process.env
 
@@ -87,7 +87,7 @@ initializeDatabaseConnection()
       res.status(500).send(err.toString())
     })
 
-    if (!IN_MAINTENANCE)
+    if (!IN_MAINTENANCE && inProduction)
       initializeCronJobs()
 
     const STAGING = process.env.NODE_ENV === 'staging'

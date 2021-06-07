@@ -5,7 +5,8 @@ import Reports from 'Components/ReportsPage/Reports'
 import SisReports from 'Components/ReportsPage/SisReports'
 import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
 import {
-  getAllReportsAction
+  getAllReportsAction,
+  getUsersReportsAction
 } from 'Utilities/redux/reportsReducer'
 import {
   sisGetAllReportsAction,
@@ -30,6 +31,7 @@ export default ({ match }) => {
     } else {
       dispatch(sisGetUsersReportsAction(user.id))
       dispatch(getUsersCoursesAction(user.id))
+      dispatch(getUsersReportsAction(user.id))
     }
   }, [user])
 
@@ -76,7 +78,20 @@ export default ({ match }) => {
           />
         </Tab.Pane>
       )
-    }
+    },
+    {
+      menuItem: (
+        <Menu.Item key="pretty" data-cy="pretty-reports-tab">
+          <Icon name="tasks" />
+          OODI Reports
+        </Menu.Item>
+      ),
+      render: () => (
+        <Tab.Pane>
+          <Reports />
+        </Tab.Pane>
+      )
+    },
   ]
 
   if (user.adminMode) {

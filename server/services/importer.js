@@ -109,7 +109,14 @@ const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
   }
 }
 
-
+const getSubstitutions = async (codes) => {
+  try {
+    const { data } = await api.post(`suotar/substitutions/`, codes)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
 
 async function getResponsibles(courseCode) {
   try {
@@ -130,5 +137,6 @@ module.exports = {
   getEarlierAttainmentsWithoutSubstituteCourses,
   getAcceptorPersons,
   resolveUser,
-  getResponsibles
+  getResponsibles,
+  getSubstitutions
 }

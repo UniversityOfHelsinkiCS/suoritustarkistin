@@ -26,7 +26,8 @@ const checkOodiEntries = async () => {
 
     const faultyStudentNumbers = ['014226385', '014732571', '014374078', '0154210102']
 
-    const confirmations = await unregisteredCredits.split(0,100).reduce(
+    const allUnregistered = unregisteredCredits.length < 101 ? unregisteredCredits : unregisteredCredits.slice(0,100)
+    const confirmations = await allUnregistered.reduce(
       async (accPromise, credit) => {
         const acc = await accPromise
         try {

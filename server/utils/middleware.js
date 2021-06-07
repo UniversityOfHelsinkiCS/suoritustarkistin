@@ -54,6 +54,9 @@ const errorMiddleware = (req, res) => {
   if (statusCode < 400)
     return
 
+  if (req.headers.uid === 'ohj_tosk')
+    return
+
   const { originalUrl, method, query } = req
   const { body } = res.req // res.req :wat:
 

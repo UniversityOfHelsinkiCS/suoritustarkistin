@@ -5,18 +5,17 @@ const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
 
 const checkEntries = async (entries) => {
-  const data = entries.map(({ personId, courseUnitRealisationId, assessmentItemId, gradeId, courseUnitId, id }) => ({
-    id, personId, courseUnitRealisationId, assessmentItemId, gradeId, courseUnitId
+  const postData = entries.map(({ personId, assessmentItemId, gradeId, courseUnitId, id }) => ({
+    id, personId, assessmentItemId, gradeId, courseUnitId
   }))
 
   try {
-    const resp = await api.post('/suotar/verify', data)
-    const registeredEntries = resp.data.filter(({ registered }) => registered)
-    const amountUpdated = await markAsRegistered(registeredEntries)
-    logger.info({ 
+    const { data } = await api.post('/suotar/verify', postData)
+    const amountUpdated = await markAsRegistered(data)
+    logger.info({
       message: `Checked total ${entries.length} entries, found ${amountUpdated} new registrations.`,
-      newRegistrations: registeredEntries.length, 
-      missingRegistrations: (entries.length - registeredEntries.length) 
+      newRegistrations: data.length,
+      missingRegistrations: (entries.length - data.length)
     })
     return true
   } catch (e) {
@@ -26,18 +25,25 @@ const checkEntries = async (entries) => {
 }
 
 const markAsRegistered = async (entries) => {
-  const ids = entries.map(({ id }) => id)
-  return await db.entries.update({ registered: true }, {
-    where: { 
-      id: { [Sequelize.Op.in]: ids } 
+  const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
+  const registeredIds = entries.filter(({ registered }) => registered === 'CourseUnitAttainment').map(({ id }) => id)
+  const partlyAffected = await db.entries.update({ registered: 'PARTLY_REGISTERED' }, {
+    where: {
+      id: { [Sequelize.Op.in]: partlyIds }
     }
   })
+  const registeredAffected = await db.entries.update({ registered: 'REGISTERED' }, {
+    where: {
+      id: { [Sequelize.Op.in]: registeredIds }
+    }
+  })
+  return partlyAffected + registeredAffected
 }
 
 const checkAllEntriesFromSisu = async () => {
   const entries = await db.entries.findAll({
     where: {
-      registered: { [Sequelize.Op.eq]: null },
+      registered: { [Sequelize.Op.eq]: 'NOT_REGISTERED' },
       sent: { [Sequelize.Op.not]: null }
     }
   })
@@ -48,8 +54,8 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
   const date = new Date()
   const moocCompletionsIds = completionStudentPairs.map(({ completion_id }) => completion_id)
   return await db.raw_entries.update({ registeredToMooc: date }, {
-    where: { 
-      moocCompletionId: { [Sequelize.Op.in]: moocCompletionsIds } 
+    where: {
+      moocCompletionId: { [Sequelize.Op.in]: moocCompletionsIds }
     }
   })
 }
@@ -93,8 +99,8 @@ const checkRegisteredForMooc = async () => {
 
   } catch (error) {
     logger.error(`Error in running Mooc registration check: ${error.message}`)
-  }  
-  
+  }
+
 }
 
 module.exports = {

@@ -18,7 +18,12 @@ module.exports = (sequelize, DataTypes) => {
       gradeScaleId: DataTypes.STRING,
       gradeId: DataTypes.STRING,
       sent: DataTypes.DATE,
-      registered: DataTypes.BOOLEAN,
+      registered: {
+        type: DataTypes.STRING,
+        validate: {
+          isIn: [['NOT_REGISTERED', 'PARTLY_REGISTERED', 'REGISTERED']]
+        }
+      },
       senderId: {
         type: DataTypes.INTEGER,
         references: {

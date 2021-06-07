@@ -160,7 +160,9 @@ const EntryCells = ({ entry }) => {
         {sender ? sender.name : null}
       </Table.Cell>
       <Table.Cell data-cy={`sis-report-registered-${entry.id}`}>
-        {registered ? <Icon name="checkmark" color="green" /> : <Icon name="close" color="red" />}
+        {registered === 'NOT_REGISTERED' ? <Icon name="close" color="red" /> : null}
+        {registered === 'PARTLY_REGISTERED' ? <Icon name="checkmark" color="green" /> : null}
+        {registered === 'REGISTERED' ? <><Icon name="checkmark" color="green" /> <Icon name="checkmark" color="green" /></> : null}
       </Table.Cell>
     </>
   )

@@ -91,7 +91,7 @@ export default ({ match }) => {
           <Reports />
         </Tab.Pane>
       )
-    },
+    }
   ]
 
   if (user.adminMode) {

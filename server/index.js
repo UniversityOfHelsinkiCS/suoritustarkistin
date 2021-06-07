@@ -17,7 +17,6 @@ const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 const { initializeDatabaseConnection } = require('./database/connection')
 const { checkAllEntriesFromSisu, checkRegisteredForMooc } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/sisCronjobs')
-const checkOodiEntries = require('./scripts/checkOodiEntries')
 
 const { IN_MAINTENANCE } = process.env
 
@@ -94,15 +93,11 @@ initializeDatabaseConnection()
     const STAGING = process.env.NODE_ENV === 'staging'
 
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
-      cron.schedule('*/15 * * * *', () => {
-        checkOodiEntries()
-      })
-  
       cron.schedule('0 * * * *', () => {
         checkAllEntriesFromSisu()
       })
 
-      cron.schedule('0 3 * * *', () => {
+      cron.schedule('0 3 * * 5', () => {
         checkRegisteredForMooc()
       })
     }

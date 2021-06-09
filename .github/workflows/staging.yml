@@ -13,9 +13,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Tests
-      - run: npm run test
+        run: npm run test
 
       - name: Notify
-      - if: failure()
-      - run: >
+        if: failure()
+        run: >
           curl --silent -X POST -H 'Content-type: application/json' --data "{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Test run failed on *${GITHUB_REF}* :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, *${GITHUB_ACTOR}* test run failed on branch ${GITHUB_REF}."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_=${GITHUB_RUN_ID}","alt_text":"cat failing"}}]}" ${SLACKBOT_URL}

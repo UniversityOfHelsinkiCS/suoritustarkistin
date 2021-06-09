@@ -23,7 +23,7 @@ describe('Submitting data creates a valid report into database', function () {
 
   it('Admin can grant rights', () => {
     cy.asAdmin().visit('')
-    cy.get('[data-cy=adminmode-enable-deletethis]').click()
+    cy.get('[data-cy=adminmode-enable]').click()
     cy.get('[data-cy=nav-users]').click()
     cy.get('[data-cy=user-not-admin]').click()
     cy.get('[data-cy=grant-admin-confirm]').click()

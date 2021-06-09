@@ -20,4 +20,18 @@ jobs:
         env:
           SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
         run: |
-          curl --silent -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Test run failed on *'$GITHUB_REF'* :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, *'$GITHUB_ACTOR'* test run failed on branch '$GITHUB_REF'."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_='$GITHUB_RUN_ID'","alt_text":"cat failing"}}]}' "$SLACKBOT_URL"
+          curl --silent -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Test run failed on *'${GITHUB_REF##*/}'* :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, test run by *'$GITHUB_ACTOR'* failed on branch '${GITHUB_REF##*/}'."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_='$GITHUB_RUN_ID'","alt_text":"cat failing"}}]}' "$SLACKBOT_URL"
+  publish:
+    runs-on: ubuntu-20.04
+    needs: build-and-test
+    steps:
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1.1.0
+        with:
+          repository: toska/suoritustarkistin
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tags: 'toska/suoritustarkistin:trunk'
+          build-args:
+            - BASE_PATH: /staging/suoritustarkistin/
+            - NODE_ENV: staging

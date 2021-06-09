@@ -32,7 +32,12 @@ export default ({ rows, courses }) => {
   const includeDelete = rows.some((r) => allowDelete(user, r))
   return <Table className="sis-report-table">
     <TableColumns allowDelete={includeDelete} />
-    <TableBody key={rows[0].batchId} rawEntries={rows} courses={courses} />
+    <TableBody
+      key={rows[0].batchId}
+      user={user}
+      rawEntries={rows}
+      courses={courses}
+    />
   </Table>
 }
 
@@ -43,6 +48,7 @@ const TableColumns = ({ allowDelete }) => (
       <Table.HeaderCell>Course name</Table.HeaderCell>
       <Table.HeaderCell>Student number</Table.HeaderCell>
       <Table.HeaderCell>Credits</Table.HeaderCell>
+      <Table.HeaderCell>Grader</Table.HeaderCell>
       <Table.HeaderCell colSpan='2'>Course Unit</Table.HeaderCell>
       <Table.HeaderCell>Student ID</Table.HeaderCell>
       <Table.HeaderCell>Completion date</Table.HeaderCell>
@@ -58,9 +64,7 @@ const TableColumns = ({ allowDelete }) => (
   </Table.Header>
 )
 
-const TableBody = ({ rawEntries, courses }) => {
-  const user = useSelector((state) => state.user.data)
-
+const TableBody = ({ user, rawEntries, courses }) => {
   return <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => {
       const course = courses.find((c) => rawEntry.courseId === c.id) || PLACEHOLDER_COURSE
@@ -70,6 +74,7 @@ const TableBody = ({ rawEntries, courses }) => {
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
           <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
+          <Table.Cell>{rawEntry.grader.name}</Table.Cell>
           <EntryCells entry={rawEntry.entry} />
           {allowDelete(user, rawEntry)
             ? <Table.Cell>

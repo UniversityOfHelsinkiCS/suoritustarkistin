@@ -31,7 +31,7 @@ jobs:
           repository: toska/suoritustarkistin
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tags: 'toska/suoritustarkistin:trunk'
-          build-args:
+          tags: 'trunk'
+          build_args:
             - BASE_PATH: /staging/suoritustarkistin/
             - NODE_ENV: staging

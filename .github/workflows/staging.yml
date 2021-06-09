@@ -17,5 +17,7 @@ jobs:
 
       - name: Notify
         if: failure()
+        env:
+          SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
         run: |
-          curl -vv -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Test run failed on *${GITHUB_REF}* :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, *${GITHUB_ACTOR}* test run failed on branch ${GITHUB_REF}."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_=${GITHUB_RUN_ID}","alt_text":"cat failing"}}]}' ${SLACKBOT_URL}
+          curl -vv -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Test run failed on *${GITHUB_REF}* :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, *${GITHUB_ACTOR}* test run failed on branch ${GITHUB_REF}."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_=${GITHUB_RUN_ID}","alt_text":"cat failing"}}]}' "$SLACKBOT_URL"

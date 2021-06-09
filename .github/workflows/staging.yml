@@ -1,5 +1,4 @@
-name: Release staging
-
+name: Build, test and release staging
 
 on:
   push:
@@ -7,42 +6,16 @@ on:
       - trunk
 
 jobs:
-  test-and-build:
+  build-and-test:
     runs-on: ubuntu-20.04
-    container: cypress/browsers:node12.13.0-chrome78-ff70
-    strategy:
-      matrix:
-        node: [10]
-
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          build: npm run test:setup
-          start: npm run test:start
-          command: npm run cypress:test
-          wait-on: 'http://localhost:8000'
-          wait-on-timeout: 120
-        env:
-          SUOTAR_TOKEN: token
-          NODE_ENV: test
+      - name: Tests
+      - run: npm run test
 
-
-
+      - name: Notify
+      - if: failure()
+      - run: |
+          curl --silent -X POST -H 'Content-type: application/json' --data "{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Test run failed on *${GITHUB_REF}* :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, *${GITHUB_ACTOR}* test run failed on branch ${GITHUB_REF}."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_=${GITHUB_RUN_ID}","alt_text":"cat failing"}}]}" ${SLACKBOT_URL}

@@ -9,9 +9,11 @@ module.exports = {
     logging: false
   },
   test: {
-    database_url: 'postgres://postgres:postgres@localhost:5432/circle_test',
+    database_url: 'postgres://postgres:postgres@e2e-db:5432/postgres',
     username: 'postgres',
-    dialect: 'postgres'
+    dialect: 'postgres',
+    database: 'postgres',
+    logging: false
   },
   production: {
     database_url: process.env.DATABASE_URL,

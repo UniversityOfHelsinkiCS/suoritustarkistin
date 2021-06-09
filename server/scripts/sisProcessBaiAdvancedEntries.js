@@ -40,8 +40,10 @@ const processBaiAdvancedEntries = async ({
       }
     })
 
+    const registeredIncluded = true
+
     const registrations = await getRegistrations(course.courseCode)
-    const rawCompletions = await getCompletions(job.slug || course.courseCode)
+    const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
     const completions = rawCompletions.filter((completion) => {
       if (!completion.tier === Number(3)) return false

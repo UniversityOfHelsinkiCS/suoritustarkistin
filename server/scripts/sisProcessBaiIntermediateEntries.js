@@ -35,7 +35,8 @@ const processBaiIntermediateEntries = async ({
     })
 
     const registrations = await getRegistrations(course.courseCode)
-    const rawCompletions = await getCompletions(job.slug || course.courseCode)
+    const registeredIncluded = true
+    const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
     // If a completion with same or more credits if found, the new 
     // completion won't replace it

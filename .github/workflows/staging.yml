@@ -1,0 +1,48 @@
+name: Release staging
+
+
+on:
+  push:
+    branches: 
+      - trunk
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-20.04
+    container: cypress/browsers:node12.13.0-chrome78-ff70
+    strategy:
+      matrix:
+        node: [10]
+
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432/5432
+        environment:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run test:setup
+          start: npm run test:start
+          command: npm run cypress:test
+          wait-on: 'http://localhost:8000'
+          wait-on-timeout: 120
+        env:
+          SUOTAR_TOKEN: token
+          NODE_ENV: test
+
+
+

@@ -8,7 +8,8 @@
     "build": "webpack",
     "start": "node index.js",
     "start:dev": "nodemon index.js",
-    "lint": "eslint . --fix",
+    "lint": "eslint .",
+    "lintfix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
     "stats": "webpack --mode production --json --optimize-minimize > stats.json",
     "db:create": "sequelize db:create",
@@ -103,7 +104,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
+      "pre-push": "npm run lint"
     }
   },
   "nodemonConfig": {

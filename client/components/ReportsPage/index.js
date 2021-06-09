@@ -78,21 +78,26 @@ export default ({ match }) => {
           />
         </Tab.Pane>
       )
-    },
-    {
-      menuItem: (
-        <Menu.Item key="pretty" data-cy="pretty-reports-tab">
-          <Icon name="tasks" />
-          OODI Reports
-        </Menu.Item>
-      ),
-      render: () => (
-        <Tab.Pane>
-          <Reports />
-        </Tab.Pane>
-      )
     }
   ]
+
+  if (!user.adminMode) {
+    panes = [...panes,
+      {
+        menuItem: (
+          <Menu.Item key="pretty" data-cy="pretty-reports-tab">
+            <Icon name="tasks" />
+            OODI Reports
+          </Menu.Item>
+        ),
+        render: () => (
+          <Tab.Pane>
+            <Reports />
+          </Tab.Pane>
+        )
+      }
+    ]
+  }
 
   if (user.adminMode) {
     const autoReportsCount = new Set(sisReports.data

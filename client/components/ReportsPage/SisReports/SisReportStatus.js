@@ -30,7 +30,7 @@ const SisReportStatus = ({ batch }) => {
   const formattedDate = moment(sentDate).format("DD.MM.YYYY")
   const hasSuccessfullySentEntries = batch.some(({ entry }) => !entry.errors && entry.sent)
   const amountOfErrors = batch.filter(({ entry }) => entry.errors).length
-  const amountMissingFromSisu = batch.filter(({ entry }) => entry.registered === 'NOT_REGISTERED' && entry.sent).length
+  const amountMissingFromSisu = batch.filter(({ entry }) => entry.registered === 'NOT_REGISTERED' && entry.sent && !entry.errors).length
   const missingEnrollments = batch.filter(({ entry }) => entry.missingEnrolment).length
 
   const getMissing = () => hasSuccessfullySentEntries && amountMissingFromSisu ? (

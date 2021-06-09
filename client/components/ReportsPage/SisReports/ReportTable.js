@@ -170,14 +170,19 @@ const EntryCells = ({ entry }) => {
 
 
 const parseEntryError = (error) => {
+  const errors = []
   try {
-    const { messageTemplate, message, path } = error
-    if (!sisuErrorMessages[messageTemplate] || !path)
-      return message
-    return `${sisuErrorMessages[messageTemplate]} in attribute ${path.split(".")[2]}`
+    Object.keys(error).forEach((key) => {
+      const { messageTemplate, message } = error[key]
+      if (!sisuErrorMessages[messageTemplate]) {
+        errors.push(message)
+      } else
+        errors.push(sisuErrorMessages[messageTemplate])
+    })
   } catch (e) {
     return 'Click to view full error'
   }
+  return errors.join(", ")
 }
 
 const MinimalExpand = ({ title, content }) => {

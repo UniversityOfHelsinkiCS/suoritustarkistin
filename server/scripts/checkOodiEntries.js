@@ -1,4 +1,4 @@
-const hasOodiEntry = require('../services/oodikone')
+// const hasOodiEntry = require('../services/oodikone')
 const { postRegistrations } = require('../services/pointsmooc')
 const Sequelize = require('sequelize')
 const db = require('../models/index')
@@ -24,11 +24,14 @@ const checkOodiEntries = async () => {
     })
     logger.info(`Found ${unregisteredCredits.length} unchecked credits`)
 
-    const confirmations = await unregisteredCredits.reduce(
+    const faultyStudentNumbers = ['014226385', '014732571', '014374078', '0154210102']
+
+    const allUnregistered = unregisteredCredits.length < 101 ? unregisteredCredits : unregisteredCredits.slice(0,100)
+    const confirmations = await allUnregistered.reduce(
       async (accPromise, credit) => {
         const acc = await accPromise
         try {
-          const hasEntry = await hasOodiEntry(credit.studentId, credit.courseId)
+          const hasEntry = !faultyStudentNumbers.includes(String(credit.studentId))
           if (hasEntry) {
             return acc.concat({
               completion_id: credit.completionId,

@@ -37,13 +37,14 @@ const markAsRegistered = async (entries) => {
       id: { [Sequelize.Op.in]: registeredIds }
     }
   })
-  return partlyAffected + registeredAffected
+  return parseInt(partlyAffected) + parseInt(registeredAffected)
 }
 
 const checkAllEntriesFromSisu = async () => {
   const entries = await db.entries.findAll({
     where: {
       registered: { [Sequelize.Op.eq]: 'NOT_REGISTERED' },
+      errors: { [Sequelize.Op.eq]: null },
       sent: { [Sequelize.Op.not]: null }
     }
   })

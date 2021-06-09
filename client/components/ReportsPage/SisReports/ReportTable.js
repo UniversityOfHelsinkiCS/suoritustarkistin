@@ -23,7 +23,7 @@ const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
   return false
 }
 
-export default ({ rows, courses }) => {
+export default ({ rows }) => {
   const user = useSelector((state) => state.user.data)
 
   if (!rows.length)
@@ -36,7 +36,6 @@ export default ({ rows, courses }) => {
       key={rows[0].batchId}
       user={user}
       rawEntries={rows}
-      courses={courses}
     />
   </Table>
 }
@@ -64,10 +63,10 @@ const TableColumns = ({ allowDelete }) => (
   </Table.Header>
 )
 
-const TableBody = ({ user, rawEntries, courses }) => {
+const TableBody = ({ user, rawEntries }) => {
   return <Table.Body data-cy="sis-report-table">
     {rawEntries.map((rawEntry) => {
-      const course = courses.find((c) => rawEntry.courseId === c.id) || PLACEHOLDER_COURSE
+      const course = rawEntry.course || PLACEHOLDER_COURSE
       return <React.Fragment key={`row-${rawEntry.id}`}>
         <Table.Row warning={rawEntry.entry.missingEnrolment}>
           <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, course)}</Table.Cell>

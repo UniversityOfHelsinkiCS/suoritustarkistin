@@ -73,7 +73,7 @@ const TableBody = ({ user, rawEntries }) => {
           <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
           <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
-          <Table.Cell>{rawEntry.grader.name}</Table.Cell>
+          <Table.Cell>{rawEntry.grader ? rawEntry.grader.name : 'Grader not found'}</Table.Cell>
           <EntryCells entry={rawEntry.entry} />
           {allowDelete(user, rawEntry)
             ? <Table.Cell>

@@ -77,7 +77,7 @@ const checkRegisteredForMooc = async () => {
 
     const completionStudentPairs = unregistered.reduce(
       (completionStudentPairs, rawEntry) => {
-        const alreadyInSis = rawEntry.entry && rawEntry.entry.registered
+        const alreadyInSis = rawEntry.entry && (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED') 
         if (alreadyInSis) {
           return completionStudentPairs.concat({
             completion_id: rawEntry.moocCompletionId,

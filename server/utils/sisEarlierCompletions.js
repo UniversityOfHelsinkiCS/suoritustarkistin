@@ -43,7 +43,7 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, newDate) =
   return true
 }
 
-const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber) => {
+const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, newDate) => {
   if (!allEarlierAttainments) return false
   const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
 
@@ -55,48 +55,51 @@ const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber) => {
   // No earlier completions for old or new BAI, Intermediate can be given
   if (!earlierAttainments) return false
 
+  const formattedDate = moment(newDate).format('YYYY-MM-DD')
+
   // Intermediate level already completed, no Intermediate credit can be given
-  if (earlierAttainments.some((a) => Number(a.credits) >= 1 && a.grade.passed && !a.misregistration)) {
-    return true
-  }
-
-  return false
-}
-
-const intermediateFound = (allEarlierAttainments, studentNumber) => {
-  const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
-
-  // Map student's earlier attainments for old and new BAI
-  const earlierAttainments = studentsAttainments.length
-    ? studentsAttainments.reduce((attainments, pair) => attainments.concat(pair.attainments), [])
-    : undefined
-
-  // No earlier completions for BAI, so Advanced credit cannot be given.
-  if (!earlierAttainments) return false
+  if (earlierAttainments.some(
+    (a) =>
+      Number(a.credits) >= 1
+      && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
+      && a.grade.passed
+      && !a.misregistration
+    )
+  ) return true
   
-  // Earlier completion with 2 credits from BAI, i.e. course fully completed, no Advanced credit should be given
-  if (earlierAttainments.some((a) => Number(a.credits) >= 2 && !a.misregistration)) return false
-
-  // Earlier completion with 1 credits correctly from new or old BAI, Advanced credit can be given
-  if (earlierAttainments.some((a) => a.grade.passed && a.credits === 1 && !a.misregistration)) return true
-
   return false
 }
 
-const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber) => {
+const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, newDate) => {
   const advancedStudent = advancedAttainments.find((a) => a.studentNumber === studentNumber)
   const earlierAdvancedAttainments = advancedStudent ? advancedStudent.attainments : undefined
 
+  const formattedDate = moment(newDate).format('YYYY-MM-DD')
+
   // Earlier completion for Advanced course, no credit can be given
-  if (earlierAdvancedAttainments && earlierAdvancedAttainments.some((a) => a.grade.passed && a.credits >= 1 && !a.misregistration)) return true
+  if (earlierAdvancedAttainments && earlierAdvancedAttainments.some(
+    (a) =>
+      a.grade.passed
+      && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
+      && a.credits >= 1
+      && !a.misregistration
+    )
+  ) return true
 
   const baiStudent = oldBaiAttainments.find((a) => a.studentNumber === studentNumber)
   const earlierBaiAttainments = baiStudent ? baiStudent.attainments : undefined
 
   // Earlier 2 credit completion for old Building AI -course, no new credits can be given
-  if (earlierBaiAttainments && earlierBaiAttainments.some((a) => a.grade.passed && a.credits >= 2 && !a.misregistration)) return true
+  if (earlierBaiAttainments && earlierBaiAttainments.some(
+    (a) =>
+      a.grade.passed
+      && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
+      && a.credits >= 2
+      && !a.misregistration
+    )
+  ) return true
 
   return false
 }
 
-module.exports = { isImprovedGrade, earlierBaiCompletionFound, intermediateFound, advancedFound }
+module.exports = { isImprovedGrade, earlierBaiCompletionFound, advancedFound }

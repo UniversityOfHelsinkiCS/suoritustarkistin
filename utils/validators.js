@@ -170,7 +170,7 @@ const sisIsValidLanguage = (language) => {
 const sisIsValidRow = (row, date) => {
   if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
-  if (!row.grade || (row.grade && !sisIsValidGrade(row.grade))) return false
+  if (row.grade && !sisIsValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
   if (row.language && !sisIsValidLanguage(row.language)) return false
   if ((row.attainmentDate && !sisIsValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !sisIsValidDate(date))) return false

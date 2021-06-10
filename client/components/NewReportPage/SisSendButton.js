@@ -7,14 +7,22 @@ import { sisAreValidNewRawEntries } from 'Root/utils/validators'
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
 
+  const defaultGrade = rawEntries.defaultGrade
   return {
     ...rawEntries,
     data: rawEntries.data.map((row) => {
-      if (row.registration) {
+      if (row.registration && !row.grade) {
         return {
           ...row,
+          grade: defaultGrade ? 'Hyv.' : null,
           studentId: row.registration.onro,
           registration: undefined
+        }
+      }
+      if (!row.grade && defaultGrade) {
+        return {
+          ...row,
+          grade: 'Hyv.'
         }
       }
       return row
@@ -37,7 +45,7 @@ export default () => {
   const course = courses.find((c) => c.id === newRawEntries.courseId)
 
   const sendRawEntries = () => {
-    dispatch(sendNewRawEntriesAction(newRawEntries))
+    dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
     closeModal()
   }
 

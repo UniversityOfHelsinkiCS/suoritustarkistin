@@ -17,7 +17,6 @@ describe('New sis-entries can be added correctly', function () {
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10001]').click()
-    cy.get('[data-cy=sis-report-course-code-1]').should('contain', 'TKT10001')
     cy.get('[data-cy=sis-report-student-number-1]').should('contain', '011111111')
 
     // Emulate sending two new entries in the same batch

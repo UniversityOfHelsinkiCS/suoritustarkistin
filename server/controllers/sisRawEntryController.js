@@ -11,8 +11,8 @@ const handleDatabaseError = (res, error) => {
 
 const addRawEntries = async (req, res) => {
 
+  const transaction = await db.sequelize.transaction()
   try {
-    const transaction = await db.sequelize.transaction()
     if (!req.user.isGrader && !req.user.isAdmin) {
       throw new Error('User is not authorized to report credits.')
     }
@@ -60,6 +60,7 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ message: "Processing new completions failed", failed: result.failed })
     }
   } catch (error) {
+    await transaction.rollback()
     handleDatabaseError(res, error)
   }
 }

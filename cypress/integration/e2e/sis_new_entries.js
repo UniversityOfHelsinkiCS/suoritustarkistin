@@ -67,9 +67,7 @@ describe('New sis-entries can be added correctly', function () {
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=sis-report-TKT10002]').click()
     cy.get('[data-cy=sis-report-table]').its('length').should('eq', 2)
-    cy.get('[data-cy=sis-report-course-code-2]').should('contain', 'TKT10002')
     cy.get('[data-cy=sis-report-student-number-2]').should('contain', '011000002')
-    cy.get('[data-cy=sis-report-course-code-3]').should('contain', 'TKT10002')
     cy.get('[data-cy=sis-report-student-number-3]').should('contain', '010000003')
   })
 

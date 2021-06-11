@@ -40,8 +40,10 @@ const processBaiAdvancedEntries = async ({
       }
     })
 
+    const registeredIncluded = true
+
     const registrations = await getRegistrations(course.courseCode)
-    const rawCompletions = await getCompletions(job.slug || course.courseCode)
+    const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
     const completions = rawCompletions.filter((completion) => {
       if (!completion.tier === Number(3)) return false
@@ -110,7 +112,7 @@ const processBaiAdvancedEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro)) {
+          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, completion.completion_date)) {
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches

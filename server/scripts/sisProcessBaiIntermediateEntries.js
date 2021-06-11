@@ -35,7 +35,8 @@ const processBaiIntermediateEntries = async ({
     })
 
     const registrations = await getRegistrations(course.courseCode)
-    const rawCompletions = await getCompletions(job.slug || course.courseCode)
+    const registeredIncluded = true
+    const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
     // If a completion with same or more credits if found, the new 
     // completion won't replace it
@@ -91,7 +92,7 @@ const processBaiIntermediateEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-          if (await earlierBaiCompletionFound(earlierAttainments, registration.onro)) {
+          if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, completion.completion_date)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches

@@ -23,7 +23,7 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 /teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
 `
 
-const reportContents = (report, dispatch, courses, user, openAccordions, batchLoading) => {
+const reportContents = (report, dispatch, user, openAccordions, batchLoading) => {
   if (!report) return null
 
   const batchSent = report.some(({ entry }) => entry.sent)
@@ -41,7 +41,6 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
         <Accordion.Content>
           <ReportTable
             rows={entriesWithoutErrors}
-            courses={courses}
             allowDelete={false} // Never allow delete for successfully sent entries
           />
         </Accordion.Content>
@@ -57,7 +56,6 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
         <Accordion.Content>
           <ReportTable
             rows={entriesNotSentOrErroneous}
-            courses={courses}
             allowDelete={user.adminMode}
           />
         </Accordion.Content>
@@ -116,7 +114,6 @@ const reportContents = (report, dispatch, courses, user, openAccordions, batchLo
           !batchSent
             ? <ReportTable
               rows={report}
-              courses={courses}
               allowDelete={user.adminMode && !batchSent}
             />
             : <Accordion.Accordion
@@ -145,7 +142,6 @@ const title = (batch) => {
 }
 
 export default withRouter(({ reports, user }) => {
-  const courses = useSelector((state) => state.courses.data)
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const batchLoading = useSelector((state) => state.sisReports.singleBatchPending)
   const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false, search: '' })
@@ -169,7 +165,7 @@ export default withRouter(({ reports, user }) => {
       return {
         key: `panel-${index}`,
         title: title(reportWithEntries),
-        content: reportContents(reportWithEntries, dispatch, courses, user, openAccordions, batchLoading),
+        content: reportContents(reportWithEntries, dispatch, user, openAccordions, batchLoading),
         onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
       }
     })

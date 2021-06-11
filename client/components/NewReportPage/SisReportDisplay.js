@@ -94,7 +94,7 @@ const getStudentIdCell = (studentId, registration, duplicate) => {
   )
 }
 
-const getGradeCell = (grade) => {
+const getGradeCell = (grade, defaultGrade) => {
   if (grade) {
     if (sisIsValidGrade(grade)) {
       return <Table.Cell style={validStyle}>{grade}</Table.Cell>
@@ -105,7 +105,14 @@ const getGradeCell = (grade) => {
         {grade}
       </Table.Cell>
     )
+  } else if (!grade && defaultGrade) {
+    return (
+      <Table.Cell style={validStyle}>
+        Hyv.
+      </Table.Cell>
+    )
   }
+  
   return (
     <Table.Cell style={invalidStyle}>
       <Icon name="ban" />
@@ -226,6 +233,7 @@ export default () => {
   const grader = graders.find(
     (g) => g.employeeId === newRawEntries.graderId
   )
+  const defaultGrade = newRawEntries.defaultGrade
   const course = courses.find((c) => c.id === newRawEntries.courseId)
   const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
 
@@ -236,7 +244,7 @@ export default () => {
         ? getOpenUniCourseCell(course)
         : getCourseCell(course)}
       {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
-      {getGradeCell(row.grade)}
+      {getGradeCell(row.grade, defaultGrade)}
       {getCreditCell(row.credits, course)}
       {getLanguageCell(row.language, course)}
       {grader ? (

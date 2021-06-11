@@ -32,6 +32,7 @@ const sisGetAllReports = async (req, res) => {
       include: [
         { model: db.entries, as: 'entry', include: ['sender'] },
         { model: db.users, as: 'reporter' },
+        { model: db.users, as: 'grader' },
         { model: db.courses, as: 'course' }
       ],
       order: [['createdAt', 'DESC']]
@@ -48,7 +49,9 @@ const sisGetUsersReports = async (req, res) => {
       where: { graderId: req.user.id },
       include: [
         { model: db.entries, as: 'entry', include: ['sender'] },
-        { model: db.users, as: 'reporter' }
+        { model: db.users, as: 'grader' },
+        { model: db.users, as: 'reporter' },
+        { model: db.courses, as: 'course' }
       ],
       order: [['createdAt', 'DESC']]
     })

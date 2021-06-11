@@ -6,6 +6,7 @@ const initialState = {
   rawData: '',
   data: null, 
   courseId: null,
+  defaultGrade: false,
   date: new Date()
 }
 
@@ -40,6 +41,7 @@ export default (state = initialState, action) => {
         data: null,
         courseId: null,
         sending: false,
+        defaultGrade: false,
         rawData: '',
         error: ''
       }
@@ -63,6 +65,7 @@ export default (state = initialState, action) => {
     case 'LOGIN_SUCCESS':
       return {
         courseId: null,
+        defaultGrade: false,
         graderId: action.response.employeeId,
         data: null,
         sending: false,

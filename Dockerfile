@@ -5,6 +5,7 @@ RUN echo "Europe/Helsinki" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
 
 ARG BASE_PATH
+ARG GITHUB_SHA
 ENV BASE_PATH=$BASE_PATH
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
@@ -19,7 +20,7 @@ RUN npm ci --only=production
 RUN curl -sL https://sentry.io/get-cli/ | bash
 
 COPY . .
-RUN SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
+RUN SENTRY_RELEASE=$GITHUB_SHA && \
     echo "${SENTRY_RELEASE}" > /SENTRY_RELEASE && \
     SENTRY_RELEASE="${SENTRY_RELEASE}" npm run build
 

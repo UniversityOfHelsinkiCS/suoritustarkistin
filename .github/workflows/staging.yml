@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           tags: 'trunk'
-          build_args: |
+          build-args: |
             BASE_PATH=/staging/suoritustarkistin/
             NODE_ENV=staging
 

@@ -38,4 +38,4 @@ jobs:
           build_args: |
             BASE_PATH=/staging/suoritustarkistin/
             NODE_ENV=staging
-            ARG=$GITHUB_SHA
+

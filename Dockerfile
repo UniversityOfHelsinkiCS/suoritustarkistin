@@ -21,6 +21,6 @@ RUN curl -sL https://sentry.io/get-cli/ | bash
 COPY . .
 RUN SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
     echo "${SENTRY_RELEASE}" > /SENTRY_RELEASE && \
-    SENTRY_RELEASE="${SENTRY_RELEASE}" NODE_ENV="${NODE_ENV}" npm run build
+    SENTRY_RELEASE="${SENTRY_RELEASE}" npm run build
 
 CMD ["npm", "start"]

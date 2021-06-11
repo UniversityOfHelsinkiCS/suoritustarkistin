@@ -38,9 +38,11 @@ Grade can be a number (0, 1, 2, 3, 4, 5), "Hyv." or "Hyl." (Hyv. = hyväksytty =
 011100009;5
 011110002;0;;fi
 ```
-On the first row, all details are filled in. The second row has no credits, meaning it will default to whatever the course default for the amount of credits is.
+On the first row, all details are filled in. The second row has no explicitly set credits. This student will therefore receive the default amount of credits set for this course.
 
-Third row only gives the student id and grade =5, and everything else is filled based on the course details. On the fourth row the completion is marked as failed (grade = 0), and being in Finnish.
+Third row only gives the studentnumber and grade (5), and everything else is filled based on the course details. On the fourth row the completion is marked as failed (grade = 0), and being in Finnish.
+
+Any details and validation errors can be seen in the table below the copy-paste-field.
 
 ### Enrolment limbo
 
@@ -61,7 +63,8 @@ There are a bunch courses with automatic reporting. These are courses that come 
 2. Make sure you have a .env-file with the necessary variables in the project root
 3. ```npm install```
 4. ```npm run dev```
-5. Open localhost:8000
+5. Open [localhost:8000](localhost:8000)
+6. Dev-database can be viewed at: [localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public)
 
 ### Program Logic
 - [Sequence diagram for the EoAI weekly script](documentation/Suotar_Weekly_EoAI_Credit_Markup_Script.png)

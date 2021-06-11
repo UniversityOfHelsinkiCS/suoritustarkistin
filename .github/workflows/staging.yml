@@ -2,26 +2,26 @@ name: Build, test and release staging
 
 on:
   push:
-    branches: 
+    branches:
       - trunk
 
 jobs:
-  # build-and-test:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-
-  #     - name: Tests
-  #       run: npm run test
-
-  publish:
+  build-and-test:
     runs-on: ubuntu-20.04
-    # needs: build-and-test
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        
+
+      - name: Tests
+        run: npm run test
+
+  publish:
+    runs-on: ubuntu-20.04
+    needs: build-and-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -38,3 +38,18 @@ jobs:
             BASE_PATH=/staging/suoritustarkistin/
             NODE_ENV=staging
 
+  notify:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Notify failed
+        if: failure()
+        env:
+          SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
+        run: |
+          curl --silent -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Test run failed on *'${GITHUB_REF##*/}'* :kurkkumopo:","emoji":true}},{"type":"section","text":{"type":"mrkdwn","text":"Uh oh, test run by *'$GITHUB_ACTOR'* failed on branch '${GITHUB_REF##*/}'."},"accessory":{"type":"image","image_url":"https://cataas.com/cat/fail?_='$GITHUB_RUN_ID'","alt_text":"cat failing"}}]}' "$SLACKBOT_URL"
+      - name: Notify success
+        if: success()
+        env:
+          SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
+        run: |
+          curl --silent -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":"Suotar *'${GITHUB_REF##*/}'* started deployment by *'$GITHUB_ACTOR'* \n\n '${{ github.event.head_commit.message }}'"},"accessory":{"type":"image","image_url":"https://cataas.com/cat/gif?_='$GITHUB_RUN_ID'","alt_text":"cute cat"}},{"type":"actions","elements":[{"type":"button","text":{"type":"plain_text","text":"Open Suotar :suotar:","emoji":true},"url":"https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/"},{"type":"button","text":{"type":"plain_text","text":"Github","emoji":true},"url":"https://github.com/UniversityOfHelsinkiCS/suoritustarkistin"}]}]}" ${SLACKBOT_URL}

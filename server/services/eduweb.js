@@ -1,5 +1,6 @@
 const axios = require('axios')
 const logger = require('@utils/logger')
+const moment = require('moment')
 
 const eduwebGet = async (course) => {
   const { data } = await axios.get(`${process.env.EDUWEB_URL}${course}`, {
@@ -24,9 +25,12 @@ const getMultipleCourseRegistrations = async (courseNames) => {
 
 const getRegistrations = async (course) => {
   logger.info({ message: `Fetching registrations for course ${course} from eduweb` })
-  const instances = await eduwebGet(course)
+  const allInstances = await eduwebGet(course)
 
-  const registrations = await instances.reduce(async (accPromise, instance) => {
+  // Filter out instances that have ended more than 50 days ago
+  const recentInstances = allInstances.filter((instance) => moment(new Date()).diff(instance.loppupvm, 'days') < 50)
+
+  const registrations = await recentInstances.reduce(async (accPromise, instance) => {
     const instanceRegistrations = await eduwebGet(instance.url)
     const acc = await accPromise
 

@@ -106,11 +106,11 @@ const isValidHYCourseCode = (courseCode) =>
 const isValidComboCourseCode = (courseCode) => {
   if (!courseCode) return false
   const courses = courseCode.split('+')
-  const firstCourse = courses[0] ? courses[0].trim() : null
-  const secondCourse = courses[1] ? courses[1].trim() : null
-  const isFirstValidCourseCode = isValidOpenCourseCode(firstCourse) || isValidHYCourseCode(firstCourse)
-  const isSecondValidCourseCode = isValidOpenCourseCode(secondCourse) || isValidHYCourseCode(secondCourse)
-  return isFirstValidCourseCode && isSecondValidCourseCode
+  const ayCourse = courses[0] ? courses[0].trim() : null
+  const tktCourse = courses[1] ? courses[1].trim() : null
+  const isValidAyCourse = isValidOpenCourseCode(ayCourse)
+  const isValidTktCourse = isValidHYCourseCode(tktCourse)
+  return isValidAyCourse && isValidTktCourse
 }
 
 const isValidCourseCode = (courseCode) =>

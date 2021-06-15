@@ -12,9 +12,12 @@ const getCourseRegistrations = async (req, res) => {
       return res.status(403).end()
     if (!course.isMooc && !course.autoSeparate) return res.status(404).end()
 
-    const courseCode = course.autoSeparate
-      ? `AY${course.courseCode}`
-      : course.courseCode
+    let courseCode = course.courseCode
+
+    if (course.autoSeparate) {
+      const courses = course.courseCode.split('+')
+      courseCode = courses[0] ? courses[0].trim() : undefined
+    }
 
     const registrations = await getRegistrations(courseCode)
     res.status(200).json(registrations)

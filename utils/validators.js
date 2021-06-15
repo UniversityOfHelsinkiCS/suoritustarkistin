@@ -103,8 +103,18 @@ const isValidOpenCourseCode = (courseCode) =>
 const isValidHYCourseCode = (courseCode) =>
   /^(TKT|BSCS|CSM|MAT|DATA)[A-Za-z0-9-]{3,6}$/.test(courseCode)
 
+const isValidComboCourseCode = (courseCode) => {
+  if (!courseCode) return false
+  const courses = courseCode.split('+')
+  const ayCourse = courses[0] ? courses[0].trim() : null
+  const tktCourse = courses[1] ? courses[1].trim() : null
+  const isValidAyCourse = isValidOpenCourseCode(ayCourse)
+  const isValidTktCourse = isValidHYCourseCode(tktCourse)
+  return isValidAyCourse && isValidTktCourse
+}
+
 const isValidCourseCode = (courseCode) =>
-  isValidOpenCourseCode(courseCode) || isValidHYCourseCode(courseCode)
+  isValidOpenCourseCode(courseCode) || isValidHYCourseCode(courseCode) || isValidComboCourseCode(courseCode)
 
 
 const areValidGraders = (graders) => {
@@ -119,7 +129,7 @@ const isValidGradeScale = (gradeScale) => {
 }
 
 const isValidCourse = (course) => {
-  if (course.autoSeparate && !isValidHYCourseCode(course.courseCode))
+  if (course.autoSeparate && !isValidComboCourseCode(course.courseCode))
     return false
   if (
     !course.autoSeparate &&
@@ -227,6 +237,7 @@ module.exports = {
   isValidCourse,
   isValidHYCourseCode,
   isValidOpenCourseCode,
+  isValidComboCourseCode,
   isValidCourseCode,
   isValidJob,
   isValidSchedule

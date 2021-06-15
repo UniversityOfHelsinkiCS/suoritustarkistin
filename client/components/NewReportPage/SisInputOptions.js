@@ -29,9 +29,7 @@ const formatGradersForSelection = (data) => {
 const formatCoursesForSelection = (data) => {
   const courses = data.map((c) => ({
     key: c.id,
-    text: c.autoSeparate
-      ? `${c.name} (${c.courseCode} + AY${c.courseCode})`
-      : `${c.name} (${c.courseCode})`,
+    text: `${c.name} (${c.courseCode})`,
     value: c.id
   }))
   if (courses) return _.sortBy(courses, ['text'])

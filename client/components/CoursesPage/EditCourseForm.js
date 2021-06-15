@@ -13,7 +13,7 @@ import { editCourseAction, getResponsiblesAction, resetResponsibles } from 'Util
 import {
   isValidCourse,
   isValidOpenCourseCode,
-  isValidHYCourseCode,
+  isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
   isValidLanguage
@@ -54,7 +54,7 @@ export default ({ course, close: closeModal }) => {
   }
 
   const hasValidCourseCode = (code) => {
-    if (data.autoSeparate) return isValidHYCourseCode(code)
+    if (data.autoSeparate) return isValidComboCourseCode(code)
     if (data.isMooc) return isValidOpenCourseCode(code)
     return isValidCourseCode(code)
   }
@@ -81,6 +81,7 @@ export default ({ course, close: closeModal }) => {
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
           icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
+        <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx"</p>
         <Form.Field
           required={true}
           control={Input}

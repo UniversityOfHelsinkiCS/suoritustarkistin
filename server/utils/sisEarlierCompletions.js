@@ -64,7 +64,7 @@ const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, newDate
       && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
       && a.grade.passed
       && !a.misregistration
-    )
+  )
   ) return true
   
   return false
@@ -83,7 +83,7 @@ const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, ne
       && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
       && a.credits >= 1
       && !a.misregistration
-    )
+  )
   ) return true
 
   const baiStudent = oldBaiAttainments.find((a) => a.studentNumber === studentNumber)
@@ -96,7 +96,7 @@ const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, ne
       && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
       && a.credits >= 2
       && !a.misregistration
-    )
+  )
   ) return true
 
   return false

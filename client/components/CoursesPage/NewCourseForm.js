@@ -13,7 +13,7 @@ import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utili
 import {
   isValidCourse,
   isValidOpenCourseCode,
-  isValidHYCourseCode,
+  isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
   isValidLanguage
@@ -50,7 +50,7 @@ export default ({ close: closeModal }) => {
   }
 
   const hasValidCourseCode = (code) => {
-    if (data.autoSeparate) return isValidHYCourseCode(code)
+    if (data.autoSeparate) return isValidComboCourseCode(code)
     if (data.isMooc) return isValidOpenCourseCode(code)
     return isValidCourseCode(code)
   }
@@ -79,6 +79,7 @@ export default ({ close: closeModal }) => {
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
           icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
+        <p style={{ color: "gray" }}>When adding a combocourse, separate the course codes with a "+"</p>
         <Form.Field
           data-cy="add-course-language"
           required={true}

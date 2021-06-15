@@ -79,7 +79,7 @@ export default ({ close: closeModal }) => {
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
           icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
-        <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx"</p>
+        <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx". AY-coded should be first.</p>
         <Form.Field
           data-cy="add-course-language"
           required={true}

@@ -1,5 +1,4 @@
 const moment = require('moment')
-const { Op } = require("sequelize")
 const db = require('../models/index')
 const {
   isValidStudentId,
@@ -66,18 +65,22 @@ const processManualEntry = async ({
   let tktCourse = undefined
 
   if (originalCourse.autoSeparate) {
+    const courses = originalCourse.courseCode.split('+')
+
+    const firstCourse = courses[0] ? courses[0].trim() : undefined
+    const secondCourse = courses[1] ? courses[1].trim() : undefined
+
+    if (!firstCourse || !secondCourse) throw new Error('Erroneous coursecode for a combocourse') 
+
     ayCourse = await db.courses.findOne({
       where: {
-        courseCode: `AY${originalCourse.courseCode}`
+        courseCode: firstCourse.startsWith('AY') ? firstCourse : secondCourse
       }
     })
 
     tktCourse = await db.courses.findOne({
       where: {
-        [Op.and]: [
-          { courseCode: originalCourse.courseCode },
-          { autoSeparate: true }
-        ]
+        courseCode: firstCourse.startsWith('AY') ? secondCourse : firstCourse
       }
     })
 

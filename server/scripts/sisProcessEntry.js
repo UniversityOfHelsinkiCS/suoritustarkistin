@@ -182,6 +182,8 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   const now = moment()
   const filteredEnrolments = enrolments
     .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(now))
+    .filter((e) => e.courseUnitRealisation.name.fi && !e.courseUnitRealisation.name.fi.includes('MOOC Java'))
+    // Hacky solution to filter out MOOC Java enrolments, since there is no other way. Remove in the fall.
 
   if (!filteredEnrolments.length) return null
 

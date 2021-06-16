@@ -9,7 +9,7 @@ const {
   getStudents,
   getGrades,
   getEnrolments,
-  getEarlierAttainments
+  getEarlierAttainmentsWithoutSubstituteCourses
 } = require('../services/importer')
 
 /**
@@ -53,8 +53,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
     const { courseCode } = courses.find((c) => c.id === courseId)
     return ({ courseCode, studentNumber })
   })
-  const earlierAttainments = checkImprovements === true ? await getEarlierAttainments(courseStudentPairs) : []
-
+  const earlierAttainments = checkImprovements === true ? await getEarlierAttainmentsWithoutSubstituteCourses(courseStudentPairs) : []
   const studentCourseCodePairs = createdEntries.map((rawEntry) => ({
     personId: (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id,
     code: courses.find((course) => course.id === rawEntry.courseId).courseCode
@@ -69,7 +68,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
     const completionDate = moment(rawEntry.attainmentDate)
     const course = courses.find((c) => c.id === rawEntry.courseId)
     const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
-    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade, completionDate)
+    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade, completionDate, rawEntry.credits)
 
     if (!student) {
       failed.push({

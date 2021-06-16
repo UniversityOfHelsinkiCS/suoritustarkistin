@@ -1,49 +1,90 @@
 const moment = require("moment")
 
+
 /**
- * Return true if given grade is valid for student. That is, the student does not
- * already have a higher grade for the course, or for it's substitutions.
-**/
-const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, newDate) => {
+ * Return true if given grade is valid for student. That is any of:
+ *  1. Given grade is better than grade in earlier attainments
+ *  2. Given grade is same with greater credits than grade in earlier attainments
+ *  3. Given grade and credits is same with greater completion date than grade in earlier attainments
+ *  4. Given grade is exactly same as than grade in earlier attainments :wat:
+ */
+const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completionDate, credits) => {
   if (!allEarlierAttainments) return true
   const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
-  const earlierAttainments = student ? student.attainments : undefined
-  if (!earlierAttainments) return true
+  const earlierAttainments = student
+    ? student.attainments.filter((a) => !a.misregistration)
+    : undefined
+  if (!earlierAttainments || !earlierAttainments.length) return true
 
-  const formattedDate = moment(newDate).format('YYYY-MM-DD')
+  const sanitizedCredits = Number(credits.replace(",", "."))
+  const sanitizedGrade = Number(credits.replace(",", "."))
+  if (sanitizedGrade >= 1 && sanitizedGrade <= 5)
+    return checkNumericImprovement(earlierAttainments, sanitizedGrade, completionDate, sanitizedCredits)
 
-  if ([0,1,2,3,4,5].includes(Number(grade))) {
-    // If the grade is better, no matter the date, the credits are given
-    const existingBetterGrade = earlierAttainments.some((a) => a.grade.numericCorrespondence > Number(grade) && !a.misregistration)
+  if (grade === 'Hyv.')
+    return checkPassed(earlierAttainments, completionDate, sanitizedCredits)
 
-    // If the grade is the same, but date is older than some other attainment, no new credits are given
-    const existingNewerDate = earlierAttainments.some((a) => {
-      return a.grade.numericCorrespondence === Number(grade) && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate) && !a.misregistration
-    })
-    let newerFailed = false
-
-    // If the grade is 0, there is no numeric correspondence, so checking needs to be done with the passed-attribute
-    if (Number(grade) === 0) {
-      newerFailed = earlierAttainments.some((a) => !a.grade.passed && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate) && !a.misregistration)
-    }
-    if (existingBetterGrade || existingNewerDate || newerFailed) return false
-  }
-
-  if (['Hyl.', 'Hyv.'].includes(grade)) {
-    // If the grade is the same, but date is older than some other attainment, no new credits are given
-    const existingPassedAttainment = earlierAttainments.some((a) => a.grade.passed && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate) && !a.misregistration)
-
-    let newerFailed = false
-    if (grade === "Hyl.") {
-      newerFailed = earlierAttainments.some((a) => !a.grade.passed && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate) && !a.misregistration)
-    }
-    if (existingPassedAttainment || newerFailed) return false
-  }
-
-  return true
+  return checkFailed(earlierAttainments, completionDate, sanitizedCredits)
 }
 
-const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, newDate) => {
+const checkNumericImprovement = (earlierAttainments, grade, completionDate, credits) => {
+  if (earlierAttainments.some((a) => a.grade.numericCorrespondence < grade))
+    return true
+
+  if (earlierAttainments.some((a) => a.grade.numericCorrespondence === grade && Number(a.credits) < credits))
+    return true
+
+  // Same grade and credits but greater completion date
+  if (
+    earlierAttainments.filter((a) => a.grade.numericCorrespondence === grade &&
+      Number(a.credits) === credits)
+      .some((a) => completionDate.isSameOrAfter(moment(a.attainmentDate), 'day'))
+  )
+    return true
+
+  return false
+}
+
+const checkPassed = (earlierAttainments, completionDate, credits) => {
+  const completionDateMoment = moment(completionDate)
+
+  if (earlierAttainments.every((a) => !a.grade.passed))
+    return true
+
+  // Passed and new mark has greater credits
+  if (earlierAttainments.filter((a) => a.grade.passed).every((a) => Number(a.credits) < credits))
+    return true
+
+  // Passed with same credits but greater completion date
+  if (earlierAttainments
+    .filter((a) => a.grade.passed && Number(a.credits) === credits)
+    .some((a) => completionDateMoment.isSameOrAfter(moment(a.attainmentDate), 'day'))
+  )
+    return true
+
+  return false
+}
+
+const checkFailed = (earlierAttainments, completionDate, credits) => {
+  const completionDateMoment = moment(completionDate)
+  if (earlierAttainments.some((a) => a.grade.passed))
+    return false
+
+  // Failed and new mark has greater credits
+  if (earlierAttainments.filter((a) => !a.grade.passed).every((a) => Number(a.credits) < credits))
+    return true
+
+  // Failed with same credits but greater completion date
+  if (earlierAttainments
+    .filter((a) => !a.grade.passed && Number(a.credits) === credits)
+    .some((a) => completionDateMoment.isSameOrAfter(moment(a.attainmentDate), 'day'))
+  )
+    return true
+
+  return false
+}
+
+const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, completionDate) => {
   if (!allEarlierAttainments) return false
   const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
 
@@ -55,7 +96,7 @@ const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, newDate
   // No earlier completions for old or new BAI, Intermediate can be given
   if (!earlierAttainments) return false
 
-  const formattedDate = moment(newDate).format('YYYY-MM-DD')
+  const formattedDate = moment(completionDate).format('YYYY-MM-DD')
 
   // Intermediate level already completed, no Intermediate credit can be given
   if (earlierAttainments.some(
@@ -66,15 +107,15 @@ const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, newDate
       && !a.misregistration
   )
   ) return true
-  
+
   return false
 }
 
-const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, newDate) => {
+const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, completionDate) => {
   const advancedStudent = advancedAttainments.find((a) => a.studentNumber === studentNumber)
   const earlierAdvancedAttainments = advancedStudent ? advancedStudent.attainments : undefined
 
-  const formattedDate = moment(newDate).format('YYYY-MM-DD')
+  const formattedDate = moment(completionDate).format('YYYY-MM-DD')
 
   // Earlier completion for Advanced course, no credit can be given
   if (earlierAdvancedAttainments && earlierAdvancedAttainments.some(

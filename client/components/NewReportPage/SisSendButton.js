@@ -96,8 +96,8 @@ export default () => {
           />
         </div>
       }
-      content="Report contains validation errors, see table below."
-      disabled={!newRawEntries.data || sisAreValidNewRawEntries(parseRawEntries(newRawEntries))}
+      content={newRawEntries.data && newRawEntries.data.length > 100 ? 'Currently single report can contain max 100 completions' :"Report contains validation errors, see table below."}
+      disabled={!newRawEntries.data || sisAreValidNewRawEntries(parseRawEntries(newRawEntries) || newRawEntries.data && newRawEntries.data.length <= 100)}
       style={{ color: 'red' }}
     />
   </>

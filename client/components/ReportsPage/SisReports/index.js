@@ -23,6 +23,11 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 /teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
 `
 
+const getBatchLink = (id) => process.env.NODE_ENV === 'production'
+  ? `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
+  : `https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/reports/sisu/${id}`
+
+
 const reportContents = (report, dispatch, user, openAccordions, batchLoading) => {
   if (!report) return null
 
@@ -70,6 +75,11 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
     </a>
     : null
 
+  const CopyBatchLinkButton = ({ batchId }) => <Button onClick={() => { navigator.clipboard.writeText(getBatchLink(batchId)) }} icon>
+    <Icon name="copy" /> Copy link to report
+  </Button>
+
+
   const RefreshBatch = ({ report }) => <Button
     onClick={() => dispatch(
       refreshBatchStatus(report.map(({ entry }) => entry.id))
@@ -107,6 +117,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
             <RefreshBatch report={report} />
           </>
         )}
+        <CopyBatchLinkButton batchId={report[0].batchId} />
 
         {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 

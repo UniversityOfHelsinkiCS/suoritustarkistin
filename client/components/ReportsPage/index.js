@@ -25,15 +25,17 @@ export default ({ match }) => {
   const sisReports = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    if (user.adminMode) {
-      dispatch(getAllCoursesAction())
-      dispatch(sisGetAllReportsAction())
-    } else {
-      dispatch(sisGetUsersReportsAction(user.id))
-      dispatch(getUsersCoursesAction(user.id))
-      dispatch(getUsersReportsAction(user.id))
+    if (!sisReports.reportsFetched) {
+      if (user.adminMode) {
+        dispatch(getAllCoursesAction())
+        dispatch(sisGetAllReportsAction())
+      } else {
+        dispatch(sisGetUsersReportsAction(user.id))
+        dispatch(getUsersCoursesAction(user.id))
+        dispatch(getUsersReportsAction(user.id))
+      }
     }
-  }, [user])
+  }, [sisReports, user])
 
   useEffect(() => {
     if (match && match.params && loading && sisReports.data.length) {

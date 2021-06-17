@@ -94,7 +94,7 @@ const processEoaiEntries = async ({ grader }) => {
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.")) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.", completion.completion_date || date, courseVersion.credits)) {
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches

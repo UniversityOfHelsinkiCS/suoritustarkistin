@@ -11,7 +11,7 @@ const {
   inDevelopment,
   SHIBBOLETH_HEADERS
 } = require('@utils/common')
-const { requestLogger, parseUser, currentUser, errorMiddleware } = require('./utils/middleware')
+const { devRequestLogger, prodRequestLogger, parseUser, currentUser, errorMiddleware } = require('./utils/middleware')
 const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
@@ -49,7 +49,7 @@ initializeDatabaseConnection()
 
       app.use(parseUser)
       app.use(currentUser)
-      app.use(requestLogger)
+      app.use(devRequestLogger)
       app.use((req, res, next) => {
         res.on('finish', () => errorMiddleware(req, res, next))
         next()
@@ -82,6 +82,7 @@ initializeDatabaseConnection()
       app.use(express.static(DIST_PATH))
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
       app.use(Sentry.Handlers.errorHandler())
+      app.use(prodRequestLogger)
     }
     app.use((err, req, res) => {
       res.status(500).send(err.toString())

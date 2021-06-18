@@ -28,6 +28,8 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completion
 }
 
 const checkNumericImprovement = (earlierAttainments, grade, completionDate, credits) => {
+  const completionDateMoment = moment(completionDate)
+
   if (earlierAttainments.some((a) => a.grade.numericCorrespondence < grade))
     return true
 
@@ -38,7 +40,7 @@ const checkNumericImprovement = (earlierAttainments, grade, completionDate, cred
   if (
     earlierAttainments.filter((a) => a.grade.numericCorrespondence === grade &&
       Number(a.credits) === credits)
-      .some((a) => completionDate.isAfter(moment(a.attainmentDate), 'day'))
+      .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
   )
     return true
 

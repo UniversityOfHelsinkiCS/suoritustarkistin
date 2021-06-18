@@ -142,14 +142,14 @@ const processManualEntry = async ({
   })
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
-  const checkImprovements = true
+
   logger.info({
     message: 'Raw entries created successfully',
     amount: newRawEntries.length,
     course: originalCourse.courseCode,
     batchId
   })
-  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries, checkImprovements)
+  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries)
   if (!failed.length) {
     await db.entries.bulkCreate(success, { transaction })
     logger.info({

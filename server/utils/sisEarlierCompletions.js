@@ -10,6 +10,7 @@ const moment = require("moment")
  */
 const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completionDate, credits) => {
   if (!allEarlierAttainments) return true
+  if (!grade) return false
   const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
   const earlierAttainments = student
     ? student.attainments.filter((a) => !a.misregistration)
@@ -17,7 +18,7 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completion
   if (!earlierAttainments || !earlierAttainments.length) return true
 
   const sanitizedCredits = Number(credits.replace(",", "."))
-  const sanitizedGrade = Number(credits.replace(",", "."))
+  const sanitizedGrade = Number(grade.replace(",", "."))
   if (sanitizedGrade >= 1 && sanitizedGrade <= 5)
     return checkNumericImprovement(earlierAttainments, sanitizedGrade, completionDate, sanitizedCredits)
 
@@ -61,7 +62,7 @@ const checkPassed = (earlierAttainments, completionDate, credits) => {
   if (earlierAttainments
     .filter((a) => a.grade.passed && Number(a.credits) === credits)
     .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
-  )
+  ) 
     return true
 
   return false

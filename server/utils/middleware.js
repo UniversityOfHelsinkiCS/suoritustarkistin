@@ -49,26 +49,10 @@ const currentUser = async (req, res, next) => {
   next()
 }
 
-const requestLogger = (req, res) => {
+const errorMiddleware = (req, res) => {
   const { statusCode } = res
-  if (statusCode < 400) {
-    if (inProduction) {
-      logger.info({
-        requestLogger: true,
-        user: req.headers.uid,
-        method: req.method,
-        path: req.path,
-        body: JSON.stringify(req.body)
-      })
-    } else {
-      logger.info(`Method: ${req.method}`)
-      logger.info(`Path: ${req.path}`)
-      logger.info(`Body: ${JSON.stringify(req.body)}`)
-      logger.info(`User: ${req.headers.employeenumber}`)
-      logger.info('---')
-    }
+  if (statusCode < 400)
     return
-  }
 
   if (req.headers.uid === 'ohj_tosk')
     return
@@ -88,8 +72,30 @@ const requestLogger = (req, res) => {
   })
 }
 
+const prodRequestLogger = (req, res, next) => {
+  logger.info({
+    requestLogger: true,
+    user: req.headers.uid,
+    method: req.method,
+    path: req.path,
+    body: JSON.stringify(req.body)
+  })
+  next()
+}
+
+const devRequestLogger = (req, res, next) => {
+  logger.info(`Method: ${req.method}`)
+  logger.info(`Path: ${req.path}`)
+  logger.info(`Body: ${JSON.stringify(req.body)}`)
+  logger.info(`User: ${req.headers.employeenumber}`)
+  logger.info('---')
+  next()
+}
+
 module.exports = {
-  requestLogger,
+  devRequestLogger,
+  prodRequestLogger,
   parseUser,
-  currentUser
+  currentUser,
+  errorMiddleware
 }

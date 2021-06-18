@@ -77,7 +77,7 @@ const processEoaiEntries = async ({ grader }) => {
     )}`
     const date = new Date()
 
-    const matches = await completions.reduce(
+    let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
         if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)) {
@@ -120,6 +120,7 @@ const processEoaiEntries = async ({ grader }) => {
       []
     )
 
+    if (!matches) matches = []
     logger.info(`${EOAI_CODES[0]}: Found ${matches.length} new completions.`)
 
     const result = await automatedAddToDb(matches, courses[0], batchId)

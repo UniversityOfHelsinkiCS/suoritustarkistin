@@ -47,7 +47,7 @@ const processKurkiEntries = async ({
     )}`
     const date = new Date()
 
-    const matches = await completions.reduce(
+    let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
         if (!sisIsValidGrade(completion.grade)) {
@@ -87,6 +87,7 @@ const processKurkiEntries = async ({
       },
       []
     )
+    if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
   
     let result = await automatedAddToDb(matches, course, batchId, false)

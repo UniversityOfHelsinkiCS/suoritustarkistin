@@ -89,7 +89,7 @@ const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, complet
   const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
 
   // Map student's earlier attainments for old and new intermediate BAI
-  const earlierAttainments = studentsAttainments.length
+  const earlierAttainments = studentsAttainments && studentsAttainments.length
     ? studentsAttainments.reduce((attainments, pair) => attainments.concat(pair.attainments), [])
     : undefined
 

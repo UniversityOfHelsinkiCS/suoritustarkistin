@@ -72,18 +72,8 @@ const errorMiddleware = (req, res) => {
   })
 }
 
-const prodRequestLogger = (req, res, next) => {
-  logger.info({
-    requestLogger: true,
-    user: req.headers.uid,
-    method: req.method,
-    path: req.path,
-    body: JSON.stringify(req.body)
-  })
-  next()
-}
 
-const devRequestLogger = (req, res, next) => {
+const requestLogger = (req, res, next) => {
   logger.info(`Method: ${req.method}`)
   logger.info(`Path: ${req.path}`)
   logger.info(`Body: ${JSON.stringify(req.body)}`)
@@ -93,8 +83,7 @@ const devRequestLogger = (req, res, next) => {
 }
 
 module.exports = {
-  devRequestLogger,
-  prodRequestLogger,
+  requestLogger,
   parseUser,
   currentUser,
   errorMiddleware

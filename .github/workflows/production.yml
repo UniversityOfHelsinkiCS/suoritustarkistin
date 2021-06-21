@@ -1,9 +1,9 @@
-name: Build, test and release staging
+name: Build, test and release production
 
 on:
   push:
     branches:
-      - trunk
+      - master
 
 jobs:
   build-and-test:
@@ -32,11 +32,11 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          tags: toska/suoritustarkistin:trunk
+          tags: toska/suoritustarkistin:latest
           push: true
           build-args: |
-            BASE_PATH=/staging/suoritustarkistin/
-            NODE_ENV=staging
+            BASE_PATH=/suoritustarkistin/
+            NODE_ENV=production
 
   notify:
     runs-on: ubuntu-20.04
@@ -55,4 +55,4 @@ jobs:
           SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Suotar *${GITHUB_REF##*/}* started deployment by *$GITHUB_ACTOR* \n\n $COMMIT_MESSAGE\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif?_=$GITHUB_RUN_ID\",\"alt_text\":\"cute cat\"}},{\"type\":\"actions\",\"elements\":[{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Open Suotar :suotar:\",\"emoji\":true},\"url\":\"https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Github\",\"emoji\":true},\"url\":\"https://github.com/UniversityOfHelsinkiCS/suoritustarkistin\"}]}]}" "$SLACKBOT_URL"
+          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Suotar *${GITHUB_REF##*/}* started deployment by *$GITHUB_ACTOR* \n\n $COMMIT_MESSAGE\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif?_=$GITHUB_RUN_ID\",\"alt_text\":\"cute cat\"}},{\"type\":\"actions\",\"elements\":[{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Open Suotar :suotar:\",\"emoji\":true},\"url\":\"https://opetushallinto.cs.helsinki.fi/suoritustarkistin/\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Github\",\"emoji\":true},\"url\":\"https://github.com/UniversityOfHelsinkiCS/suoritustarkistin\"}]}]}" "$SLACKBOT_URL"

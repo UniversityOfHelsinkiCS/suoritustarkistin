@@ -25,7 +25,7 @@ export default ({ match }) => {
   const sisReports = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    if (!sisReports.reportsFetched) {
+    if (!sisReports.reportsFetched && !sisReports.pending) {
       if (user.adminMode) {
         dispatch(getAllCoursesAction())
         dispatch(sisGetAllReportsAction())

@@ -2,27 +2,30 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
+const OPTIONS = {
+  dialect: 'postgres',
+  logging: false,
+  dialectOptions: {
+    statement_timeout: 10000,
+    idle_in_transaction_session_timeout: 60 * 1000 * 5
+  }
+}
+
 module.exports = {
   development: {
     database_url: process.env.DATABASE_URL,
-    dialect: 'postgres',
-    logging: false
+    ...OPTIONS
   },
   test: {
     database_url: 'postgres://postgres:postgres@e2e-db:5432/postgres',
-    username: 'postgres',
-    dialect: 'postgres',
-    database: 'postgres',
-    logging: false
+    ...OPTIONS
   },
   production: {
     database_url: process.env.DATABASE_URL,
-    dialect: 'postgres',
-    logging: false
+    ...OPTIONS
   },
   staging: {
     database_url: process.env.DATABASE_URL,
-    dialect: 'postgres',
-    logging: false
+    ...OPTIONS
   }
 }

@@ -12,7 +12,6 @@ const textAreaStyle = {
 export default () => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
-  const courses = useSelector((state) => state.courses.data)
 
   const handleDataChange = (event) => {
     const rawData = event.target.value
@@ -25,7 +24,7 @@ export default () => {
         })
       )
     } else {
-      const data = parseCSV(rawData.trim(), newRawEntries, courses)
+      const data = parseCSV(rawData.trim())
       dispatch(
         setNewRawEntriesAction({
           ...newRawEntries,

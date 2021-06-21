@@ -43,7 +43,7 @@ const markAsRegistered = async (entries) => {
 const checkAllEntriesFromSisu = async () => {
   const entries = await db.entries.findAll({
     where: {
-      registered: { [Sequelize.Op.eq]: 'NOT_REGISTERED' },
+      registered: { [Sequelize.Op.not]: 'REGISTERED' },
       errors: { [Sequelize.Op.eq]: null },
       sent: { [Sequelize.Op.not]: null }
     }
@@ -77,7 +77,7 @@ const checkRegisteredForMooc = async () => {
 
     const completionStudentPairs = unregistered.reduce(
       (completionStudentPairs, rawEntry) => {
-        const alreadyInSis = rawEntry.entry && rawEntry.entry.registered
+        const alreadyInSis = rawEntry.entry && (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED') 
         if (alreadyInSis) {
           return completionStudentPairs.concat({
             completion_id: rawEntry.moocCompletionId,

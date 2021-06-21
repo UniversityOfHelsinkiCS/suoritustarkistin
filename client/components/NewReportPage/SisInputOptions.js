@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Select } from 'semantic-ui-react'
+import { Checkbox, Select } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -41,6 +41,7 @@ const formatCoursesForSelection = (data) => {
 export default () => {
   const dispatch = useDispatch()
   const [showingDate, setShowingDate] = useState()
+  const [defaultGrade, setDefaultGrade] = useState(false)
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
@@ -82,37 +83,53 @@ export default () => {
     }
   }
 
+  const handleDefaultGradeSelection = () => {
+    const newDefaultGrade = !defaultGrade
+    setDefaultGrade(newDefaultGrade)
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, defaultGrade: newDefaultGrade }))
+  }
+
   return (
-    <div style={{ marginBlock: '10px', marginBottom: '10px', display: 'flex' }}>
-      <Select
-        className="input"
-        data-cy="sisGraderSelection"
-        placeholder="Choose grader"
-        onChange={handleGraderSelection}
-        value={newRawEntries.graderId}
-        options={formatGradersForSelection(graders)}
-      />
-      <Select
-        className="input"
-        data-cy="sisCourseSelection"
-        onChange={handleCourseSelection}
-        placeholder="Choose course"
-        value={newRawEntries.courseId}
-        options={formatCoursesForSelection(courses)}
-      />
-      <DatePicker
-        id="sisDatePicker"
-        className="date-picker"
-        style={{ height: "10px"}}
-        dateFormat="dd.MM.yyyy"
-        placeholderText="Set date for completions"
-        selected={showingDate}
-        onChange={(date) => handleDateSelection(date)}
-      />
-      <span style={{ paddingLeft: "1em", width: "20em", height: "3em" }}>
+    <>
+      <div style={{ marginBlock: '10px', marginBottom: '10px', display: 'flex' }}>
+        <Select
+          className="input"
+          data-cy="sisGraderSelection"
+          placeholder="Choose grader"
+          onChange={handleGraderSelection}
+          value={newRawEntries.graderId}
+          options={formatGradersForSelection(graders)}
+        />
+        <Select
+          className="input"
+          data-cy="sisCourseSelection"
+          onChange={handleCourseSelection}
+          placeholder="Choose course"
+          value={newRawEntries.courseId}
+          options={formatCoursesForSelection(courses)}
+        />
+        <DatePicker
+          id="sisDatePicker"
+          className="date-picker"
+          style={{ height: "20px"}}
+          dateFormat="dd.MM.yyyy"
+          placeholderText="Set date for completions"
+          selected={showingDate}
+          onChange={(date) => handleDateSelection(date)}
+        />
+        <span style={{ paddingTop: "0.7em", paddingLeft: "1em" }}>
+          <Checkbox
+            data-cy="sisDefaultGradeSelection"
+            onChange={handleDefaultGradeSelection}
+            checked={defaultGrade}
+            label="Give all students grade 'Hyv.'"
+          />
+        </span>
+        <SisSendButton />
+      </div>
+      <span style={{ paddingTop: "1.3em", width: "40em", height: "3em" }}>
         Remember to report completions for the correct academic year (1.8. – 31.7.)
       </span>
-      <SisSendButton />
-    </div>
+    </>  
   )
 }

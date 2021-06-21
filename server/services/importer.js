@@ -9,6 +9,16 @@ const handleImporterApiErrors = (e) => {
   throw new Error(e.toString())
 }
 
+const chunkifyApi = async (data, url, size = 50) => {
+  let allData = []
+  const chunks = _.chunk(data, size)
+  for (const chunk of chunks) {
+    const res = await api.post(url, chunk)
+    allData = _.concat(allData, res.data)
+  }
+  return allData
+}
+
 // TODO: Create endpoint to db.api for batch converting employee ids
 async function getEmployees(employeeIds) {
   const responses = await Promise.all(employeeIds.map(async (employeeId) => {
@@ -31,8 +41,7 @@ async function getStudents(studentNumbers) {
 
 async function getEnrolments(studentCourseCodes) {
   try {
-    const res = await api.post('suotar/enrolments/', studentCourseCodes)
-    return res.data
+    return await chunkifyApi(studentCourseCodes, 'suotar/enrolments/')
   } catch (e) {
     handleImporterApiErrors(e)
   }
@@ -74,17 +83,10 @@ async function resolveUser(formData) {
 const getEarlierAttainments = async (data) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
   if (!data) return []
-  let allData = []
   try {
-    const chunks = _.chunk(data, 50)
-    for (const chunk of chunks) {
-      const res = await api.post(`suotar/attainments`, chunk)
-      allData = _.concat(allData, res.data)
-    }
-    return allData
+    return await chunkifyApi(data, 'suotar/attainments')
   } catch (e) {
-    if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error("Error fetching earlier attainments from importer")
+    handleImporterApiErrors(e)
   }
 }
 
@@ -95,21 +97,12 @@ const getEarlierAttainments = async (data) => {
 const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
   if (!data) return []
-  let allData = []
   try {
-    const chunks = _.chunk(data, 50)
-    for (const chunk of chunks) {
-      const res = await api.post(`suotar/attainments?noSubstitutions=true`, chunk)
-      allData = _.concat(allData, res.data)
-    }
-    return allData
+    return await chunkifyApi(data, 'suotar/attainments?noSubstitutions=true')
   } catch (e) {
-    if (e.response.data.status === 404) throw new Error(e.response.data.message)
-    throw new Error("Error fetching earlier attainments from importer")
+    handleImporterApiErrors(e)
   }
 }
-
-
 
 async function getResponsibles(courseCode) {
   try {

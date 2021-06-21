@@ -37,7 +37,8 @@ const formatDate = (date) => {
   return date.trim()
 }
 
-const formatGrade = (grade) => {
+const formatGrade = (grade, defaultGrade) => {
+  if (!grade && defaultGrade) return 'Hyv.'
   if (!grade) return undefined
   const trimmedGrade = grade.trim()
   if (trimmedGrade === 'Hyv' || trimmedGrade === 'hyv' || trimmedGrade === 'hyv.') return 'Hyv.'
@@ -46,7 +47,6 @@ const formatGrade = (grade) => {
 }
 
 export const parseCSV = (string) => {
-
   const addLeadingZero = (studentnumber) => {
     if (isValidStudentId(`0${studentnumber.trim()}`)) return `0${studentnumber}`
     return studentnumber

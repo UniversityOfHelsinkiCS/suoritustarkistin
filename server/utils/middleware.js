@@ -49,28 +49,41 @@ const currentUser = async (req, res, next) => {
   next()
 }
 
-const errorMiddleware = (req, res) => {
-  const { statusCode } = res
-  if (statusCode < 400)
-    return
+const errorMiddleware = (req, res, next) => {
+  const oldWrite = res.write, oldEnd = res.end
 
-  if (req.headers.uid === 'ohj_tosk')
-    return
+  const chunks = []
 
-  const { originalUrl, method, query } = req
-  const { body } = res.req // res.req :wat:
+  res.write = function (chunk) {
+    chunks.push(chunk)
+    return oldWrite.apply(res, arguments)
+  }
 
-  const errorMsg = body.error || ''
-  const message = `Response ${originalUrl} failed with status code ${statusCode} - ${errorMsg}`
-  logger.info({ originalUrl, body: JSON.stringify(body), method, query, message })
-  Sentry.withScope((scope) => {
-    scope.setUser(req.user ? req.user.get({ plain: true }) : null)
-    scope.setExtras({
-      originalUrl, body: JSON.stringify(body), method, query
-    })
-    Sentry.captureMessage(message)
-  })
+  res.end = function (chunk) {
+    if (chunk)
+      chunks.push(chunk)
+
+    const { statusCode } = res
+    if (statusCode >= 400 && req.headers.uid !== 'ohj_tosk') {
+      const body = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+      const { originalUrl, method, query } = req
+      const errorMsg = body.error || ''
+      const message = `Response ${originalUrl} failed with status code ${statusCode} - ${errorMsg}`
+      logger.info({ originalUrl, body: JSON.stringify(body), method, query, message })
+      Sentry.withScope((scope) => {
+        scope.setUser(req.user ? req.user.get({ plain: true }) : null)
+        scope.setExtras({
+          originalUrl, body: JSON.stringify(body), method, query
+        })
+        Sentry.captureMessage(message)
+      })
+    }
+    oldEnd.apply(res, arguments)
+  }
+
+  next()
 }
+
 
 
 const requestLogger = (req, res, next) => {

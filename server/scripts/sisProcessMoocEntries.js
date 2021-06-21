@@ -51,7 +51,7 @@ const processMoocEntries = async ({
     )}`
     const date = new Date()
 
-    const matches = await completions.reduce(
+    let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
 
@@ -73,7 +73,7 @@ const processMoocEntries = async ({
           if (!grade) {
             return matches
           }
-          if (!isImprovedGrade(earlierAttainments, registration.onro, grade, completion.completion_date)) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, grade, completion.completion_date, course.credits)) {
             return matches
           }
           if (matches.some((c) => c.studentNumber === registration.onro)) {
@@ -99,6 +99,7 @@ const processMoocEntries = async ({
       []
     )
 
+    if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
     const result = await automatedAddToDb(matches, course, batchId)
     return result

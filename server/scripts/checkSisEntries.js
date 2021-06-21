@@ -12,10 +12,12 @@ const checkEntries = async (entries) => {
   try {
     const { data } = await api.post('/suotar/verify', postData)
     const amountUpdated = await markAsRegistered(data)
+    const stats = await getRegisteredStatusStats()
     logger.info({
       message: `Checked total ${entries.length} entries, found ${amountUpdated} new registrations.`,
       newRegistrations: data.length,
-      missingRegistrations: (entries.length - data.length)
+      missingRegistrations: (entries.length - data.length),
+      stats
     })
     return true
   } catch (e) {
@@ -24,20 +26,34 @@ const checkEntries = async (entries) => {
   }
 }
 
+const getRegisteredStatusStats = async () => {
+  return await db.entries.findAll({
+    where: {
+      sent: {[Sequelize.Op.not]: null},
+      errors: {[Sequelize.Op.eq]: null}
+    },
+    attributes: ['registered', [Sequelize.fn('COUNT', 'registered'), 'count']],
+    group: ['registered'],
+    raw: true
+  })
+}
+
 const markAsRegistered = async (entries) => {
   const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
   const registeredIds = entries.filter(({ registered }) => registered === 'CourseUnitAttainment').map(({ id }) => id)
   const partlyAffected = await db.entries.update({ registered: 'PARTLY_REGISTERED' }, {
     where: {
-      id: { [Sequelize.Op.in]: partlyIds }
+      id: { [Sequelize.Op.in]: partlyIds },
+      registered: {[Sequelize.Op.not]: 'PARTLY_REGISTERED'}
     }
   })
   const registeredAffected = await db.entries.update({ registered: 'REGISTERED' }, {
     where: {
-      id: { [Sequelize.Op.in]: registeredIds }
+      id: { [Sequelize.Op.in]: registeredIds },
+      registered: {[Sequelize.Op.not]: 'REGISTERED'}
     }
   })
-  return parseInt(partlyAffected) + parseInt(registeredAffected)
+  return partlyAffected[0] + registeredAffected[0]
 }
 
 const checkAllEntriesFromSisu = async () => {

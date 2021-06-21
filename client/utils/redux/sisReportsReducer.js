@@ -66,7 +66,8 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         data: action.response,
         pending: false,
-        error: false
+        error: false,
+        reportsFetched: true
       }
     case 'SIS_GET_ALL_REPORTS_ATTEMPT':
       return {
@@ -86,7 +87,8 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         data: action.response,
         pending: false,
-        error: false
+        error: false,
+        reportsFetched: true
       }
     case 'SIS_GET_USERS_REPORTS_ATTEMPT':
       return {
@@ -228,6 +230,11 @@ export default (state = { data: [], openAccordions: [] }, action) => {
       return {
         ...state,
         openAccordions: setOpenAccordions(state.openAccordions, action.id)
+      }
+    case 'SIS_POST_RAW_ENTRIES_SUCCESS':
+      return {
+        ...state,
+        reportsFetched: false
       }
     default:
       return state

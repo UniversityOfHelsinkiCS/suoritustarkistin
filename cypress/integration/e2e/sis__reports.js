@@ -5,7 +5,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=adminmode-enable]').click()
 
     cy.server()
-    cy.route('GET', 'http://localhost:8000/api/sis_reports', '@initialRawEntriesJSON').as('getInitialEntries')
+    cy.route('GET', 'http://localhost:8001/api/sis_reports', '@initialRawEntriesJSON').as('getInitialEntries')
 
     cy.get('[data-cy=nav-reports]').click()
     cy.wait('@getInitialEntries')
@@ -15,7 +15,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=sis-report-TKT10001]').click()
     cy.get('[data-cy=sis-report-table]').its('length').should('eq', 1)
 
-    // TODO: Refactor the test so that entries are added to the database 
+    // TODO: Refactor the test so that entries are added to the database
     // cy.get('[data-cy=sis-report-course-code-1').should('contain', 'TKT10001')
     // cy.get('[data-cy=sis-report-course-name-1').should('contain', 'Valid course 1')
     cy.get('[data-cy=sis-report-credits-1]').should('contain', '1,0')
@@ -41,7 +41,7 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=adminmode-enable]').click()
     cy.server()
-    cy.route('GET', 'http://localhost:8000/api/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
+    cy.route('GET', 'http://localhost:8001/api/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
     cy.wait(1000)
     cy.get('[data-cy=nav-reports]').click()
     cy.get('[data-cy=nav-reports]').click()

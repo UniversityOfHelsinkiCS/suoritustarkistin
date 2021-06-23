@@ -19,7 +19,7 @@ jobs:
         run:  docker-compose -f docker-compose.e2e.yml run e2e npm run lint
 
       - name: Test
-        run: npm run test
+        run: docker-compose -f docker-compose.e2e.yml up --build --abort-on-container-exit --exit-code-from e2e
 
   publish:
     runs-on: ubuntu-20.04
@@ -50,12 +50,12 @@ jobs:
     if: always()
     steps:
       - name: Notify failed
-        if: failure()
+        if: (needs.build-lint-and-test.result == 'failure' || needs.publish.result == 'failure')
         env:
           SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"header\",\"text\":{\"type\":\"plain_text\",\"text\":\"Test run failed on *${GITHUB_REF##*/}* :kurkkumopo:\",\"emoji\":true}},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Uh oh, <https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/actions/runs${GITHUB_RUN_ID}|workflow> run by *$GITHUB_ACTOR* has failed on branch ${GITHUB_REF##*/}. \n Commit: <https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/commit${GITHUB_SHA}|${GITHUB_SHA:6}>\"}},{\"type\":\"section\",\"text\":{\"type\":\"plain_text\",\"text\":\"Commit message: \n $COMMIT_MESSAGE\",\"emoji\":true},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/fail?_=$GITHUB_RUN_ID\",\"alt_text\":\"cat failing\"}}]}" "$SLACKBOT_URL"
+          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"header\",\"text\":{\"type\":\"plain_text\",\"text\":\"Test run failed on *${GITHUB_REF##*/}* :kurkkumopo:\",\"emoji\":true}},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Uh oh, <https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/actions/runs${GITHUB_RUN_ID}|workflow> run by *$GITHUB_ACTOR* has failed on branch ${GITHUB_REF##*/}. \n Commit: <https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/commit${GITHUB_SHA}|${GITHUB_SHA:6}>\"}},{\"type\":\"section\",\"text\":{\"type\":\"plain_text\",\"text\":\"Commit message: \n $COMMIT_MESSAGE\",\"emoji\":true},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/fail?_=$GITHUB_RUN_ID\",\"alt_text\":\"cat failing\"}}]}" "$SLACKBOT_URL" && exit 1
       - name: Notify success
         if: success()
         env:

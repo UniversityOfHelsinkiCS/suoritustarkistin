@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 
 COPY package* ./
 
-RUN npm ci --include=dev
+RUN npm install
 
 COPY . .
 
@@ -19,4 +19,4 @@ RUN npm run test:build
 
 EXPOSE 8001
 
-CMD ["sh", "-c", "npm start & npm run cypress:run"]
+CMD ["npm", "run", "start:ci"]

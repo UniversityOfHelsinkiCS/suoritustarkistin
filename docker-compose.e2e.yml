@@ -9,10 +9,8 @@ services:
     build:
       context: ./
       dockerfile: config/test.Dockerfile
-    image: suotar_e2e
     container_name: suotar_e2e
-    volumes:
-      - ./:/usr/src/app
+    image: suotar_e2e
     ports:
       - 8001:8001
     depends_on:

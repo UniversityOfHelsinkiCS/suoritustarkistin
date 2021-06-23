@@ -5,20 +5,17 @@
   "main": "index.js",
   "scripts": {
     "dev": "docker-compose up",
-    "build": "webpack",
     "start": "node index.js",
-    "test": "docker-compose -f docker-compose.e2e.yml up --build --abort-on-container-exit --exit-code-from e2e",
-    "start:dev": "nodemon index.js",
+    "test": "npm run test:clean && docker-compose -f docker-compose.e2e.yml up --build --abort-on-container-exit --exit-code-from e2e",
+    "start:cypress": "docker-compose -f docker-compose.e2e.yml run --service-ports e2e sh -c 'set NODE_ENV=test && npm run start:dev'",
+    "cypress:open": "npm run test:clean && npm-run-all -p start:cypress cypress:interactive",
+    "cypress:interactive": "npx cypress open -P ./",
     "lint": "eslint .",
     "lintfix": "eslint . --fix",
-    "stats": "webpack --mode production --json --optimize-minimize > stats.json",
-    "db:create": "sequelize db:create",
-    "db:drop": "sequelize db:drop",
-    "db:migrate": "sequelize db:migrate",
+    "build": "webpack",
+    "start:dev": "nodemon index.js",
     "test:build": "webpack --mode production",
-    "cypress:open": "npx cypress open -P ./",
-    "cypress:run": "npx cypress run -P ./",
-    "populate:uid": "node server/utils/populateUid.js"
+    "test:clean": "docker-compose -f docker-compose.e2e.yml rm -vf && docker-compose -f docker-compose.e2e.yml build"
   },
   "engines": {
     "node": ">=10.15"
@@ -92,6 +89,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "cypress": "^6.2.1",
     "nodemon": "^2.0.7",
+    "npm-run-all": "^4.1.5",
     "wait-on": "^3.2.0",
     "webpack-dev-middleware": "^3.5.2",
     "webpack-dev-server": "^3.11.1",

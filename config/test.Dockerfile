@@ -11,10 +11,12 @@ WORKDIR /usr/src/app
 
 COPY package* ./
 
-RUN npm ci
+RUN npm install --production=false
 
 COPY . .
 
 RUN npm run test:build
 
-CMD ["./e2e.sh"]
+EXPOSE 8001
+
+CMD ["sh", "-c", "node index.js & npx cypress run -P ./"]

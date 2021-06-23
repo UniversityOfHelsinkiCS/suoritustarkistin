@@ -9,6 +9,7 @@
     "test": "npm run test:clean && docker-compose -f docker-compose.e2e.yml up --abort-on-container-exit --exit-code-from e2e",
     "start:cypress": "docker-compose -f docker-compose.e2e.yml run --service-ports e2e sh -c 'set NODE_ENV=test && npm run start:dev'",
     "cypress:open": "npm run test:clean && npm-run-all -p start:cypress cypress:interactive",
+    "cypress:run": "npx cypress run -P ./",
     "cypress:interactive": "npx cypress open -P ./",
     "lint": "eslint .",
     "lintfix": "eslint . --fix",

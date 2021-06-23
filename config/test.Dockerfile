@@ -19,4 +19,4 @@ RUN npm run test:build
 
 EXPOSE 8001
 
-CMD ["sh", "-c", "node index.js & npx cypress run -P ./"]
+CMD ["sh", "-c", "npm start & npm run cypress:run"]

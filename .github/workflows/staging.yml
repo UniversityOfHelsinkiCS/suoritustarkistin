@@ -47,6 +47,7 @@ jobs:
   notify:
     runs-on: ubuntu-20.04
     needs: [build-lint-and-test, publish]
+    if: always()
     steps:
       - name: Notify failed
         if: failure()

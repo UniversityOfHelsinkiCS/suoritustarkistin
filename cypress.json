@@ -1,6 +1,7 @@
 {
   "baseUrl": "http://localhost:8001",
   "responseTimeout": 19000,
+  "video": false,
   "env": {
     "SUOTAR_TOKEN": "token",
     "ADMIN_EMPLOYEE_NUMBER": "123",

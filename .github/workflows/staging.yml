@@ -6,24 +6,30 @@ on:
       - trunk
 
 jobs:
-  build-lint-and-test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 10
+      - name: Install eslint
+        run: npm install eslint
+      - name: Run lint
+        run: npm run lint
+
+  build-and-test:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build end to end
-        run: docker-compose -f docker-compose.e2e.yml build
-
-      - name: Lint
-        run:  docker-compose -f docker-compose.e2e.yml run e2e npm run lint
-
       - name: Test
-        run: docker-compose -f docker-compose.e2e.yml up --build --abort-on-container-exit --exit-code-from e2e
+        run: npm run test
 
   publish:
     runs-on: ubuntu-20.04
-    needs: build-lint-and-test
+    needs: build-and-test
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -46,11 +52,11 @@ jobs:
 
   notify:
     runs-on: ubuntu-20.04
-    needs: [build-lint-and-test, publish]
+    needs: [lint, build-and-test, publish]
     if: always()
     steps:
       - name: Notify failed
-        if: (needs.build-lint-and-test.result == 'failure' || needs.publish.result == 'failure')
+        if: (needs.build-and-test.result == 'failure' || needs.lint.result == 'failure' || needs.publish.result == 'failure')
         env:
           SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}

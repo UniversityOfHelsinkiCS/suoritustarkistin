@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 
 COPY package* ./
 
-RUN npm install --production=false
+RUN npm ci
 
 COPY . .
 

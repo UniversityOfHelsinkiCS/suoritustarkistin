@@ -9,6 +9,7 @@ const {
   PORT,
   inProduction,
   inDevelopment,
+  inTest,
   SHIBBOLETH_HEADERS
 } = require('@utils/common')
 const { requestLogger, parseUser, currentUser, errorMiddleware } = require('./utils/middleware')
@@ -35,7 +36,7 @@ initializeDatabaseConnection()
     /**
      * Use hot loading when in development, else serve the static content
      */
-    if (inDevelopment) {
+    if (inDevelopment || inTest) {
       /* eslint-disable */
       const middleware = require('webpack-dev-middleware')
       const hotMiddleWare = require('webpack-hot-middleware')
@@ -97,7 +98,7 @@ initializeDatabaseConnection()
     }
 
     app.listen(PORT, () => {
-      logger.info(`Started on port ${PORT} with environment ${process.env.NODE_ENV}`)
+      logger.info(`Started on port ${PORT} jeea with environment ${process.env.NODE_ENV}`)
       if (IN_MAINTENANCE)
         logger.info(`Maintenance mode enabled for environment ${process.env.NODE_ENV}`)
     })

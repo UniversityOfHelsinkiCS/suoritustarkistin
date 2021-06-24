@@ -9,6 +9,8 @@ ENV BASE_PATH=$BASE_PATH
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
 
+RUN echo "${NODE_ENV}"
+
 # Setup
 WORKDIR /usr/src/app
 COPY package* ./

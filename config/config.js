@@ -17,8 +17,7 @@ module.exports = {
     ...OPTIONS
   },
   test: {
-    database_url: 'postgres://postgres:postgres@localhost/circle_test',
-    username: 'postgres',
+    database_url: 'postgres://postgres:postgres@e2e-db:5432/postgres',
     ...OPTIONS
   },
   production: {

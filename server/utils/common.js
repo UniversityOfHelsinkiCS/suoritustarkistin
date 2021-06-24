@@ -12,6 +12,6 @@ const SHIBBOLETH_HEADERS = [
 module.exports = {
   ...common,
   DB_URL: process.env.DB_URL,
-  PORT: process.env.PORT || 8000,
+  PORT: process.env.NODE_ENV === 'test' ? 8001 : process.env.PORT || 8000,
   SHIBBOLETH_HEADERS
 }

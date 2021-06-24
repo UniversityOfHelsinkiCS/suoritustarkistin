@@ -5,24 +5,20 @@
   "main": "index.js",
   "scripts": {
     "dev": "docker-compose up",
-    "build": "webpack",
+    "test": "npm run test:clean && docker-compose -f docker-compose.e2e.yml up --abort-on-container-exit --exit-code-from e2e",
     "start": "node index.js",
+    "lint": "eslint .",
+    "lintfix": "eslint . --fix",
+    "cypress:open": "npm run test:clean && npm run start:cypress-open",
+    "start:cypress": "docker-compose -f docker-compose.e2e.yml run --service-ports e2e npm run start:dev",
+    "start:ci": "npm-run-all -r -p start cypress:run",
+    "start:cypress-open": "npm-run-all -p start:cypress cypress:interactive",
+    "cypress:run": "npx cypress run --headless",
+    "cypress:interactive": "npx cypress open -P ./",
+    "build": "webpack",
     "start:dev": "nodemon index.js",
-    "lint": "eslint . --fix",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "stats": "webpack --mode production --json --optimize-minimize > stats.json",
-    "db:create": "sequelize db:create",
-    "db:drop": "sequelize db:drop",
-    "db:migrate": "sequelize db:migrate",
-    "db:seed:all": "sequelize db:seed:all",
-    "db:nuke": "npx npm-run-all -s db:drop db:create",
-    "db:recreate": "npx npm-run-all -s db:nuke db:migrate db:seed:all",
     "test:build": "webpack --mode production",
-    "test:start": "cross-env NODE_ENV=test node index.js",
-    "test:setup": "npx npm-run-all -s test:build db:migrate",
-    "cypress:open": "npx cypress open -P ./",
-    "cypress:run": "npx cypress run -P ./",
-    "populate:uid": "node server/utils/populateUid.js"
+    "test:clean": "docker-compose -f docker-compose.e2e.yml rm -vf && docker-compose -f docker-compose.e2e.yml build"
   },
   "engines": {
     "node": ">=10.15"
@@ -52,7 +48,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
     "csv-string": "^4.0.1",
-    "dotenv": "^8.0.0",
+    "dotenv": "^8.6.0",
     "elliptic": "^6.5.4",
     "eslint": "^5.13.0",
     "eslint-config-airbnb": "^17.1.0",
@@ -94,8 +90,9 @@
   },
   "devDependencies": {
     "babel-preset-stage-2": "^6.24.1",
-    "cypress": "^6.2.1",
+    "cypress": "^6.9.1",
     "nodemon": "^2.0.7",
+    "npm-run-all": "^4.1.5",
     "wait-on": "^3.2.0",
     "webpack-dev-middleware": "^3.5.2",
     "webpack-dev-server": "^3.11.1",
@@ -103,7 +100,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
+      "pre-push": "npm run lint"
     }
   },
   "nodemonConfig": {

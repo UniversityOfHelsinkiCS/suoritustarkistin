@@ -56,7 +56,6 @@ For some courses, same course instance has students signed in from both AY and T
 There are a bunch courses with automatic reporting. These are courses that come from Kurki or MOOC and can be found from the page 'Automated Reports'.
 
 ## Developer Information
-**Master:** [![CircleCI](https://circleci.com/gh/UniversityOfHelsinkiCS/suoritustarkistin/tree/master.svg?style=svg)](https://circleci.com/gh/UniversityOfHelsinkiCS/suoritustarkistin/tree/master)
 
 ### Development Environment
 1. Clone the repository
@@ -65,6 +64,10 @@ There are a bunch courses with automatic reporting. These are courses that come 
 4. ```npm run dev```
 5. Open [localhost:8000](localhost:8000)
 6. Dev-database can be viewed at: [localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public)
+
+### Testing
+
+Run all test by ```npm test``` or open Cypress interactively with ```npm run cypress:open```
 
 ### Program Logic
 - [Sequence diagram for the EoAI weekly script](documentation/Suotar_Weekly_EoAI_Credit_Markup_Script.png)

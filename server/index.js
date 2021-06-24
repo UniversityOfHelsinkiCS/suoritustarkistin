@@ -98,7 +98,7 @@ initializeDatabaseConnection()
     }
 
     app.listen(PORT, () => {
-      logger.info(`Started on port ${PORT} jeea with environment ${process.env.NODE_ENV}`)
+      logger.info(`Started on port ${PORT} with environment ${process.env.NODE_ENV}`)
       if (IN_MAINTENANCE)
         logger.info(`Maintenance mode enabled for environment ${process.env.NODE_ENV}`)
     })

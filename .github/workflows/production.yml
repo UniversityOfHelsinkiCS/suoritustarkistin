@@ -45,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          tags: toska/suoritustarkistin:latest
+          tags: toska/suoritustarkistin:production
           push: true
           build-args: |
             BASE_PATH=/suoritustarkistin/

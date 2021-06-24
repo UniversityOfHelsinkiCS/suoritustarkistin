@@ -52,7 +52,7 @@ const initializeCronJobs = async () => {
     return { ...acc, [job.id]: createdJob }
   }, {})
 
-  cronjobs["enrollment-limbo"] = cron.schedule('55 3 * * 4', refreshEntriesCron)
+  cronjobs["enrollment-limbo"] = cron.schedule('55 3 */2 * *', refreshEntriesCron)
 }
 
 const activateJob = async (id) => {

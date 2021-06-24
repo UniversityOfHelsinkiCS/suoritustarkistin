@@ -2,14 +2,12 @@ const db = require('../models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
-const { isImprovedGrade } = require('@utils/sisEarlierCompletions')
 const { v4: uuidv4 } = require('uuid')
 const {
   getEmployees,
   getStudents,
   getGrades,
-  getEnrolments,
-  getEarlierAttainments
+  getEnrolments
 } = require('../services/importer')
 
 /**
@@ -49,12 +47,6 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
   const employeeIds = graders.map((grader) => grader.employeeId)
   const employees = await getEmployees(employeeIds)
 
-  const courseStudentPairs = createdEntries.map(({ courseId, studentNumber }) => {
-    const { courseCode } = courses.find((c) => c.id === courseId)
-    return ({ courseCode, studentNumber })
-  })
-  const earlierAttainments = checkImprovements === true ? await getEarlierAttainments(courseStudentPairs) : []
-
   const studentCourseCodePairs = createdEntries.map((rawEntry) => ({
     personId: (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id,
     code: courses.find((course) => course.id === rawEntry.courseId).courseCode
@@ -69,7 +61,6 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
     const completionDate = moment(rawEntry.attainmentDate)
     const course = courses.find((c) => c.id === rawEntry.courseId)
     const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
-    const improvedGrade = isImprovedGrade(earlierAttainments, rawEntry.studentNumber, rawEntry.grade, completionDate)
 
     if (!student) {
       failed.push({
@@ -137,14 +128,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
       })
       return Promise.resolve()
     }
-    if (checkImprovements === true && !improvedGrade) {
-      failed.push({
-        id: rawEntry.id,
-        studentNumber: rawEntry.studentNumber,
-        message: `Student ${rawEntry.studentNumber} has already higher grade for course ${course.courseCode}`
-      })
-      return Promise.resolve()
-    }
+
     success.push({
       ...filteredEnrolment,
       id: generateEntryId(),
@@ -182,6 +166,8 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   const now = moment()
   const filteredEnrolments = enrolments
     .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(now))
+    .filter((e) => e.courseUnitRealisation.name.fi && !e.courseUnitRealisation.name.fi.includes('MOOC Java'))
+    // Hacky solution to filter out MOOC Java enrolments, since there is no other way. Remove in the fall.
 
   if (!filteredEnrolments.length) return null
 

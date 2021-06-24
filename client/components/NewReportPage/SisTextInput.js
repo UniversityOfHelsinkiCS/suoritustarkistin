@@ -1,5 +1,5 @@
 import React from 'react'
-import { Loader } from 'semantic-ui-react'
+import { Loader, Message } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import { TextArea, Form } from 'semantic-ui-react'
@@ -38,6 +38,9 @@ export default () => {
   return (
     <Form>
       <Loader size='big' active={newRawEntries.sending} />
+      {newRawEntries.data && newRawEntries.data.length > 100 ? <Message color="orange">
+        Currently single report can contain max 100 completions
+      </Message> : null}
       <TextArea
         data-cy="sisPastefield"
         onChange={handleDataChange}

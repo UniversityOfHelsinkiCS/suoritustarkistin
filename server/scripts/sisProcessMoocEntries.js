@@ -1,5 +1,4 @@
 const moment = require('moment')
-const db = require('@models/index')
 const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const logger = require('@utils/logger')
@@ -34,33 +33,8 @@ const processMoocEntries = async ({
   grader
 }) => {
   try {
-    const credits = await db.credits.findAll({
-      where: {
-        courseId: course.courseCode
-      },
-      raw: true
-    })
-
-    const rawEntries = await db.raw_entries.findAll({
-      where: {
-        courseId: course.id
-      }
-    })
-
-    const rawRegistrations = await getRegistrations(course.courseCode)
+    const registrations = await getRegistrations(course.courseCode)
     const completions = await getCompletions(job.slug || course.courseCode)
-    
-    const registrations = rawRegistrations.filter((registration) => {
-      const earlierCredit = credits.find(
-        (credit) =>
-          credit.studentId === registration.onro
-      )
-      const earlierEntry = rawEntries.find(
-        (entry) =>
-          entry.studentNumber === registration.onro 
-      )
-      return (!earlierCredit && !earlierEntry)
-    })
 
     const courseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
@@ -70,8 +44,6 @@ const processMoocEntries = async ({
       }
     }, [])
 
-    logger.info({ message: `Found ${courseStudentPairs.length} students with no earlier completion in Suotar database` })
-
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
     const batchId = `${course.courseCode}-${moment().format(
@@ -79,7 +51,7 @@ const processMoocEntries = async ({
     )}`
     const date = new Date()
 
-    const matches = await completions.reduce(
+    let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
 
@@ -101,7 +73,7 @@ const processMoocEntries = async ({
           if (!grade) {
             return matches
           }
-          if (!isImprovedGrade(earlierAttainments, registration.onro, grade)) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, grade, completion.completion_date, course.credits)) {
             return matches
           }
           if (matches.some((c) => c.studentNumber === registration.onro)) {
@@ -127,6 +99,7 @@ const processMoocEntries = async ({
       []
     )
 
+    if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
     const result = await automatedAddToDb(matches, course, batchId)
     return result

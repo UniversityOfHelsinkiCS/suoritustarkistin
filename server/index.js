@@ -30,6 +30,8 @@ initializeDatabaseConnection()
     })
     app.use(Sentry.Handlers.requestHandler())
     app.use(express.json({ limit: '5mb' }))
+    app.use(errorMiddleware)
+
 
     /**
      * Use hot loading when in development, else serve the static content
@@ -51,10 +53,6 @@ initializeDatabaseConnection()
       app.use(parseUser)
       app.use(currentUser)
       app.use(requestLogger)
-      app.use((req, res, next) => {
-        res.on('finish', () => errorMiddleware(req, res, next))
-        next()
-      })
       app.use('/api', routes)
 
       app.use('*', (req, res, next) => {
@@ -72,10 +70,6 @@ initializeDatabaseConnection()
       app.use(shibbolethCharsetMiddleware(SHIBBOLETH_HEADERS))
       app.use(parseUser)
       app.use(currentUser)
-      app.use((req, res, next) => {
-        res.on('finish', () => errorMiddleware(req, res, next))
-        next()
-      })
       app.use('/api', routes)
 
       const DIST_PATH = path.resolve(__dirname, '../dist')

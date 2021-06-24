@@ -82,7 +82,7 @@ const processBaiIntermediateEntries = async ({
     )}`
     const date = new Date()
 
-    const matches = await completions.reduce(
+    let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
 
@@ -118,6 +118,7 @@ const processBaiIntermediateEntries = async ({
       []
     )
 
+    if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
 
     const result = await automatedAddToDb(matches, course, batchId)

@@ -40,7 +40,7 @@ const getOpenUniCourseCell = (course) => {
   if (course) {
     return (
       <Table.Cell style={changedStyle}>
-        {`${course.name} (AY${course.courseCode})`}
+        {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[0] : course.courseCode})`}
       </Table.Cell>
     )
   }
@@ -51,7 +51,7 @@ const getCourseCell = (course) => {
   if (course) {
     return (
       <Table.Cell style={validStyle}>
-        {`${course.name} (${course.courseCode})`}
+        {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[1] : course.courseCode})`}
       </Table.Cell>
     )
   }

@@ -47,7 +47,7 @@ const processKurkiEntries = async ({
     )}`
     const date = new Date()
 
-    const matches = await completions.reduce(
+    let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
         if (!sisIsValidGrade(completion.grade)) {
@@ -62,7 +62,8 @@ const processKurkiEntries = async ({
             logger.info({ message: `Student ${completion.studentNumber} did not finish the course and has grade -`})
             return matches
           }
-          if (!isImprovedGrade(earlierAttainments, completion.studentNumber, completion.grade, completion.courseFinishDate)) {
+          const credits = completion.credits || course.credits
+          if (!isImprovedGrade(earlierAttainments, completion.studentNumber, completion.grade, completion.courseFinishDate, credits)) {
             logger.info({ message: `Student ${completion.studentNumber} already has a higher grade for the course`})
             return matches
           } else if (matches.some((c) => c.studentNumber === completion.studentNumber)) {
@@ -72,12 +73,12 @@ const processKurkiEntries = async ({
               studentNumber: completion.studentNumber,
               batchId: batchId,
               grade: completion.grade,
-              credits: completion.credits || course.credits,
               language: language,
               attainmentDate: completion.courseFinishDate || date,
               graderId: grader.id,
               reporterId: null,
-              courseId: course.id
+              courseId: course.id,
+              credits
             })
           }
         } else {
@@ -86,6 +87,7 @@ const processKurkiEntries = async ({
       },
       []
     )
+    if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
   
     let result = await automatedAddToDb(matches, course, batchId, false)

@@ -6,18 +6,31 @@ on:
       - master
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 10
+      - name: Install eslint
+        run: npm install eslint
+      - name: Run lint
+        run: npm run lint
+
   build-and-test:
     runs-on: ubuntu-20.04
+    needs: lint
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Tests
+      - name: Test
         run: npm run test
 
   publish:
     runs-on: ubuntu-20.04
-    needs: build-and-test
+    needs: [lint, build-and-test]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -40,19 +53,20 @@ jobs:
 
   notify:
     runs-on: ubuntu-20.04
-    needs: [build-and-test, publish]
+    needs: [lint, build-and-test, publish]
+    if: always()
     steps:
       - name: Notify failed
-        if: failure()
+        if: (needs.build-and-test.result == 'failure' || needs.lint.result == 'failure' || needs.publish.result == 'failure')
         env:
           SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"header\",\"text\":{\"type\":\"plain_text\",\"text\":\"Test run failed on *${GITHUB_REF##*/}* :kurkkumopo:\",\"emoji\":true}},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Uh oh, test run by *$GITHUB_ACTOR* has failed on branch ${GITHUB_REF##*/}. \n\n $COMMIT_MESSAGE\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/fail?_=$GITHUB_RUN_ID\",\"alt_text\":\"cat failing\"}}]}" "$SLACKBOT_URL"
+          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"header\",\"text\":{\"type\":\"plain_text\",\"text\":\"Test run failed on ${GITHUB_REF##*/} :kurkkumopo:\",\"emoji\":true}},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Uh oh, <https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/actions/runs/${GITHUB_RUN_ID}|workflow> run by *$GITHUB_ACTOR* has failed on branch ${GITHUB_REF##*/}. \nCommit: <https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/commit/${GITHUB_SHA}|${GITHUB_SHA:6}>\"}},{\"type\":\"section\",\"text\":{\"type\":\"plain_text\",\"text\":\"Commit message: \n $COMMIT_MESSAGE\",\"emoji\":true},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/fail?_=$GITHUB_RUN_ID\",\"alt_text\":\"cat failing\"}}]}" "$SLACKBOT_URL" && exit 1
       - name: Notify success
         if: success()
         env:
           SLACKBOT_URL: ${{ secrets.SLACKBOT_URL }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Suotar *${GITHUB_REF##*/}* started deployment by *$GITHUB_ACTOR* \n\n $COMMIT_MESSAGE\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif?_=$GITHUB_RUN_ID\",\"alt_text\":\"cute cat\"}},{\"type\":\"actions\",\"elements\":[{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Open Suotar :suotar:\",\"emoji\":true},\"url\":\"https://opetushallinto.cs.helsinki.fi/suoritustarkistin/\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Github\",\"emoji\":true},\"url\":\"https://github.com/UniversityOfHelsinkiCS/suoritustarkistin\"}]}]}" "$SLACKBOT_URL"
+          curl --silent -X POST -H 'Content-type: application/json' --data "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Suotar *${GITHUB_REF##*/}* started deployment by *$GITHUB_ACTOR* \n\n*Commit message:* $COMMIT_MESSAGE\"},\"accessory\":{\"type\":\"image\",\"image_url\":\"https://cataas.com/cat/gif?_=$GITHUB_RUN_ID\",\"alt_text\":\"cute cat\"}},{\"type\":\"actions\",\"elements\":[{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Open Suotar :suotar:\",\"emoji\":true},\"url\":\"https://opetushallinto.cs.helsinki.fi/suoritustarkistin/\"},{\"type\":\"button\",\"text\":{\"type\":\"plain_text\",\"text\":\"Github\",\"emoji\":true},\"url\":\"https://github.com/UniversityOfHelsinkiCS/suoritustarkistin\"}]}]}" "$SLACKBOT_URL"

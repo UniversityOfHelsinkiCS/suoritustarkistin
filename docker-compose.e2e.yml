@@ -17,7 +17,11 @@ services:
       - PORT=8001
     volumes:
       - ./:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
     ports:
       - 8001:8001
     depends_on:
       - e2e-db
+
+volumes:
+  node_modules:

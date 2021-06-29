@@ -63,7 +63,7 @@ export const parseCSV = (string) => {
       attainmentDate: formatDate(splitRow[4]),
       graderId: '',
       reporterId: '',
-      course: ''
+      course: (splitRow[5] && splitRow[5].trim()) || ''
     }
   })
   return markDuplicates(data)

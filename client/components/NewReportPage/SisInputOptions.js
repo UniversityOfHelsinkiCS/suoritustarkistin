@@ -55,6 +55,18 @@ export default () => {
     }
   }, [user])
 
+
+  // Select course from first row if a valid course code is provided
+  useEffect(() => {
+    if (!newRawEntries.data || !newRawEntries.data.length) return
+    const { course: courseCode } = newRawEntries.data[0]
+    const course = courses.find((c) => c.courseCode.toLowerCase() === courseCode.toLowerCase())
+    if (!course) return
+    if (course.id === newRawEntries.courseId) return
+
+    handleCourseSelection(null, { value: course.id })
+  }, [newRawEntries])
+
   const handleGraderSelection = (e, data) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, graderId: data.value }))
   }
@@ -66,12 +78,12 @@ export default () => {
     if (date) {
       newDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 6)
     }
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, date: newDay ? newDay : new Date()}))
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, date: newDay ? newDay : new Date() }))
   }
 
-  const handleCourseSelection = (e, data) => {
-    const courseId = data.value
+  const handleCourseSelection = (e, { value: courseId }) => {
     const course = courses.find((course) => course.id === courseId)
+    if (!course) return
     if (course.isMooc || course.autoSeparate) {
       dispatch(setNewRawEntriesAction({ ...newRawEntries, courseId }))
       dispatch(getCoursesRegistrationsAction(courseId))
@@ -109,7 +121,7 @@ export default () => {
         <DatePicker
           id="sisDatePicker"
           className="date-picker"
-          style={{ height: "20px"}}
+          style={{ height: "20px" }}
           dateFormat="dd.MM.yyyy"
           placeholderText="Set date for completions"
           selected={showingDate}
@@ -128,6 +140,6 @@ export default () => {
       <span style={{ paddingTop: "1.3em", width: "40em", height: "3em" }}>
         Remember to report completions for the correct academic year (1.8. – 31.7.)
       </span>
-    </>  
+    </>
   )
 }

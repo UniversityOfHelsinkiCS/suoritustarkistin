@@ -31,11 +31,11 @@ const DetailedInstructions = () => (
     <List>
       <List.Item>
         <p style={instruction}>Student number</p>
-        Student numbers will be fetched from SIS for reporting. Students not present in SIS, cannot be given course completions. 
+        Student numbers will be fetched from Sisu for reporting. Students not present in Sisu, cannot be given course completions.
       </List.Item>
       <List.Item>
         <p style={instruction}>Grade</p>
-        Each course has a pre-defined grade scale in SIS. For most it is "0-5" or "Hyv.-Hyl.".
+        Each course has a pre-defined grade scale in Sisu. For most it is "0-5" or "Hyv.-Hyl.".
         Only grades within the grade scale of the course can be given.
       </List.Item>
       <List.Item>
@@ -52,10 +52,15 @@ const DetailedInstructions = () => (
         Any date chosen from date-picker will apply to completions that do not have a separately set date for them.
         Please note that the course instance will be picked based automatically based on the completion date.  
       </List.Item>
+      <List.Item>
+        <p style={instruction}>Course code</p>
+        You can select course for the full report by providing course code in last column of csv.
+        A single report can contain completions for one course only. The course is selected from first row of csv or by the dropdown select bellow.
+      </List.Item>
     </List>
   </div>
 )
-// Add this when Sis
+
 export default () => (
   <Segment data-cy="userguide">
     <div style={instructionContainer}>
@@ -64,14 +69,14 @@ export default () => (
       </Header>
       <p>
         Teachers add course completions to Suotar either by copy-pasting or by inserting a csv.
-        When hitting "create report"-button, Suotar creates a report of these completions, that can be later on added to SIS by an education coordinator.
-        Teachers can see their own reports from the "View Reports"-page, but only education coordinators can send them to SIS.
+        When hitting "create report"-button, Suotar creates a report of these completions, that can be later on added to Sisu by an education coordinator.
+        Teachers can see their own reports from the "View Reports"-page, but only education coordinators can send them to Sisu.
       </p>
       <p style={subHeader}>
         Each completion should be its own line in the following format:
       </p>
       <p style={subHeader}>
-        student number;grade;credits;language;date 
+        student number;grade;credits;language;date;course code
         <span>
           <Popup
             on={'hover', 'click'}
@@ -94,6 +99,7 @@ export default () => (
         <List.Item>011000002;;2,0</List.Item>
         <List.Item>011100009</List.Item>
         <List.Item>011110002;;;fi;25.7.2019</List.Item>
+        <List.Item>011110002;;;fi;25.7.2019;TKT10001</List.Item>
       </List>
       <p>
         <b>

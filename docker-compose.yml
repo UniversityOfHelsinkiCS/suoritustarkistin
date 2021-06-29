@@ -24,8 +24,7 @@ services:
     volumes:
       - pg_data:/data
     container_name: suotar_db
-  adminer:
-    container_name: adminer
+  adminer-suotar:
     environment:
       - ADMINER_DESIGN=pepa-linha
       - ADMINER_DEFAULT_SERVER=db

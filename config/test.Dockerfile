@@ -1,4 +1,4 @@
-FROM cypress/base:14.17-stretch
+FROM cypress/base:14.7.0
 
 # Set timezone to Europe/Helsinki
 RUN echo "Europe/Helsinki" > /etc/timezone

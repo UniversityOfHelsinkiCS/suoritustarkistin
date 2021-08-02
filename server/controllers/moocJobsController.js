@@ -1,6 +1,5 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
-const { manualRun } = require('../scripts/cronjobs')
 const { activateJob, deactivateJob } = require('../scripts/sisCronjobs')
 const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
 const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
@@ -53,16 +52,6 @@ const editJob = async (req, res) => {
       return res.status(200).json(updatedJob)
     }
     return res.status(400).json({ error: 'id not found.' })
-  } catch (e) {
-    logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
-  }
-}
-
-const runJob = async (req, res) => {
-  try {
-    await manualRun(req.params.id)
-    return res.status(200).json({ id: req.params.id })
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })
@@ -144,6 +133,5 @@ module.exports = {
   editJob,
   deleteJob,
   deleteAllJobs,
-  runJob,
   sisRunJob
 }

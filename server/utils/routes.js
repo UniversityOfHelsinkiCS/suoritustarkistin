@@ -20,7 +20,6 @@ const {
   deleteUser
 } = require('@controllers/userController')
 const {
-  addReport,
   getReportList,
   getReports,
   getUsersReports,
@@ -42,7 +41,6 @@ const {
   addJob,
   getJobs,
   editJob,
-  runJob,
   sisRunJob,
   deleteJob,
   deleteAllJobs
@@ -100,7 +98,6 @@ router.get('/users/:id/reports', checkIdMatch, getUsersReports)
 router.get('/users/:id/sis_reports', checkIdMatch, sisGetUsersReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
-router.post('/reports', addReport)
 router.get('/reports', checkAdmin, getReports)
 
 router.get('/sis_reports', checkAdmin, sisGetAllReports)
@@ -114,7 +111,6 @@ router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)
 router.put('/jobs/:id', checkAdmin, editJob)
-router.post('/jobs/:id', checkAdmin, runJob)
 router.post('/sis_jobs/:id', checkAdmin, sisRunJob)
 router.delete('/jobs/:id', checkAdmin, deleteJob)
 

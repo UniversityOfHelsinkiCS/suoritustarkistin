@@ -146,33 +146,6 @@ const isValidCourse = (course) => {
   return true
 }
 
-const isValidRow = (row) => {
-  if (row.duplicate) return false
-  if (!isValidStudentId(row.studentId)) return false
-  if (row.grade && !isValidGrade(row.grade)) return false
-  if (row.credits && !isValidCreditAmount(row.credits)) return false
-  if (row.language && !isValidLanguage(row.language)) return false
-  if (row.completionDate && !isValidOodiDate(row.completionDate)) return false
-  return true
-}
-
-const isValidReport = (report) => {
-  if (!report) return false
-  if (!report.graderEmployeeId || !report.courseId) return false
-  if (!report.data) return false
-  if (!isValidOodiDate(report.date)) return false
-
-  let allRowsValid = true
-  report.data.forEach((row) => {
-    if (!isValidRow(row)) {
-      allRowsValid = false
-    }
-  })
-  if (!allRowsValid) return false
-
-  return true
-}
-
 const sisIsValidLanguage = (language) => {
   return (SIS_LANGUAGES.includes(language))
 }
@@ -232,7 +205,6 @@ module.exports = {
   isValidCreditAmount,
   isValidLanguage,
   isValidEmailAddress,
-  isValidReport,
   sisAreValidNewRawEntries,
   isValidCourse,
   isValidHYCourseCode,

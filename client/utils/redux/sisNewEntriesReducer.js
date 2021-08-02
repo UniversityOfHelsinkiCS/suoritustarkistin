@@ -1,4 +1,4 @@
-import { attachRegistrations, stripRegistrations } from 'Utilities/inputParser'
+import { attachRegistrations, stripRegistrations } from 'Utilities/sisInputParser'
 const moment = require('moment')
 
 import callBuilder from '../apiConnection'

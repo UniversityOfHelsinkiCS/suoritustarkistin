@@ -38,15 +38,6 @@ export default ({ job, jobs }) => {
     />
   )
 
-  // const CreateOodiReportButton = () => (
-  //   <Button
-  //     disabled={jobs.pending}
-  //     onClick={() => dispatch(runJobAction(job.id))}
-  //     content="Create report"
-  //     color="yellow"
-  //   />
-  // )
-
   const CreateReportButton = () => (
     <Button
       disabled={jobs.pending}

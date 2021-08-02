@@ -27,12 +27,6 @@ export const deleteJobAction = (id) => {
   return callBuilder(route, prefix, 'delete')
 }
 
-export const runJobAction = (id) => {
-  const route = `/jobs/${id}`
-  const prefix = 'RUN_JOB'
-  return callBuilder(route, prefix, 'post')
-}
-
 export const sisRunJobAction = (id) => {
   const route = `/sis_jobs/${id}`
   const prefix = 'SIS_RUN_JOB'

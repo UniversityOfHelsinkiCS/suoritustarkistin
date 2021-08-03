@@ -1,6 +1,5 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
-const { processManualEntry } = require('../scripts/processManualEntry')
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
@@ -12,59 +11,9 @@ const getCourseName = (data) => {
   return hackySplit[4] || 'Unnamed course'
 }
 
-const addReport = async (req, res) => {
-  try {
-    if (!req.user.isGrader && !req.user.isAdmin) {
-      throw new Error('User is not authorized to report credits.')
-    }
-
-    const { courseId, graderEmployeeId, date, data } = req.body
-    if (!courseId || !graderEmployeeId || !date || !data) {
-      logger.error('Unsuccessful upload: missing form fields')
-      return res.status(400).json({ error: 'invalid form values' })
-    }
-
-    processManualEntry({
-      data,
-      courseId,
-      graderEmployeeId,
-      date,
-      reporterId: req.user.id
-    })
-      .then(() => {
-        logger.info('Successful CSV insert.')
-        return res.status(200).json({ message: 'report created successfully' })
-      })
-      .catch((error) => {
-        logger.error('Unsuccessful CSV insert:', error)
-        return res.status(400).json({ error: error })
-      })
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
 const getReportList = async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll()
-    const reportFileInfo = fetchedReports.map((report) => ({
-      id: report.id,
-      fileName: report.fileName,
-      courseName: getCourseName(report.data)
-    }))
-    return res.status(200).send(reportFileInfo)
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
-const getNewReportList = async (req, res) => {
-  try {
-    const fetchedReports = await db.reports.findAll({
-      where: {
-        lastDownloaded: null
-      }
-    })
     const reportFileInfo = fetchedReports.map((report) => ({
       id: report.id,
       fileName: report.fileName,
@@ -134,9 +83,7 @@ const deleteAllReports = async (req, res) => {
 }
 
 module.exports = {
-  addReport,
   getReportList,
-  getNewReportList,
   getReports,
   getUsersReports,
   getSingleReport,

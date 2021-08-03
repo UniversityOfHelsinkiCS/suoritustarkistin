@@ -1,4 +1,4 @@
-import { attachRegistrations, stripRegistrations } from 'Utilities/inputParser'
+import { attachRegistrations, stripRegistrations } from 'Utilities/sisInputParser'
 import callBuilder from '../apiConnection'
 
 

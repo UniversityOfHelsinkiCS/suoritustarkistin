@@ -6,7 +6,6 @@ import sisReports from './sisReportsReducer'
 import courses from './coursesReducer'
 import graders from './gradersReducer'
 import registrations from './registrationsReducer'
-import newReport from './newReportReducer'
 import newRawEntries from './sisNewRawEntriesReducer'
 import newEntries from './sisNewEntriesReducer'
 import kurki from './kurkiReducer'
@@ -22,7 +21,6 @@ export default combineReducers({
   courses,
   graders,
   registrations,
-  newReport,
   newRawEntries,
   newEntries,
   kurki,

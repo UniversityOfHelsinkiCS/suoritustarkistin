@@ -3,7 +3,7 @@ import { Tab, Menu, Icon } from 'semantic-ui-react'
 import Dropzone from 'Components/NewReportPage/Dropzone'
 import InputOptions from 'Components/NewReportPage/InputOptions'
 import SisTextInput from 'Components/NewReportPage/SisTextInput'
-import SisReportDisplay from 'Components/NewReportPage/SisReportDisplay'
+import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 
 export default () => {
   let panes = [
@@ -18,7 +18,7 @@ export default () => {
         <Tab.Pane>
           <SisTextInput />
           <InputOptions />
-          <SisReportDisplay />
+          <ReportDisplay />
         </Tab.Pane>
       )
     },
@@ -33,7 +33,7 @@ export default () => {
         <Tab.Pane>
           <Dropzone />
           <InputOptions />
-          <SisReportDisplay />
+          <ReportDisplay />
         </Tab.Pane>
       )
     }

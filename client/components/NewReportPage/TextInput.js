@@ -1,7 +1,7 @@
 import React from 'react'
 import { Loader, Message } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
+import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { TextArea, Form } from 'semantic-ui-react'
 import { parseCSV } from 'Utilities/sisInputParser'
 

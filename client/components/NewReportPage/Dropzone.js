@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { Loader } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
+import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { useDropzone } from 'react-dropzone'
 import { parseCSV } from 'Utilities/sisInputParser'
 

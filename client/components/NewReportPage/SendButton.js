@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Header, Modal, Popup, Segment } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { sendNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
+import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { sisAreValidNewRawEntries } from 'Root/utils/validators'
 
 const parseRawEntries = (rawEntries) => {

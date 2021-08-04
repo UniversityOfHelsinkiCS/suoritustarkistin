@@ -5,7 +5,7 @@ import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import SendButton from 'Components/NewReportPage/SendButton.js'
-import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
+import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import {
   getCoursesRegistrationsAction,
   clearRegistrationsAction

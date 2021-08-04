@@ -94,11 +94,11 @@ router.post('/users', checkAdmin, addUser)
 router.put('/users/:id', checkAdmin, editUser)
 router.delete('/users/:id', checkAdmin, deleteUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
-router.get('/users/:id/reports', checkIdMatch, getUsersReports)
+router.get('/users/:id/oodi_reports', checkIdMatch, getUsersReports)
 router.get('/users/:id/sis_reports', checkIdMatch, sisGetUsersReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
-router.get('/reports', checkAdmin, getReports)
+router.get('/oodi_reports', checkAdmin, getReports)
 
 router.get('/sis_reports', checkAdmin, sisGetAllReports)
 router.delete('/sis_reports/:id', deleteSingleEntry, sisDeleteSingleEntry)

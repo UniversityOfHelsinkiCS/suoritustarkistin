@@ -5,8 +5,8 @@ import OodiReports from 'Components/ReportsPage/OodiReports/OodiReports'
 import SisReports from 'Components/ReportsPage/SisReports'
 import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
 import {
-  getAllReportsAction,
-  getUsersReportsAction
+  getAllOodiReportsAction,
+  getUsersOodiReportsAction
 } from 'Utilities/redux/oodiReportsReducer'
 import {
   sisGetAllReportsAction,
@@ -32,7 +32,7 @@ export default ({ match }) => {
       } else {
         dispatch(sisGetUsersReportsAction(user.id))
         dispatch(getUsersCoursesAction(user.id))
-        dispatch(getUsersReportsAction(user.id))
+        dispatch(getUsersOodiReportsAction(user.id))
       }
     }
   }, [sisReports, user])
@@ -56,7 +56,7 @@ export default ({ match }) => {
     // Fetch old reports only if tab is opened
     setActiveTab(activeIndex)
     if (user.adminMode && activeIndex > 2 && !reports.data.length)
-      dispatch(getAllReportsAction())
+      dispatch(getAllOodiReportsAction())
   }
 
   const manualReportsCount = new Set(sisReports.data

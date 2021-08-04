@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import RawReports from 'Components/ReportsPage/RawReports'
-import Reports from 'Components/ReportsPage/Reports'
+import OodiReports from 'Components/ReportsPage/OodiReports'
 import SisReports from 'Components/ReportsPage/SisReports'
 import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
 import {
@@ -94,7 +94,7 @@ export default ({ match }) => {
         ),
         render: () => (
           <Tab.Pane>
-            <Reports />
+            <OodiReports />
           </Tab.Pane>
         )
       }
@@ -147,7 +147,7 @@ export default ({ match }) => {
       ),
       render: () => (
         <Tab.Pane>
-          <Reports />
+          <OodiReports />
         </Tab.Pane>
       )
     },

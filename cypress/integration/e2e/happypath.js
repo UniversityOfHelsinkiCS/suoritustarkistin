@@ -61,7 +61,7 @@ describe('Submitting data creates a valid report into database', function () {
   })
 
   it('Grader can create reports', () => {
-    cy.fixture('sis/raw-entries-add.json').as('addRawEntriesJSON');
+    cy.fixture('raw-entries-add.json').as('addRawEntriesJSON');
     cy.server()
     cy.route('POST', 'http://localhost:8001/api/sis_raw_entries', '@addRawEntriesJSON').as('addRawEntries')
 
@@ -99,7 +99,7 @@ describe('Submitting data creates a valid report into database', function () {
 
 
   it('Grader can view created report', () => {
-    cy.fixture('sis/raw-entries-after.json').as('updatedRawEntriesJSON');
+    cy.fixture('raw-entries-after.json').as('updatedRawEntriesJSON');
 
     cy.server()
     cy.route('GET', 'http://localhost:8001/api/users/*/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')

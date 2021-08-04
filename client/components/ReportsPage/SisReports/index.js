@@ -6,7 +6,7 @@ import { Accordion, Button, Icon, Message, Segment } from 'semantic-ui-react'
 
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
-import SisReportStatus from './SisReportStatus'
+import ReportStatus from './ReportStatus'
 import ReportTable from './ReportTable'
 import Filters, { filterBatches } from './Filters'
 import { refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
@@ -147,7 +147,7 @@ const title = (batch) => {
   return (
     <Accordion.Title data-cy={`sis-report-${courseCode}`}>
       {titleString}
-      <SisReportStatus batch={batch} />
+      <ReportStatus batch={batch} />
     </Accordion.Title>
   )
 }

@@ -1,4 +1,3 @@
-import { attachRegistrations, stripRegistrations } from 'Utilities/sisInputParser'
 const moment = require('moment')
 
 import callBuilder from '../apiConnection'
@@ -49,16 +48,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         sending: false
-      }
-    case 'SIS_GET_REGISTRATIONS_SUCCESS':
-      return {
-        ...state,
-        data: attachRegistrations(state.data, action.response)
-      }
-    case 'SIS_CLEAR_REGISTRATIONS':
-      return {
-        ...state,
-        data: stripRegistrations(state.data)
       }
     case 'SIS_LOGIN_SUCCESS':
       return {

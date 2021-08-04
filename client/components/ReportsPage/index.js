@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import RawOodiReports from 'Components/ReportsPage/RawOodiReports'
-import OodiReports from 'Components/ReportsPage/OodiReports'
+import RawOodiReports from 'Components/ReportsPage/OodiReports/RawOodiReports'
+import OodiReports from 'Components/ReportsPage/OodiReports/OodiReports'
 import SisReports from 'Components/ReportsPage/SisReports'
 import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
 import {

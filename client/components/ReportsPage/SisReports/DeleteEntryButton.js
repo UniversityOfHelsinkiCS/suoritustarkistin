@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
+import { handleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 
 export default ({ rawEntryId, batchId }) => {
   const [open, setOpen] = useState(false)
@@ -9,7 +9,7 @@ export default ({ rawEntryId, batchId }) => {
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
 
   const deleteEntry = () => {
-    dispatch(sisHandleEntryDeletionAction(rawEntryId))
+    dispatch(handleEntryDeletionAction(rawEntryId))
   }
 
   return (

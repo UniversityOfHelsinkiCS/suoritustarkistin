@@ -111,7 +111,7 @@ router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)
 router.put('/jobs/:id', checkAdmin, editJob)
-router.post('/sis_jobs/:id', checkAdmin, sisRunJob)
+router.post('/jobs/:id', checkAdmin, sisRunJob)
 router.delete('/jobs/:id', checkAdmin, deleteJob)
 
 router.get('/kurki/courses', checkAdmin, getKurkiCourses)

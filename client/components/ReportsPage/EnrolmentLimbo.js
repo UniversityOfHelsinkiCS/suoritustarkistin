@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react'
-import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
-import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
-import { sisHandleEntryDeletionAction, refreshEnrollmentsAction, sisGetAllReportsAction, sisGetUsersReportsAction } from 'Utilities/redux/sisReportsReducer'
 import { Button, Icon, Table, Segment, Message } from 'semantic-ui-react'
+import moment from 'moment'
+
 import Notification from 'Components/Message'
+import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
+import {
+  handleEntryDeletionAction,
+  refreshEnrollmentsAction,
+  getAllSisReportsAction,
+  getUsersSisReportsAction
+} from 'Utilities/redux/sisReportsReducer'
 
 
 const getCourseCode = (rawEntry, course) => {
@@ -27,7 +33,7 @@ const DeleteButton = ({ id }) => {
     <Button
       data-cy={`sis-report-entry-delete-button-${id}`}
       color="red"
-      onClick={() => dispatch(sisHandleEntryDeletionAction(id))}
+      onClick={() => dispatch(handleEntryDeletionAction(id))}
     >
       Delete
     </Button>
@@ -52,9 +58,9 @@ const EnrolmentLimbo = ({ rawEntries }) => {
   useEffect(() => {
     if (reports.refreshSuccess) {
       if (user.adminMode)
-        dispatch(sisGetAllReportsAction())
+        dispatch(getAllSisReportsAction())
       else
-        dispatch(sisGetUsersReportsAction(user.id))
+        dispatch(getUsersSisReportsAction(user.id))
     }
   }, [reports.refreshSuccess])
 

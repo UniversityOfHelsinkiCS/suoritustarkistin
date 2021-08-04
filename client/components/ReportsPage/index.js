@@ -9,12 +9,15 @@ import {
   getUsersOodiReportsAction
 } from 'Utilities/redux/oodiReportsReducer'
 import {
-  sisGetAllReportsAction,
-  sisGetUsersReportsAction,
+  getAllSisReportsAction,
+  getUsersSisReportsAction,
   openReport
 } from 'Utilities/redux/sisReportsReducer'
 import { Menu, Icon, Tab, Label } from 'semantic-ui-react'
-import { getAllCoursesAction, getUsersCoursesAction } from '../../utils/redux/coursesReducer'
+import {
+  getAllCoursesAction,
+  getUsersCoursesAction
+} from 'Utilities/redux/coursesReducer'
 
 export default ({ match }) => {
   const [activeTab, setActiveTab] = useState(0)
@@ -28,9 +31,9 @@ export default ({ match }) => {
     if (!sisReports.reportsFetched && !sisReports.pending) {
       if (user.adminMode) {
         dispatch(getAllCoursesAction())
-        dispatch(sisGetAllReportsAction())
+        dispatch(getAllSisReportsAction())
       } else {
-        dispatch(sisGetUsersReportsAction(user.id))
+        dispatch(getUsersSisReportsAction(user.id))
         dispatch(getUsersCoursesAction(user.id))
         dispatch(getUsersOodiReportsAction(user.id))
       }

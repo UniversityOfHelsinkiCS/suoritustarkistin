@@ -11,7 +11,7 @@ const initialState = {
 }
 
 export const setNewEntriesAction = (entries) => {
-  return { type: 'SIS_SET_NEW_ENTRIES', payload: entries }
+  return { type: 'SET_NEW_ENTRIES', payload: entries }
 }
 
 export const sendNewEntriesAction = (entries) => {
@@ -28,14 +28,14 @@ export const sendNewEntriesAction = (entries) => {
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'SIS_SET_NEW_ENTRIES':
+    case 'SET_NEW_ENTRIES':
       return action.payload
-    case 'SIS_POST_ENTRIES_ATTEMPT':
+    case 'POST_ENTRIES_ATTEMPT':
       return {
         ...state,
         sending: true
       }
-    case 'SIS_POST_ENTRIES_SUCCESS':
+    case 'POST_ENTRIES_SUCCESS':
       return {
         ...state,
         data: null,
@@ -44,19 +44,10 @@ export default (state = initialState, action) => {
         sending: false,
         rawData: ''
       }
-    case 'SIS_POST_ENTRIES_FAILURE':
+    case 'POST_ENTRIES_FAILURE':
       return {
         ...state,
         sending: false
-      }
-    case 'SIS_LOGIN_SUCCESS':
-      return {
-        courseId: null,
-        graderEmployeeId: action.response.employeeId,
-        data: null,
-        date: moment().format('D.M.YYYY'),
-        sending: false,
-        rawData: ''
       }
     default:
       return state

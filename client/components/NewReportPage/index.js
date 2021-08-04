@@ -1,13 +1,13 @@
 import React from 'react'
 import InputSelector from 'Components/NewReportPage/InputSelector'
-import SisUserGuide from 'Components/NewReportPage/SisUserGuide'
+import UserGuide from 'Components/NewReportPage/UserGuide'
 import Message from 'Components/Message'
 
 export default () => {
 
   return (
     <div>
-      <SisUserGuide />
+      <UserGuide />
       <Message />
       <InputSelector />
     </div>

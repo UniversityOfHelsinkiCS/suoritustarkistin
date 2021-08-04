@@ -1,7 +1,7 @@
 import React from 'react'
 import { Tab, Menu, Icon } from 'semantic-ui-react'
 import Dropzone from 'Components/NewReportPage/Dropzone'
-import SisInputOptions from 'Components/NewReportPage/SisInputOptions'
+import InputOptions from 'Components/NewReportPage/InputOptions'
 import SisTextInput from 'Components/NewReportPage/SisTextInput'
 import SisReportDisplay from 'Components/NewReportPage/SisReportDisplay'
 
@@ -11,13 +11,13 @@ export default () => {
       menuItem: (
         <Menu.Item key="sis-copypaste" data-cy="sis-copypaste">
           <Icon name="file alternate outline" />
-          SIS - Copy & Paste
+          Copy & Paste
         </Menu.Item>
       ),
       render: () => (
         <Tab.Pane>
           <SisTextInput />
-          <SisInputOptions />
+          <InputOptions />
           <SisReportDisplay />
         </Tab.Pane>
       )
@@ -26,13 +26,13 @@ export default () => {
       menuItem: (
         <Menu.Item key="sis-dragdrop" data-cy="sis-dragdrop">
           <Icon name="folder open" />
-          SIS - Drag & Drop
+          Drag & Drop
         </Menu.Item>
       ),
       render: () => (
         <Tab.Pane>
           <Dropzone />
-          <SisInputOptions />
+          <InputOptions />
           <SisReportDisplay />
         </Tab.Pane>
       )

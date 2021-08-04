@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import RawReports from 'Components/ReportsPage/RawReports'
+import RawOodiReports from 'Components/ReportsPage/RawOodiReports'
 import OodiReports from 'Components/ReportsPage/OodiReports'
 import SisReports from 'Components/ReportsPage/SisReports'
 import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
@@ -160,7 +160,7 @@ export default ({ match }) => {
       ),
       render: () => (
         <Tab.Pane>
-          <RawReports
+          <RawOodiReports
             reports={{
               ...reports,
               data: reports.data.filter((report) => report.reporterId)
@@ -178,7 +178,7 @@ export default ({ match }) => {
       ),
       render: () => (
         <Tab.Pane>
-          <RawReports
+          <RawOodiReports
             reports={{
               ...reports,
               data: reports.data.filter((report) => !report.reporterId)

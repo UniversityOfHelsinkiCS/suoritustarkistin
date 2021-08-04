@@ -2,7 +2,7 @@ import React from 'react'
 import { Tab, Menu, Icon } from 'semantic-ui-react'
 import Dropzone from 'Components/NewReportPage/Dropzone'
 import InputOptions from 'Components/NewReportPage/InputOptions'
-import SisTextInput from 'Components/NewReportPage/SisTextInput'
+import TextInput from 'Components/NewReportPage/TextInput'
 import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 
 export default () => {
@@ -16,7 +16,7 @@ export default () => {
       ),
       render: () => (
         <Tab.Pane>
-          <SisTextInput />
+          <TextInput />
           <InputOptions />
           <ReportDisplay />
         </Tab.Pane>

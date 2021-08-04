@@ -3,7 +3,7 @@ import { Loader } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { useDropzone } from 'react-dropzone'
-import { parseCSV } from 'Utilities/sisInputParser'
+import { parseCSV } from 'Utilities/inputParser'
 
 const baseStyle = {
   flex: 1,

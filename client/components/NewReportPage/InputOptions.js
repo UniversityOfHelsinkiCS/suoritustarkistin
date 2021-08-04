@@ -4,7 +4,7 @@ import { Checkbox, Select } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import SisSendButton from 'Components/NewReportPage/SisSendButton.js'
+import SendButton from 'Components/NewReportPage/SendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
 import {
   getCoursesRegistrationsAction,
@@ -135,7 +135,7 @@ export default () => {
             label="Give all students grade 'Hyv.'"
           />
         </span>
-        <SisSendButton />
+        <SendButton />
       </div>
       <span style={{ paddingTop: "1.3em", width: "40em", height: "3em" }}>
         Remember to report completions for the correct academic year (1.8. – 31.7.)

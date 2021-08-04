@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 
 import user from './userReducer'
-import reports from './reportsReducer'
+import oodiReports from './oodiReportsReducer'
 import sisReports from './sisReportsReducer'
 import courses from './coursesReducer'
 import graders from './gradersReducer'
@@ -16,7 +16,7 @@ import systemStatus from './systemStatusReducer'
 
 export default combineReducers({
   user,
-  reports,
+  oodiReports,
   sisReports,
   courses,
   graders,

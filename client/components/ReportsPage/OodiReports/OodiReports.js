@@ -71,7 +71,7 @@ export default () => {
     setLoading(false)
   }, [])
 
-  const reports = useSelector((state) => state.reports)
+  const reports = useSelector((state) => state.oodiReports)
   if (reports.pending || loading) return <TabLoader />
 
   const manualReports = reports.data.filter((report) => report.reporterId) // filter out EoAI reports.

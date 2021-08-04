@@ -7,7 +7,7 @@ import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
 import {
   getAllReportsAction,
   getUsersReportsAction
-} from 'Utilities/redux/reportsReducer'
+} from 'Utilities/redux/oodiReportsReducer'
 import {
   sisGetAllReportsAction,
   sisGetUsersReportsAction,
@@ -21,7 +21,7 @@ export default ({ match }) => {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
-  const reports = useSelector((state) => state.reports)
+  const reports = useSelector((state) => state.oodiReports)
   const sisReports = useSelector((state) => state.sisReports)
 
   useEffect(() => {

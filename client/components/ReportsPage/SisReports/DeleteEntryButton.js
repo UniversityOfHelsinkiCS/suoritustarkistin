@@ -19,7 +19,7 @@ export default ({ rawEntryId, batchId }) => {
         <Button
           negative
           content="Delete"
-          data-cy={`sis-report-entry-delete-button-${rawEntryId}`}
+          data-cy={`report-entry-delete-button-${rawEntryId}`}
           disabled={!batchId}
           onClick={() => setOpen(true)}
         />
@@ -39,7 +39,7 @@ export default ({ rawEntryId, batchId }) => {
           <Button
             style={{ margin: '5px 2px' }}
             negative
-            data-cy={`sis-report-entry-confirm-button-${rawEntryId}`}
+            data-cy={`report-entry-confirm-button-${rawEntryId}`}
             onClick={deleteEntry}
             disabled={!rawEntryId}
             content="Yes, delete completions"

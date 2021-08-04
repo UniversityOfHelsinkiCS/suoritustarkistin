@@ -69,9 +69,9 @@ Cypress.Commands.add('initializeUsersAndCourses', () => {
   cy.request('DELETE', '/api/seed/courses')
   cy.request('DELETE', '/api/seed/users')
 
-  cy.fixture('sis/raw-entries-before.json').as('initialRawEntriesJSON');
-  cy.fixture('sis/raw-entries-add.json').as('addRawEntriesJSON');
-  cy.fixture('sis/raw-entries-after.json').as('updatedRawEntriesJSON');
+  cy.fixture('raw-entries-before.json').as('initialRawEntriesJSON');
+  cy.fixture('raw-entries-add.json').as('addRawEntriesJSON');
+  cy.fixture('raw-entries-after.json').as('updatedRawEntriesJSON');
 
   cy.request('POST', '/api/seed/users', {
     name: 'user',

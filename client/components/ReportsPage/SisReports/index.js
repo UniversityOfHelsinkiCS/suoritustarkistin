@@ -128,7 +128,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
               allowDelete={user.adminMode && !batchSent}
             />
             : <Accordion.Accordion
-              data-cy={`sis-entries-panel-${report[0].batchId}`}
+              data-cy={`entries-panel-${report[0].batchId}`}
               panels={panels}
               exclusive={false}
             />
@@ -145,7 +145,7 @@ const title = (batch) => {
     ? batch[0].batchId
     : `${courseName} - ${courseCode} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`
   return (
-    <Accordion.Title data-cy={`sis-report-${courseCode}`}>
+    <Accordion.Title data-cy={`report-${courseCode}`}>
       {titleString}
       <ReportStatus batch={batch} />
     </Accordion.Title>
@@ -159,7 +159,7 @@ export default withRouter(({ reports, user }) => {
   const dispatch = useDispatch()
 
 
-  if (!reports || reports.length === 0) return <div data-cy="sis-no-reports">NO REPORTS FOUND.</div>
+  if (!reports || reports.length === 0) return <div data-cy="no-reports">NO REPORTS FOUND.</div>
 
   const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
@@ -184,6 +184,6 @@ export default withRouter(({ reports, user }) => {
   return <>
     <Notification />
     <Filters filters={filters} setFilters={setFilters} />
-    <Accordion panels={panels} exclusive={false} data-cy="sis-reports-list" fluid styled />
+    <Accordion panels={panels} exclusive={false} data-cy="reports-list" fluid styled />
   </>
 })

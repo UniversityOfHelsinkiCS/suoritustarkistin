@@ -31,7 +31,7 @@ const DeleteButton = ({ id }) => {
   const dispatch = useDispatch()
   return (
     <Button
-      data-cy={`sis-report-entry-delete-button-${id}`}
+      data-cy={`report-entry-delete-button-${id}`}
       color="red"
       onClick={() => dispatch(handleEntryDeletionAction(id))}
     >
@@ -96,18 +96,18 @@ const EnrolmentLimbo = ({ rawEntries }) => {
             <Table.Body>
               {rawEntries.map((rawEntry) => (
                 <Table.Row key={rawEntry.id}>
-                  <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, rawEntry.course)}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, rawEntry.course)}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-personId-${rawEntry.id}`}>{rawEntry.entry.personId}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-completionDate-${rawEntry.id}`}>
+                  <Table.Cell data-cy={`report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, rawEntry.course)}</Table.Cell>
+                  <Table.Cell data-cy={`report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, rawEntry.course)}</Table.Cell>
+                  <Table.Cell data-cy={`report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
+                  <Table.Cell data-cy={`report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
+                  <Table.Cell data-cy={`report-personId-${rawEntry.id}`}>{rawEntry.entry.personId}</Table.Cell>
+                  <Table.Cell data-cy={`report-completionDate-${rawEntry.id}`}>
                     {rawEntry.entry.completionDate ? moment(rawEntry.entry.completionDate).format("DD.MM.YYYY") : null}
                   </Table.Cell>
-                  <Table.Cell data-cy={`sis-report-completionLanguage-${rawEntry.id}`}>
+                  <Table.Cell data-cy={`report-completionLanguage-${rawEntry.id}`}>
                     {rawEntry.entry.completionLanguage ? rawEntry.entry.completionLanguage : null}
                   </Table.Cell>
-                  <Table.Cell data-cy={`sis-report-completionDate-${rawEntry.id}`}>
+                  <Table.Cell data-cy={`report-completionDate-${rawEntry.id}`}>
                     {moment(rawEntry.createdAt).format("DD.MM.YYYY")}
                   </Table.Cell>
                   <Table.Cell>

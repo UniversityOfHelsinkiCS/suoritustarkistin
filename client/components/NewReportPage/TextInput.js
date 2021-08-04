@@ -42,7 +42,7 @@ export default () => {
         Currently single report can contain max 100 completions
       </Message> : null}
       <TextArea
-        data-cy="sisPastefield"
+        data-cy="paste-field"
         onChange={handleDataChange}
         placeholder="Add the course completion information here, formatted as in the instructions above."
         rows={10}

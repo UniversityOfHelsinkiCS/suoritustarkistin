@@ -104,7 +104,7 @@ export default () => {
       <div style={{ marginBlock: '10px', marginBottom: '10px', display: 'flex' }}>
         <Select
           className="input"
-          data-cy="sisGraderSelection"
+          data-cy="grader-selection"
           placeholder="Choose grader"
           onChange={handleGraderSelection}
           value={newRawEntries.graderId}
@@ -112,14 +112,14 @@ export default () => {
         />
         <Select
           className="input"
-          data-cy="sisCourseSelection"
+          data-cy="course-selection"
           onChange={handleCourseSelection}
           placeholder="Choose course"
           value={newRawEntries.courseId}
           options={formatCoursesForSelection(courses)}
         />
         <DatePicker
-          id="sisDatePicker"
+          id="date-picker"
           className="date-picker"
           style={{ height: "20px" }}
           dateFormat="dd.MM.yyyy"
@@ -129,7 +129,7 @@ export default () => {
         />
         <span style={{ paddingTop: "0.7em", paddingLeft: "1em" }}>
           <Checkbox
-            data-cy="sisDefaultGradeSelection"
+            data-cy="default-grade-election"
             onChange={handleDefaultGradeSelection}
             checked={defaultGrade}
             label="Give all students grade 'Hyv.'"

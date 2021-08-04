@@ -9,7 +9,7 @@ export default () => {
   let panes = [
     {
       menuItem: (
-        <Menu.Item key="sis-copypaste" data-cy="sis-copypaste">
+        <Menu.Item key="copypaste" data-cy="copypaste">
           <Icon name="file alternate outline" />
           Copy & Paste
         </Menu.Item>
@@ -24,7 +24,7 @@ export default () => {
     },
     {
       menuItem: (
-        <Menu.Item key="sis-dragdrop" data-cy="sis-dragdrop">
+        <Menu.Item key="dragdrop" data-cy="dragdrop">
           <Icon name="folder open" />
           Drag & Drop
         </Menu.Item>

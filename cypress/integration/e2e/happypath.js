@@ -66,41 +66,38 @@ describe('Submitting data creates a valid report into database', function () {
     cy.route('POST', 'http://localhost:8001/api/sis_raw_entries', '@addRawEntriesJSON').as('addRawEntries')
 
     cy.asUser().visit('')
-    cy.get('[data-cy=sis-create-report-button]').should('be.disabled')
-    cy.get('[data-cy=sisPastefield]').type(
+    cy.get('[data-cy=create-report-button]').should('be.disabled')
+    cy.get('[data-cy=paste-field]').type(
       '010000003;2;5;fi\n011000002;3;2,0\n011100009;4\n011110002;5;;fi'
     )
-    cy.get('#sisDatePicker').clear().type('30.12.2020')
+    cy.get('#date-picker').clear().type('30.12.2020')
 
-    cy.get('[data-cy=sisGraderSelection]')
+    cy.get('[data-cy=grader-selection]')
       .click()
       .children()
       .should('not.contain', 'admin')
       .contains('user')
       .click()
 
-    cy.get('[data-cy=sisCourseSelection]')
+    cy.get('[data-cy=course-selection]')
       .click()
       .children()
       .contains('E2E')
       .click()
 
-    cy.get('[data-cy=sis-create-report-button]')
+    cy.get('[data-cy=create-report-button]')
       .should('not.be.disabled')
       .click()
 
-    cy.get('[data-cy=sis-confirm-sending-button]')
+    cy.get('[data-cy=confirm-sending-button]')
       .should('be.visible')
       .click()
-
-
   })
 
 
 
   it('Grader can view created report', () => {
     cy.fixture('raw-entries-after.json').as('updatedRawEntriesJSON');
-
     cy.server()
     cy.route('GET', 'http://localhost:8001/api/users/*/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
     cy.asUser().visit('')
@@ -109,8 +106,8 @@ describe('Submitting data creates a valid report into database', function () {
     cy.wait(2000)
 
     cy.get('[data-cy=sis-reports-tab]').click()
-    cy.get('[data-cy=sis-report-TKT10001]').should('be.visible')
-    cy.get('[data-cy=sis-report-TKT10002]').should('be.visible')
+    cy.get('[data-cy=report-TKT10001]').should('be.visible')
+    cy.get('[data-cy=report-TKT10002]').should('be.visible')
 
   })
 })

@@ -83,7 +83,7 @@ export default () => {
 
   return (
     <div className="container" style={{ cursor: 'pointer' }}>
-      <div data-cy="sis-dropzone" {...getRootProps({ style })}>
+      <div data-cy="dropzone" {...getRootProps({ style })}>
         <input {...getInputProps()} />
         <p>
           Drag a file here, or find it by clicking this box.

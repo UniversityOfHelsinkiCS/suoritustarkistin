@@ -31,7 +31,7 @@ export default ({ reports }) => {
 
 
   return (
-    <div data-cy="raw-reports">
+    <div data-cy="raw-oodi-reports">
       {reports.data.map((report) => {
         return (
           <Segment key={report.id}>

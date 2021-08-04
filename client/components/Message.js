@@ -17,7 +17,7 @@ export default () => {
   if (!message) return null
 
   return <Message
-    data-cy="positive-message"
+    data-cy={`${message.type}-message`}
     color={resolveColor(message.type)}
     onDismiss={() => dispatch(clearMessageAction())}
     header={message.header}

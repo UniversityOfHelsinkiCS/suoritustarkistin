@@ -2,7 +2,7 @@ const logger = require('@utils/logger')
 const db = require('../models/index')
 const { getCourses } = require('../services/kurki')
 const { createCourse } = require('../scripts/createCourse')
-const { processKurkiEntries } = require('../scripts/sisProcessKurkiEntries')
+const { processKurkiEntries } = require('../scripts/processKurkiEntries')
 
 const getKurkiCourses = async (req, res) => {
   try {

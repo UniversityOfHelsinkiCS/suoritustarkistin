@@ -150,7 +150,7 @@ const isValidRow = (row, date) => {
   return true
 }
 
-const sisAreValidNewRawEntries = (rawEntries) => {
+const areValidNewRawEntries = (rawEntries) => {
   if (!rawEntries) return false
   if (!rawEntries.graderId || !rawEntries.courseId) return false
   if (!rawEntries.data) return false
@@ -194,7 +194,7 @@ module.exports = {
   isValidCreditAmount,
   isValidLanguage,
   isValidEmailAddress,
-  sisAreValidNewRawEntries,
+  areValidNewRawEntries,
   isValidCourse,
   isValidHYCourseCode,
   isValidOpenCourseCode,

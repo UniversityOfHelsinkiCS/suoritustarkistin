@@ -27,7 +27,7 @@ const {
 } = require('@controllers/reportController')
 const {
   addRawEntries
-} = require('@controllers/sisRawEntryController')
+} = require('@controllers/rawEntryController')
 const {
   sisGetAllReports,
   sisGetUsersReports,

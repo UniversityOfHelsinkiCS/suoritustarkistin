@@ -5,7 +5,7 @@ const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { advancedFound } = require('../utils/sisEarlierCompletions')
+const { advancedFound } = require('../utils/earlierCompletions')
 const { OLD_BAI_CODE, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
 // const { getTestRegistrations, getTestCompletions } = require('../utils/testdataForMoocScripts')
 

@@ -3,7 +3,7 @@ const logger = require('@utils/logger')
 const { SIS_LANGUAGES, sisIsValidGrade } = require('@root/utils/validators')
 const { getCompletions, postTransferredId } = require('../services/kurki')
 const { getEarlierAttainments } = require('../services/importer')
-const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { inProduction } = require('@utils/common')
 

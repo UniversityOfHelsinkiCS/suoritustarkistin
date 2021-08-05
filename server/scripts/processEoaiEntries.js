@@ -4,7 +4,7 @@ const logger = require('@utils/logger')
 const { getMultipleCourseRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
-const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { EOAI_CODES } = require('@root/utils/validators')
 const { automatedAddToDb } = require('./automatedAddToDb')
 

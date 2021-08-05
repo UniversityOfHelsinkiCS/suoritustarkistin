@@ -3,7 +3,7 @@ const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const logger = require('@utils/logger')
 const { sisIsValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
-const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { getEarlierAttainments } = require('../services/importer')
 const { automatedAddToDb } = require('./automatedAddToDb')
 

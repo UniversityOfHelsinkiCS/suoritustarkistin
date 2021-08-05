@@ -6,7 +6,7 @@ const handleDatabaseError = (res, error) => {
   return res.status(500).json({ error: 'Server went BOOM!' })
 }
 
-const getReports = async (req, res) => {
+const getOodiReports = async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll({
       order: [['createdAt', 'DESC']]
@@ -17,7 +17,7 @@ const getReports = async (req, res) => {
   }
 }
 
-const getUsersReports = async (req, res) => {
+const getUsersOodiReports = async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll({
       where: { graderId: req.user.id },
@@ -29,32 +29,7 @@ const getUsersReports = async (req, res) => {
   }
 }
 
-const getSingleReport = async (req, res) => {
-  try {
-    const fetchedReport = await db.reports.findOne({
-      where: {
-        id: req.params.id
-      },
-      raw: true
-    })
-
-    if (fetchedReport) {
-      db.reports.update(
-        {
-          ...fetchedReport,
-          lastDownloaded: db.sequelize.fn('NOW')
-        },
-        { where: { id: fetchedReport.id } }
-      )
-      return res.status(200).json(fetchedReport)
-    }
-    return res.status(404).json({ error: 'Report not found.' })
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
-const deleteAllReports = async (req, res) => {
+const deleteAllOodiReports = async (req, res) => {
   try {
     await db.reports.destroy({ where: {} })
     return res.status(204).end()
@@ -64,8 +39,7 @@ const deleteAllReports = async (req, res) => {
 }
 
 module.exports = {
-  getReports,
-  getUsersReports,
-  getSingleReport,
-  deleteAllReports
+  getOodiReports,
+  getUsersOodiReports,
+  deleteAllOodiReports
 }

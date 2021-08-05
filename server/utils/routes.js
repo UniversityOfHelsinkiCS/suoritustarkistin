@@ -20,9 +20,9 @@ const {
   deleteUser
 } = require('@controllers/userController')
 const {
-  getReports,
-  getUsersReports,
-  deleteAllReports
+  getOodiReports,
+  getUsersOodiReports,
+  deleteAllOodiReports
 } = require('@controllers/oodiReportController')
 const {
   addRawEntries
@@ -69,7 +69,7 @@ router.get('/sandbox', () => {
 // Routes for seeding the test database
 router.delete('/seed/courses', notInProduction, deleteAllCourses)
 router.delete('/seed/users', notInProduction, deleteAllUsers)
-router.delete('/seed/reports', notInProduction, deleteAllReports)
+router.delete('/seed/reports', notInProduction, deleteAllOodiReports)
 router.delete('/seed/jobs', notInProduction, deleteAllJobs)
 router.post('/seed/users', notInProduction, addUser)
 
@@ -92,11 +92,11 @@ router.post('/users', checkAdmin, addUser)
 router.put('/users/:id', checkAdmin, editUser)
 router.delete('/users/:id', checkAdmin, deleteUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
-router.get('/users/:id/oodi_reports', checkIdMatch, getUsersReports)
+router.get('/users/:id/oodi_reports', checkIdMatch, getUsersOodiReports)
 router.get('/users/:id/sis_reports', checkIdMatch, sisGetUsersReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
-router.get('/oodi_reports', checkAdmin, getReports)
+router.get('/oodi_reports', checkAdmin, getOodiReports)
 
 router.get('/sis_reports', checkAdmin, sisGetAllReports)
 router.delete('/sis_reports/:id', deleteSingleEntry, sisDeleteSingleEntry)

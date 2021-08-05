@@ -61,7 +61,7 @@ const getUsersSisReports = async (req, res) => {
   }
 }
 
-const sisDeleteSingleEntry = async (req, res) => {
+const deleteSingleSisEntry = async (req, res) => {
   try {
     db.raw_entries.destroy({
       where: {
@@ -74,7 +74,7 @@ const sisDeleteSingleEntry = async (req, res) => {
   }
 }
 
-const sisDeleteBatch = async (req, res) => {
+const deleteSisBatch = async (req, res) => {
   try {
     db.raw_entries.destroy({
       where: {
@@ -281,8 +281,8 @@ const updateSuccess = async (entryIds, senderId) =>
 module.exports = {
   getAllSisReports,
   getUsersSisReports,
-  sisDeleteSingleEntry,
-  sisDeleteBatch,
+  deleteSingleSisEntry,
+  deleteSisBatch,
   sendToSis,
   refreshSisStatus,
   refreshEnrollments

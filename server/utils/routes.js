@@ -30,8 +30,8 @@ const {
 const {
   getAllSisReports,
   getUsersSisReports,
-  sisDeleteSingleEntry,
-  sisDeleteBatch,
+  deleteSingleSisEntry,
+  deleteSisBatch,
   sendToSis,
   refreshSisStatus,
   refreshEnrollments
@@ -99,8 +99,8 @@ router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 router.get('/oodi_reports', checkAdmin, getOodiReports)
 
 router.get('/sis_reports', checkAdmin, getAllSisReports)
-router.delete('/sis_reports/:id', deleteSingleEntry, sisDeleteSingleEntry)
-router.delete('/sis_reports/batch/:batchId', checkAdmin, sisDeleteBatch)
+router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
+router.delete('/sis_reports/batch/:batchId', checkAdmin, deleteSisBatch)
 router.post('/sis_raw_entries', addRawEntries)
 router.post('/entries_to_sis', checkAdmin, sendToSis)
 router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)

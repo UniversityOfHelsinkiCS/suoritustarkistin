@@ -1,6 +1,6 @@
 const moment = require('moment')
 const logger = require('@utils/logger')
-const { SIS_LANGUAGES, sisIsValidGrade } = require('@root/utils/validators')
+const { SIS_LANGUAGES, isValidGrade } = require('@root/utils/validators')
 const { getCompletions, postTransferredId } = require('../services/kurki')
 const { getEarlierAttainments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
@@ -50,7 +50,7 @@ const processKurkiEntries = async ({
     let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
-        if (!sisIsValidGrade(completion.grade)) {
+        if (!isValidGrade(completion.grade)) {
           logger.error({ message: `Invalid grade for student ${completion.studentNumber}: ${completion.grade}` })
           return matches
         }

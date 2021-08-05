@@ -2,7 +2,7 @@ const moment = require('moment')
 const db = require('../models/index')
 const {
   isValidStudentId,
-  sisIsValidGrade,
+  isValidGrade,
   isValidCreditAmount
 } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
@@ -21,7 +21,7 @@ const validateEntry = ({
   if (!isValidStudentId(studentId)) {
     throw new Error(`'${studentId}' is not valid student id`)
   }
-  if (grade && !sisIsValidGrade(grade)) {
+  if (grade && !isValidGrade(grade)) {
     throw new Error(`'${grade}' is not valid grade`)
   }
   if (credits && !isValidCreditAmount(credits)) {

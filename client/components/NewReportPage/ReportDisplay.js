@@ -6,7 +6,7 @@ const { commify } = require('Root/utils/commify')
 
 const {
   isValidStudentId,
-  sisIsValidGrade,
+  isValidGrade,
   isValidCreditAmount,
   isValidLanguage,
   isValidDate,
@@ -96,7 +96,7 @@ const getStudentIdCell = (studentId, registration, duplicate) => {
 
 const getGradeCell = (grade, defaultGrade) => {
   if (grade) {
-    if (sisIsValidGrade(grade)) {
+    if (isValidGrade(grade)) {
       return <Table.Cell style={validStyle}>{grade}</Table.Cell>
     }
     return (

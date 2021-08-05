@@ -83,9 +83,7 @@ const isDateObject = (date) => {
   return Object.prototype.toString.call(date) === "[object Date]"
 }
 
-const isValidGrade = (grade) => /^([0-5]|Hyv\.|Hyl\.)$/.test(grade) // 0 to 5, Hyv. or Hyl.
-
-const sisIsValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
+const isValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
 
 const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // Hyv. or Hyl.
 
@@ -153,7 +151,7 @@ const sisIsValidLanguage = (language) => {
 const sisIsValidRow = (row, date) => {
   if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
-  if (row.grade && !sisIsValidGrade(row.grade)) return false
+  if (row.grade && !isValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
   if (row.language && !sisIsValidLanguage(row.language)) return false
   if ((row.attainmentDate && !isValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !isValidDate(date))) return false
@@ -200,7 +198,6 @@ module.exports = {
   isFutureDate,
   isPastDate,
   isValidGrade,
-  sisIsValidGrade,
   isValidHylHyvGrade,
   isValidCreditAmount,
   isValidLanguage,

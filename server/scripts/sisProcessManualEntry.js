@@ -5,7 +5,7 @@ const {
   sisIsValidGrade,
   isValidCreditAmount
 } = require('../../utils/validators')
-const { processEntries } = require('./sisProcessEntry')
+const { processEntries } = require('./processEntries')
 const { getRegistrations } = require('../services/eduweb')
 const logger = require('@utils/logger')
 

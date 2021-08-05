@@ -3,7 +3,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const db = require('../models/index')
 const logger = require('@utils/logger')
-const { processEntries } = require('../scripts/sisProcessEntry')
+const { processEntries } = require('../scripts/processEntries')
 const { sendSentryMessage } = require('@utils/sentry')
 
 

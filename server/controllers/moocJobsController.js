@@ -5,7 +5,7 @@ const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = req
 const { processEoaiEntries } = require('../scripts/processEoaiEntries')
 const { processBaiIntermediateEntries } = require('../scripts/processBaiIntermediateEntries')
 const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')
-const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const { processMoocEntries } = require('../scripts/processMoocEntries')
 
 const getJobs = async (req, res) => {
   try {

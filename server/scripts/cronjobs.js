@@ -5,7 +5,7 @@ const { EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/
 const { processEoaiEntries } = require('./processEoaiEntries')
 const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntries')
 const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
-const { processMoocEntries } = require('./sisProcessMoocEntries')
+const { processMoocEntries } = require('./processMoocEntries')
 
 const refreshEntriesCron = require('./sisRefreshEntryCron')
 

@@ -24,7 +24,7 @@ const {
   getReports,
   getUsersReports,
   deleteAllReports
-} = require('@controllers/reportController')
+} = require('@controllers/oodiReportController')
 const {
   addRawEntries
 } = require('@controllers/rawEntryController')
@@ -36,7 +36,7 @@ const {
   sendToSis,
   refreshSisStatus,
   refreshEnrollments
-} = require('@controllers/sisReportController')
+} = require('@controllers/reportController')
 const {
   addJob,
   getJobs,

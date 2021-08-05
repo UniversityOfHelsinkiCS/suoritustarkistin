@@ -58,10 +58,10 @@ const editJob = async (req, res) => {
   }
 }
 
-const sisRunJob = async (req, res) => {
+const runJob = async (req, res) => {
   try {
     if (!req.user.isAdmin) {
-      return res.status(400).json({ error: 'User is not authorized to create SIS-reports.' })
+      return res.status(400).json({ error: 'User is not authorized to create mooc-reports.' })
     }
     const jobId = req.params.id
 
@@ -133,5 +133,5 @@ module.exports = {
   editJob,
   deleteJob,
   deleteAllJobs,
-  sisRunJob
+  runJob
 }

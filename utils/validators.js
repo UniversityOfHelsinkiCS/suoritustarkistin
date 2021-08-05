@@ -148,7 +148,7 @@ const sisIsValidLanguage = (language) => {
   return (SIS_LANGUAGES.includes(language))
 }
 
-const sisIsValidRow = (row, date) => {
+const isValidRow = (row, date) => {
   if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
   if (row.grade && !isValidGrade(row.grade)) return false
@@ -164,7 +164,7 @@ const sisAreValidNewRawEntries = (rawEntries) => {
   if (!rawEntries.data) return false
   let allRowsValid = true
   rawEntries.data.forEach((row) => {
-    if (!sisIsValidRow(row, rawEntries.date)) {
+    if (!isValidRow(row, rawEntries.date)) {
       allRowsValid = false
     }
   })

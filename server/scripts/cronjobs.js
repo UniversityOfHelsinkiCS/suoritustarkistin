@@ -7,7 +7,7 @@ const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntri
 const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
 const { processMoocEntries } = require('./processMoocEntries')
 
-const refreshEntriesCron = require('./sisRefreshEntryCron')
+const refreshEntriesCron = require('./refreshEntryCron')
 
 let cronjobs = {}
 

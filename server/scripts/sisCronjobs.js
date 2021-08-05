@@ -4,7 +4,7 @@ const logger = require('@utils/logger')
 const { EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
 const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
 const { processBaiIntermediateEntries } = require('../scripts/sisProcessBaiIntermediateEntries')
-const { processBaiAdvancedEntries } = require('../scripts/sisProcessBaiAdvancedEntries')
+const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')
 const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
 
 const refreshEntriesCron = require('./sisRefreshEntryCron')

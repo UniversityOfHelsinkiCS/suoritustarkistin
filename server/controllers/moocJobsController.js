@@ -4,7 +4,7 @@ const { activateJob, deactivateJob } = require('../scripts/sisCronjobs')
 const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
 const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
 const { processBaiIntermediateEntries } = require('../scripts/sisProcessBaiIntermediateEntries')
-const { processBaiAdvancedEntries } = require('../scripts/sisProcessBaiAdvancedEntries')
+const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')
 const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
 
 const getJobs = async (req, res) => {

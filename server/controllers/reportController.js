@@ -26,7 +26,7 @@ const handleDatabaseError = (res, error) => {
   return res.status(500).json({ error: 'Server went BOOM!' })
 }
 
-const sisGetAllReports = async (req, res) => {
+const getAllSisReports = async (req, res) => {
   try {
     const allRawEntries = await db.raw_entries.findAll({
       include: [
@@ -43,7 +43,7 @@ const sisGetAllReports = async (req, res) => {
   }
 }
 
-const sisGetUsersReports = async (req, res) => {
+const getUsersSisReports = async (req, res) => {
   try {
     const usersRawEntries = await db.raw_entries.findAll({
       where: { graderId: req.user.id },
@@ -279,8 +279,8 @@ const updateSuccess = async (entryIds, senderId) =>
   })
 
 module.exports = {
-  sisGetAllReports,
-  sisGetUsersReports,
+  getAllSisReports,
+  getUsersSisReports,
   sisDeleteSingleEntry,
   sisDeleteBatch,
   sendToSis,

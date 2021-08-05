@@ -28,8 +28,8 @@ const {
   addRawEntries
 } = require('@controllers/rawEntryController')
 const {
-  sisGetAllReports,
-  sisGetUsersReports,
+  getAllSisReports,
+  getUsersSisReports,
   sisDeleteSingleEntry,
   sisDeleteBatch,
   sendToSis,
@@ -93,12 +93,12 @@ router.put('/users/:id', checkAdmin, editUser)
 router.delete('/users/:id', checkAdmin, deleteUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
 router.get('/users/:id/oodi_reports', checkIdMatch, getUsersOodiReports)
-router.get('/users/:id/sis_reports', checkIdMatch, sisGetUsersReports)
+router.get('/users/:id/sis_reports', checkIdMatch, getUsersSisReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
 router.get('/oodi_reports', checkAdmin, getOodiReports)
 
-router.get('/sis_reports', checkAdmin, sisGetAllReports)
+router.get('/sis_reports', checkAdmin, getAllSisReports)
 router.delete('/sis_reports/:id', deleteSingleEntry, sisDeleteSingleEntry)
 router.delete('/sis_reports/batch/:batchId', checkAdmin, sisDeleteBatch)
 router.post('/sis_raw_entries', addRawEntries)

@@ -1,6 +1,6 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
-const { processManualEntry } = require('../scripts/sisProcessManualEntry')
+const { processManualEntry } = require('../scripts/processManualEntry')
 const sendEmail = require('../utils/sendEmail')
 const { newReport } = require('../utils/emailFactory')
 

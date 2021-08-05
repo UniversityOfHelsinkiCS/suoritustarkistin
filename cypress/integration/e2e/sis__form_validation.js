@@ -1,11 +1,10 @@
 /// <reference types="Cypress" />
 
-describe('SIS form validation', () => {
-
+describe('Form validation', () => {
   describe("Validation prevents submission of invalid data", () => {
     it('when pasted data is invalid', () => {
       cy.initializeUsersAndCourses()
-      cy.asAdmin().visit('')
+      cy.login('admin').visit('')
       cy.get('[data-cy=adminmode-enable]').click()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
       cy.get('[data-cy=create-report-button]').should('be.disabled')  
@@ -30,12 +29,13 @@ describe('SIS form validation', () => {
         .click()
   
       cy.get('[data-cy=create-report-button]').should('be.disabled')
+      cy.logout()
     })
   
     // Fix me later
     it('when there are missing fields', () => {
       cy.initializeUsersAndCourses()
-      cy.asAdmin().visit('')
+      cy.login('admin').visit('')
       cy.get('[data-cy=adminmode-enable]').click()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
       cy.get('[data-cy=create-report-button]').should('be.disabled')  
@@ -70,6 +70,7 @@ describe('SIS form validation', () => {
         { delay: 1 }
       )
       cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.logout()
     })  
   })  
 })

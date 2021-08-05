@@ -3,14 +3,21 @@ describe('New entries can be added correctly', function () {
 
   it('When pasting (typing) completions with valid data, correct entries are created', () => {
     cy.initializeUsersAndCourses()
-    cy.asAdmin().visit('')
+    cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
 
     // Check that before entering any new entries, only one entry is shown
     // Mock the importer calls
-    cy.server()
-    cy.route('GET', 'http://localhost:8001/api/sis_reports', '@initialRawEntriesJSON').as('getInitialEntries')
-    cy.route('POST', 'http://localhost:8001/api/sis_raw_entries', '@addRawEntriesJSON').as('addRawEntries')
+    cy.intercept(
+      'GET',
+      'http://localhost:8001/api/sis_reports',
+      { fixture: 'raw-entries-before.json'})
+      .as('getInitialEntries')
+    cy.intercept(
+      'POST',
+      'http://localhost:8001/api/sis_raw_entries',
+      { fixture: 'raw-entries-add.json'})
+      .as('addRawEntries')
 
     cy.get('[data-cy=nav-reports]').click()
     cy.wait('@getInitialEntries')
@@ -55,8 +62,11 @@ describe('New entries can be added correctly', function () {
     cy.get('[data-cy=create-report-button]')
       .should('be.disabled')
 
-    cy.server()
-    cy.route('GET', 'http://localhost:8001/api/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
+    cy.intercept(
+      'GET',
+      'http://localhost:8001/api/sis_reports',
+      { fixture: 'raw-entries-after'})
+    .as('getUpdatedEntries')
 
     cy.get('[data-cy=nav-reports]').click()
     cy.wait('@getUpdatedEntries')
@@ -72,7 +82,7 @@ describe('New entries can be added correctly', function () {
 
   it('When pasting (typing) completions with a non-existing employee number, no entries are created', () => {
     cy.initializeUsersAndCourses()
-    cy.asAdmin().visit('')
+    cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
     cy.get('[data-cy=copypaste]').should('be.visible').click()
     cy.get('[data-cy=paste-field]').type(

@@ -1,4 +1,4 @@
-describe('Submitting data creates a valid report into database', function () {
+describe('Basic functions work', function () {
 
   before(function () {
     cy.request('DELETE', '/api/seed/courses')
@@ -7,22 +7,29 @@ describe('Submitting data creates a valid report into database', function () {
 
     cy.request('POST', '/api/seed/users', {
       name: 'admin',
-      uid: 'admin-1',
+      uid: 'admin',
       employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
       isAdmin: true,
       isGrader: false
     })
     cy.request('POST', '/api/seed/users', {
+      name: 'grader',
+      employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
+      uid: 'grader',
+      isAdmin: false,
+      isGrader: true
+    })
+    cy.request('POST', '/api/seed/users', {
       name: 'user',
-      uid: 'user-1',
       employeeId: Cypress.env('USER_EMPLOYEE_NUMBER'),
+      uid: 'user',
       isAdmin: false,
       isGrader: false
     })
   })
 
   it('Admin can grant rights', () => {
-    cy.asAdmin().visit('')
+    cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
     cy.get('[data-cy=nav-users]').click()
     cy.get('[data-cy=user-not-admin]').click()
@@ -37,8 +44,7 @@ describe('Submitting data creates a valid report into database', function () {
   })
 
   it('Admin can create and edit course', () => {
-    cy.asAdmin().visit('')
-
+    cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
     cy.get('[data-cy=nav-courses]').click()
     cy.get('[data-cy=add-course-button]').click()
@@ -58,14 +64,17 @@ describe('Submitting data creates a valid report into database', function () {
       .clear()
       .type('1,5')
     cy.get('[data-cy=edit-course-confirm]').click()
+    cy.logout()
   })
 
   it('Grader can create reports', () => {
-    cy.fixture('raw-entries-add.json').as('addRawEntriesJSON');
-    cy.server()
-    cy.route('POST', 'http://localhost:8001/api/sis_raw_entries', '@addRawEntriesJSON').as('addRawEntries')
+    cy.login('grader').visit('')
+    cy.intercept(
+      'POST',
+      'http://localhost:8001/api/sis_raw_entries', 
+      { fixture: 'raw-entries-add.json'}
+    ).as('addRawEntries')
 
-    cy.asUser().visit('')
     cy.get('[data-cy=create-report-button]').should('be.disabled')
     cy.get('[data-cy=paste-field]').type(
       '010000003;2;5;fi\n011000002;3;2,0\n011100009;4\n011110002;5;;fi'
@@ -92,22 +101,23 @@ describe('Submitting data creates a valid report into database', function () {
     cy.get('[data-cy=confirm-sending-button]')
       .should('be.visible')
       .click()
+    cy.logout()
   })
 
 
-
   it('Grader can view created report', () => {
-    cy.fixture('raw-entries-after.json').as('updatedRawEntriesJSON');
-    cy.server()
-    cy.route('GET', 'http://localhost:8001/api/users/*/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
-    cy.asUser().visit('')
+    cy.login('grader').visit('')
+    cy.intercept(
+        'GET',
+        'http://localhost:8001/api/users/*/sis_reports',
+        { fixture: 'raw-entries-after.json' }
+      ).as('getUpdatedEntries')
     cy.get('[data-cy=nav-reports]').click()
     cy.wait('@getUpdatedEntries')
     cy.wait(2000)
-
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=report-TKT10001]').should('be.visible')
     cy.get('[data-cy=report-TKT10002]').should('be.visible')
-
+    cy.logout()
   })
 })

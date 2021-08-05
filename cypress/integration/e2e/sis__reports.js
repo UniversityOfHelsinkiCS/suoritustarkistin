@@ -1,11 +1,14 @@
 describe('SIS Reports -page shows data correctly', () => {
   it('Entry data is shown correctly on the reports page', () => {
     cy.initializeUsersAndCourses()
-    cy.asAdmin().visit('')
+    cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
 
-    cy.server()
-    cy.route('GET', 'http://localhost:8001/api/sis_reports', '@initialRawEntriesJSON').as('getInitialEntries')
+    cy.intercept(
+      'GET',
+      'http://localhost:8001/api/sis_reports', 
+      { fixture: 'raw-entries-before.json'}
+    ).as('getInitialEntries')
 
     cy.get('[data-cy=nav-reports]').click()
     cy.wait('@getInitialEntries')
@@ -31,21 +34,26 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy="report-course-content-1')
       .should('contain', "Course unit ID 1", "Course unit realisation ID 1", "Assessment ID 1", "Grader's ID 1", "sis-0-5")
+    cy.logout()
   })
 
   it('Single entries can be deleted from the reports page', () => {
     cy.initializeUsersAndCourses()
-    cy.asAdmin().visit('')
+    cy.login('admin').visit('')
     // TODO: Structure the table better, so that everything (including delete-buttons) is shown also for smaller screens
     cy.viewport(1800, 1800)
 
     cy.get('[data-cy=adminmode-enable]').click()
-    cy.server()
-    cy.route('GET', 'http://localhost:8001/api/sis_reports', '@updatedRawEntriesJSON').as('getUpdatedEntries')
+    cy.intercept(
+      'GET',
+      'http://localhost:8001/api/sis_reports', 
+      { fixture: 'raw-entries-after.json'}
+    ).as('getUpdatedRawEntries')
+
     cy.wait(1000)
     cy.get('[data-cy=nav-reports]').click()
     cy.get('[data-cy=nav-reports]').click()
-    cy.wait('@getUpdatedEntries')
+    cy.wait('@getUpdatedRawEntries')
     cy.wait(1000)
 
     cy.get('[data-cy=sis-reports-tab]').click()
@@ -55,5 +63,6 @@ describe('SIS Reports -page shows data correctly', () => {
     //cy.get('[data-cy=report-entry-delete-button-2]').should('be.visible').click()
     //cy.get('[data-cy=report-entry-delete-button-3]').should('be.visible').click()
     cy.get('[data-cy=report-TKT10001]').should('not.exist');
+    cy.logout()
   })
 })

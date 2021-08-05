@@ -1,4 +1,4 @@
-const refreshEntries = require('../scripts/sisRefreshEntry')
+const refreshEntries = require('../scripts/refreshEntries')
 const db = require('../models/index')
 const { Op, col } = require("sequelize")
 const logger = require('@utils/logger')

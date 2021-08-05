@@ -5,7 +5,7 @@ const db = require('../models/index')
 const logger = require('@utils/logger')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const { getEmployees, getAcceptorPersons } = require('../services/importer')
-const refreshEntries = require('../scripts/sisRefreshEntry')
+const refreshEntries = require('../scripts/refreshEntries')
 const { sendSentryMessage } = require('@utils/sentry')
 
 const Op = Sequelize.Op

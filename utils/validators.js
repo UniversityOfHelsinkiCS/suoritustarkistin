@@ -1,12 +1,6 @@
 const moment = require('moment')
 const cron = require('node-cron')
 
-const LANGUAGES = {
-  fi: 1,
-  sv: 2,
-  en: 6
-}
-
 const SIS_LANGUAGES = [
   "fi",
   "sv",
@@ -89,8 +83,6 @@ const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // Hyv. or 
 
 const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
 
-const isValidLanguage = (language) => LANGUAGES[language]
-
 const isValidEmailAddress = (address) =>
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
     address
@@ -144,7 +136,7 @@ const isValidCourse = (course) => {
   return true
 }
 
-const sisIsValidLanguage = (language) => {
+const isValidLanguage = (language) => {
   return (SIS_LANGUAGES.includes(language))
 }
 
@@ -153,7 +145,7 @@ const isValidRow = (row, date) => {
   if (!isValidStudentId(row.studentId)) return false
   if (row.grade && !isValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
-  if (row.language && !sisIsValidLanguage(row.language)) return false
+  if (row.language && !isValidLanguage(row.language)) return false
   if ((row.attainmentDate && !isValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !isValidDate(date))) return false
   return true
 }

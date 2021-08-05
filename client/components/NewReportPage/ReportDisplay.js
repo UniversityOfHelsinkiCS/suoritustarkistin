@@ -9,10 +9,10 @@ const {
   sisIsValidGrade,
   isValidCreditAmount,
   isValidLanguage,
-  sisIsValidDate,
-  sisFutureDate,
-  sisPastDate,
-  sisIsDateObject
+  isValidDate,
+  isFutureDate,
+  isPastDate,
+  isDateObject
 } = require('Root/utils/validators')
 
 const validStyle = {
@@ -159,8 +159,8 @@ const getLanguageCell = (language, course) => {
 
 const getDateCell = (date) => {
   if (date) {
-    const past = sisPastDate(date)
-    const future = sisFutureDate(date)
+    const past = isPastDate(date)
+    const future = isFutureDate(date)
     if (past || future) {
       return (
         <Popup
@@ -179,10 +179,10 @@ const getDateCell = (date) => {
         />
       )
     }
-    if (sisIsValidDate(date)) {
+    if (isValidDate(date)) {
       return <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
     }
-    if (sisIsDateObject(date)) {
+    if (isDateObject(date)) {
       return (
         <Table.Cell style={invalidStyle}>
           <Icon name="ban" />

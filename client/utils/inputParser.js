@@ -1,6 +1,6 @@
 import * as CSV from 'csv-string'
 import { isValidStudentId, isValidEmailAddress, isValidOodiDate } from 'Root/utils/validators'
-import { sisIsValidDate, sisIsDateObject } from '../../utils/validators'
+import { isValidDate, isDateObject } from '../../utils/validators'
 
 const markDuplicates = (data) => {
   const indexes = data
@@ -23,12 +23,12 @@ const markDuplicates = (data) => {
 
 const formatDate = (date) => {
   if (!date) return undefined
-  if (sisIsDateObject(date) && sisIsValidDate(date)) {
+  if (isDateObject(date) && isValidDate(date)) {
     // Use 12 PM to avoid off by one day -errors in frontend
     const newDay = new Date(date.getYear(), date.getMonth()+1, date.getDate(), 6)
     return newDay
   }
-  if (!sisIsDateObject(date) && isValidOodiDate(date)) {
+  if (!isDateObject(date) && isValidOodiDate(date)) {
     const parts = date.split('.')
     // Use 12 PM to avoid off by one day -errors in frontend
     const newDay = new Date(parts[2], Number(parts[1])-1, parts[0], 6)

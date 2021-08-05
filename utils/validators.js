@@ -55,31 +55,31 @@ const isValidOodiDate = (date) =>
   /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.5.2019
 
 
-const sisIsValidDate = (date) => {
+const isValidDate = (date) => {
   if (!date) return false
-  if (sisIsDateObject(date)) {
+  if (isDateObject(date)) {
     if (date.getFullYear() > 1999 && date.getFullYear() < 2099) return true
   }
   return false
 }
 
-const sisFutureDate = (date) => {
+const isFutureDate = (date) => {
   if (!date) return false
-  if (sisIsDateObject(date)) {
+  if (isDateObject(date)) {
     if (date > new Date()) return true
   }
   return false
 }
 
-const sisPastDate = (date) => {
+const isPastDate = (date) => {
   if (!date) return false
-  if (sisIsDateObject(date)) {
+  if (isDateObject(date)) {
     if (date < moment().subtract(100, 'days')) return 'past'
   }
   return false
 }
 
-const sisIsDateObject = (date) => {
+const isDateObject = (date) => {
   return Object.prototype.toString.call(date) === "[object Date]"
 }
 
@@ -156,7 +156,7 @@ const sisIsValidRow = (row, date) => {
   if (row.grade && !sisIsValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
   if (row.language && !sisIsValidLanguage(row.language)) return false
-  if ((row.attainmentDate && !sisIsValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !sisIsValidDate(date))) return false
+  if ((row.attainmentDate && !isValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !isValidDate(date))) return false
   return true
 }
 
@@ -195,10 +195,10 @@ module.exports = {
   SIS_LANGUAGES,
   isValidStudentId,
   isValidOodiDate,
-  sisIsValidDate,
-  sisIsDateObject,
-  sisFutureDate,
-  sisPastDate,
+  isValidDate,
+  isDateObject,
+  isFutureDate,
+  isPastDate,
   isValidGrade,
   sisIsValidGrade,
   isValidHylHyvGrade,

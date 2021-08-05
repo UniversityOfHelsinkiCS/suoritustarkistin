@@ -6,25 +6,6 @@ const handleDatabaseError = (res, error) => {
   return res.status(500).json({ error: 'Server went BOOM!' })
 }
 
-const getCourseName = (data) => {
-  const hackySplit = data.split('#')
-  return hackySplit[4] || 'Unnamed course'
-}
-
-const getReportList = async (req, res) => {
-  try {
-    const fetchedReports = await db.reports.findAll()
-    const reportFileInfo = fetchedReports.map((report) => ({
-      id: report.id,
-      fileName: report.fileName,
-      courseName: getCourseName(report.data)
-    }))
-    return res.status(200).send(reportFileInfo)
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
 const getReports = async (req, res) => {
   try {
     const fetchedReports = await db.reports.findAll({
@@ -83,7 +64,6 @@ const deleteAllReports = async (req, res) => {
 }
 
 module.exports = {
-  getReportList,
   getReports,
   getUsersReports,
   getSingleReport,

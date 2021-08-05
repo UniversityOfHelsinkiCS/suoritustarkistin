@@ -20,7 +20,6 @@ const {
   deleteUser
 } = require('@controllers/userController')
 const {
-  getReportList,
   getReports,
   getUsersReports,
   deleteAllReports
@@ -70,7 +69,6 @@ router.get('/sandbox', () => {
 // Routes for seeding the test database
 router.delete('/seed/courses', notInProduction, deleteAllCourses)
 router.delete('/seed/users', notInProduction, deleteAllUsers)
-router.get('/seed/reports/list', notInProduction, getReportList)
 router.delete('/seed/reports', notInProduction, deleteAllReports)
 router.delete('/seed/jobs', notInProduction, deleteAllJobs)
 router.post('/seed/users', notInProduction, addUser)

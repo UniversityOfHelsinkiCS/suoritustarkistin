@@ -189,6 +189,12 @@ export default (state = null, action) => {
         content: action.error.message,
         type: 'negative'
       }
+    case 'ADD_USER_FAILURE':
+      return {
+        header: 'Adding the user failed',
+        content: action.error,
+        type: 'negative'
+      }
     default:
       return state
   }

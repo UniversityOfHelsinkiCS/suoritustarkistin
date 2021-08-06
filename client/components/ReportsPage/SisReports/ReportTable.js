@@ -30,7 +30,7 @@ export default ({ rows }) => {
     return null
 
   const includeDelete = rows.some((r) => allowDelete(user, r))
-  return <Table className="sis-report-table">
+  return <Table className="report-table">
     <TableColumns allowDelete={includeDelete} />
     <TableBody
       key={rows[0].batchId}
@@ -64,15 +64,15 @@ const TableColumns = ({ allowDelete }) => (
 )
 
 const TableBody = ({ user, rawEntries }) => {
-  return <Table.Body data-cy="sis-report-table">
+  return <Table.Body data-cy="report-table">
     {rawEntries.map((rawEntry) => {
       const course = rawEntry.course || PLACEHOLDER_COURSE
       return <React.Fragment key={`row-${rawEntry.id}`}>
         <Table.Row warning={rawEntry.entry.missingEnrolment}>
-          <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, course)}</Table.Cell>
-          <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
-          <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
-          <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
+          <Table.Cell data-cy={`report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, course)}</Table.Cell>
+          <Table.Cell data-cy={`report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
+          <Table.Cell data-cy={`report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
+          <Table.Cell data-cy={`report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
           <Table.Cell>{rawEntry.grader ? rawEntry.grader.name : 'Grader not found'}</Table.Cell>
           <EntryCells entry={rawEntry.entry} />
           {allowDelete(user, rawEntry)
@@ -115,20 +115,20 @@ const EntryCells = ({ entry }) => {
   return (
     <>
       <Table.Cell
-        data-cy={`sis-report-courseUnitRealisationName-${entry.id}`}
+        data-cy={`report-courseUnitRealisationName-${entry.id}`}
         colSpan='2'
       >
-        <Accordion className="sis-report-table-accordion" >
+        <Accordion className="report-table-accordion" >
           <Accordion.Title
             active
             onClick={() => setOpen(!open)}
-            data-cy={`sis-report-entry-course-${entry.id}`}
+            data-cy={`report-entry-course-${entry.id}`}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`} />
             {getSisUnitName(courseUnitRealisationName, completionLanguage)}
           </Accordion.Title>
           <Accordion.Content
-            data-cy={`sis-report-course-content-${entry.id}`}
+            data-cy={`report-course-content-${entry.id}`}
             active={open}
             style={{ padding: "0.75em 1em" }}
           >
@@ -145,25 +145,25 @@ const EntryCells = ({ entry }) => {
           </Accordion.Content>
         </Accordion>
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-personId-${entry.id}`}>
+      <Table.Cell data-cy={`report-personId-${entry.id}`}>
         {personId ? personId : null}
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-completionDate-${entry.id}`}>
+      <Table.Cell data-cy={`report-completionDate-${entry.id}`}>
         {completionDate ? moment(completionDate).format("DD.MM.YYYY") : null}
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-completionLanguage-${entry.id}`}>
+      <Table.Cell data-cy={`report-completionLanguage-${entry.id}`}>
         {completionLanguage ? completionLanguage : null}
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-entry-grade-${entry.id}`}>
+      <Table.Cell data-cy={`report-entry-grade-${entry.id}`}>
         {getGrade(gradeScaleId, gradeId, completionLanguage)}
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-sent-${entry.id}`}>
+      <Table.Cell data-cy={`report-sent-${entry.id}`}>
         {sent ? moment(sent).format("DD.MM.YYYY") : null}
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-senderName-${entry.id}`}>
+      <Table.Cell data-cy={`report-senderName-${entry.id}`}>
         {sender ? sender.name : null}
       </Table.Cell>
-      <Table.Cell data-cy={`sis-report-registered-${entry.id}`}>
+      <Table.Cell data-cy={`report-registered-${entry.id}`}>
         {registered === 'NOT_REGISTERED' ? <Icon name="close" color="red" /> : null}
         {registered === 'PARTLY_REGISTERED' ? <Icon name="checkmark" color="green" /> : null}
         {registered === 'REGISTERED' ? <><Icon name="checkmark" color="green" /> <Icon name="checkmark" color="green" /></> : null}

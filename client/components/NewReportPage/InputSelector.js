@@ -1,39 +1,39 @@
 import React from 'react'
 import { Tab, Menu, Icon } from 'semantic-ui-react'
-import SisDropzone from 'Components/NewReportPage/SisDropzone'
-import SisInputOptions from 'Components/NewReportPage/SisInputOptions'
-import SisTextInput from 'Components/NewReportPage/SisTextInput'
-import SisReportDisplay from 'Components/NewReportPage/SisReportDisplay'
+import Dropzone from 'Components/NewReportPage/Dropzone'
+import InputOptions from 'Components/NewReportPage/InputOptions'
+import TextInput from 'Components/NewReportPage/TextInput'
+import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 
 export default () => {
   let panes = [
     {
       menuItem: (
-        <Menu.Item key="sis-copypaste" data-cy="sis-copypaste">
+        <Menu.Item key="copypaste" data-cy="copypaste">
           <Icon name="file alternate outline" />
-          SIS - Copy & Paste
+          Copy & Paste
         </Menu.Item>
       ),
       render: () => (
         <Tab.Pane>
-          <SisTextInput />
-          <SisInputOptions />
-          <SisReportDisplay />
+          <TextInput />
+          <InputOptions />
+          <ReportDisplay />
         </Tab.Pane>
       )
     },
     {
       menuItem: (
-        <Menu.Item key="sis-dragdrop" data-cy="sis-dragdrop">
+        <Menu.Item key="dragdrop" data-cy="dragdrop">
           <Icon name="folder open" />
-          SIS - Drag & Drop
+          Drag & Drop
         </Menu.Item>
       ),
       render: () => (
         <Tab.Pane>
-          <SisDropzone />
-          <SisInputOptions />
-          <SisReportDisplay />
+          <Dropzone />
+          <InputOptions />
+          <ReportDisplay />
         </Tab.Pane>
       )
     }

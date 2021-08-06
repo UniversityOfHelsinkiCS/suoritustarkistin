@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Button, Header, Modal, Popup, Segment } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { sendNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
-import { sisAreValidNewRawEntries } from 'Root/utils/validators'
+import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { areValidNewRawEntries } from 'Root/utils/validators'
 
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
@@ -70,7 +70,7 @@ export default () => {
           </Header>
           <div style={{ marginTop: "2em" }}>
             <Button
-              data-cy="sis-confirm-sending-button"
+              data-cy="confirm-sending-button"
               color="green"
               onClick={sendRawEntries}
             >
@@ -87,17 +87,17 @@ export default () => {
         <div style={{ position: "absolute", right: "1em" }}>
           <Button
             positive
-            data-cy="sis-create-report-button"
+            data-cy="create-report-button"
             onClick={() => setShowForm(true)}
             disabled={
-              newRawEntries.sending || !sisAreValidNewRawEntries(parseRawEntries(newRawEntries))
+              newRawEntries.sending || !areValidNewRawEntries(parseRawEntries(newRawEntries))
             }
             content="Create report"
           />
         </div>
       }
       content={newRawEntries.data && newRawEntries.data.length > 100 ? 'Currently single report can contain max 100 completions' :"Report contains validation errors, see table below."}
-      disabled={!newRawEntries.data || sisAreValidNewRawEntries(parseRawEntries(newRawEntries) || newRawEntries.data && newRawEntries.data.length <= 100)}
+      disabled={!newRawEntries.data || areValidNewRawEntries(parseRawEntries(newRawEntries) || newRawEntries.data && newRawEntries.data.length <= 100)}
       style={{ color: 'red' }}
     />
   </>

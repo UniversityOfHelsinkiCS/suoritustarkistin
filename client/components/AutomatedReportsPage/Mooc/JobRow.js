@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Grid, Icon } from 'semantic-ui-react'
-import { deleteJobAction, sisRunJobAction } from 'Utilities/redux/moocJobsReducer'
+import { deleteJobAction, runJobAction } from 'Utilities/redux/moocJobsReducer'
 import EditJob from 'Components/AutomatedReportsPage/Mooc/EditJob'
 
 export default ({ job, jobs }) => {
@@ -41,7 +41,7 @@ export default ({ job, jobs }) => {
   const CreateReportButton = () => (
     <Button
       disabled={jobs.pending}
-      onClick={() => dispatch(sisRunJobAction(job.id))}
+      onClick={() => dispatch(runJobAction(job.id))}
       content="Create report"
       color="blue"
     />

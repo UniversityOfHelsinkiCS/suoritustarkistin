@@ -27,9 +27,9 @@ export const deleteJobAction = (id) => {
   return callBuilder(route, prefix, 'delete')
 }
 
-export const sisRunJobAction = (id) => {
-  const route = `/sis_jobs/${id}`
-  const prefix = 'SIS_RUN_JOB'
+export const runJobAction = (id) => {
+  const route = `/jobs/${id}`
+  const prefix = 'RUN_JOB'
   return callBuilder(route, prefix, 'post')
 }
 
@@ -116,20 +116,20 @@ export default (state = { data: [] }, action) => {
         pending: false,
         error: true
       }
-    case 'SIS_RUN_JOB_SUCCESS':
+    case 'RUN_JOB_SUCCESS':
       return {
         ...state,
         message: action.result,
         pending: false,
         error: false
       }
-    case 'SIS_RUN_JOB_ATTEMPT':
+    case 'RUN_JOB_ATTEMPT':
       return {
         ...state,
         pending: true,
         error: false
       }
-    case 'SIS_RUN_JOB_FAILURE':
+    case 'RUN_JOB_FAILURE':
       return {
         ...state,
         pending: false,

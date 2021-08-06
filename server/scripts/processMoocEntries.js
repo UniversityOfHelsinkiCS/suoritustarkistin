@@ -2,8 +2,8 @@ const moment = require('moment')
 const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const logger = require('@utils/logger')
-const { sisIsValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
-const { isImprovedGrade } = require('../utils/sisEarlierCompletions')
+const { isValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
+const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { getEarlierAttainments } = require('../services/importer')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
@@ -55,7 +55,7 @@ const processMoocEntries = async ({
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
 
-        if (completion.grade && !sisIsValidGrade(completion.grade)) {
+        if (completion.grade && !isValidGrade(completion.grade)) {
           return matches
         }
 

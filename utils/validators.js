@@ -1,12 +1,6 @@
 const moment = require('moment')
 const cron = require('node-cron')
 
-const LANGUAGES = {
-  fi: 1,
-  sv: 2,
-  en: 6
-}
-
 const SIS_LANGUAGES = [
   "fi",
   "sv",
@@ -55,43 +49,39 @@ const isValidOodiDate = (date) =>
   /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.5.2019
 
 
-const sisIsValidDate = (date) => {
+const isValidDate = (date) => {
   if (!date) return false
-  if (sisIsDateObject(date)) {
+  if (isDateObject(date)) {
     if (date.getFullYear() > 1999 && date.getFullYear() < 2099) return true
   }
   return false
 }
 
-const sisFutureDate = (date) => {
+const isFutureDate = (date) => {
   if (!date) return false
-  if (sisIsDateObject(date)) {
+  if (isDateObject(date)) {
     if (date > new Date()) return true
   }
   return false
 }
 
-const sisPastDate = (date) => {
+const isPastDate = (date) => {
   if (!date) return false
-  if (sisIsDateObject(date)) {
+  if (isDateObject(date)) {
     if (date < moment().subtract(100, 'days')) return 'past'
   }
   return false
 }
 
-const sisIsDateObject = (date) => {
+const isDateObject = (date) => {
   return Object.prototype.toString.call(date) === "[object Date]"
 }
 
-const isValidGrade = (grade) => /^([0-5]|Hyv\.|Hyl\.)$/.test(grade) // 0 to 5, Hyv. or Hyl.
-
-const sisIsValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
+const isValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
 
 const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // Hyv. or Hyl.
 
 const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
-
-const isValidLanguage = (language) => LANGUAGES[language]
 
 const isValidEmailAddress = (address) =>
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
@@ -146,27 +136,27 @@ const isValidCourse = (course) => {
   return true
 }
 
-const sisIsValidLanguage = (language) => {
+const isValidLanguage = (language) => {
   return (SIS_LANGUAGES.includes(language))
 }
 
-const sisIsValidRow = (row, date) => {
+const isValidRow = (row, date) => {
   if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
-  if (row.grade && !sisIsValidGrade(row.grade)) return false
+  if (row.grade && !isValidGrade(row.grade)) return false
   if (row.credits && !isValidCreditAmount(row.credits)) return false
-  if (row.language && !sisIsValidLanguage(row.language)) return false
-  if ((row.attainmentDate && !sisIsValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !sisIsValidDate(date))) return false
+  if (row.language && !isValidLanguage(row.language)) return false
+  if ((row.attainmentDate && !isValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !isValidDate(date))) return false
   return true
 }
 
-const sisAreValidNewRawEntries = (rawEntries) => {
+const areValidNewRawEntries = (rawEntries) => {
   if (!rawEntries) return false
   if (!rawEntries.graderId || !rawEntries.courseId) return false
   if (!rawEntries.data) return false
   let allRowsValid = true
   rawEntries.data.forEach((row) => {
-    if (!sisIsValidRow(row, rawEntries.date)) {
+    if (!isValidRow(row, rawEntries.date)) {
       allRowsValid = false
     }
   })
@@ -195,17 +185,16 @@ module.exports = {
   SIS_LANGUAGES,
   isValidStudentId,
   isValidOodiDate,
-  sisIsValidDate,
-  sisIsDateObject,
-  sisFutureDate,
-  sisPastDate,
+  isValidDate,
+  isDateObject,
+  isFutureDate,
+  isPastDate,
   isValidGrade,
-  sisIsValidGrade,
   isValidHylHyvGrade,
   isValidCreditAmount,
   isValidLanguage,
   isValidEmailAddress,
-  sisAreValidNewRawEntries,
+  areValidNewRawEntries,
   isValidCourse,
   isValidHYCourseCode,
   isValidOpenCourseCode,

@@ -22,7 +22,7 @@ const styles = {
   }
 }
 
-const SisReportStatus = ({ batch }) => {
+const ReportStatus = ({ batch }) => {
   if (!batch) return null
 
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
@@ -79,4 +79,4 @@ const SisReportStatus = ({ batch }) => {
   )
 }
 
-export default SisReportStatus
+export default ReportStatus

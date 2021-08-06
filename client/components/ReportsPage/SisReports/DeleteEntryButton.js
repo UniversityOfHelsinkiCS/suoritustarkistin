@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { sisHandleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
+import { handleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 
 export default ({ rawEntryId, batchId }) => {
   const [open, setOpen] = useState(false)
@@ -9,7 +9,7 @@ export default ({ rawEntryId, batchId }) => {
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
 
   const deleteEntry = () => {
-    dispatch(sisHandleEntryDeletionAction(rawEntryId))
+    dispatch(handleEntryDeletionAction(rawEntryId))
   }
 
   return (
@@ -19,7 +19,7 @@ export default ({ rawEntryId, batchId }) => {
         <Button
           negative
           content="Delete"
-          data-cy={`sis-report-entry-delete-button-${rawEntryId}`}
+          data-cy={`report-entry-delete-button-${rawEntryId}`}
           disabled={!batchId}
           onClick={() => setOpen(true)}
         />
@@ -39,7 +39,7 @@ export default ({ rawEntryId, batchId }) => {
           <Button
             style={{ margin: '5px 2px' }}
             negative
-            data-cy={`sis-report-entry-confirm-button-${rawEntryId}`}
+            data-cy={`report-entry-confirm-button-${rawEntryId}`}
             onClick={deleteEntry}
             disabled={!rawEntryId}
             content="Yes, delete completions"

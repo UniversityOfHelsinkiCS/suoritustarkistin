@@ -1,9 +1,9 @@
 import React from 'react'
 import { Loader, Message } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
+import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { TextArea, Form } from 'semantic-ui-react'
-import { parseCSV } from 'Utilities/sisInputParser'
+import { parseCSV } from 'Utilities/inputParser'
 
 const textAreaStyle = {
   padding: '20px'
@@ -42,7 +42,7 @@ export default () => {
         Currently single report can contain max 100 completions
       </Message> : null}
       <TextArea
-        data-cy="sisPastefield"
+        data-cy="paste-field"
         onChange={handleDataChange}
         placeholder="Add the course completion information here, formatted as in the instructions above."
         rows={10}

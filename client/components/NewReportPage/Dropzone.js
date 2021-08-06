@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react'
 import { Loader } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setNewRawEntriesAction } from 'Utilities/redux/sisNewRawEntriesReducer'
+import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { useDropzone } from 'react-dropzone'
-import { parseCSV } from 'Utilities/sisInputParser'
+import { parseCSV } from 'Utilities/inputParser'
 
 const baseStyle = {
   flex: 1,
@@ -83,7 +83,7 @@ export default () => {
 
   return (
     <div className="container" style={{ cursor: 'pointer' }}>
-      <div data-cy="sis-dropzone" {...getRootProps({ style })}>
+      <div data-cy="dropzone" {...getRootProps({ style })}>
         <input {...getInputProps()} />
         <p>
           Drag a file here, or find it by clicking this box.

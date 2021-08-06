@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react'
-import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
-import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
-import { sisHandleEntryDeletionAction, refreshEnrollmentsAction, sisGetAllReportsAction, sisGetUsersReportsAction } from 'Utilities/redux/sisReportsReducer'
 import { Button, Icon, Table, Segment, Message } from 'semantic-ui-react'
+import moment from 'moment'
+
 import Notification from 'Components/Message'
+import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
+import {
+  handleEntryDeletionAction,
+  refreshEnrollmentsAction,
+  getAllSisReportsAction,
+  getUsersSisReportsAction
+} from 'Utilities/redux/sisReportsReducer'
 
 
 const getCourseCode = (rawEntry, course) => {
@@ -25,9 +31,9 @@ const DeleteButton = ({ id }) => {
   const dispatch = useDispatch()
   return (
     <Button
-      data-cy={`sis-report-entry-delete-button-${id}`}
+      data-cy={`report-entry-delete-button-${id}`}
       color="red"
-      onClick={() => dispatch(sisHandleEntryDeletionAction(id))}
+      onClick={() => dispatch(handleEntryDeletionAction(id))}
     >
       Delete
     </Button>
@@ -52,9 +58,9 @@ const EnrolmentLimbo = ({ rawEntries }) => {
   useEffect(() => {
     if (reports.refreshSuccess) {
       if (user.adminMode)
-        dispatch(sisGetAllReportsAction())
+        dispatch(getAllSisReportsAction())
       else
-        dispatch(sisGetUsersReportsAction(user.id))
+        dispatch(getUsersSisReportsAction(user.id))
     }
   }, [reports.refreshSuccess])
 
@@ -90,18 +96,18 @@ const EnrolmentLimbo = ({ rawEntries }) => {
             <Table.Body>
               {rawEntries.map((rawEntry) => (
                 <Table.Row key={rawEntry.id}>
-                  <Table.Cell data-cy={`sis-report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, rawEntry.course)}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, rawEntry.course)}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-personId-${rawEntry.id}`}>{rawEntry.entry.personId}</Table.Cell>
-                  <Table.Cell data-cy={`sis-report-completionDate-${rawEntry.id}`}>
+                  <Table.Cell data-cy={`report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, rawEntry.course)}</Table.Cell>
+                  <Table.Cell data-cy={`report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, rawEntry.course)}</Table.Cell>
+                  <Table.Cell data-cy={`report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
+                  <Table.Cell data-cy={`report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
+                  <Table.Cell data-cy={`report-personId-${rawEntry.id}`}>{rawEntry.entry.personId}</Table.Cell>
+                  <Table.Cell data-cy={`report-completionDate-${rawEntry.id}`}>
                     {rawEntry.entry.completionDate ? moment(rawEntry.entry.completionDate).format("DD.MM.YYYY") : null}
                   </Table.Cell>
-                  <Table.Cell data-cy={`sis-report-completionLanguage-${rawEntry.id}`}>
+                  <Table.Cell data-cy={`report-completionLanguage-${rawEntry.id}`}>
                     {rawEntry.entry.completionLanguage ? rawEntry.entry.completionLanguage : null}
                   </Table.Cell>
-                  <Table.Cell data-cy={`sis-report-completionDate-${rawEntry.id}`}>
+                  <Table.Cell data-cy={`report-completionDate-${rawEntry.id}`}>
                     {moment(rawEntry.createdAt).format("DD.MM.YYYY")}
                   </Table.Cell>
                   <Table.Cell>

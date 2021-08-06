@@ -3,45 +3,45 @@ import callBuilder from '../apiConnection'
  * Actions and reducers are in the same file for readability
  */
 
-export const sisGetAllReportsAction = () => {
+export const getAllSisReportsAction = () => {
   const route = '/sis_reports'
-  const prefix = 'SIS_GET_ALL_REPORTS'
+  const prefix = 'GET_ALL_SIS_REPORTS'
   return callBuilder(route, prefix, 'get')
 }
 
-export const sisGetUsersReportsAction = (id) => {
+export const getUsersSisReportsAction = (id) => {
   const route = `/users/${id}/sis_reports`
-  const prefix = 'SIS_GET_USERS_REPORTS'
+  const prefix = 'GET_USERS_SIS_REPORTS'
   return callBuilder(route, prefix, 'get')
 }
 
-export const sisHandleEntryDeletionAction = (id) => {
+export const handleEntryDeletionAction = (id) => {
   const route = `/sis_reports/${id}`
-  const prefix = 'SIS_DELETE_SINGLE_ENTRY'
+  const prefix = 'DELETE_SINGLE_ENTRY'
   return callBuilder(route, prefix, 'delete')
 }
 
-export const sisHandleBatchDeletionAction = (batchId) => {
+export const handleBatchDeletionAction = (batchId) => {
   const route = `/sis_reports/batch/${batchId}`
-  const prefix = 'SIS_DELETE_BATCH'
+  const prefix = 'DELETE_BATCH'
   return callBuilder(route, prefix, 'delete')
 }
 
 export const sendEntriesToSisAction = (entryIds) => {
   const route = `/entries_to_sis`
-  const prefix = 'SIS_POST_ENTRIES_TO_SIS'
+  const prefix = 'POST_ENTRIES_TO_SIS'
   return callBuilder(route, prefix, 'post', entryIds)
 }
 
 export const refreshBatchStatus = (entryIds) => {
   const route = `/refresh_sis_status`
-  const prefix = 'SIS_REFRESH_BATCH_STATUS'
+  const prefix = 'REFRESH_BATCH_STATUS'
   return callBuilder(route, prefix, 'post', entryIds)
 }
 
 export const refreshEnrollmentsAction = (rawEntryIds) => {
-  const route = `/refresh_sis_enrollments`
-  const prefix = 'SIS_REFRESH_ENROLLMENTS'
+  const route = `/refresh_enrollments`
+  const prefix = 'REFRESH_ENROLLMENTS'
   return callBuilder(route, prefix, 'post', rawEntryIds)
 }
 
@@ -61,7 +61,7 @@ const setOpenAccordions = (openAccordions, id) => {
 // You can include more app wide actions such as "selected: []" into the state
 export default (state = { data: [], openAccordions: [] }, action) => {
   switch (action.type) {
-    case 'SIS_GET_ALL_REPORTS_SUCCESS':
+    case 'GET_ALL_SIS_REPORTS_SUCCESS':
       return {
         ...state,
         data: action.response,
@@ -69,20 +69,20 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         error: false,
         reportsFetched: true
       }
-    case 'SIS_GET_ALL_REPORTS_ATTEMPT':
+    case 'GET_ALL_SIS_REPORTS_ATTEMPT':
       return {
         ...state,
         pending: true,
         error: false
       }
-    case 'SIS_GET_ALL_REPORTS_FAILURE':
+    case 'GET_ALL_SIS_REPORTS_FAILURE':
       return {
         ...state,
         data: [],
         pending: false,
         error: true
       }
-    case 'SIS_GET_USERS_REPORTS_SUCCESS':
+    case 'GET_USERS_SIS_REPORTS_SUCCESS':
       return {
         ...state,
         data: action.response,
@@ -90,20 +90,20 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         error: false,
         reportsFetched: true
       }
-    case 'SIS_GET_USERS_REPORTS_ATTEMPT':
+    case 'GET_USERS_SIS_REPORTS_ATTEMPT':
       return {
         ...state,
         pending: true,
         error: false
       }
-    case 'SIS_GET_USERS_REPORTS_FAILURE':
+    case 'GET_USERS_SIS_REPORTS_FAILURE':
       return {
         ...state,
         data: [],
         pending: false,
         error: true
       }
-    case 'SIS_DELETE_SINGLE_ENTRY_SUCCESS':
+    case 'DELETE_SINGLE_ENTRY_SUCCESS':
       return {
         ...state,
         data: state.data.filter((e) => e.id != action.response.id),
@@ -111,21 +111,21 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         singleBatchPending: false,
         error: false
       }
-    case 'SIS_DELETE_SINGLE_ENTRY_ATTEMPT':
+    case 'DELETE_SINGLE_ENTRY_ATTEMPT':
       return {
         ...state,
         pending: false,
         singleBatchPending: true,
         error: false
       }
-    case 'SIS_DELETE_SINGLE_ENTRY_FAILURE':
+    case 'DELETE_SINGLE_ENTRY_FAILURE':
       return {
         ...state,
         pending: false,
         singleBatchPending: false,
         error: true
       }
-    case 'SIS_DELETE_BATCH_SUCCESS':
+    case 'DELETE_BATCH_SUCCESS':
       return {
         ...state,
         openAccordions: [],
@@ -133,26 +133,26 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         pending: false,
         error: false
       }
-    case 'SIS_DELETE_BATCH_ATTEMPT':
+    case 'DELETE_BATCH_ATTEMPT':
       return {
         ...state,
         pending: true,
         error: false
       }
-    case 'SIS_DELETE_BATCH_FAILURE':
+    case 'DELETE_BATCH_FAILURE':
       return {
         ...state,
         pending: false,
         error: true
       }
-    case 'SIS_POST_ENTRIES_TO_SIS_ATTEMPT':
+    case 'POST_ENTRIES_TO_SIS_ATTEMPT':
       return {
         ...state,
         singleBatchPending: true,
         pending: false,
         error: false
       }
-    case 'SIS_POST_ENTRIES_TO_SIS_FAILURE': {
+    case 'POST_ENTRIES_TO_SIS_FAILURE': {
       const { error } = action
       // When generic error occurs, no need to update entries in state
       if (error.genericError)
@@ -168,7 +168,7 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         error: true
       }
     }
-    case 'SIS_POST_ENTRIES_TO_SIS_SUCCESS': {
+    case 'POST_ENTRIES_TO_SIS_SUCCESS': {
       const updatedIds = action.response.map(({ id }) => id)
       const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
       const data = action.response.concat(oldEntries)
@@ -180,14 +180,14 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         error: false
       }
     }
-    case 'SIS_REFRESH_BATCH_STATUS_ATTEMPT':
+    case 'REFRESH_BATCH_STATUS_ATTEMPT':
       return {
         ...state,
         pending: false,
         singleBatchPending: true,
         error: false
       }
-    case 'SIS_REFRESH_BATCH_STATUS_SUCCESS': {
+    case 'REFRESH_BATCH_STATUS_SUCCESS': {
       const updatedIds = action.response.map(({ id }) => id)
       const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
       const data = action.response.concat(oldEntries)
@@ -199,28 +199,28 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         error: false
       }
     }
-    case 'SIS_REFRESH_BATCH_STATUS_FAILURE':
+    case 'REFRESH_BATCH_STATUS_FAILURE':
       return {
         ...state,
         pending: false,
         singleBatchPending: false,
         error: true
       }
-    case 'SIS_REFRESH_ENROLLMENTS_ATTEMPT':
+    case 'REFRESH_ENROLLMENTS_ATTEMPT':
       return {
         ...state,
         pending: true,
         refreshSuccess: false,
         error: false
       }
-    case 'SIS_REFRESH_ENROLLMENTS_SUCCESS':
+    case 'REFRESH_ENROLLMENTS_SUCCESS':
       return {
         ...state,
         pending: false,
         refreshSuccess: true,
         error: false
       }
-    case 'SIS_REFRESH_ENROLLMENTS_FAILURE':
+    case 'REFRESH_ENROLLMENTS_FAILURE':
       return {
         ...state,
         pending: false,
@@ -231,7 +231,7 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         openAccordions: setOpenAccordions(state.openAccordions, action.id)
       }
-    case 'SIS_POST_RAW_ENTRIES_SUCCESS':
+    case 'POST_RAW_ENTRIES_SUCCESS':
       return {
         ...state,
         reportsFetched: false

@@ -1,38 +1,41 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import RawReports from 'Components/ReportsPage/RawReports'
-import Reports from 'Components/ReportsPage/Reports'
+import RawOodiReports from 'Components/ReportsPage/OodiReports/RawOodiReports'
+import OodiReports from 'Components/ReportsPage/OodiReports/OodiReports'
 import SisReports from 'Components/ReportsPage/SisReports'
 import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
 import {
-  getAllReportsAction,
-  getUsersReportsAction
-} from 'Utilities/redux/reportsReducer'
+  getAllOodiReportsAction,
+  getUsersOodiReportsAction
+} from 'Utilities/redux/oodiReportsReducer'
 import {
-  sisGetAllReportsAction,
-  sisGetUsersReportsAction,
+  getAllSisReportsAction,
+  getUsersSisReportsAction,
   openReport
 } from 'Utilities/redux/sisReportsReducer'
 import { Menu, Icon, Tab, Label } from 'semantic-ui-react'
-import { getAllCoursesAction, getUsersCoursesAction } from '../../utils/redux/coursesReducer'
+import {
+  getAllCoursesAction,
+  getUsersCoursesAction
+} from 'Utilities/redux/coursesReducer'
 
 export default ({ match }) => {
   const [activeTab, setActiveTab] = useState(0)
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
-  const reports = useSelector((state) => state.reports)
+  const reports = useSelector((state) => state.oodiReports)
   const sisReports = useSelector((state) => state.sisReports)
 
   useEffect(() => {
     if (!sisReports.reportsFetched && !sisReports.pending) {
       if (user.adminMode) {
         dispatch(getAllCoursesAction())
-        dispatch(sisGetAllReportsAction())
+        dispatch(getAllSisReportsAction())
       } else {
-        dispatch(sisGetUsersReportsAction(user.id))
+        dispatch(getUsersSisReportsAction(user.id))
         dispatch(getUsersCoursesAction(user.id))
-        dispatch(getUsersReportsAction(user.id))
+        dispatch(getUsersOodiReportsAction(user.id))
       }
     }
   }, [sisReports, user])
@@ -56,7 +59,7 @@ export default ({ match }) => {
     // Fetch old reports only if tab is opened
     setActiveTab(activeIndex)
     if (user.adminMode && activeIndex > 2 && !reports.data.length)
-      dispatch(getAllReportsAction())
+      dispatch(getAllOodiReportsAction())
   }
 
   const manualReportsCount = new Set(sisReports.data
@@ -65,7 +68,7 @@ export default ({ match }) => {
   let panes = [
     {
       menuItem: (
-        <Menu.Item key="sis-manual" data-cy="sis-reports-tab">
+        <Menu.Item key="manual" data-cy="sis-reports-tab">
           {manualReportsCount && activeTab !== 0
             ? <Label color='red' style={{ marginLeft: 0, marginRight: '1em' }} circular>{manualReportsCount}</Label>
             : <Icon name="file alternate" />}
@@ -87,14 +90,14 @@ export default ({ match }) => {
     panes = [...panes,
       {
         menuItem: (
-          <Menu.Item key="pretty" data-cy="pretty-reports-tab">
+          <Menu.Item key="pretty" data-cy="pretty-oodi-reports-tab">
             <Icon name="tasks" />
             OODI Reports
           </Menu.Item>
         ),
         render: () => (
           <Tab.Pane>
-            <Reports />
+            <OodiReports />
           </Tab.Pane>
         )
       }
@@ -107,7 +110,7 @@ export default ({ match }) => {
       .map((entry) => entry.batchId)).size
     panes = [...panes, {
       menuItem: (
-        <Menu.Item key="sis-mooc" data-cy="sis-auto-reports-tab">
+        <Menu.Item key="mooc" data-cy="sis-auto-reports-tab">
           {autoReportsCount && activeTab !== 1
             ? <Label color='red' style={{ marginLeft: 0, marginRight: '1em' }} circular>{autoReportsCount}</Label>
             : <Icon name="file alternate" />}
@@ -125,7 +128,7 @@ export default ({ match }) => {
     },
     {
       menuItem: (
-        <Menu.Item key="sis-limbo" data-cy="sis-limbo">
+        <Menu.Item key="limbo" data-cy="sis-limbo">
           <Icon name="sync" />
           Enrolment limbo
         </Menu.Item>
@@ -140,27 +143,27 @@ export default ({ match }) => {
     },
     {
       menuItem: (
-        <Menu.Item key="pretty" data-cy="pretty-reports-tab">
+        <Menu.Item key="pretty" data-cy="pretty-oodi-reports-tab">
           <Icon name="tasks" />
           Pretty (OODI)
         </Menu.Item>
       ),
       render: () => (
         <Tab.Pane>
-          <Reports />
+          <OodiReports />
         </Tab.Pane>
       )
     },
     {
       menuItem: (
-        <Menu.Item key="raw" data-cy="raw-reports-tab">
+        <Menu.Item key="raw" data-cy="raw-oodi-reports-tab">
           <Icon name="file alternate outline" />
           Raw (OODI)
         </Menu.Item>
       ),
       render: () => (
         <Tab.Pane>
-          <RawReports
+          <RawOodiReports
             reports={{
               ...reports,
               data: reports.data.filter((report) => report.reporterId)
@@ -171,14 +174,14 @@ export default ({ match }) => {
     },
     {
       menuItem: (
-        <Menu.Item key="mooc" data-cy="mooc-reports-tab">
+        <Menu.Item key="mooc" data-cy="oodi-mooc-reports-tab">
           <Icon name="file alternate outline" />
           Autogenerated MOOC (OODI)
         </Menu.Item>
       ),
       render: () => (
         <Tab.Pane>
-          <RawReports
+          <RawOodiReports
             reports={{
               ...reports,
               data: reports.data.filter((report) => !report.reporterId)

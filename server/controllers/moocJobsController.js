@@ -1,11 +1,11 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
-const { activateJob, deactivateJob } = require('../scripts/sisCronjobs')
+const { activateJob, deactivateJob } = require('../scripts/cronjobs')
 const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
-const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
-const { processBaiIntermediateEntries } = require('../scripts/sisProcessBaiIntermediateEntries')
-const { processBaiAdvancedEntries } = require('../scripts/sisProcessBaiAdvancedEntries')
-const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const { processEoaiEntries } = require('../scripts/processEoaiEntries')
+const { processBaiIntermediateEntries } = require('../scripts/processBaiIntermediateEntries')
+const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')
+const { processMoocEntries } = require('../scripts/processMoocEntries')
 
 const getJobs = async (req, res) => {
   try {
@@ -58,10 +58,10 @@ const editJob = async (req, res) => {
   }
 }
 
-const sisRunJob = async (req, res) => {
+const runJob = async (req, res) => {
   try {
     if (!req.user.isAdmin) {
-      return res.status(400).json({ error: 'User is not authorized to create SIS-reports.' })
+      return res.status(400).json({ error: 'User is not authorized to create mooc-reports.' })
     }
     const jobId = req.params.id
 
@@ -133,5 +133,5 @@ module.exports = {
   editJob,
   deleteJob,
   deleteAllJobs,
-  sisRunJob
+  runJob
 }

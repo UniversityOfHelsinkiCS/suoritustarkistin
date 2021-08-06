@@ -64,20 +64,20 @@ export default (state = null, action) => {
         content: `${action.error}`,
         type: 'negative'
       }
-    case 'SIS_DELETE_BATCH_SUCCESS':
+    case 'DELETE_BATCH_SUCCESS':
       return {
         header: 'Completions successfully deleted',
         content:
           "Course completions have now been deleted. This won't affect any entries already sent to SIS.",
         type: 'positive'
       }
-    case 'SIS_POST_RAW_ENTRIES_FAILURE':
+    case 'POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,
         content: `${(action.error && action.error.failed) ? "Check out the errors below" : `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi'.`}`,
         type: 'negative'
       }
-    case 'SIS_POST_RAW_ENTRIES_SUCCESS':
+    case 'POST_RAW_ENTRIES_SUCCESS':
       if (action.response.isMissingEnrollment)
         return {
           header: 'Report sent with missing enrollments',
@@ -94,7 +94,7 @@ export default (state = null, action) => {
           'Course completions have now been sent for reporting. You can see the created report on the "View reports" -page',
         type: 'positive'
       }
-    case 'SIS_POST_ENTRIES_TO_SIS_FAILURE':
+    case 'POST_ENTRIES_TO_SIS_FAILURE':
       if (action.error && action.error.genericError) {
         const content = action.error.message.message || action.error.message
         return {
@@ -108,7 +108,7 @@ export default (state = null, action) => {
         type: 'negative',
         content: 'See batch for Sisu error messages'
       }
-    case 'SIS_REFRESH_BATCH_STATUS_FAILURE': {
+    case 'REFRESH_BATCH_STATUS_FAILURE': {
       const content = action.error.message.message || action.error.message
       return {
         header: 'Refreshing status from Sisu failed',
@@ -116,20 +116,20 @@ export default (state = null, action) => {
         content
       }
     }
-    case 'SIS_REFRESH_BATCH_STATUS_SUCCESS': {
+    case 'REFRESH_BATCH_STATUS_SUCCESS': {
       return {
         header: 'Batch status refreshed!',
         type: 'positive',
         content: 'Batch status successfully refreshed from Sisu.'
       }
     }
-    case 'SIS_RUN_JOB_ATTEMPT': {
+    case 'RUN_JOB_ATTEMPT': {
       return {
         header: 'Creating a new report, this might take a while',
         type: 'neutral'
       }
     }
-    case 'SIS_RUN_JOB_SUCCESS': {
+    case 'RUN_JOB_SUCCESS': {
       if (action.response.message == "success") {
         return {
           header: 'New report created!',
@@ -143,7 +143,7 @@ export default (state = null, action) => {
         content: 'There were no new completions to be reported'
       }
     }
-    case 'SIS_RUN_JOB_FAILURE': {
+    case 'RUN_JOB_FAILURE': {
       if (action.error) {
         const content = action.error
         return {
@@ -177,13 +177,13 @@ export default (state = null, action) => {
           `${action.error}`,
         type: 'negative'
       }
-    case 'SIS_REFRESH_ENROLLMENTS_SUCCESS':
+    case 'REFRESH_ENROLLMENTS_SUCCESS':
       return {
         header: 'Entries refreshed successfully!',
         content: `${action.response.amount} new enrollments found${action.response.amount ? `, a new batch ${action.response.batchId} created` : ''}.`,
         type: 'positive'
       }
-    case 'SIS_REFRESH_ENROLLMENTS_FAILURE':
+    case 'REFRESH_ENROLLMENTS_FAILURE':
       return {
         header: 'Failed to refresh entries!',
         content: action.error.message,

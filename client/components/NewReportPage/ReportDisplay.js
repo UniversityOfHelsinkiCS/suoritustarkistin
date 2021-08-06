@@ -6,13 +6,13 @@ const { commify } = require('Root/utils/commify')
 
 const {
   isValidStudentId,
-  sisIsValidGrade,
+  isValidGrade,
   isValidCreditAmount,
   isValidLanguage,
-  sisIsValidDate,
-  sisFutureDate,
-  sisPastDate,
-  sisIsDateObject
+  isValidDate,
+  isFutureDate,
+  isPastDate,
+  isDateObject
 } = require('Root/utils/validators')
 
 const validStyle = {
@@ -96,7 +96,7 @@ const getStudentIdCell = (studentId, registration, duplicate) => {
 
 const getGradeCell = (grade, defaultGrade) => {
   if (grade) {
-    if (sisIsValidGrade(grade)) {
+    if (isValidGrade(grade)) {
       return <Table.Cell style={validStyle}>{grade}</Table.Cell>
     }
     return (
@@ -159,8 +159,8 @@ const getLanguageCell = (language, course) => {
 
 const getDateCell = (date) => {
   if (date) {
-    const past = sisPastDate(date)
-    const future = sisFutureDate(date)
+    const past = isPastDate(date)
+    const future = isFutureDate(date)
     if (past || future) {
       return (
         <Popup
@@ -179,10 +179,10 @@ const getDateCell = (date) => {
         />
       )
     }
-    if (sisIsValidDate(date)) {
+    if (isValidDate(date)) {
       return <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
     }
-    if (sisIsDateObject(date)) {
+    if (isDateObject(date)) {
       return (
         <Table.Cell style={invalidStyle}>
           <Icon name="ban" />

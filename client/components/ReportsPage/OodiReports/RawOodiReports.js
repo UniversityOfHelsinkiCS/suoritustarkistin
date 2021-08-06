@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Segment } from 'semantic-ui-react'
-import TabLoader from './TabLoader'
+import TabLoader from '../TabLoader'
 
 const Downloaded = () => (
   <div data-cy="report-downloaded" style={{ color: 'green' }}>
@@ -31,7 +31,7 @@ export default ({ reports }) => {
 
 
   return (
-    <div data-cy="raw-reports">
+    <div data-cy="raw-oodi-reports">
       {reports.data.map((report) => {
         return (
           <Segment key={report.id}>

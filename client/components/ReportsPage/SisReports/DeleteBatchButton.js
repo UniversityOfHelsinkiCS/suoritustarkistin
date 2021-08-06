@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { sisHandleBatchDeletionAction, openReport } from 'Utilities/redux/sisReportsReducer'
+import { handleBatchDeletionAction, openReport } from 'Utilities/redux/sisReportsReducer'
 
 export default ({ batchId }) => {
   const [open, setOpen] = useState(false)
@@ -9,7 +9,7 @@ export default ({ batchId }) => {
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
 
   const deleteBatch = () => {
-    dispatch(sisHandleBatchDeletionAction(batchId))
+    dispatch(handleBatchDeletionAction(batchId))
     dispatch(openReport(batchId))
   }
 

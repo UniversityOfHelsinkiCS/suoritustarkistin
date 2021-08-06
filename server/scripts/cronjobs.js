@@ -2,12 +2,12 @@ const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
-const { processEoaiEntries } = require('../scripts/sisProcessEoaiEntries')
-const { processBaiIntermediateEntries } = require('../scripts/sisProcessBaiIntermediateEntries')
-const { processBaiAdvancedEntries } = require('../scripts/sisProcessBaiAdvancedEntries')
-const { processMoocEntries } = require('../scripts/sisProcessMoocEntries')
+const { processEoaiEntries } = require('./processEoaiEntries')
+const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntries')
+const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
+const { processMoocEntries } = require('./processMoocEntries')
 
-const refreshEntriesCron = require('./sisRefreshEntryCron')
+const refreshEntriesCron = require('./refreshEntryCron')
 
 let cronjobs = {}
 

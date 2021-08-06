@@ -35,7 +35,7 @@ const ReportStatus = ({ batch }) => {
 
   const getMissing = () => hasSuccessfullySentEntries && amountMissingFromSisu ? (
     <Label basic color='orange' pointing='left'>
-      {amountMissingFromSisu} of {batch.length} NOT IN SISU
+      {amountMissingFromSisu} of {batch.length} NOT YET VISIBLE IN SISU
     </Label>
   ) : null
 

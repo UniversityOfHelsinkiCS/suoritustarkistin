@@ -55,7 +55,20 @@ const TableColumns = ({ allowDelete }) => (
       <Table.HeaderCell>Grade</Table.HeaderCell>
       <Table.HeaderCell>Date sent</Table.HeaderCell>
       <Table.HeaderCell>Sender name</Table.HeaderCell>
-      <Popup content='Is the attainment successfully registered in Sisu' trigger={<Table.HeaderCell>In Sisu</Table.HeaderCell>} />
+      <Popup
+        content={
+          <div>
+            Is the sent attainment successfully registered in Sisu. 
+            <strong> One checkmark</strong> means that the attainment
+            is successfully registered as a partial attainment (osasuoritus).
+            <strong> Two checkmarks</strong> means attainment can be found as an actual 
+            course completion in Sisu.
+          </div>
+        }
+        trigger={
+          <Table.HeaderCell>In Sisu</Table.HeaderCell>
+        }
+      />
       {allowDelete
         ? <Table.HeaderCell>Delete</Table.HeaderCell>
         : null}
@@ -93,6 +106,42 @@ const TableBody = ({ user, rawEntries }) => {
     })}
   </Table.Body>
 }
+
+const getSisuStatusCell = (sent, registered) => (
+  <>
+    {sent && registered === 'NOT_REGISTERED'
+      && (
+        <Popup
+          content="Attainment has been sent to Sisu, but is not (yet) visible there"
+          trigger={
+            <Icon className="hoverable-item" name="close" color="red" />
+          }
+        />
+      )
+    }
+    {registered === 'PARTLY_REGISTERED'
+      && (
+        <Popup
+          content="Attainment has been registered to Sisu as an partial attainment (osasuoritus)"
+          trigger={<Icon className="hoverable-item"name="checkmark" color="green" />}
+        />
+      )
+    }
+    {registered === 'REGISTERED' 
+      && (
+        <Popup
+          content="Attainment has been registered as a proper course completion"
+          trigger={
+            <div>
+              <Icon className="hoverable-item" name="checkmark" color="green" />
+              <Icon className="hoverable-item" name="checkmark" color="green" />
+            </div>
+          }
+        />
+      )
+    }
+  </>
+)
 
 const EntryCells = ({ entry }) => {
   const [open, setOpen] = useState(false)
@@ -164,9 +213,7 @@ const EntryCells = ({ entry }) => {
         {sender ? sender.name : null}
       </Table.Cell>
       <Table.Cell data-cy={`report-registered-${entry.id}`}>
-        {registered === 'NOT_REGISTERED' ? <Icon name="close" color="red" /> : null}
-        {registered === 'PARTLY_REGISTERED' ? <Icon name="checkmark" color="green" /> : null}
-        {registered === 'REGISTERED' ? <><Icon name="checkmark" color="green" /> <Icon name="checkmark" color="green" /></> : null}
+        {getSisuStatusCell(sent, registered)}
       </Table.Cell>
     </>
   )

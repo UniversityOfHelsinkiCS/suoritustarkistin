@@ -16,3 +16,7 @@
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
 }
+
+.hoverable-item:hover {
+  filter: brightness(0.7);
+}

@@ -61,6 +61,10 @@ const addUser = async (req, res, next) => {
       }]
     })
   } catch (e) {
+    if (e.message === "Validation error") {
+      logger.error(`User with the uid already exists`)
+      return res.status(400).json({ error: `User with the uid already exists` })
+    }
     next(e)
   }
 }

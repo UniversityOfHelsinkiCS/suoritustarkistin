@@ -119,7 +119,7 @@ const addCourse = async (req, res) => {
       return res.status(400).json({ error: `Course with the course code already exists` })
     }
     logger.error(e.message)
-    return res.status(500).json({ error: 'server went BOOM!' })
+    return res.status(500).json({ error: 'Creating a new course failed' })
   }
 }
 

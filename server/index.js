@@ -92,7 +92,7 @@ initializeDatabaseConnection()
         checkAllEntriesFromSisu()
       })
 
-      cron.schedule('0 3 * * 5', () => {
+      cron.schedule('15 3 * * 5', () => {
         checkRegisteredForMooc()
       })
     }

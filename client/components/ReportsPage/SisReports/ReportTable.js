@@ -58,10 +58,10 @@ const TableColumns = ({ allowDelete }) => (
       <Popup
         content={
           <div>
-            Is the sent attainment successfully registered in Sisu. 
+            Is the sent attainment successfully registered in Sisu.
             <strong> One checkmark</strong> means that the attainment
             is successfully registered as a partial attainment (osasuoritus).
-            <strong> Two checkmarks</strong> means attainment can be found as an actual 
+            <strong> Two checkmarks</strong> means attainment can be found as an actual
             course completion in Sisu.
           </div>
         }
@@ -87,7 +87,7 @@ const TableBody = ({ user, rawEntries }) => {
           <Table.Cell data-cy={`report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
           <Table.Cell data-cy={`report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
           <Table.Cell>{rawEntry.grader ? rawEntry.grader.name : 'Grader not found'}</Table.Cell>
-          <EntryCells entry={rawEntry.entry} />
+          <EntryCells entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }} />
           {allowDelete(user, rawEntry)
             ? <Table.Cell>
               <DeleteEntryButton rawEntryId={rawEntry.id} batchId={rawEntry.batchId} />
@@ -123,11 +123,11 @@ const getSisuStatusCell = (sent, registered) => (
       && (
         <Popup
           content="Attainment has been registered to Sisu as an partial attainment (osasuoritus)"
-          trigger={<Icon className="hoverable-item"name="checkmark" color="green" />}
+          trigger={<Icon className="hoverable-item" name="checkmark" color="green" />}
         />
       )
     }
-    {registered === 'REGISTERED' 
+    {registered === 'REGISTERED'
       && (
         <Popup
           content="Attainment has been registered as a proper course completion"
@@ -204,7 +204,7 @@ const EntryCells = ({ entry }) => {
         {completionLanguage ? completionLanguage : null}
       </Table.Cell>
       <Table.Cell data-cy={`report-entry-grade-${entry.id}`}>
-        {getGrade(gradeScaleId, gradeId, completionLanguage)}
+        {!entry.missingEnrolment ? getGrade(gradeScaleId, gradeId, completionLanguage) : gradeId}
       </Table.Cell>
       <Table.Cell data-cy={`report-sent-${entry.id}`}>
         {sent ? moment(sent).format("DD.MM.YYYY") : null}

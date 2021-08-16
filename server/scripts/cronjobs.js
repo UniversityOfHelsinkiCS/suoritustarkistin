@@ -8,7 +8,7 @@ const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
 const { processMoocEntries } = require('./processMoocEntries')
 
 const refreshEntriesCron = require('./refreshEntryCron')
-const deleteOldEntries = require('./deleteOldEntriesCron')
+// const deleteOldEntries = require('./deleteOldEntriesCron')
 
 let cronjobs = {}
 

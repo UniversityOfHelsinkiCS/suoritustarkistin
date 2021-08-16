@@ -19,7 +19,7 @@ const deleteOldEntries = async () => {
         { assessmentItemId: null }
       ],
       createdAt: { [Op.lte]: monthAgo },
-      '$rawEntry.grade$': {[Op.in]: ['0', 'Hyl.']}
+      '$rawEntry.grade$': { [Op.in]: ['0', 'Hyl.'] }
     },
     include: [{
       model: db.raw_entries,
@@ -38,7 +38,7 @@ const deleteOldEntries = async () => {
   const rawEntryIds = entries.map(({ rawEntry }) => rawEntry.id)
 
   logger.info({ message: `Deleting ${entries.length} old entries with missing enrollment and failing grade`, entries: { ...entries } })
-  sendSentryMessage(`Deleting ${entries.length} old entries with missing enrollment and failing grade`, null, { ...entries })
+  sendSentryMessage(`Deleting ${entries.length} old entries with missing enrollment and failing grade`, null, { entries: JSON.stringify(entries) })
 
 
   const deletedAmount = await db.raw_entries.destroy({

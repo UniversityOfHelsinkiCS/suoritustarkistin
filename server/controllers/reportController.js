@@ -263,6 +263,7 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
     courseUnitId,
     gradeScaleId,
     gradeId,
+    state: gradeId === '0' ? 'FAILED' : 'ATTAINED', // naive, 0 equals to failing grade
     credits: parseFloat(rawEntry.credits)
   }
 })

@@ -18,7 +18,8 @@ const deleteOldEntries = async () => {
         { courseUnitRealisationId: null },
         { assessmentItemId: null }
       ],
-      createdAt: { [Op.lte]: monthAgo }
+      createdAt: { [Op.lte]: monthAgo },
+      '$rawEntry.grade$': {[Op.in]: ['0', 'Hyl.']}
     },
     include: [{
       model: db.raw_entries,

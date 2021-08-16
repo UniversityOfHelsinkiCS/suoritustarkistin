@@ -8,7 +8,7 @@ const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
 const { processMoocEntries } = require('./processMoocEntries')
 
 const refreshEntriesCron = require('./refreshEntryCron')
-// const deleteOldEntries = require('./deleteOldEntriesCron')
+const deleteOldEntries = require('./deleteOldEntriesCron')
 
 let cronjobs = {}
 
@@ -54,7 +54,7 @@ const initializeCronJobs = async () => {
   }, {})
 
   cronjobs["enrollment-limbo"] = cron.schedule('0 2 * * *', refreshEntriesCron)
-  // cronjobs["delete-old-entries"] = cron.schedule('0 8 * * 1', deleteOldEntries)  // Every monday 08:00
+  cronjobs["delete-old-entries"] = cron.schedule('0 9 * * 1', deleteOldEntries)  // Every monday 9:00
 }
 
 const activateJob = async (id) => {

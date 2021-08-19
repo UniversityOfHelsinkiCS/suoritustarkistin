@@ -1,7 +1,12 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { activateJob, deactivateJob } = require('../scripts/cronjobs')
-const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
+const { isValidJob,
+  NEW_EOAI_CODE,
+  EOAI_CODES,
+  BAI_INTERMEDIATE_CODE,
+  BAI_ADVANCED_CODE
+} = require('@root/utils/validators')
 const { processNewEoaiEntries } = require('../scripts/processNewEoaiEntries')
 const { processEoaiEntries } = require('../scripts/processEoaiEntries')
 const { processBaiIntermediateEntries } = require('../scripts/processBaiIntermediateEntries')

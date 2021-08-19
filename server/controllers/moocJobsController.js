@@ -2,6 +2,7 @@ const logger = require('@utils/logger')
 const db = require('../models/index')
 const { activateJob, deactivateJob } = require('../scripts/cronjobs')
 const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
+const { processNewEoaiEntries } = require('../scripts/processNewEoaiEntries')
 const { processEoaiEntries } = require('../scripts/processEoaiEntries')
 const { processBaiIntermediateEntries } = require('../scripts/processBaiIntermediateEntries')
 const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')
@@ -94,8 +95,9 @@ const runJob = async (req, res) => {
       }) completions`
     )
     let result = ""
-
-    if (EOAI_CODES.includes(course.courseCode)) {
+    if (NEW_EOAI_CODE === course.courseCode) {
+      result = await processNewEoaiEntries({ grader })
+    } else if (EOAI_CODES.includes(course.courseCode)) {
       result = await processEoaiEntries({ grader })
     } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
       result = await processBaiIntermediateEntries({ job, course, grader })

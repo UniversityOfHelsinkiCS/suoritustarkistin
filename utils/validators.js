@@ -7,7 +7,11 @@ const SIS_LANGUAGES = [
   "en"
 ]
 
+const NEW_EOAI_CODE = ['TKT21018']
+
 const EOAI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+
+const ALL_EOAI_CODES = ['TKT21018', 'AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
 const EOAI_NAMEMAP = {
   en: {
@@ -176,7 +180,9 @@ const isValidSchedule = (schedule) => {
 }
 
 module.exports = {
+  NEW_EOAI_CODE,
   EOAI_CODES,
+  ALL_EOAI_CODES,
   EOAI_NAMEMAP,
   OLD_BAI_CODE,
   BAI_CODES,

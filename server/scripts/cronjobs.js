@@ -1,8 +1,9 @@
 const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
-const { EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
+const { EOAI_CODES, NEW_EOAI_CODE, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
 const { processEoaiEntries } = require('./processEoaiEntries')
+const { processNewEoaiEntries } = require('./processNewEoaiEntries')
 const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntries')
 const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
 const { processMoocEntries } = require('./processMoocEntries')
@@ -35,7 +36,9 @@ const initializeCronJobs = async () => {
 
       let result = ""
 
-      if (EOAI_CODES.includes(course.courseCode)) {
+      if (NEW_EOAI_CODE === course.courseCode) {
+        result = await processNewEoaiEntries({ grader })  
+      } else if (EOAI_CODES.includes(course.courseCode)) {
         result = await processEoaiEntries({ grader })
       } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
         result = await processBaiIntermediateEntries({ job, course, grader })

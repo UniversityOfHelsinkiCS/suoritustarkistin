@@ -12,7 +12,6 @@ import {
 import { editCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
-  isValidOpenCourseCode,
   isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
@@ -26,7 +25,7 @@ export default ({ course, close: closeModal }) => {
   const courseData = useSelector((state) => state.courses)
   const [data, setData] = useState(
     { ...course, graders: course.graders.map((g) => g.id) }
-    || { isMooc: false, autoSeparate: false, graders: [] }
+    || { autoSeparate: false, graders: [] }
   )
 
   useEffect(() => {
@@ -55,7 +54,6 @@ export default ({ course, close: closeModal }) => {
 
   const hasValidCourseCode = (code) => {
     if (data.autoSeparate) return isValidComboCourseCode(code)
-    if (data.isMooc) return isValidOpenCourseCode(code)
     return isValidCourseCode(code)
   }
 
@@ -130,24 +128,6 @@ export default ({ course, close: closeModal }) => {
           icon="refresh"
           color="blue"
           basic
-        />
-        <Popup
-          trigger={
-            <Form.Field
-              control={Checkbox}
-              label="Enable identification by MOOC email"
-              checked={data.isMooc}
-              onChange={(e, d) => {
-                setData({ ...data, isMooc: d.checked })
-              }}
-            />
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content={`
-            Enables indentifying students with either MOOC email address or 
-            student numbers. Requires MOOC-bit to be set in Open university systems.
-          `}
         />
         <Popup
           trigger={

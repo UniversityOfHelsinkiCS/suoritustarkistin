@@ -12,7 +12,6 @@ import {
 import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
-  isValidOpenCourseCode,
   isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
@@ -24,7 +23,7 @@ export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
   const graders = useSelector((state) => state.graders.data)
   const courseData = useSelector((state) => state.courses)
-  const [data, setData] = useState({ isMooc: false, autoSeparate: false, graders: [] })
+  const [data, setData] = useState({ autoSeparate: false, graders: [] })
 
   useEffect(() => {
     if (courseData.responsibles && !courseData.pending) {
@@ -51,7 +50,6 @@ export default ({ close: closeModal }) => {
 
   const hasValidCourseCode = (code) => {
     if (data.autoSeparate) return isValidComboCourseCode(code)
-    if (data.isMooc) return isValidOpenCourseCode(code)
     return isValidCourseCode(code)
   }
 
@@ -131,24 +129,6 @@ export default ({ close: closeModal }) => {
           icon="refresh"
           color="blue"
           basic
-        />
-        <Popup
-          trigger={
-            <Form.Field
-              control={Checkbox}
-              label="Email identification"
-              checked={data.isMooc}
-              onChange={(e, d) => {
-                setData({ ...data, isMooc: d.checked })
-              }}
-            />
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content={`
-            Enables indentifying students with either MOOC email address or 
-            student numbers. Requires MOOC-bit to be set in Open university systems.
-          `}
         />
         <Popup
           trigger={

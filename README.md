@@ -10,7 +10,7 @@ Additionally, Suotar automatically checks completions for various mooc-courses e
 To use Suotar, you must be a HY employee and be approved as a grader in Suotar. To get approved, **first [visit the service](https://opetushallinto.cs.helsinki.fi/suoritustarkistin/)** so that your user account is automatically created, then contact grp-toska@helsinki.fi.
 
 ### Supported courses
-Suotar can be used to register completions on any course CS department may register. Mostly this means all TKT, AYTKT, and some MOOC courses. However, before using Suotar, **the course details must first be added to it manually**. To get your course added, please contact grp-toska@helsinki.fi.
+Suotar can be used to register completions on any course CS department may register. Mostly this means all TKT (also Open University) and some MOOC courses. However, before using Suotar, **the course details must first be added to it manually**. To get your course added, please contact grp-toska@helsinki.fi.
 
 ### How to report completions
 1. [Visit the site](https://opetushallinto.cs.helsinki.fi/suoritustarkistin/).
@@ -49,7 +49,7 @@ Any details and validation errors can be seen in the table below the copy-paste-
 In case some students are missing enrolment to the course, Suotar will catch these completions into something called enrolment limbo. Suotar checks automatically every week, whether these students already have enrolled to the course. Once they have, Suotar will create a report of these completions. Teacher does not need to report completions without initial enrolment again.  
 
 ### Combo Courses
-For some courses, same course instance has students signed in from both AY and TKT. These courses are called Combo Courses. When marked as such in the SuotarDB, and approved by AY, Suotar can automatically detect which completion should the student receive. You can see the selection for each student after inserting the data. The AY-completions will be painted blue, and they will have the AY -course code in them.
+For some courses, same course instance has students signed in from both AY and TKT. These courses are called Combo Courses. When marked as such in the SuotarDB, and approved by Open University, Suotar can automatically detect which completion should the student receive. You can see the selection for each student after inserting the data. The Open University completions will be painted blue.
 
 ### Automated reports (for admins only)
 

@@ -12,7 +12,6 @@ import {
 import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
-  isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
   isValidLanguage
@@ -44,13 +43,8 @@ export default ({ close: closeModal }) => {
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(addCourseAction(data))
-    setData({ isMooc: false, autoSeparate: false })
+    setData({ autoSeparate: false })
     close()
-  }
-
-  const hasValidCourseCode = (code) => {
-    if (data.autoSeparate) return isValidComboCourseCode(code)
-    return isValidCourseCode(code)
   }
 
   return (
@@ -75,7 +69,7 @@ export default ({ close: closeModal }) => {
           placeholder="TKT00000"
           value={data.courseCode || ''}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
+          icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
         <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx". AY-coded should be first.</p>
         <Form.Field

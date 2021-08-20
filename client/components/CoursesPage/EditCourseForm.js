@@ -12,7 +12,6 @@ import {
 import { editCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
-  isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
   isValidLanguage
@@ -52,11 +51,6 @@ export default ({ course, close: closeModal }) => {
     close()
   }
 
-  const hasValidCourseCode = (code) => {
-    if (data.autoSeparate) return isValidComboCourseCode(code)
-    return isValidCourseCode(code)
-  }
-
   return (
     <Segment>
       <Form loading={courseData.pending}>
@@ -77,7 +71,7 @@ export default ({ course, close: closeModal }) => {
           placeholder="TKT00000"
           value={data.courseCode}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
+          icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
         <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx"</p>
         <Form.Field
@@ -133,7 +127,7 @@ export default ({ course, close: closeModal }) => {
           trigger={
             <Form.Field
               control={Checkbox}
-              label="Combined (TKT + AYTKT) course"
+              label="Combined (TKT + Open university) course"
               checked={data.autoSeparate}
               onChange={(e, d) => setData({ ...data, autoSeparate: d.checked })}
             />

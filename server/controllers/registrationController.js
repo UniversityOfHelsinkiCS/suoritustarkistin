@@ -10,7 +10,7 @@ const getCourseRegistrations = async (req, res) => {
     })
     if (!req.user.isAdmin && !course.graders.map(({ id }) => id).includes(req.user.id))
       return res.status(403).end()
-    if (!course.isMooc && !course.autoSeparate) return res.status(404).end()
+    if (!course.autoSeparate) return res.status(404).end()
 
     let courseCode = course.courseCode
 

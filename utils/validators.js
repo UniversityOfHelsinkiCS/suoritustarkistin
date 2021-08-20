@@ -93,24 +93,10 @@ const isValidEmailAddress = (address) =>
     address
   )
 
-const isValidOpenCourseCode = (courseCode) =>
-  /^AY[A-Z0-9-]{6,10}(fi|en|sv)?$/.test(courseCode)
 const isValidHYCourseCode = (courseCode) =>
   /^(TKT|BSCS|CSM|MAT|DATA)[A-Za-z0-9-]{3,6}$/.test(courseCode)
 
-const isValidComboCourseCode = (courseCode) => {
-  if (!courseCode) return false
-  const courses = courseCode.split('+')
-  const ayCourse = courses[0] ? courses[0].trim() : null
-  const tktCourse = courses[1] ? courses[1].trim() : null
-  const isValidAyCourse = isValidOpenCourseCode(ayCourse)
-  const isValidTktCourse = isValidHYCourseCode(tktCourse)
-  return isValidAyCourse && isValidTktCourse
-}
-
-const isValidCourseCode = (courseCode) =>
-  isValidOpenCourseCode(courseCode) || isValidHYCourseCode(courseCode) || isValidComboCourseCode(courseCode)
-
+const isValidCourseCode = (courseCode) => isValidHYCourseCode(courseCode)
 
 const areValidGraders = (graders) => {
   if (!Array.isArray(graders)) return false
@@ -124,14 +110,7 @@ const isValidGradeScale = (gradeScale) => {
 }
 
 const isValidCourse = (course) => {
-  if (course.autoSeparate && !isValidComboCourseCode(course.courseCode))
-    return false
-  if (
-    !course.autoSeparate &&
-    course.isMooc &&
-    !isValidOpenCourseCode(course.courseCode)
-  )
-    return false
+  if (course.autoSeparate && !isValidCourseCode(course.courseCode))return false
   if (!isValidCourseCode(course.courseCode)) return false
   if (!course.name) return false
   if (!isValidLanguage(course.language)) return false
@@ -207,8 +186,6 @@ module.exports = {
   areValidNewRawEntries,
   isValidCourse,
   isValidHYCourseCode,
-  isValidOpenCourseCode,
-  isValidComboCourseCode,
   isValidCourseCode,
   isValidJob,
   isValidSchedule

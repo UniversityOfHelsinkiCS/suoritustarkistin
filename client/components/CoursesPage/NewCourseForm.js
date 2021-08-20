@@ -71,7 +71,6 @@ export default ({ close: closeModal }) => {
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
           icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
-        <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx". AY-coded should be first.</p>
         <Form.Field
           data-cy="add-course-language"
           required={true}
@@ -117,7 +116,7 @@ export default ({ close: closeModal }) => {
         <Form.Field
           data-cy="fetch-graders"
           control={Button}
-          disabled={!hasValidCourseCode(data.courseCode)}
+          disabled={!isValidCourseCode(data.courseCode)}
           onClick={() => dispatch(getResponsiblesAction(data.courseCode))}
           content="Fetch course graders"
           icon="refresh"

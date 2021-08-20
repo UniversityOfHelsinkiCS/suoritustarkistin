@@ -5,7 +5,6 @@ module.exports = (sequelize, DataTypes) => {
     courseCode: DataTypes.STRING,
     language: DataTypes.STRING,
     credits: DataTypes.STRING,
-    isMooc: DataTypes.BOOLEAN,
     autoSeparate: DataTypes.BOOLEAN,
     gradeScale: DataTypes.STRING
   })

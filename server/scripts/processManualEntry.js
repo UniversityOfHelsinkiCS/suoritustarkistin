@@ -52,7 +52,6 @@ const processManualEntry = async ({
   data
 }, transaction) => {
 
-
   const originalCourse = await db.courses.findOne({
     where: {
       id: courseId
@@ -98,7 +97,7 @@ const processManualEntry = async ({
 
   if (!grader) throw new Error('Grader employee id does not exist.')
 
-  const batchId = `${originalCourse.courseCode}-${moment().format(
+  const batchId = `${originalCourse.courseCode}-${moment().tz("Europe/Helsinki").format(
     'DD.MM.YY-HHmmss'
   )}`
 

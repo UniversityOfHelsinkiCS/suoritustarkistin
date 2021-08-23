@@ -77,7 +77,7 @@ const processBaiIntermediateEntries = async ({
     const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiCourseStudentPairs)
     const earlierAttainments = intermediateAttainments.concat(oldBaiAttainments)
 
-    const batchId = `${course.courseCode}-${moment().format(
+    const batchId = `${course.courseCode}-${moment().tz("Europe/Helsinki").format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()

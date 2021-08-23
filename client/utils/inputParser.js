@@ -1,6 +1,12 @@
 import * as CSV from 'csv-string'
-import { isValidStudentId, isValidEmailAddress, isValidOodiDate } from 'Root/utils/validators'
-import { isValidDate, isDateObject } from '../../utils/validators'
+import {
+  isValidStudentId,
+  isValidEmailAddress,
+  isValidOodiDate,
+  isValidDate,
+  isDateObject
+} from 'Root/utils/validators'
+
 
 const markDuplicates = (data) => {
   const indexes = data

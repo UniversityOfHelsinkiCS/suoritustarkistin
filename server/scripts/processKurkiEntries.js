@@ -42,7 +42,7 @@ const processKurkiEntries = async ({
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
-    const batchId = `${course.courseCode}-${moment().format(
+    const batchId = `${course.courseCode}-${moment().tz("Europe/Helsinki").format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()

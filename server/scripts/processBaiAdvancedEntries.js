@@ -97,7 +97,7 @@ const processBaiAdvancedEntries = async ({
     const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiPairs)
     const advancedAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(advancedPairs)
 
-    const batchId = `${course.courseCode}-${moment().format(
+    const batchId = `${course.courseCode}-${moment().tz("Europe/Helsinki").format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()

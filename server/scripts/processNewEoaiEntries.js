@@ -84,7 +84,7 @@ const processNewEoaiEntries = async ({ grader }) => {
       return (!earlierCredit && !earlierEntry)
     })
 
-    const batchId = `${NEW_EOAI_CODE}-${moment().format(
+    const batchId = `${NEW_EOAI_CODE}-${moment().tz("Europe/Helsinki").format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()

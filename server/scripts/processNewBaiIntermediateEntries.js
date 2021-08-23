@@ -99,7 +99,7 @@ const processNewBaiIntermediateEntries = async ({
     // Combine these to be all the earlier attainments for the same course
     const earlierAttainments = intermediateAttainments.concat(oldBaiAttainments).concat(oldIntermediateAttainments)
 
-    const batchId = `${course.courseCode}-${moment().format(
+    const batchId = `${course.courseCode}-${moment().tz("Europe/Helsinki").format(
       'DD.MM.YY-HHmmss'
     )}`
     const date = new Date()

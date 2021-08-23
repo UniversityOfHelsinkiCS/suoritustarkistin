@@ -1,6 +1,6 @@
 import React from 'react'
-import { Table, Icon, Popup } from 'semantic-ui-react'
 import { useSelector } from 'react-redux'
+import { Table, Icon, Popup } from 'semantic-ui-react'
 
 const { commify } = require('Root/utils/commify')
 

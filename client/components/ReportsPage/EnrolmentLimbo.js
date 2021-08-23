@@ -4,7 +4,7 @@ import { Button, Icon, Table, Segment, Message } from 'semantic-ui-react'
 import moment from 'moment'
 
 import Notification from 'Components/Message'
-import { EOAI_CODES, EOAI_NAMEMAP } from '../../../utils/validators'
+import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/validators'
 import {
   handleEntryDeletionAction,
   refreshEnrollmentsAction,

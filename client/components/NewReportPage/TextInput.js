@@ -1,8 +1,7 @@
 import React from 'react'
-import { Loader, Message } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Form, Loader, Message, TextArea } from 'semantic-ui-react'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { TextArea, Form } from 'semantic-ui-react'
 import { parseCSV } from 'Utilities/inputParser'
 
 const textAreaStyle = {

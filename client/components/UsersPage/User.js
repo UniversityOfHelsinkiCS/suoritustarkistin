@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Button, Grid, Icon, Popup, Modal } from 'semantic-ui-react'
 
-import { editUserAction, deleteUser } from 'Utilities/redux/usersReducer'
 import UserForm from 'Components/UsersPage/UserForm'
+import { editUserAction, deleteUser } from 'Utilities/redux/usersReducer'
+
 
 export default ({ user }) => {
   const dispatch = useDispatch()

@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import * as _ from 'lodash'
 import { Form, Checkbox, Input, Button, Segment } from 'semantic-ui-react'
+
 import { editJobAction } from 'Utilities/redux/moocJobsReducer'
 import { isValidJob, isValidSchedule } from 'Root/utils/validators'
+
 
 export default ({ job, close }) => {
   const dispatch = useDispatch()

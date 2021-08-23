@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Accordion, Table } from 'semantic-ui-react'
-import TabLoader from '../TabLoader'
+import TabLoader from 'Components/ReportsPage/TabLoader'
 
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
 const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>

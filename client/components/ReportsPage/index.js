@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Menu, Icon, Tab, Label } from 'semantic-ui-react'
 import RawOodiReports from 'Components/ReportsPage/OodiReports/RawOodiReports'
 import OodiReports from 'Components/ReportsPage/OodiReports/OodiReports'
 import SisReports from 'Components/ReportsPage/SisReports'
@@ -13,7 +14,6 @@ import {
   getUsersSisReportsAction,
   openReport
 } from 'Utilities/redux/sisReportsReducer'
-import { Menu, Icon, Tab, Label } from 'semantic-ui-react'
 import {
   getAllCoursesAction,
   getUsersCoursesAction

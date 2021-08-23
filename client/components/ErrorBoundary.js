@@ -6,7 +6,7 @@ const ErrorView = ({ error }) => <Segment textAlign="center" style={{ width: '10
   <Message style={{ maxWidth: 800, marginLeft: 'auto', marginRight: 'auto' }} size="large" error>
     <Message.Header>Something broke</Message.Header>
     <Message.Content>
-      <Icon name="frown outline" color="#91332b" size="massive" style={{ margin: '2rem' }} />
+      <Icon name="frown outline" size="massive" style={{ margin: '2rem', color: "#91332b" }} />
       <p><b>If the error persists, please contact grp-toska@cs.helsinki.fi.</b></p>
       {process.env.NODE_ENV === "development" ? <p>{error.stack}</p> : null}
     </Message.Content>

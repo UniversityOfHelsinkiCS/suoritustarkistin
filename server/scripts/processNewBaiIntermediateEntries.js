@@ -6,10 +6,10 @@ const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/i
 const { getCompletions } = require('../services/pointsmooc')
 const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { OLD_BAI_CODE } = require('@root/utils/validators')
+const { OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE } = require('@root/utils/validators')
 // const { getTestCompletions, getTestRegistrations } = require('../utils/testdataForMoocScripts')
 
-const processBaiIntermediateEntries = async ({
+const processNewBaiIntermediateEntries = async ({
   job,
   course,
   grader
@@ -21,16 +21,22 @@ const processBaiIntermediateEntries = async ({
       }
     })
 
+    const oldIntermediateCourse = await db.courses.findOne({
+      where: {
+        courseCode: OLD_BAI_INTERMEDIATE_CODE
+      }
+    })
+
     const rawCredits = await db.credits.findAll({
       where: {
-        courseId: [course.courseCode, OLD_BAI_CODE]
+        courseId: [course.courseCode, OLD_BAI_INTERMEDIATE_CODE, OLD_BAI_CODE]
       },
       raw: true
     })
 
     const rawEntries = await db.raw_entries.findAll({ 
       where: {
-        courseId: [course.id, oldBaiCourse.id]
+        courseId: [course.id, oldBaiCourse.id, oldIntermediateCourse.id]
       }
     })
 
@@ -73,9 +79,25 @@ const processBaiIntermediateEntries = async ({
       }
     }, [])
 
+    const oldIntermediateCourseStudentPairs = registrations.reduce((pairs, registration) => {
+      if (registration && registration.onro) {
+        return pairs.concat({ courseCode: oldIntermediateCourse.courseCode, studentNumber: registration.onro })
+      } else {
+        return pairs
+      }
+    }, [])
+
+    // Fetch the earlier attainments for the new course code that is used after 1.9.2021
     const intermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(intermediateStudentPairs)
+
+    // Fetch the earlier attainments for the course code that was used before Sisu
     const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiCourseStudentPairs)
-    const earlierAttainments = intermediateAttainments.concat(oldBaiAttainments)
+
+    // Fetch the earlier attainments for the course code that was used temporarily in summer 2021
+    const oldIntermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldIntermediateCourseStudentPairs)
+    
+    // Combine these to be all the earlier attainments for the same course
+    const earlierAttainments = intermediateAttainments.concat(oldBaiAttainments).concat(oldIntermediateAttainments)
 
     const batchId = `${course.courseCode}-${moment().format(
       'DD.MM.YY-HHmmss'
@@ -131,5 +153,5 @@ const processBaiIntermediateEntries = async ({
 }
 
 module.exports = {
-  processBaiIntermediateEntries
+  processNewBaiIntermediateEntries
 }

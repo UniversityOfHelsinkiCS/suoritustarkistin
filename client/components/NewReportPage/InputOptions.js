@@ -84,7 +84,7 @@ export default () => {
   const handleCourseSelection = (e, { value: courseId }) => {
     const course = courses.find((course) => course.id === courseId)
     if (!course) return
-    if (course.isMooc || course.autoSeparate) {
+    if (course.autoSeparate) {
       dispatch(setNewRawEntriesAction({ ...newRawEntries, courseId }))
       dispatch(getCoursesRegistrationsAction(courseId))
     } else {

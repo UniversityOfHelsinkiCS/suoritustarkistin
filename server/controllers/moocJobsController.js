@@ -1,10 +1,20 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { activateJob, deactivateJob } = require('../scripts/cronjobs')
-const { isValidJob, EOAI_CODES, BAI_INTERMEDIATE_CODE, BAI_ADVANCED_CODE } = require('@root/utils/validators')
+const { isValidJob,
+  EOAI_CODES,
+  BAI_INTERMEDIATE_CODE,
+  BAI_ADVANCED_CODE,
+  NEW_EOAI_CODE,
+  NEW_BAI_INTERMEDIATE_CODE,
+  NEW_BAI_ADVANCED_CODE
+} = require('@root/utils/validators')
+const { processNewEoaiEntries } = require('../scripts/processNewEoaiEntries')
 const { processEoaiEntries } = require('../scripts/processEoaiEntries')
+const { processNewBaiIntermediateEntries } = require('../scripts/processNewBaiIntermediateEntries')
 const { processBaiIntermediateEntries } = require('../scripts/processBaiIntermediateEntries')
 const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')
+const { processNewBaiAdvancedEntries } = require('../scripts/processNewBaiAdvancedEntries')
 const { processMoocEntries } = require('../scripts/processMoocEntries')
 
 const getJobs = async (req, res) => {
@@ -94,8 +104,13 @@ const runJob = async (req, res) => {
       }) completions`
     )
     let result = ""
-
-    if (EOAI_CODES.includes(course.courseCode)) {
+    if (NEW_EOAI_CODE === course.courseCode) {
+      result = await processNewEoaiEntries({ grader })  
+    } else if (NEW_BAI_INTERMEDIATE_CODE === course.courseCode) {
+      result = await processNewBaiIntermediateEntries({ job, course, grader })
+    } else if (NEW_BAI_ADVANCED_CODE === course.courseCode) {
+      result = await processNewBaiAdvancedEntries({ job, course, grader })
+    } else if (EOAI_CODES.includes(course.courseCode)) {
       result = await processEoaiEntries({ grader })
     } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
       result = await processBaiIntermediateEntries({ job, course, grader })

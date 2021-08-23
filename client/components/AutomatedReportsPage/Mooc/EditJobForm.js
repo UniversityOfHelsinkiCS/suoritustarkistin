@@ -10,15 +10,9 @@ export default ({ job, close }) => {
   const courses = useSelector((state) => state.courses.data)
   const [data, setData] = useState(job || { active: false })
 
-  if (!data.courseId) return null
+  if (!data.courseId || !courses) return null
 
   const course = courses.find((c) => c.id === data.courseId)
-
-  const filterAYCourses = (courses) => {
-    if (!courses) return []
-    const filteredCourses = courses.filter((c) => c.courseCode.substring(0, 2) === 'AY')
-    return _.sortBy(filteredCourses, 'name')
-  }
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -46,7 +40,7 @@ export default ({ job, close }) => {
           search={true}
           required={true}
           label="Course"
-          options={filterAYCourses(courses).map((course) => ({
+          options={courses.map((course) => ({
             key: course.id,
             value: course.id,
             text: `${course.name} (${course.courseCode})`

@@ -12,8 +12,6 @@ import {
 import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
-  isValidOpenCourseCode,
-  isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
   isValidLanguage
@@ -24,7 +22,7 @@ export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
   const graders = useSelector((state) => state.graders.data)
   const courseData = useSelector((state) => state.courses)
-  const [data, setData] = useState({ isMooc: false, autoSeparate: false, graders: [] })
+  const [data, setData] = useState({ autoSeparate: false, graders: [] })
 
   useEffect(() => {
     if (courseData.responsibles && !courseData.pending) {
@@ -45,14 +43,8 @@ export default ({ close: closeModal }) => {
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(addCourseAction(data))
-    setData({ isMooc: false, autoSeparate: false })
+    setData({ autoSeparate: false })
     close()
-  }
-
-  const hasValidCourseCode = (code) => {
-    if (data.autoSeparate) return isValidComboCourseCode(code)
-    if (data.isMooc) return isValidOpenCourseCode(code)
-    return isValidCourseCode(code)
   }
 
   return (
@@ -77,9 +69,8 @@ export default ({ close: closeModal }) => {
           placeholder="TKT00000"
           value={data.courseCode || ''}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
+          icon={(data.autoSeparate || (!data.autoSeparate && isValidCourseCode(data.courseCode))) ? 'check' : 'times'}
         />
-        <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx". AY-coded should be first.</p>
         <Form.Field
           data-cy="add-course-language"
           required={true}
@@ -125,30 +116,12 @@ export default ({ close: closeModal }) => {
         <Form.Field
           data-cy="fetch-graders"
           control={Button}
-          disabled={!hasValidCourseCode(data.courseCode)}
+          disabled={!isValidCourseCode(data.courseCode)}
           onClick={() => dispatch(getResponsiblesAction(data.courseCode))}
           content="Fetch course graders"
           icon="refresh"
           color="blue"
           basic
-        />
-        <Popup
-          trigger={
-            <Form.Field
-              control={Checkbox}
-              label="Email identification"
-              checked={data.isMooc}
-              onChange={(e, d) => {
-                setData({ ...data, isMooc: d.checked })
-              }}
-            />
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content={`
-            Enables indentifying students with either MOOC email address or 
-            student numbers. Requires MOOC-bit to be set in Open university systems.
-          `}
         />
         <Popup
           trigger={

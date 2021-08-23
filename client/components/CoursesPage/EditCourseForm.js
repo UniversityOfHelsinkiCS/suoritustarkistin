@@ -12,8 +12,6 @@ import {
 import { editCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
-  isValidOpenCourseCode,
-  isValidComboCourseCode,
   isValidCourseCode,
   isValidCreditAmount,
   isValidLanguage
@@ -26,7 +24,7 @@ export default ({ course, close: closeModal }) => {
   const courseData = useSelector((state) => state.courses)
   const [data, setData] = useState(
     { ...course, graders: course.graders.map((g) => g.id) }
-    || { isMooc: false, autoSeparate: false, graders: [] }
+    || { autoSeparate: false, graders: [] }
   )
 
   useEffect(() => {
@@ -53,12 +51,6 @@ export default ({ course, close: closeModal }) => {
     close()
   }
 
-  const hasValidCourseCode = (code) => {
-    if (data.autoSeparate) return isValidComboCourseCode(code)
-    if (data.isMooc) return isValidOpenCourseCode(code)
-    return isValidCourseCode(code)
-  }
-
   return (
     <Segment>
       <Form loading={courseData.pending}>
@@ -79,9 +71,8 @@ export default ({ course, close: closeModal }) => {
           placeholder="TKT00000"
           value={data.courseCode}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={hasValidCourseCode(data.courseCode) ? 'check' : 'times'}
+          icon={(data.autoSeparate || (!data.autoSeparate && isValidCourseCode(data.courseCode))) ? 'check' : 'times'}
         />
-        <p style={{ color: "gray" }}>When editing a combocourse, add the coursecode in format "AYTKTxxxxx + TKTxxxxx"</p>
         <Form.Field
           required={true}
           control={Input}
@@ -135,25 +126,7 @@ export default ({ course, close: closeModal }) => {
           trigger={
             <Form.Field
               control={Checkbox}
-              label="Enable identification by MOOC email"
-              checked={data.isMooc}
-              onChange={(e, d) => {
-                setData({ ...data, isMooc: d.checked })
-              }}
-            />
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content={`
-            Enables indentifying students with either MOOC email address or 
-            student numbers. Requires MOOC-bit to be set in Open university systems.
-          `}
-        />
-        <Popup
-          trigger={
-            <Form.Field
-              control={Checkbox}
-              label="Combined (TKT + AYTKT) course"
+              label="Combined (TKT + Open university) course"
               checked={data.autoSeparate}
               onChange={(e, d) => setData({ ...data, autoSeparate: d.checked })}
             />

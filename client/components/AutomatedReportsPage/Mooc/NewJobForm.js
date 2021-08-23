@@ -14,12 +14,6 @@ export default ({ close }) => {
 
   if (!courses || !graders) return null
 
-  const filterAYCourses = (courses) => {
-    if (!courses) return []
-    const filteredCourses = courses.filter((c) => c.courseCode.substring(0, 2) === 'AY')
-    return _.sortBy(filteredCourses, 'name')
-  }
-
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(addJobAction(data))
@@ -47,7 +41,7 @@ export default ({ close }) => {
           search
           required={true}
           label="Course"
-          options={filterAYCourses(courses).map((course) => ({
+          options={courses.map((course) => ({
             key: course.id,
             value: course.id,
             text: `${course.name} (${course.courseCode})`

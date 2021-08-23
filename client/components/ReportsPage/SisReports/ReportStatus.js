@@ -27,7 +27,7 @@ const ReportStatus = ({ batch }) => {
 
   const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
   const senderNames = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
-  const formattedDate = moment(sentDate).format("DD.MM.YYYY")
+  const formattedDate = moment(sentDate ? sentDate.entry.sent : null).format("DD.MM.YYYY")
   const hasSuccessfullySentEntries = batch.some(({ entry }) => !entry.errors && entry.sent)
   const amountOfErrors = batch.filter(({ entry }) => entry.errors).length
   const amountMissingFromSisu = batch.filter(({ entry }) => entry.registered === 'NOT_REGISTERED' && entry.sent && !entry.errors).length

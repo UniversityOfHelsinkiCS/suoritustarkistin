@@ -9,6 +9,7 @@ export default () => {
 
   const resolveColor = (type) => {
     if (!type) return 'blue'
+    if (type === 'neutral') return 'grey'
     if (type === 'positive') return 'green'
     if (type === 'negative') return 'red'
     return type

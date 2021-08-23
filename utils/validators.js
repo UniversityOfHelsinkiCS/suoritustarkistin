@@ -7,7 +7,9 @@ const SIS_LANGUAGES = [
   "en"
 ]
 
+const NEW_EOAI_CODE = ['TKT21018']
 const EOAI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+const ALL_EOAI_CODES = ['TKT21018', 'AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
 const EOAI_NAMEMAP = {
   en: {
@@ -24,13 +26,16 @@ const EOAI_NAMEMAP = {
   }
 }
 
-const BAI_CODES = ['AYTKT21028en']
-
-const OLD_BAI_CODE = 'AYTKT21028en'
+const NEW_BAI_INTERMEDIATE_CODE = 'TKT210281'
+const NEW_BAI_ADVANCED_CODE = 'TKT210282'
 
 const BAI_INTERMEDIATE_CODE = 'AYTKT210281en'
-
 const BAI_ADVANCED_CODE = 'AYTKT210282en'
+
+const OLD_BAI_CODE = 'AYTKT21028en'
+const OLD_BAI_INTERMEDIATE_CODE = 'AYTKT210281en'
+const OLD_BAI_ADVANCED_CODE = 'AYTKT210282en'
+
 
 const isValidStudentId = (id) => {
   if (/^0[12]\d{7}$/.test(id)) {
@@ -88,24 +93,10 @@ const isValidEmailAddress = (address) =>
     address
   )
 
-const isValidOpenCourseCode = (courseCode) =>
-  /^AY[A-Z0-9-]{6,10}(fi|en|sv)?$/.test(courseCode)
 const isValidHYCourseCode = (courseCode) =>
-  /^(TKT|BSCS|CSM|MAT|DATA)[A-Za-z0-9-]{3,6}$/.test(courseCode)
-
-const isValidComboCourseCode = (courseCode) => {
-  if (!courseCode) return false
-  const courses = courseCode.split('+')
-  const ayCourse = courses[0] ? courses[0].trim() : null
-  const tktCourse = courses[1] ? courses[1].trim() : null
-  const isValidAyCourse = isValidOpenCourseCode(ayCourse)
-  const isValidTktCourse = isValidHYCourseCode(tktCourse)
-  return isValidAyCourse && isValidTktCourse
-}
-
-const isValidCourseCode = (courseCode) =>
-  isValidOpenCourseCode(courseCode) || isValidHYCourseCode(courseCode) || isValidComboCourseCode(courseCode)
-
+  /^(TKT|BSCS|CSM|MAT|DATA|AY)[A-Za-z0-9-]{3,10}$/.test(courseCode)
+ 
+const isValidCourseCode = (courseCode, combo) => combo ? true : isValidHYCourseCode(courseCode)
 
 const areValidGraders = (graders) => {
   if (!Array.isArray(graders)) return false
@@ -119,15 +110,7 @@ const isValidGradeScale = (gradeScale) => {
 }
 
 const isValidCourse = (course) => {
-  if (course.autoSeparate && !isValidComboCourseCode(course.courseCode))
-    return false
-  if (
-    !course.autoSeparate &&
-    course.isMooc &&
-    !isValidOpenCourseCode(course.courseCode)
-  )
-    return false
-  if (!isValidCourseCode(course.courseCode)) return false
+  if (!course.autoSeparate && !isValidCourseCode(course.courseCode)) return false
   if (!course.name) return false
   if (!isValidLanguage(course.language)) return false
   if (!isValidCreditAmount(course.credits)) return false
@@ -176,12 +159,17 @@ const isValidSchedule = (schedule) => {
 }
 
 module.exports = {
+  NEW_EOAI_CODE,
   EOAI_CODES,
+  ALL_EOAI_CODES,
   EOAI_NAMEMAP,
-  OLD_BAI_CODE,
-  BAI_CODES,
   BAI_INTERMEDIATE_CODE,
   BAI_ADVANCED_CODE,
+  NEW_BAI_INTERMEDIATE_CODE,
+  NEW_BAI_ADVANCED_CODE,
+  OLD_BAI_CODE,
+  OLD_BAI_INTERMEDIATE_CODE,
+  OLD_BAI_ADVANCED_CODE,
   SIS_LANGUAGES,
   isValidStudentId,
   isValidOodiDate,
@@ -197,8 +185,6 @@ module.exports = {
   areValidNewRawEntries,
   isValidCourse,
   isValidHYCourseCode,
-  isValidOpenCourseCode,
-  isValidComboCourseCode,
   isValidCourseCode,
   isValidJob,
   isValidSchedule

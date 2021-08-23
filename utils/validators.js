@@ -94,9 +94,9 @@ const isValidEmailAddress = (address) =>
   )
 
 const isValidHYCourseCode = (courseCode) =>
-  /^(TKT|BSCS|CSM|MAT|DATA)[A-Za-z0-9-]{3,6}$/.test(courseCode)
-
-const isValidCourseCode = (courseCode) => isValidHYCourseCode(courseCode)
+  /^(TKT|BSCS|CSM|MAT|DATA|AY)[A-Za-z0-9-]{3,10}$/.test(courseCode)
+ 
+const isValidCourseCode = (courseCode, combo) => combo ? true : isValidHYCourseCode(courseCode)
 
 const areValidGraders = (graders) => {
   if (!Array.isArray(graders)) return false
@@ -110,8 +110,7 @@ const isValidGradeScale = (gradeScale) => {
 }
 
 const isValidCourse = (course) => {
-  if (course.autoSeparate && !isValidCourseCode(course.courseCode))return false
-  if (!isValidCourseCode(course.courseCode)) return false
+  if (!course.autoSeparate && !isValidCourseCode(course.courseCode)) return false
   if (!course.name) return false
   if (!isValidLanguage(course.language)) return false
   if (!isValidCreditAmount(course.credits)) return false

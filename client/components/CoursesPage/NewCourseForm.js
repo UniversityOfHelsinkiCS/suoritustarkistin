@@ -69,7 +69,7 @@ export default ({ close: closeModal }) => {
           placeholder="TKT00000"
           value={data.courseCode || ''}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
+          icon={(data.autoSeparate || (!data.autoSeparate && isValidCourseCode(data.courseCode))) ? 'check' : 'times'}
         />
         <Form.Field
           data-cy="add-course-language"

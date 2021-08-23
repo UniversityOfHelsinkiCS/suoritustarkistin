@@ -1,4 +1,3 @@
-const moment = require('moment')
 const logger = require('@utils/logger')
 const { SIS_LANGUAGES, isValidGrade } = require('@root/utils/validators')
 const { getCompletions, postTransferredId } = require('../services/kurki')
@@ -6,6 +5,8 @@ const { getEarlierAttainments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { inProduction } = require('@utils/common')
+const { getBatchId } = require('@root/utils/common')
+
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.language
@@ -42,9 +43,7 @@ const processKurkiEntries = async ({
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
-    const batchId = `${course.courseCode}-${moment().tz("Europe/Helsinki").format(
-      'DD.MM.YY-HHmmss'
-    )}`
+    const batchId = getBatchId(course.courseCode)
     const date = new Date()
 
     let matches = await completions.reduce(

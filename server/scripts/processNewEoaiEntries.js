@@ -1,4 +1,3 @@
-const moment = require('moment')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { getRegistrations } = require('../services/eduweb')
@@ -7,6 +6,8 @@ const { getCompletions } = require('../services/pointsmooc')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { ALL_EOAI_CODES, NEW_EOAI_CODE } = require('@root/utils/validators')
 const { automatedAddToDb } = require('./automatedAddToDb')
+const { getBatchId } = require('@root/utils/common')
+
 
 const languageMap = {
   "fi_FI" : "fi",
@@ -84,9 +85,7 @@ const processNewEoaiEntries = async ({ grader }) => {
       return (!earlierCredit && !earlierEntry)
     })
 
-    const batchId = `${NEW_EOAI_CODE}-${moment().tz("Europe/Helsinki").format(
-      'DD.MM.YY-HHmmss'
-    )}`
+    const batchId = getBatchId(NEW_EOAI_CODE)
     const date = new Date()
 
     let matches = await completions.reduce(

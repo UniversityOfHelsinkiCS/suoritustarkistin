@@ -25,7 +25,7 @@ const styles = {
 const ReportStatus = ({ batch }) => {
   if (!batch) return null
 
-  const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
+  const sentDate = batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0].entry.sent || null
   const senderNames = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
   const formattedDate = moment(sentDate).format("DD.MM.YYYY")
   const hasSuccessfullySentEntries = batch.some(({ entry }) => !entry.errors && entry.sent)

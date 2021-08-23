@@ -35,6 +35,11 @@ const deleteOldEntries = async () => {
     attributes: ['id', 'personId'],
     raw: true
   })
+  if (!entries.length) {
+    logger.info('No old entries with missing enrollment and failing grade to delete')
+    return
+  }
+
   const rawEntryIds = entries.map(({ rawEntry }) => rawEntry.id)
 
   logger.info({ message: `Deleting ${entries.length} old entries with missing enrollment and failing grade`, entries: { ...entries } })

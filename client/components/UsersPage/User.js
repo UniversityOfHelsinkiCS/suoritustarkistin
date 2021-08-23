@@ -11,7 +11,7 @@ export default ({ user }) => {
 
   const logInAs = () => {
     localStorage.setItem('adminLoggedInAs', user.employeeId)
-    window.location.reload()
+    window.location.href = "/"
   }
 
   const grantAdmin = () => {
@@ -183,7 +183,7 @@ export default ({ user }) => {
         <DeleteUser />
       </Grid.Column>
       <Grid.Column width={1}>
-        <Icon onClick={logInAs} size="large" name="sign-in" />
+        <Icon onClick={logInAs} size="large" name="sign-in" style={{cursor: 'pointer'}} />
       </Grid.Column>
     </Grid.Row>
   )

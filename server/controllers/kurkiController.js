@@ -63,7 +63,7 @@ const addKurkiRawEntries = async (req, res) => {
     const result = await processKurkiEntries({ kurkiId, course, grader })
 
     if (result.message === "success" || result.message === "no new entries") {
-      return res.status(200).json({ message: result.message })
+      return res.status(200).json({ message: result.message, kurkiId })
     }
     logger.error({ message: result.message })
     return res.status(500).json({ error: result.message })

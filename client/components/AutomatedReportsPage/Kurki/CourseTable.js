@@ -5,7 +5,6 @@ import moment from 'moment'
 
 import { addKurkiRawEntriesAction } from 'Utilities/redux/kurkiReducer'
 
-
 const CourseTable = () => {
   const dispatch = useDispatch()
   const kurki = useSelector((state) => state.kurki)
@@ -55,6 +54,7 @@ const CourseTable = () => {
             <Grid.Column width={3}>
               <Button
                 color="blue"
+                disabled={course.disabled}
                 onClick={() => createReport(course)}
               >
                 Create a report

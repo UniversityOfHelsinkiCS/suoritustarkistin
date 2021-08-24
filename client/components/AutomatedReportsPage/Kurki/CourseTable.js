@@ -5,6 +5,7 @@ import moment from 'moment'
 
 import { addKurkiRawEntriesAction } from 'Utilities/redux/kurkiReducer'
 
+
 const CourseTable = () => {
   const dispatch = useDispatch()
   const kurki = useSelector((state) => state.kurki)

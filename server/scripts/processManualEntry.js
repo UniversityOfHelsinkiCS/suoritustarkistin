@@ -1,4 +1,3 @@
-const moment = require('moment')
 const db = require('../models/index')
 const {
   isValidStudentId,
@@ -8,6 +7,7 @@ const {
 const { processEntries } = require('./processEntries')
 const { getRegistrations } = require('../services/eduweb')
 const logger = require('@utils/logger')
+const { getBatchId } = require('@root/utils/common')
 
 
 const LANGUAGES = ["fi", "sv", "en"]
@@ -51,7 +51,6 @@ const processManualEntry = async ({
   date,
   data
 }, transaction) => {
-
 
   const originalCourse = await db.courses.findOne({
     where: {
@@ -98,9 +97,7 @@ const processManualEntry = async ({
 
   if (!grader) throw new Error('Grader employee id does not exist.')
 
-  const batchId = `${originalCourse.courseCode}-${moment().format(
-    'DD.MM.YY-HHmmss'
-  )}`
+  const batchId = getBatchId(originalCourse.courseCode)
 
   const registrations = originalCourse.autoSeparate
     ? await getRegistrations([ayCourse.courseCode])

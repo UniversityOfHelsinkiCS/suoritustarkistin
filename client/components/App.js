@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { loginAction, pingAction } from 'Utilities/redux/userReducer'
-import { getStatus } from 'Utilities/redux/systemStatusReducer'
+import { Header } from 'semantic-ui-react'
+
 import NavBar from 'Components/NavBar'
 import Router from 'Components/Router'
 import Footer from 'Components/Footer'
 import MaintenanceView, { MaintenanceMessage } from 'Components/MaintenanceView'
-import { Header } from 'semantic-ui-react'
+import { loginAction, pingAction } from 'Utilities/redux/userReducer'
+import { getStatus } from 'Utilities/redux/systemStatusReducer'
+
 
 export default withRouter(({history}) => {
   const dispatch = useDispatch()

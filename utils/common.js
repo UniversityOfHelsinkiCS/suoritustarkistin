@@ -1,6 +1,7 @@
 /**
  * Insert application wide common items here
  */
+const moment = require('moment')
 
 const inProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' // staging is production ¯\_(ツ)_/¯
 const inDevelopment = process.env.NODE_ENV === 'development'
@@ -19,9 +20,14 @@ const gradeScales = [
   }
 ]
 
+const getBatchId = (courseCode) => `${courseCode}-${moment().tz("Europe/Helsinki").format(
+  'DD.MM.YY-HHmmss'
+)}` 
+
 module.exports = {
   gradeScales,
   inProduction,
   inDevelopment,
-  inTest
+  inTest,
+  getBatchId
 }

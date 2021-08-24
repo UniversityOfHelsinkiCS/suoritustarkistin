@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
-import { Loader } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { Loader } from 'semantic-ui-react'
 import { useDropzone } from 'react-dropzone'
+import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { parseCSV } from 'Utilities/inputParser'
 
 const baseStyle = {

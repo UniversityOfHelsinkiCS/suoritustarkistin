@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Button, Header, Modal, Popup, Segment } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Button, Header, Modal, Popup, Segment } from 'semantic-ui-react'
 import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { areValidNewRawEntries } from 'Root/utils/validators'
 

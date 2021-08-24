@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { Menu, Label, Radio } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import {
   logoutAction,
   activateAdminModeAction,
   disableAdminModeAction
 } from 'Utilities/redux/userReducer'
 import { images } from 'Utilities/common'
-import { Link } from 'react-router-dom'
-import FakeShibboMenu from './fakeShibboMenu'
+import FakeShibboMenu from 'Components/fakeShibboMenu'
 
 const STAGING = process.env.NODE_ENV === 'staging'
 

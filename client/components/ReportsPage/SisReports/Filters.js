@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { Radio, Input, Form, Header } from 'semantic-ui-react'
 

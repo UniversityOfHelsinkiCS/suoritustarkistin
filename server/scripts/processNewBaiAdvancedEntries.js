@@ -1,4 +1,3 @@
-const moment = require('moment')
 const db = require('@models/index')
 const logger = require('@utils/logger')
 const { getRegistrations } = require('../services/eduweb')
@@ -12,6 +11,7 @@ const {
   OLD_BAI_ADVANCED_CODE,
   NEW_BAI_INTERMEDIATE_CODE
 } = require('@root/utils/validators')
+const { getBatchId } = require('@root/utils/common')
 // const { getTestRegistrations, getTestCompletions } = require('../utils/testdataForMoocScripts')
 
 const processNewBaiAdvancedEntries = async ({
@@ -131,9 +131,7 @@ const processNewBaiAdvancedEntries = async ({
     const newAdvancedAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(advancedPairs)
     const advancedAttainments = oldAdvancedAttainments.concat(newAdvancedAttainments)
 
-    const batchId = `${course.courseCode}-${moment().format(
-      'DD.MM.YY-HHmmss'
-    )}`
+    const batchId = getBatchId(course.courseCode)
     const date = new Date()
 
     let matches = await completions.reduce(

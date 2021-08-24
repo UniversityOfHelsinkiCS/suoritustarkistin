@@ -1,11 +1,12 @@
-const moment = require('moment')
+const logger = require('@utils/logger')
 const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
-const logger = require('@utils/logger')
-const { isValidGrade, SIS_LANGUAGES } = require('../../utils/validators')
-const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { getEarlierAttainments } = require('../services/importer')
+const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
+const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
+const { getBatchId } = require('@root/utils/common')
+
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
@@ -46,9 +47,7 @@ const processMoocEntries = async ({
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
 
-    const batchId = `${course.courseCode}-${moment().format(
-      'DD.MM.YY-HHmmss'
-    )}`
+    const batchId = getBatchId(course.courseCode)
     const date = new Date()
 
     let matches = await completions.reduce(

@@ -17,13 +17,16 @@ export default () => {
           <Grid.Column width={8}>
             <Header as="h4">Name</Header>
           </Grid.Column>
-          <Grid.Column width={1}>
+          <Grid.Column textAlign="center" width={1}>
             <Header as="h4">Grader</Header>
           </Grid.Column>
-          <Grid.Column width={1}>
+          <Grid.Column textAlign="center" width={1}>
             <Header as="h4">Admin</Header>
           </Grid.Column>
-          <Grid.Column width={3}>
+          <Grid.Column textAlign="center" width={2}>
+            <Header as="h4">Last login</Header>
+          </Grid.Column>
+          <Grid.Column textAlign="center" width={3}>
             <Header as="h4">Edit</Header>
           </Grid.Column>
           <Grid.Column width={1} />

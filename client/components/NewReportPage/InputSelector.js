@@ -1,5 +1,6 @@
 import React from 'react'
-import { Tab, Menu, Icon } from 'semantic-ui-react'
+import { Icon, Menu, Tab } from 'semantic-ui-react'
+
 import Dropzone from 'Components/NewReportPage/Dropzone'
 import InputOptions from 'Components/NewReportPage/InputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'

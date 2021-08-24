@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
+import { Button, Modal } from 'semantic-ui-react'
+
 import NewJobForm from 'Components/AutomatedReportsPage/Mooc/NewJobForm'
-import { Modal, Button } from 'semantic-ui-react'
+
 
 export default () => {
   const [showForm, setShowForm] = useState(false)

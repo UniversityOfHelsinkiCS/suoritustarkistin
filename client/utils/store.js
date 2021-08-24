@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, compose } from 'redux'
+import { applyMiddleware, compose, createStore } from 'redux'
 import thunk from 'redux-thunk'
 
 import { inProduction } from 'Utilities/common'

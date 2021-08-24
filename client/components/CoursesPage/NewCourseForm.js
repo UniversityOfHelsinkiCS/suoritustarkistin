@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
 import {
-  Form,
-  Checkbox,
-  Input,
   Button,
+  Checkbox,
+  Form,
+  Input,
   Popup,
   Segment
 } from 'semantic-ui-react'

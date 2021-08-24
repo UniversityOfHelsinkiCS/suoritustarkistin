@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Message, Icon } from 'semantic-ui-react'
+import { Icon, Message, Segment } from 'semantic-ui-react'
 
 
 const ErrorView = ({ error }) => <Segment textAlign="center" style={{ width: '100%', height: '100%' }}>

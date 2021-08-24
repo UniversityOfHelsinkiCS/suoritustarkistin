@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Checkbox, Select } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+
 import SendButton from 'Components/NewReportPage/SendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import {
-  getCoursesRegistrationsAction,
-  clearRegistrationsAction
+  clearRegistrationsAction,
+  getCoursesRegistrationsAction
 } from 'Utilities/redux/registrationsReducer'
 import {
   getAllGradersAction,
@@ -19,11 +20,11 @@ import {
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
 
+
 const formatGradersForSelection = (data) => {
   const graders = data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
   if (graders) return _.sortBy(graders, ['text'])
   return []
-
 }
 
 const formatCoursesForSelection = (data) => {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Header, Grid, Loader, Segment } from 'semantic-ui-react'
+import { Button, Grid, Header, Loader, Segment } from 'semantic-ui-react'
 import moment from 'moment'
 
 import { addKurkiRawEntriesAction } from 'Utilities/redux/kurkiReducer'

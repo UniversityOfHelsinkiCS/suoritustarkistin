@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Menu, Label, Radio } from 'semantic-ui-react'
+import { Label, Menu, Radio } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import {
-  logoutAction,
   activateAdminModeAction,
-  disableAdminModeAction
+  disableAdminModeAction,
+  logoutAction
 } from 'Utilities/redux/userReducer'
 import { images } from 'Utilities/common'
 import FakeShibboMenu from 'Components/fakeShibboMenu'

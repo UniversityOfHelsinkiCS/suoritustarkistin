@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Dropdown } from 'semantic-ui-react'
-import { possibleUsers, getHeaders, setHeaders } from 'Utilities/fakeShibboleth'
+import { getHeaders, possibleUsers, setHeaders } from 'Utilities/fakeShibboleth'
 import { loginAction } from 'Utilities/redux/userReducer'
 import { inProduction } from 'Utilities/common'
 

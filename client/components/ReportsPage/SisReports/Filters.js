@@ -1,5 +1,5 @@
 import React from 'react'
-import { Radio, Input, Form, Header } from 'semantic-ui-react'
+import { Form, Header, Input, Radio } from 'semantic-ui-react'
 
 
 export const filterBatches = (report, filters) => {

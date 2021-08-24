@@ -9,7 +9,7 @@ import SendToSisButton from './SendToSisButton'
 import ReportStatus from './ReportStatus'
 import ReportTable from './ReportTable'
 import Filters, { filterBatches } from './Filters'
-import { refreshBatchStatus, openReport } from 'Utilities/redux/sisReportsReducer'
+import { openReport, refreshBatchStatus } from 'Utilities/redux/sisReportsReducer'
 import Notification from 'Components/Message'
 
 import './reportStyles.css'

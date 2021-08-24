@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Accordion, Icon, Table, Popup } from 'semantic-ui-react'
+import { Accordion, Icon, Popup, Table } from 'semantic-ui-react'
 import moment from 'moment'
 
 import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/validators'

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Segment, Button, Header, Message, Icon } from 'semantic-ui-react'
+import { Button, Header, Icon, Message, Segment } from 'semantic-ui-react'
 import axios from 'axios'
 
 export default () => {

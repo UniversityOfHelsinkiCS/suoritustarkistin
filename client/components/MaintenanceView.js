@@ -1,5 +1,5 @@
 import React from 'react'
-import { Segment, Message, Icon } from 'semantic-ui-react'
+import { Icon, Message, Segment } from 'semantic-ui-react'
 
 const styles = {
   staffMessage: { width: '50%', marginLeft: 'auto', marginRight: 'auto' },

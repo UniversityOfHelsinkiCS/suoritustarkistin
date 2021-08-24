@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Icon, Table, Segment, Message } from 'semantic-ui-react'
+import { Button, Icon, Message, Segment, Table } from 'semantic-ui-react'
 import moment from 'moment'
 
 import Notification from 'Components/Message'
 import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/validators'
 import {
-  handleEntryDeletionAction,
-  refreshEnrollmentsAction,
   getAllSisReportsAction,
-  getUsersSisReportsAction
+  getUsersSisReportsAction,
+  handleEntryDeletionAction,
+  refreshEnrollmentsAction
 } from 'Utilities/redux/sisReportsReducer'
 
 

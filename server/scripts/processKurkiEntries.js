@@ -91,7 +91,7 @@ const processKurkiEntries = async ({
   
     let result = await automatedAddToDb(matches, course, batchId, false)
 
-    if (result.message === "success" && inProduction) {
+    if ((result.message === "success" || result.message === "no new entries") && inProduction) {
       result = await postTransferredId(kurkiId)
     }
 

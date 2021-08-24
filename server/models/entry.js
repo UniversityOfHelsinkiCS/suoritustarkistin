@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       senderId: {
         type: DataTypes.INTEGER,
+        allowNull: true,
         references: {
           model: 'users',
           key: 'id'
@@ -45,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
     }, {})
   Entry.associate = (models) => {
     Entry.belongsTo(models.raw_entries, { foreignKey: 'rawEntryId', as: 'rawEntry' })
-    Entry.belongsTo(models.users, { foreignKey: 'senderId', as: 'sender', allowNull: true })
+    Entry.belongsTo(models.users, { foreignKey: 'senderId', as: 'sender', onDelete: 'SET NULL' })
   }
   Entry.getUnsentBatchCount = async () => {
     const result = await sequelize.query(`

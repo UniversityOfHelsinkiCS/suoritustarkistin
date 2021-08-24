@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Menu, Icon, Tab, Label } from 'semantic-ui-react'
+import { Icon, Label, Menu, Tab } from 'semantic-ui-react'
 import RawOodiReports from 'Components/ReportsPage/OodiReports/RawOodiReports'
 import OodiReports from 'Components/ReportsPage/OodiReports/OodiReports'
 import SisReports from 'Components/ReportsPage/SisReports'
@@ -18,6 +18,7 @@ import {
   getAllCoursesAction,
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
+
 
 export default ({ match }) => {
   const [activeTab, setActiveTab] = useState(0)

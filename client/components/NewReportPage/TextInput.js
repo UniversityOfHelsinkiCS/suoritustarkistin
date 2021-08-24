@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Form, Loader, Message, TextArea } from 'semantic-ui-react'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { parseCSV } from 'Utilities/inputParser'

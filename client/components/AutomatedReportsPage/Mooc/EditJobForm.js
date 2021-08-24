@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
-import { Form, Checkbox, Input, Button, Segment } from 'semantic-ui-react'
+import { Button, Checkbox, Form, Input, Segment } from 'semantic-ui-react'
 
 import { editJobAction } from 'Utilities/redux/moocJobsReducer'
 import { isValidJob, isValidSchedule } from 'Root/utils/validators'
@@ -53,6 +53,7 @@ export default ({ job, close }) => {
         <Form.Dropdown
           required={true}
           label="Grader"
+          search
           selection
           options={_.sortBy(course.graders, 'name').map((grader) => ({
             key: grader.id,

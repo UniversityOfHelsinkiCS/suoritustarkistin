@@ -1,6 +1,7 @@
 import React from 'react'
 import { images } from 'Utilities/common'
 
+
 export default () => (
   <div className="footer">
     <div style={{ margin: '25px', float: 'left' }}>

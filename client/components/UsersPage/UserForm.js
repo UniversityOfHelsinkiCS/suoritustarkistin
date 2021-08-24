@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
-  Form,
-  Checkbox,
-  Input,
-  Segment,
   Button,
-  Message
+  Checkbox,
+  Form,
+  Input,
+  Message,
+  Segment
 } from 'semantic-ui-react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
 
-import { fetchUser, createUser, editUserAction } from 'Utilities/redux/usersReducer'
+import { createUser, editUserAction, fetchUser } from 'Utilities/redux/usersReducer'
 import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
 import { isValidEmailAddress } from 'Root/utils/validators'
+
 
 const INITIAL_FORM_DATA = {
   email: '',

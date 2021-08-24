@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Button } from 'semantic-ui-react'
+import { Button, Modal } from 'semantic-ui-react'
 
 import EditJobForm from 'Components/AutomatedReportsPage/Mooc/EditJobForm'
 

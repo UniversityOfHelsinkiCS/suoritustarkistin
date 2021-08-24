@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Button, Grid, Icon } from 'semantic-ui-react'
+
 import { confirmDeletionAction } from 'Utilities/redux/coursesReducer'
 import EditCourse from 'Components/CoursesPage/EditCourse'
 import DeletionModal from 'Components/CoursesPage/DeletionModal'
+
 
 export default ({ course, graders }) => {
   const [showForm, setShowForm] = useState(false)

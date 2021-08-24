@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Modal, Button } from 'semantic-ui-react'
+import { Button, Modal } from 'semantic-ui-react'
 
 import Message from 'Components/Message'
 import UserTable from 'Components/UsersPage/UserTable'

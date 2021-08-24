@@ -11,4 +11,17 @@ export const images = {
 
 export const colors = {}
 
+export const sortedItems = (items, sorter, reverse) => {
+  if (!items) return []
+  if (!sorter) return items
+  const sorted = items.sort((a, b) => {
+    if (typeof a[sorter] === 'string' && !reverse) return a[sorter].localeCompare(b[sorter])
+    if (typeof a[sorter] === 'string' && reverse) return b[sorter].localeCompare(a[sorter])
+    if (!reverse) return a[sorter] - b[sorter]
+    if (reverse) return b[sorter] - a[sorter]
+  })
+  return sorted
+}
+
+
 export * from 'Root/utils/common'

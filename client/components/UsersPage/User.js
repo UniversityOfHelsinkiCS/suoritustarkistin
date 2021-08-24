@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Button, Grid, Icon, Popup, Modal } from 'semantic-ui-react'
+import moment from 'moment'
 
 import UserForm from 'Components/UsersPage/UserForm'
 import { editUserAction, deleteUser } from 'Utilities/redux/usersReducer'
@@ -178,6 +179,12 @@ export default ({ user }) => {
       </Grid.Column>
       <Grid.Column textAlign="center" width={1}>
         <AdminBadge />
+      </Grid.Column>
+      <Grid.Column textAlign="center" width={2}>
+        {user.lastLogin
+          ? moment(user.lastLogin).format("DD.MM.YYYY")
+          : <span style={{ color: 'gray' }}>Not saved</span>
+        }
       </Grid.Column>
       <Grid.Column textAlign="center" width={3}>
         <EditUser />

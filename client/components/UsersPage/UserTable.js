@@ -1,37 +1,63 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import * as _ from 'lodash'
-import { Grid, Header, Segment } from 'semantic-ui-react'
+import { Grid, Header, Icon, Segment } from 'semantic-ui-react'
 
 import User from 'Components/UsersPage/User'
+import { sortedItems } from 'Utilities/common'
+
 
 export default () => {
+  const [sorter, setSorter] = useState('name')
+  const [reverse, setReverse] = useState(false)
   const users = useSelector((state) => state.users.data)
 
   if (!users) return null
+
+  const getCustomHeader = ({ name, field, sortable = true }) => {
+    const sortHandler = sortable
+      ? () => {
+        if (sorter === field) {
+          setReverse(!reverse)
+        } else {
+          setReverse(false)
+          setSorter(field)
+        }
+      }
+      : undefined
+
+    return (
+      <Header
+        as="h4"
+        onClick={sortHandler}
+        style={sortable ? { cursor: 'pointer' } : {} }
+      >
+        {name} {sortable && <Icon style={{ fontSize: "1.2em" }} name="sort" />}
+      </Header>
+    )
+  }
 
   return (
     <Segment>
       <Grid celled="internally" style={{wordWrap: 'anywhere'}}>
         <Grid.Row>
           <Grid.Column width={8}>
-            <Header as="h4">Name</Header>
+            {getCustomHeader({ name: 'Name (uid)', field: 'name' })}
           </Grid.Column>
           <Grid.Column textAlign="center" width={1}>
-            <Header as="h4">Grader</Header>
+            {getCustomHeader({ name: 'Grader', field: 'isGrader' })}
           </Grid.Column>
           <Grid.Column textAlign="center" width={1}>
-            <Header as="h4">Admin</Header>
+            {getCustomHeader({ name: 'Admin', field: 'isAdmin' })}
           </Grid.Column>
           <Grid.Column textAlign="center" width={2}>
-            <Header as="h4">Last login</Header>
+            {getCustomHeader({ name: 'Last login', field: 'lastLogin', sortable: false })}
           </Grid.Column>
           <Grid.Column textAlign="center" width={3}>
             <Header as="h4">Edit</Header>
           </Grid.Column>
           <Grid.Column width={1} />
         </Grid.Row>
-        {_.sortBy(users, 'name').map((u) => (
+        {sortedItems(users, sorter, reverse).map((u) => (
           <User user={u} key={u.id} />
         ))}
       </Grid>

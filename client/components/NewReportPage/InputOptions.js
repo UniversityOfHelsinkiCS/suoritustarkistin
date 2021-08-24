@@ -103,6 +103,7 @@ export default () => {
     <>
       <div style={{ marginBlock: '10px', marginBottom: '10px', display: 'flex' }}>
         <Select
+          search
           className="input"
           data-cy="grader-selection"
           placeholder="Choose grader"
@@ -111,6 +112,7 @@ export default () => {
           options={formatGradersForSelection(graders)}
         />
         <Select
+          search
           className="input"
           data-cy="course-selection"
           onChange={handleCourseSelection}

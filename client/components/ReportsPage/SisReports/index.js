@@ -4,15 +4,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { Accordion, Button, Icon, Message, Segment } from 'semantic-ui-react'
 
+import Notification from 'Components/Message'
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import ReportStatus from './ReportStatus'
 import ReportTable from './ReportTable'
 import Filters, { filterBatches } from './Filters'
 import { openReport, refreshBatchStatus } from 'Utilities/redux/sisReportsReducer'
-import Notification from 'Components/Message'
-
 import './reportStyles.css'
+
 
 const SisSuccessMessage = () => <Message success>
   <Message.Header>All entries sent successfully to Sisu</Message.Header>

@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
+
 import { sendEntriesToSisAction } from 'Utilities/redux/sisReportsReducer'
+
 
 export default ({ entries }) => {
   const dispatch = useDispatch()

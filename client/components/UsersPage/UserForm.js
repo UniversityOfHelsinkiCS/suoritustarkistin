@@ -14,6 +14,7 @@ import { createUser, editUserAction, fetchUser } from 'Utilities/redux/usersRedu
 import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
 import { isValidEmailAddress } from 'Root/utils/validators'
 
+
 const INITIAL_FORM_DATA = {
   email: '',
   uid: '',

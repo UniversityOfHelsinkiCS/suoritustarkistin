@@ -10,6 +10,7 @@ import {
 import { images } from 'Utilities/common'
 import FakeShibboMenu from 'Components/fakeShibboMenu'
 
+
 const STAGING = process.env.NODE_ENV === 'staging'
 
 export default () => {

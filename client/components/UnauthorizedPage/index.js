@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { Message, Segment } from 'semantic-ui-react'
 
+
 export default () => {
   const user = useSelector((state) => state.user)
 

@@ -7,6 +7,7 @@ import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/validators'
 import sisuErrorMessages from 'Utilities/sisuErrorMessages.json'
 import DeleteEntryButton from './DeleteEntryButton'
 
+
 const PLACEHOLDER_COURSE = {
   id: 'COURSE DELETED',
   name: 'COURSE DELETED',

@@ -20,13 +20,15 @@ const parseUser = async (req, res, next) => {
             !!(req.headers.employeenumber === 'grader' && !inProduction),
           isAdmin:
             false ||
-            !!(req.headers.employeenumber === 'admin' && !inProduction)
+            !!(req.headers.employeenumber === 'admin' && !inProduction),
+          lastLogin: new Date()
         }
       })
       if (created) {
         logger.info(`New user: ${user.name}, ${user.email}`)
         sendNewUserEmail(user)
       }
+      user.update({ lastLogin: new Date() })
       req.user = user
     } catch (error) {
       logger.error('Database error:', error)

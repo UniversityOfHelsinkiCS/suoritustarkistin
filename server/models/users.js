@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       employeeId: DataTypes.STRING,
       email: DataTypes.STRING,
       isGrader: DataTypes.BOOLEAN,
-      isAdmin: DataTypes.BOOLEAN
+      isAdmin: DataTypes.BOOLEAN,
+      lastLogin: DataTypes.DATE
     },
     {}
   )

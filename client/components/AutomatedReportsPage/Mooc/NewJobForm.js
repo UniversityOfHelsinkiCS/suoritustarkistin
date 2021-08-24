@@ -53,6 +53,7 @@ export default ({ close }) => {
           required={true}
           label="Grader"
           selection
+          search
           options={_.sortBy(graders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,

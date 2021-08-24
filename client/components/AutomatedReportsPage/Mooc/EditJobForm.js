@@ -53,6 +53,7 @@ export default ({ job, close }) => {
         <Form.Dropdown
           required={true}
           label="Grader"
+          search
           selection
           options={_.sortBy(course.graders, 'name').map((grader) => ({
             key: grader.id,

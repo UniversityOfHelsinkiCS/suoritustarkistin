@@ -139,13 +139,16 @@ export default ({ user }) => {
         />
       }
       content={
-        <Button
-          data-cy="delete-user-confirm"
-          color="red"
-          content="Are you sure?"
-          size="massive"
-          onClick={() => handleDeleteUser()}
-        />
+        <>
+          <p>This does not delete the reports by the user. But <strong>the reports will no longer have any mention of the user</strong></p>
+            <Button
+              data-cy="delete-user-confirm"
+              color="red"
+              content="Yes, delete the user"
+              size="massive"
+              onClick={() => handleDeleteUser()}
+            />
+        </>
       }
       on="click"
       position="top center"

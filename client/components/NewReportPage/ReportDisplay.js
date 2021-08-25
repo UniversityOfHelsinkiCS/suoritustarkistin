@@ -1,9 +1,10 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { Icon, Popup, Table } from 'semantic-ui-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Button, Icon, Popup, Table } from 'semantic-ui-react'
+
+import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 
 const { commify } = require('Root/utils/commify')
-
 const {
   isValidStudentId,
   isValidGrade,
@@ -222,7 +223,20 @@ const getErrorCell = (newRawEntries, studentId) => {
 }
 
 
+const getDeletionCell = (index, handleRowDeletion) => {
+  return (
+    <Table.Cell style={validStyle}>
+      <Button
+        style={{ width: "100%" }}
+        icon="trash"
+        onClick={() => handleRowDeletion(index)}
+      />
+    </Table.Cell>
+  )
+}
+
 export default () => {
+  const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
@@ -236,6 +250,13 @@ export default () => {
   const defaultGrade = newRawEntries.defaultGrade
   const course = courses.find((c) => c.id === newRawEntries.courseId)
   const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
+
+  const handleRowDeletion = (index) => {
+    const rows = newRawEntries.rawData.trim().split('\n')
+    const rowsWithoutTheStudent = rows.filter((r, i) => i !== index)
+    const rawData = rowsWithoutTheStudent.join("\n")
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, rawData, data: newRawEntries.data.filter((s, i) => i !== index)}))
+  }
 
   const reportRows = newRawEntries.data.map((row, index) => (
     <Table.Row key={row.studentId + index}>
@@ -254,6 +275,7 @@ export default () => {
       )}
       {getDateCell(row.attainmentDate || date)}
       {getErrorCell(newRawEntries, row.studentId)}
+      {getDeletionCell(index, handleRowDeletion)}
     </Table.Row>
   ))
 
@@ -261,14 +283,15 @@ export default () => {
     <Table celled>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>Course</Table.HeaderCell>
-          <Table.HeaderCell>Student number</Table.HeaderCell>
-          <Table.HeaderCell>Grade</Table.HeaderCell>
-          <Table.HeaderCell>Credits (op)</Table.HeaderCell>
-          <Table.HeaderCell>Language</Table.HeaderCell>
-          <Table.HeaderCell>Grader</Table.HeaderCell>
+          <Table.HeaderCell width={3}>Course</Table.HeaderCell>
+          <Table.HeaderCell width={2}>Student number</Table.HeaderCell>
+          <Table.HeaderCell width={1}>Grade</Table.HeaderCell>
+          <Table.HeaderCell width={1}>Credits (op)</Table.HeaderCell>
+          <Table.HeaderCell width={1}>Language</Table.HeaderCell>
+          <Table.HeaderCell width={2}>Grader</Table.HeaderCell>
           <Table.HeaderCell>Completion date</Table.HeaderCell>
           {newRawEntries.failed && <Table.HeaderCell>Errors</Table.HeaderCell>}
+          <Table.HeaderCell width={1}>Remove from report</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>{reportRows}</Table.Body>

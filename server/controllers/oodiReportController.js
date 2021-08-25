@@ -3,7 +3,7 @@ const db = require('../models/index')
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
-  return res.status(500).json({ error: 'Server went BOOM!' })
+  return res.status(500).json({ error: error.message })
 }
 
 const getOodiReports = async (req, res) => {

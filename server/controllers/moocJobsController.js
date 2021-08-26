@@ -131,10 +131,6 @@ const runJob = async (req, res) => {
   }
 }
 
-const deleteAllJobs = async (req, res) => {
-  await db.jobs.destroy({ where: {} })
-  res.status(204).end()
-}
 
 const deleteJob = async (req, res) => {
   await db.jobs.destroy({ where: { id: req.params.id } })
@@ -147,6 +143,5 @@ module.exports = {
   addJob,
   editJob,
   deleteJob,
-  deleteAllJobs,
   runJob
 }

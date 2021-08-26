@@ -29,17 +29,7 @@ const getUsersOodiReports = async (req, res) => {
   }
 }
 
-const deleteAllOodiReports = async (req, res) => {
-  try {
-    await db.reports.destroy({ where: {} })
-    return res.status(204).end()
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
 module.exports = {
   getOodiReports,
-  getUsersOodiReports,
-  deleteAllOodiReports
+  getUsersOodiReports
 }

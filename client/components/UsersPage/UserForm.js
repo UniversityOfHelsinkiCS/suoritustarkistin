@@ -108,7 +108,7 @@ export default ({ close, user }) => {
       <Form width={4} loading={data.pending || courses.pending}>
         <Form.Field
           style={styles.field}
-          data-cy="add-email-name"
+          data-cy="add-email"
           control={Input}
           label="Email"
           placeholder="Email"
@@ -121,7 +121,7 @@ export default ({ close, user }) => {
         />
         <Form.Field
           style={styles.field}
-          data-cy="add-user-id-name"
+          data-cy="add-user-id"
           control={Input}
           label="AD account"
           placeholder="mluukkai"
@@ -133,7 +133,7 @@ export default ({ close, user }) => {
         />
         <Form.Field
           style={styles.field}
-          data-cy="add-employee-name"
+          data-cy="add-employee-number"
           control={Input}
           label="Employee number"
           placeholder="Employee number"
@@ -156,6 +156,7 @@ export default ({ close, user }) => {
           required
         />
         <Form.Field
+          data-cy="check-is-grader"
           style={styles.field}
           control={Checkbox}
           label="Is grader"
@@ -165,6 +166,7 @@ export default ({ close, user }) => {
           }}
         />
         <Form.Field
+          data-cy="check-is-admin"
           control={Checkbox}
           label="Is admin"
           checked={formData.isAdmin}

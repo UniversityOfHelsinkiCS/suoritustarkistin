@@ -1,41 +1,12 @@
 /// <reference types="Cypress" />
 
 describe("Permissions", () => {
-  before(() => {
-    cy.request('DELETE', '/api/seed/users')
-    cy.request('POST', '/api/seed/users', {
-      name: 'admin',
-      employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
-      uid: 'admin',
-      isAdmin: true,
-      isGrader: false
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'grader',
-      employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
-      uid: 'grader',
-      isAdmin: false,
-      isGrader: true
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'employee',
-      employeeId: 222,
-      uid: 'employee',
-      isAdmin: false,
-      isGrader: false
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'non-employee',
-      employeeId: undefined,
-      uid: 'non-employee',
-      isAdmin: false,
-      isGrader: false
-    })
-
+  before(function () {
+    cy.request('/api/seed/all')
   })
 
   it("Users with employeeId and isGrader=false see who they should contact to get permissions", () => {
-    cy.login('employee')
+    cy.login('regular')
     cy.visit("/")
     cy.url().should("include","/unauthorized")
 
@@ -62,7 +33,7 @@ describe("Permissions", () => {
   })
 
   it("Regular users should not see form tab and should not be able to post entries", () => {
-    cy.login('employee').visit('')
+    cy.login('regular').visit('')
     cy.wait(2000)
     cy.get('[data-cy=copypaste]').should('not.exist')
 
@@ -95,7 +66,7 @@ describe("Permissions", () => {
         ],
         courseId:2,
         date:"2020-12-30T09:00:00.900Z",
-        graderId:Cypress.env('GRADER_EMPLOYEE_NUMBER'),
+        graderId:2,
       },
       failOnStatusCode: false
     }).then((response) => {

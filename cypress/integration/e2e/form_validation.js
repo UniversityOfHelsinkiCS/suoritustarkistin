@@ -1,9 +1,12 @@
 /// <reference types="Cypress" />
 
 describe('Form validation', () => {
+  before(function () {
+    cy.request('api/seed/all')
+  })
+
   describe("Validation prevents submission of invalid data", () => {
     it('when pasted data is invalid', () => {
-      cy.initializeUsersAndCourses()
       cy.login('admin').visit('')
       cy.get('[data-cy=adminmode-enable]').click()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
@@ -25,7 +28,7 @@ describe('Form validation', () => {
       cy.get('[data-cy=course-selection]')
         .click()
         .children()
-        .contains('Valid course 3 (TKT10003)')
+        .contains('Ohjelmoinnin perusteet (TKT10002)')
         .click()
   
       cy.get('[data-cy=create-report-button]').should('be.disabled')
@@ -34,7 +37,6 @@ describe('Form validation', () => {
   
     // Fix me later
     it('when there are missing fields', () => {
-      cy.initializeUsersAndCourses()
       cy.login('admin').visit('')
       cy.get('[data-cy=adminmode-enable]').click()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
@@ -58,7 +60,7 @@ describe('Form validation', () => {
       cy.get('[data-cy=course-selection]')
         .click()
         .children()
-        .contains('Valid course 1 (TKT10001)')
+        .contains('Tietorakenteet ja algoritmit I (TKT200011)')
         .click()
       cy.get('[data-cy=create-report-button]').should('not.be.disabled')
   

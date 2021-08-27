@@ -77,28 +77,28 @@ const testCourses = [
 
 const testUsers = [
   {
-    name: "Admin User",
-    employeeId: "1111",
+    name: "admin",
+    employeeId: 1111,
     email: "admin-user-email@helsinki-cypress-test.com",
     isGrader: false,
     isAdmin: true,
-    uid: "adminuser"
+    uid: "admin"
   },
   {
-    name: "Grader User",
-    employeeId: "2222",
+    name: "grader",
+    employeeId: 2222,
     email: "grader-user-email@helsinki-cypress-test.com",
     isGrader: true,
     isAdmin: false,
-    uid: "graderuser"
+    uid: "grader"
   },
   {
-    name: "Regular User",
-    employeeId: "3333",
+    name: "regular",
+    employeeId: 3333,
     email: "regular-user-email@helsinki-cypress-test.com",
     isGrader: false,
     isAdmin: false,
-    uid: "regularuser"
+    uid: "regular"
   }
 ]
 

@@ -74,9 +74,14 @@ export default () => {
               color="green"
               onClick={sendRawEntries}
             >
-            Create report
+              Create report
             </Button>
-            <Button onClick={closeModal}>Cancel</Button>
+            <Button
+              onClick={closeModal}
+              data-cy="cancel-sending-button"
+            >
+              Cancel
+            </Button>
           </div>
         </Segment>
 

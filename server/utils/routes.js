@@ -1,6 +1,7 @@
 const Router = require('express')
 const {
-  seedDatabaseForTests
+  seedDatabaseForTests,
+  seedTestCompletions
 } = require('@controllers/cypressController')
 const {
   getCourses,
@@ -67,6 +68,7 @@ router.get('/sandbox', () => {
 
 // Routes for seeding the test database
 router.get('/seed/all', notInProduction, seedDatabaseForTests)
+router.post('/seed/sis_completions', notInProduction, seedTestCompletions)
 
 // Production routes
 router.post('/login', login)

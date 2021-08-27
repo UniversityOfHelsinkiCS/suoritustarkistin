@@ -22,6 +22,7 @@ export default ({ batchId }) => {
         <Button
           negative
           content="Delete completions"
+          data-cy="report-delete-batch-button"
           disabled={!batchId}
           onClick={() => setOpen(true)}
         />
@@ -41,7 +42,7 @@ export default ({ batchId }) => {
           <Button
             style={{ margin: '5px 2px' }}
             negative
-            data-cy={`delete-batch-${batchId}`}
+            data-cy="report-delete-batch-confirm"
             onClick={deleteBatch}
             disabled={!batchId}
             content="Yes, delete completions"

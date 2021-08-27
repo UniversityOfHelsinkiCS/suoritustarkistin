@@ -32,6 +32,25 @@ describe("Permissions", () => {
     cy.logout()
   })
 
+  it("Grader users should be able to see the form tab", () => {
+    cy.login('grader').visit('')
+    cy.get('[data-cy=copypaste]')
+    cy.logout()
+  })
+
+  it("Grader can see themselves and no-one else as graders", () => {
+    cy.login('grader')
+    cy.visit("/")
+    cy.get('[data-cy=grader-selection]')
+      .click()
+    cy.get('span').contains('grader')
+    cy.get('span').contains('secondGrader').should('not.exist')
+    cy.get('span').contains('admin').should('not.exist')
+    cy.get('span').contains('regular').should('not.exist')
+    cy.logout()
+  })
+
+
   it("Regular users should not see form tab and should not be able to post entries", () => {
     cy.login('regular').visit('')
     cy.wait(2000)

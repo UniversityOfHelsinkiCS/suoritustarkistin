@@ -25,10 +25,22 @@ describe("Permissions", () => {
     cy.logout()
   })
 
-  it("Admin users should be able to see the form tab", () => {
+  it("Admin users should be able to see the form tab and admin-tabs", () => {
     cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
     cy.get('[data-cy=copypaste]')
+    cy.get('a').contains('Edit users')
+    cy.get('a').contains('Automated')
+    cy.get('a').contains('Sandbox')
+    cy.logout()
+  })
+
+  it("Grader users should not be able to see admin-tabs", () => {
+    cy.login('grader').visit('')
+    cy.get('[data-cy=adminmode-enable]').should('not.exist')
+    cy.get('a').contains('Edit users').should('not.exist')
+    cy.get('a').contains('Automated').should('not.exist')
+    cy.get('a').contains('Sandbox').should('not.exist')
     cy.logout()
   })
 
@@ -49,7 +61,6 @@ describe("Permissions", () => {
     cy.get('span').contains('regular').should('not.exist')
     cy.logout()
   })
-
 
   it("Regular users should not see form tab and should not be able to post entries", () => {
     cy.login('regular').visit('')

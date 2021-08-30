@@ -62,6 +62,17 @@ describe("Permissions", () => {
     cy.logout()
   })
 
+  it('Grader should not be able to see reports where they are not graders', () => {
+    cy.login('grader').visit('')
+    cy.get('[data-cy=nav-reports]').click()
+    cy.get('[data-cy=sis-reports-tab]').click()
+    cy.get('[data-cy=report-TKT10002]').should('not.exist')
+    cy.get('[data-cy=report-TKT21018]').should('not.exist')
+    cy.get('[data-cy=report-CSM14113]').should('not.exist')
+    cy.get('[data-cy=report-TKT200011]').should('not.exist')
+    cy.logout()
+  })
+
   it("Regular users should not see form tab and should not be able to post entries", () => {
     cy.login('regular').visit('')
     cy.wait(2000)

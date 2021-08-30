@@ -116,6 +116,17 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
       const batchId = getBatchId(course.courseCode)
       const testRawEntries = course.gradeScale === "sis-hyl-hyv" ? entriesHylHyv : entries0to5
 
+      const getRegisteredStatus = () => {
+        if (course.courseCode === "TKT10002") return 'PARTLY_REGISTERED'
+        if (course.courseCode === "TKT10003") return 'REGISTERED'
+        return 'NOT_REGISTERED'
+      }
+
+      const getSentStatus = () => {
+        if (course.courseCode === "TKT10002" || course.courseCode === "TKT10003") return new Date()
+        return null
+      }
+
       // With individual completions
       for (const { studentNumber, grade } of testRawEntries) {
 
@@ -150,7 +161,9 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
             "fi": `courseUnitRealisationName-fi-${rawEntry.grade}`,
             "en": `courseUnitRealisationName-en-${rawEntry.grade}`,
             "sv": `courseUnitRealisationName-sv-${rawEntry.grade}`
-          }
+          },
+          sent: getSentStatus(course.courseCode),
+          registered: getRegisteredStatus(course.courseCode)
         }, { transaction })
       }
     }

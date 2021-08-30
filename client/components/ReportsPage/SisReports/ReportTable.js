@@ -83,10 +83,10 @@ const TableBody = ({ user, rawEntries }) => {
       const course = rawEntry.course || PLACEHOLDER_COURSE
       return <React.Fragment key={`row-${rawEntry.id}`}>
         <Table.Row warning={rawEntry.entry.missingEnrolment}>
-          <Table.Cell data-cy={`report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, course)}</Table.Cell>
-          <Table.Cell data-cy={`report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, course)}</Table.Cell>
-          <Table.Cell data-cy={`report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
-          <Table.Cell data-cy={`report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
+          <Table.Cell data-cy="report-course-code">{getCourseCode(rawEntry, course)}</Table.Cell>
+          <Table.Cell data-cy="report-course-name">{getCourseName(rawEntry, course)}</Table.Cell>
+          <Table.Cell data-cy="report-student-number">{rawEntry.studentNumber}</Table.Cell>
+          <Table.Cell data-cy="report-credits">{rawEntry.credits}</Table.Cell>
           <Table.Cell>{rawEntry.grader ? rawEntry.grader.name : 'Grader not found'}</Table.Cell>
           <EntryCells entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }} />
           {allowDelete(user, rawEntry)
@@ -165,20 +165,19 @@ const EntryCells = ({ entry }) => {
   return (
     <>
       <Table.Cell
-        data-cy={`report-courseUnitRealisationName-${entry.id}`}
+        data-cy={`report-courseUnitRealisationName-${gradeId}`}
         colSpan='2'
       >
         <Accordion className="report-table-accordion" >
           <Accordion.Title
             active
             onClick={() => setOpen(!open)}
-            data-cy={`report-entry-course-${entry.id}`}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`} />
             {getSisUnitName(courseUnitRealisationName, completionLanguage)}
           </Accordion.Title>
           <Accordion.Content
-            data-cy={`report-course-content-${entry.id}`}
+            data-cy="report-course-content"
             active={open}
             style={{ padding: "0.75em 1em" }}
           >
@@ -195,25 +194,25 @@ const EntryCells = ({ entry }) => {
           </Accordion.Content>
         </Accordion>
       </Table.Cell>
-      <Table.Cell data-cy={`report-personId-${entry.id}`}>
+      <Table.Cell data-cy="report-personId">
         {personId ? personId : null}
       </Table.Cell>
-      <Table.Cell data-cy={`report-completionDate-${entry.id}`}>
+      <Table.Cell data-cy="report-completionDate">
         {completionDate ? moment(completionDate).format("DD.MM.YYYY") : null}
       </Table.Cell>
-      <Table.Cell data-cy={`report-completionLanguage-${entry.id}`}>
+      <Table.Cell data-cy="report-completionLanguage">
         {completionLanguage ? completionLanguage : null}
       </Table.Cell>
-      <Table.Cell data-cy={`report-entry-grade-${entry.id}`}>
+      <Table.Cell data-cy="report-entry-grade">
         {!entry.missingEnrolment ? getGrade(gradeScaleId, gradeId, completionLanguage) : gradeId}
       </Table.Cell>
-      <Table.Cell data-cy={`report-sent-${entry.id}`}>
+      <Table.Cell data-cy="report-sent">
         {sent ? moment(sent).format("DD.MM.YYYY") : null}
       </Table.Cell>
-      <Table.Cell data-cy={`report-senderName-${entry.id}`}>
+      <Table.Cell data-cy="report-senderName">
         {sender ? sender.name : null}
       </Table.Cell>
-      <Table.Cell data-cy={`report-registered-${entry.id}`}>
+      <Table.Cell data-cy="report-registered">
         {getSisuStatusCell(sent, registered)}
       </Table.Cell>
     </>

@@ -69,11 +69,6 @@ const addUser = async (req, res, next) => {
   }
 }
 
-const deleteAllUsers = async (req, res) => {
-  await db.users.destroy({ where: {} })
-  res.status(204).end()
-}
-
 const editUser = async (req, res) => {
   try {
     const { courses, ...user } = req.body
@@ -131,7 +126,6 @@ module.exports = {
   getGraders,
   getUsersGraders,
   addUser,
-  deleteAllUsers,
   editUser,
   fetchUserDetails,
   deleteUser

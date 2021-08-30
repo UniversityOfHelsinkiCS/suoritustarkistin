@@ -14,7 +14,8 @@ const addRawEntries = async (req, res) => {
   const transaction = await db.sequelize.transaction()
   try {
     if (!req.user.isGrader && !req.user.isAdmin) {
-      throw new Error('User is not authorized to report credits.')
+      logger.error({ message: 'User is not authorized to report completions', user: req.user.name })
+      return res.status(400).json({ error: 'User is not authorized to report completions.' })
     }
 
     const { courseId, graderId, date, data } = req.body

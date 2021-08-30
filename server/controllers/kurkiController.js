@@ -10,7 +10,7 @@ const getKurkiCourses = async (req, res) => {
     res.status(200).json(courses)
   } catch (e) {
     logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
+    res.status(500).json({ error: e.message })
   }
 }
 

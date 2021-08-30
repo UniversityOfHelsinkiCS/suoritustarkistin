@@ -23,7 +23,7 @@ const getJobs = async (req, res) => {
     res.status(200).json(jobs)
   } catch (e) {
     logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
+    res.status(500).json({ error: e.message })
   }
 }
 
@@ -39,7 +39,7 @@ const addJob = async (req, res) => {
     res.status(200).json(newJob)
   } catch (e) {
     logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
+    res.status(500).json({ error: e.message })
   }
 }
 
@@ -64,7 +64,7 @@ const editJob = async (req, res) => {
     return res.status(400).json({ error: 'id not found.' })
   } catch (e) {
     logger.error(e.message)
-    res.status(500).json({ error: 'server went BOOM!' })
+    res.status(500).json({ error: e.message })
   }
 }
 
@@ -131,10 +131,6 @@ const runJob = async (req, res) => {
   }
 }
 
-const deleteAllJobs = async (req, res) => {
-  await db.jobs.destroy({ where: {} })
-  res.status(204).end()
-}
 
 const deleteJob = async (req, res) => {
   await db.jobs.destroy({ where: { id: req.params.id } })
@@ -147,6 +143,5 @@ module.exports = {
   addJob,
   editJob,
   deleteJob,
-  deleteAllJobs,
   runJob
 }

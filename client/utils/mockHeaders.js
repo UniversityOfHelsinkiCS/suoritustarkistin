@@ -1,28 +1,33 @@
 const ITEM_NAME = 'fakeUser'
+import { testUsers } from '../../utils/common'
 
 export const possibleUsers = [
   {
-    uid: 'admin',
-    employeeNumber: 123,
-    givenName: 'admin',
-    mail: 'suotar-admin@helsinki.fi',
+    uid: testUsers[0].uid,
+    employeeNumber: testUsers[0].employeeId,
+    givenName: testUsers[0].name,
+    mail: testUsers[0].email,
     schacDateOfBirth: undefined,
     hypersonuniqueid: undefined,
-    sn: 'admin'
+    sn: testUsers[0].uid
   },
   {
-    uid: 'grader',
-    employeeNumber: 321,
-    givenName: 'grader',
-    mail: 'suotar-grader@helsinki.fi',
-    schacDateOfBirth: 19770501,
-    hypersonuniqueid: '0123456789',
-    hyGroupCn: '',
-    sn: 'grader'
+    uid: testUsers[1].uid,
+    employeeNumber: testUsers[1].employeeId,
+    givenName: testUsers[1].name,
+    mail: testUsers[1].email,
+    schacDateOfBirth: undefined,
+    hypersonuniqueid: undefined,
+    sn: testUsers[1].uid
   },
   {
-    uid: 'employee',
-    employeeNumber: 222
+    uid: testUsers[2].uid,
+    employeeNumber: testUsers[2].employeeId,
+    givenName: testUsers[2].name,
+    mail: testUsers[2].email,
+    schacDateOfBirth: undefined,
+    hypersonuniqueid: undefined,
+    sn: testUsers[2].uid
   },
   {
     uid: 'non-employee',

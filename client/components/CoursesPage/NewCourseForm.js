@@ -92,6 +92,7 @@ export default ({ close: closeModal }) => {
           icon={isValidCreditAmount(data.credits) ? 'check' : 'times'}
         />
         <Form.Dropdown
+          data-cy="add-course-grade-scale"
           label="Grade scale"
           selection
           options={gradeScales}
@@ -101,7 +102,6 @@ export default ({ close: closeModal }) => {
         <Form.Dropdown
           data-cy="add-course-grader"
           search
-          required={true}
           label="Grader"
           multiple
           selection

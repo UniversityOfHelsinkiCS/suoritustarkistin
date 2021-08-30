@@ -1,46 +1,22 @@
 describe('Basic functions work', function () {
 
   before(function () {
-    cy.request('DELETE', '/api/seed/courses')
-    cy.request('DELETE', '/api/seed/users')
-    cy.request('DELETE', '/api/seed/reports')
-
-    cy.request('POST', '/api/seed/users', {
-      name: 'admin',
-      uid: 'admin',
-      employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
-      isAdmin: true,
-      isGrader: false
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'grader',
-      employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
-      uid: 'grader',
-      isAdmin: false,
-      isGrader: true
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'user',
-      employeeId: Cypress.env('USER_EMPLOYEE_NUMBER'),
-      uid: 'user',
-      isAdmin: false,
-      isGrader: false
-    })
+    cy.request('/api/seed/all')
   })
 
   it('Admin can grant rights', () => {
     cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
     cy.get('[data-cy=nav-users]').click()
-    cy.get('[data-cy=user-not-admin]').click()
+    cy.get('[data-cy=regular-not-admin]').click()
     cy.get('[data-cy=grant-admin-confirm]').click()
-    cy.get('[data-cy=user-is-admin]').click()
+    cy.get('[data-cy=regular-is-admin]').click()
     cy.get('[data-cy=remove-admin-confirm]').click()
-    cy.get('[data-cy=user-not-admin]')
+    cy.get('[data-cy=regular-not-admin]')
 
-    cy.get('[data-cy=user-not-grader]').click()
+    cy.get('[data-cy=regular-not-grader]').click()
     cy.get('[data-cy=grant-grader-confirm]').click()
-    cy.get('[data-cy=user-is-grader]')
+    cy.get('[data-cy=regular-is-grader]')
   })
 
   it('Admin can create and edit course', () => {
@@ -55,7 +31,7 @@ describe('Basic functions work', function () {
     cy.get('[data-cy=add-course-grader]')
       .click()
       .children()
-      .contains('user')
+      .contains('grader')
       .click()
     cy.get('[data-cy=add-course-confirm]').click()
 
@@ -69,11 +45,6 @@ describe('Basic functions work', function () {
 
   it('Grader can create reports', () => {
     cy.login('grader').visit('')
-    cy.intercept(
-      'POST',
-      'http://localhost:8001/api/sis_raw_entries', 
-      { fixture: 'raw-entries-add.json'}
-    ).as('addRawEntries')
 
     cy.get('[data-cy=create-report-button]').should('be.disabled')
     cy.get('[data-cy=paste-field]').type(
@@ -85,7 +56,7 @@ describe('Basic functions work', function () {
       .click()
       .children()
       .should('not.contain', 'admin')
-      .contains('user')
+      .contains('grader')
       .click()
 
     cy.get('[data-cy=course-selection]')
@@ -100,24 +71,17 @@ describe('Basic functions work', function () {
 
     cy.get('[data-cy=confirm-sending-button]')
       .should('be.visible')
-      .click()
     cy.logout()
   })
 
 
-  it('Grader can view created report', () => {
+  it('Grader can view all reports where they are as graders', () => {
     cy.login('grader').visit('')
-    cy.intercept(
-        'GET',
-        'http://localhost:8001/api/users/*/sis_reports',
-        { fixture: 'raw-entries-after.json' }
-      ).as('getUpdatedEntries')
     cy.get('[data-cy=nav-reports]').click()
-    cy.wait('@getUpdatedEntries')
-    cy.wait(2000)
     cy.get('[data-cy=sis-reports-tab]').click()
-    cy.get('[data-cy=report-TKT10001]').should('be.visible')
-    cy.get('[data-cy=report-TKT10002]').should('be.visible')
+    cy.get('[data-cy=report-TKT200012]').should('be.visible')
+    cy.get('[data-cy=report-TKT10005]').should('be.visible')
+    cy.get('[data-cy=report-TKT10003]').should('be.visible')
     cy.logout()
   })
 })

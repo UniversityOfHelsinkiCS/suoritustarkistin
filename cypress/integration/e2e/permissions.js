@@ -1,41 +1,12 @@
 /// <reference types="Cypress" />
 
 describe("Permissions", () => {
-  before(() => {
-    cy.request('DELETE', '/api/seed/users')
-    cy.request('POST', '/api/seed/users', {
-      name: 'admin',
-      employeeId: Cypress.env('ADMIN_EMPLOYEE_NUMBER'),
-      uid: 'admin',
-      isAdmin: true,
-      isGrader: false
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'grader',
-      employeeId: Cypress.env('GRADER_EMPLOYEE_NUMBER'),
-      uid: 'grader',
-      isAdmin: false,
-      isGrader: true
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'employee',
-      employeeId: 222,
-      uid: 'employee',
-      isAdmin: false,
-      isGrader: false
-    })
-    cy.request('POST', '/api/seed/users', {
-      name: 'non-employee',
-      employeeId: undefined,
-      uid: 'non-employee',
-      isAdmin: false,
-      isGrader: false
-    })
-
+  before(function () {
+    cy.request('/api/seed/all')
   })
 
   it("Users with employeeId and isGrader=false see who they should contact to get permissions", () => {
-    cy.login('employee')
+    cy.login('regular')
     cy.visit("/")
     cy.url().should("include","/unauthorized")
 
@@ -54,15 +25,56 @@ describe("Permissions", () => {
     cy.logout()
   })
 
-  it("Admin users should be able to see the form tab", () => {
+  it("Admin users should be able to see the form tab and admin-tabs", () => {
     cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=copypaste]')
+    cy.get('a').contains('Edit users')
+    cy.get('a').contains('Automated')
+    cy.get('a').contains('Sandbox')
+    cy.logout()
+  })
+
+  it("Grader users should not be able to see admin-tabs", () => {
+    cy.login('grader').visit('')
+    cy.get('[data-cy=adminmode-enable]').should('not.exist')
+    cy.get('a').contains('Edit users').should('not.exist')
+    cy.get('a').contains('Automated').should('not.exist')
+    cy.get('a').contains('Sandbox').should('not.exist')
+    cy.logout()
+  })
+
+  it("Grader users should be able to see the form tab", () => {
+    cy.login('grader').visit('')
     cy.get('[data-cy=copypaste]')
     cy.logout()
   })
 
+  it("Grader can see themselves and no-one else as graders", () => {
+    cy.login('grader')
+    cy.visit("/")
+    cy.get('[data-cy=grader-selection]')
+      .click()
+    cy.get('span').contains('grader')
+    cy.get('span').contains('secondGrader').should('not.exist')
+    cy.get('span').contains('admin').should('not.exist')
+    cy.get('span').contains('regular').should('not.exist')
+    cy.logout()
+  })
+
+  it('Grader should not be able to see reports where they are not graders', () => {
+    cy.login('grader').visit('')
+    cy.get('[data-cy=nav-reports]').click()
+    cy.get('[data-cy=sis-reports-tab]').click()
+    cy.get('[data-cy=report-TKT10002]').should('not.exist')
+    cy.get('[data-cy=report-TKT21018]').should('not.exist')
+    cy.get('[data-cy=report-CSM14113]').should('not.exist')
+    cy.get('[data-cy=report-TKT200011]').should('not.exist')
+    cy.logout()
+  })
+
   it("Regular users should not see form tab and should not be able to post entries", () => {
-    cy.login('employee').visit('')
+    cy.login('regular').visit('')
     cy.wait(2000)
     cy.get('[data-cy=copypaste]').should('not.exist')
 
@@ -95,7 +107,7 @@ describe("Permissions", () => {
         ],
         courseId:2,
         date:"2020-12-30T09:00:00.900Z",
-        graderId:Cypress.env('GRADER_EMPLOYEE_NUMBER'),
+        graderId:2,
       },
       failOnStatusCode: false
     }).then((response) => {

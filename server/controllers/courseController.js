@@ -206,11 +206,6 @@ const editCourse = async (req, res) => {
   }
 }
 
-const deleteAllCourses = async (req, res) => {
-  await db.courses.destroy({ where: {} })
-  res.status(204).end()
-}
-
 const unsentEntries = async (id) => {
   const rawEntries = await db.raw_entries.findAll({
     where: {
@@ -236,7 +231,6 @@ const confirmDeletion = async (req, res) => {
 
 const deleteCourse = async (req, res) => {
   const transaction = await db.sequelize.transaction()
-
   try {
     const unsent = await unsentEntries(req.params.id)
     await db.raw_entries.destroy({ where: { id: unsent }, transaction })
@@ -256,7 +250,6 @@ module.exports = {
   getUsersCourses,
   addCourse,
   editCourse,
-  deleteAllCourses,
   confirmDeletion,
   deleteCourse,
   getCourseResponsibles

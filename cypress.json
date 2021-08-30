@@ -1,11 +1,7 @@
 {
   "baseUrl": "http://localhost:8001",
   "responseTimeout": 19000,
-  "video": false,
-  "env": {
-    "SUOTAR_TOKEN": "token",
-    "ADMIN_EMPLOYEE_NUMBER": "123",
-    "GRADER_EMPLOYEE_NUMBER": "111",
-    "USER_EMPLOYEE_NUMBER": "321"
-  }
+  "video": false,  
+  "viewportWidth": 1800,
+  "viewportHeight": 1800
 }

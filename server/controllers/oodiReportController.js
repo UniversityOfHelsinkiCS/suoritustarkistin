@@ -3,7 +3,7 @@ const db = require('../models/index')
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
-  return res.status(500).json({ error: 'Server went BOOM!' })
+  return res.status(500).json({ error: error.message })
 }
 
 const getOodiReports = async (req, res) => {
@@ -29,17 +29,7 @@ const getUsersOodiReports = async (req, res) => {
   }
 }
 
-const deleteAllOodiReports = async (req, res) => {
-  try {
-    await db.reports.destroy({ where: {} })
-    return res.status(204).end()
-  } catch (error) {
-    handleDatabaseError(res, error)
-  }
-}
-
 module.exports = {
   getOodiReports,
-  getUsersOodiReports,
-  deleteAllOodiReports
+  getUsersOodiReports
 }

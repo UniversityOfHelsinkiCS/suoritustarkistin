@@ -1,10 +1,13 @@
 const Router = require('express')
 const {
+  seedDatabaseForTests,
+  seedTestCompletions
+} = require('@controllers/cypressController')
+const {
   getCourses,
   getUsersCourses,
   addCourse,
   editCourse,
-  deleteAllCourses,
   confirmDeletion,
   deleteCourse,
   getCourseResponsibles
@@ -15,14 +18,12 @@ const {
   getUsersGraders,
   addUser,
   editUser,
-  deleteAllUsers,
   fetchUserDetails,
   deleteUser
 } = require('@controllers/userController')
 const {
   getOodiReports,
-  getUsersOodiReports,
-  deleteAllOodiReports
+  getUsersOodiReports
 } = require('@controllers/oodiReportController')
 const {
   addRawEntries
@@ -41,8 +42,7 @@ const {
   getJobs,
   editJob,
   runJob,
-  deleteJob,
-  deleteAllJobs
+  deleteJob
 } = require('@controllers/moocJobsController')
 const {
   getKurkiCourses,
@@ -67,11 +67,8 @@ router.get('/sandbox', () => {
 })
 
 // Routes for seeding the test database
-router.delete('/seed/courses', notInProduction, deleteAllCourses)
-router.delete('/seed/users', notInProduction, deleteAllUsers)
-router.delete('/seed/reports', notInProduction, deleteAllOodiReports)
-router.delete('/seed/jobs', notInProduction, deleteAllJobs)
-router.post('/seed/users', notInProduction, addUser)
+router.get('/seed/all', notInProduction, seedDatabaseForTests)
+router.post('/seed/sis_completions', notInProduction, seedTestCompletions)
 
 // Production routes
 router.post('/login', login)

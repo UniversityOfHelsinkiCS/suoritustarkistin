@@ -37,6 +37,9 @@ export default ({ close, user }) => {
   const [courseOptions, setCourseOptions] = useState([])
   const data = useSelector((state) => state.users)
   const courses = useSelector((state) => state.courses)
+  const currentUser = useSelector((state) => state.user.data)
+
+  if (!currentUser) return null
 
   useEffect(() => {
     if (data.error) setMessage(data.fetchedUser.error)
@@ -98,6 +101,10 @@ export default ({ close, user }) => {
       : formData.courses
   })
 
+  // Check if the user is trying to edit themselves
+  // If so, disable editing uid and employee number as that would crash the login
+  const editingCurrentUser = user && (currentUser.employeeId === user.employeeId || currentUser.uid === user.uid)
+  
   return (
     <Segment style={{ width: '50em' }}>
       {message ? <Message error>
@@ -125,6 +132,7 @@ export default ({ close, user }) => {
           control={Input}
           label="AD account"
           placeholder="mluukkai"
+          disabled={editingCurrentUser}
           value={formData.uid}
           onChange={handleFieldChange}
           error={false}
@@ -137,12 +145,16 @@ export default ({ close, user }) => {
           control={Input}
           label="Employee number"
           placeholder="Employee number"
+          disabled={editingCurrentUser}
           value={formData.employeeId}
           onChange={handleFieldChange}
           error={false}
           name="employeeId"
           required
         />
+        {editingCurrentUser && (
+          <p style={{ color: 'gray', fontWeight: 'bold' }}>AD account and employee number of the currently logged in user cannot be changed</p>
+        )}
         <Form.Field
           style={styles.field}
           data-cy="add-user-name"

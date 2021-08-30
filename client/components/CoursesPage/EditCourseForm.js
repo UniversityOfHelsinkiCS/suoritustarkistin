@@ -100,7 +100,6 @@ export default ({ course, close: closeModal }) => {
           onChange={(e, { value }) => setData({ ...data, gradeScale: value })}
         />
         <Form.Dropdown
-          required={true}
           label="Grader"
           search
           multiple

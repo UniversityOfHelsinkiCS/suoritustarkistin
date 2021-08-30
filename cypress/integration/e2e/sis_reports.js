@@ -40,12 +40,12 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.wait(1000)
 
     cy.get('[data-cy=sis-reports-tab]').click()
-    cy.get('[data-cy=report-TKT10003]').click()
+    cy.get('[data-cy=report-TKT200012]').click()
     cy.get('.content.active > .basic > .table > [data-cy=report-table] > :nth-child(4) > :nth-child(14)').click()
     cy.get('[data-cy=report-delete-entry-confirm]').click()
     cy.get('.content.active > .basic > [data-cy=report-delete-batch-button]').should('contain', 'Delete completions').click()
     cy.get('[data-cy=report-delete-batch-confirm]').click()
-    cy.get('[data-cy=report-TKT10003]').should('not.exist');
+    cy.get('[data-cy=report-TKT200012]').should('not.exist');
     cy.logout()
   })
 })

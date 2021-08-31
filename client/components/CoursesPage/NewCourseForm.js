@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Popup,
-  Segment
-} from 'semantic-ui-react'
+import { Button, Form, Input, Segment } from 'semantic-ui-react'
 import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
@@ -122,22 +115,6 @@ export default ({ close: closeModal }) => {
           icon="refresh"
           color="blue"
           basic
-        />
-        <Popup
-          trigger={
-            <Form.Field
-              control={Checkbox}
-              label="Combined (TKT + AYTKT) course"
-              checked={data.autoSeparate}
-              onChange={(e, d) => setData({ ...data, autoSeparate: d.checked })}
-            />
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content={`
-            Enables automatic detection of HY and Open university students 
-            when both courses are held simultaneously. Requires MOOC-bit to be set in Open university systems.
-          `}
         />
         <Form.Group>
           <Form.Field

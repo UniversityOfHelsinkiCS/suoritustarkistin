@@ -86,7 +86,12 @@ const errorMiddleware = (req, res, next) => {
   next()
 }
 
-
+const paginateMiddleware = (req, res, next) => {
+  const { offset } = req.query
+  if (!offset) req.offset = 0
+  else req.offset = Number(offset) || 0
+  next()
+}
 
 const requestLogger = (req, res, next) => {
   logger.info(`Method: ${req.method}`)
@@ -101,5 +106,6 @@ module.exports = {
   requestLogger,
   parseUser,
   currentUser,
-  errorMiddleware
+  errorMiddleware,
+  paginateMiddleware
 }

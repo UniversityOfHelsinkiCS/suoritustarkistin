@@ -1,11 +1,30 @@
+const _ = require('lodash')
 import callBuilder from '../apiConnection'
 /**
  * Actions and reducers are in the same file for readability
  */
 
-export const getAllSisReportsAction = () => {
-  const route = '/sis_reports'
+export const getAllSisReportsAction = (offset = 0, limit) => {
+  const route = `/sis_reports?offset=${offset}${limit ? `&limit=${limit}` : ''}`
   const prefix = 'GET_ALL_SIS_REPORTS'
+  return callBuilder(route, prefix, 'get', { params: { offset, limit } })
+}
+
+export const getAllMoocSisReportsAction = (offset = 0, limit) => {
+  const route = `/sis_mooc_reports?offset=${offset}${limit ? `&limit=${limit}` : ''}`
+  const prefix = 'GET_ALL_MOOC_SIS_REPORTS'
+  return callBuilder(route, prefix, 'get', { params: { offset, limit } })
+}
+
+export const getAllEnrollmentLimboEntriesAction = (offset = 0, limit) => {
+  const route = `/enrollment_limbo?offset=${offset}${limit ? `&limit=${limit}` : ''}`
+  const prefix = 'GET_ALL_ENROLLMENT_LIMBO'
+  return callBuilder(route, prefix, 'get', { params: { offset, limit } })
+}
+
+export const getOffsetForBatchAction = (batchId) => {
+  const route = `/sis_reports/offset/${batchId}`
+  const prefix = 'GET_OFFSET'
   return callBuilder(route, prefix, 'get')
 }
 
@@ -40,7 +59,7 @@ export const refreshBatchStatus = (entryIds) => {
 }
 
 export const refreshEnrollmentsAction = (rawEntryIds) => {
-  const route = `/refresh_enrollments`
+  const route = `/refresh_sis_enrollments`
   const prefix = 'REFRESH_ENROLLMENTS'
   return callBuilder(route, prefix, 'post', rawEntryIds)
 }
@@ -57,56 +76,62 @@ const setOpenAccordions = (openAccordions, id) => {
   return openAccordions.filter((a) => a !== id)
 }
 
+const INITIAL_DATA = {
+  rows: [],
+  offset: 0,
+  reportsFetched: false // HACK
+}
+
+const INITIAL_STATE = {
+  reports: INITIAL_DATA,
+  moocReports: INITIAL_DATA,
+  enrolmentLimbo: INITIAL_DATA,
+  openAccordions: [],
+  pending: false,
+  error: false
+}
+
 // Reducer
 // You can include more app wide actions such as "selected: []" into the state
-export default (state = { data: [], openAccordions: [] }, action) => {
+export default (state = _.cloneDeep(INITIAL_STATE), action) => {
   switch (action.type) {
     case 'GET_ALL_SIS_REPORTS_SUCCESS':
       return {
         ...state,
-        data: action.response,
+        reports: { ...action.response, reportsFetched: true },
         pending: false,
-        error: false,
-        reportsFetched: true
+        error: false
       }
-    case 'GET_ALL_SIS_REPORTS_ATTEMPT':
+    case 'GET_ALL_MOOC_SIS_REPORTS_SUCCESS':
+      return {
+        ...state,
+        moocReports: { ...action.response, reportsFetched: true },
+        pending: false,
+        error: false
+      }
+    case 'GET_ALL_ENROLLMENT_LIMBO_SUCCESS':
+      return {
+        ...state,
+        enrolmentLimbo: { ...action.response, reportsFetched: true },
+        pending: false,
+        error: false
+      }
+    case 'GET_ALL_SIS_REPORTS_ATTEMPT' || 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT' || 'GET_ALL_ENROLLMENT_LIMBO_ATTEMPT':
       return {
         ...state,
         pending: true,
         error: false
       }
-    case 'GET_ALL_SIS_REPORTS_FAILURE':
+    case 'GET_ALL_SIS_REPORTS_FAILURE' || 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT' || 'GET_ALL_ENROLLMENT_LIMBO_FAILURE':
       return {
         ...state,
-        data: [],
-        pending: false,
-        error: true
-      }
-    case 'GET_USERS_SIS_REPORTS_SUCCESS':
-      return {
-        ...state,
-        data: action.response,
-        pending: false,
-        error: false,
-        reportsFetched: true
-      }
-    case 'GET_USERS_SIS_REPORTS_ATTEMPT':
-      return {
-        ...state,
-        pending: true,
-        error: false
-      }
-    case 'GET_USERS_SIS_REPORTS_FAILURE':
-      return {
-        ...state,
-        data: [],
         pending: false,
         error: true
       }
     case 'DELETE_SINGLE_ENTRY_SUCCESS':
       return {
         ...state,
-        data: state.data.filter((e) => e.id != action.response.id),
+        ..._.cloneDeep(INITIAL_STATE),
         pending: false,
         singleBatchPending: false,
         error: false
@@ -128,8 +153,9 @@ export default (state = { data: [], openAccordions: [] }, action) => {
     case 'DELETE_BATCH_SUCCESS':
       return {
         ...state,
+        ..._.cloneDeep(INITIAL_STATE),
+        reportsFetched: false,
         openAccordions: [],
-        data: state.data.filter((e) => e.batchId != action.response.batchId),
         pending: false,
         error: false
       }
@@ -153,28 +179,20 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         error: false
       }
     case 'POST_ENTRIES_TO_SIS_FAILURE': {
-      const { error } = action
-      // When generic error occurs, no need to update entries in state
-      if (error.genericError)
-        return { ...state, pending: false, error: true }
-      const updatedIds = error.map(({ id }) => id)
-      const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
-      const data = error.concat(oldEntries)
       return {
         ...state,
-        data,
+        ..._.cloneDeep(INITIAL_STATE),
+        reportsFetched: false,
         pending: false,
         singleBatchPending: false,
         error: true
       }
     }
     case 'POST_ENTRIES_TO_SIS_SUCCESS': {
-      const updatedIds = action.response.map(({ id }) => id)
-      const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
-      const data = action.response.concat(oldEntries)
       return {
         ...state,
-        data,
+        ..._.cloneDeep(INITIAL_STATE),
+        reportsFetched: false,
         pending: false,
         singleBatchPending: false,
         error: false
@@ -188,12 +206,8 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         error: false
       }
     case 'REFRESH_BATCH_STATUS_SUCCESS': {
-      const updatedIds = action.response.map(({ id }) => id)
-      const oldEntries = state.data.filter(({ id }) => !updatedIds.includes(id))
-      const data = action.response.concat(oldEntries)
       return {
         ...state,
-        data,
         pending: false,
         singleBatchPending: false,
         error: false
@@ -216,8 +230,8 @@ export default (state = { data: [], openAccordions: [] }, action) => {
     case 'REFRESH_ENROLLMENTS_SUCCESS':
       return {
         ...state,
+        enrolmentLimbo: { ...INITIAL_DATA },
         pending: false,
-        refreshSuccess: true,
         error: false
       }
     case 'REFRESH_ENROLLMENTS_FAILURE':
@@ -236,6 +250,16 @@ export default (state = { data: [], openAccordions: [] }, action) => {
         ...state,
         reportsFetched: false
       }
+    case 'GET_OFFSET_SUCCESS': {
+      const key = action.response.mooc ? 'moocReports' : 'reports'
+      const { offset, mooc } = action.response
+      return {
+        ...state,
+        [key]: { ...state[key], offset },
+        allowFetch: true,
+        mooc
+      }
+    }
     default:
       return state
   }

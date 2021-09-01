@@ -37,8 +37,18 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     }, {})
+  RawEntry.getBatchCount = function (filters) {
+    return this.findAll({
+      where: {
+        ...filters
+      },
+      attributes: [[sequelize.literal('COUNT(DISTINCT "batchId")'), 'count']],
+      raw: true
+    })
+  }
+
   RawEntry.associate = (models) => {
-    RawEntry.hasOne(models.entries, { foreignKey: 'rawEntryId', as: 'entry', onDelete:'CASCADE', onUpdate:'CASCADE' })
+    RawEntry.hasOne(models.entries, { foreignKey: 'rawEntryId', as: 'entry', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     RawEntry.belongsTo(models.users, { foreignKey: 'reporterId', as: 'reporter', onDelete: 'SET NULL' })
     RawEntry.belongsTo(models.users, { foreignKey: 'graderId', as: 'grader', onDelete: 'SET NULL' })
     RawEntry.belongsTo(models.courses, { foreignKey: 'courseId', as: 'course' })

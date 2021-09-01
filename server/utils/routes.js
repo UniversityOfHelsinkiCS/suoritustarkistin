@@ -30,12 +30,14 @@ const {
 } = require('@controllers/rawEntryController')
 const {
   getAllSisReports,
-  getUsersSisReports,
+  getAllSisMoocReports,
+  getAllEnrollmentLimboEntries,
   deleteSingleSisEntry,
   deleteSisBatch,
   sendToSis,
   refreshSisStatus,
-  refreshEnrollments
+  refreshEnrollments,
+  getOffset
 } = require('@controllers/reportController')
 const {
   addJob,
@@ -57,8 +59,10 @@ const {
   checkAdmin,
   checkIdMatch,
   notInProduction,
-  deleteSingleEntry
+  deleteSingleEntry,
+  checkGrader
 } = require('./permissions')
+const { paginateMiddleware } = require('./middleware')
 
 const router = Router()
 
@@ -90,18 +94,21 @@ router.put('/users/:id', checkAdmin, editUser)
 router.delete('/users/:id', checkAdmin, deleteUser)
 router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
 router.get('/users/:id/oodi_reports', checkIdMatch, getUsersOodiReports)
-router.get('/users/:id/sis_reports', checkIdMatch, getUsersSisReports)
 router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
 router.get('/oodi_reports', checkAdmin, getOodiReports)
 
-router.get('/sis_reports', checkAdmin, getAllSisReports)
+router.use(['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo'], paginateMiddleware)
+router.get('/sis_reports', checkGrader, getAllSisReports)
+router.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
+router.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
 router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
 router.delete('/sis_reports/batch/:batchId', checkAdmin, deleteSisBatch)
 router.post('/sis_raw_entries', addRawEntries)
 router.post('/entries_to_sis', checkAdmin, sendToSis)
 router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
 router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
+router.get('/sis_reports/offset/:batchId', checkGrader, getOffset)
 
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)

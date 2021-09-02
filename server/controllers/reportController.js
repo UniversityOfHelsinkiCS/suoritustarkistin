@@ -49,25 +49,24 @@ const getMoocFilter = (isMooc) => {
  * Get full batches of reports using pagination.
  */
 const getBaches = async ({ offset, moocReports = false, userId }) => {
-  const filters = {}
+  const filters = {
+    ...getMoocFilter(moocReports)
+  }
   if (userId)
-    filters.reporterId = userId
-  else
-    filters.reporterId = {
-      [moocReports
-        ? Op.eq
-        : Op.not
-      ]: null
-    }
+    filters.graderId = userId
+
 
   // Get paginated distinct batch ids using limit and offset
-  const batches = await db.raw_entries.findAndCountAll({
+  const batches = await db.raw_entries.findAll({
     where: {
       ...filters
     },
-    attributes: [[Sequelize.literal('DISTINCT "batchId"'), 'batchId'], 'createdAt'],
-    groupBy: ['batchId'],
-    order: [['createdAt', 'DESC']],
+    attributes: [
+      [Sequelize.literal('DISTINCT "batchId"'), 'batchId'],
+      [Sequelize.fn('max', Sequelize.col('createdAt')), 'maxCreatedAt']
+    ],
+    group: ['batchId'],
+    order: [[Sequelize.col('maxCreatedAt'), 'DESC']],
     raw: true,
     limit: PAGE_SIZE,
     offset
@@ -77,7 +76,7 @@ const getBaches = async ({ offset, moocReports = false, userId }) => {
   // returns count for raw entries and we need count for distinct batch ids
   const count = await db.raw_entries.getBatchCount(filters)
 
-  const batchIds = batches.rows.map(({ batchId }) => batchId)
+  const batchIds = batches.map(({ batchId }) => batchId)
   const rows = await db.raw_entries.findAll({
     where: {
       batchId: {
@@ -149,7 +148,7 @@ const getOffset = async (req, res) => {
 
   const filters = { ...getMoocFilter(isMooc) }
   if (!req.user.isAdmin)
-    filters.reporterId = req.user.id
+    filters.graderId = req.user.id
 
   const batches = await db.raw_entries.findAll({
     where: {

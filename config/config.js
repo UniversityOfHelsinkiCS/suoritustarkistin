@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const OPTIONS = {
   dialect: 'postgres',
-  logging: false,
+  logging: process.env.NODE_ENV !== 'development' ? false : true,
   dialectOptions: {
     statement_timeout: 10000,
     idle_in_transaction_session_timeout: 60 * 1000 * 5

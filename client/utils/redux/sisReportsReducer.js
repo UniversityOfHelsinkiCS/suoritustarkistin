@@ -128,14 +128,17 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         pending: false,
         error: true
       }
-    case 'DELETE_SINGLE_ENTRY_SUCCESS':
+    case 'DELETE_SINGLE_ENTRY_SUCCESS': {
+      const { openAccordions } = state
       return {
         ...state,
         ..._.cloneDeep(INITIAL_STATE),
+        openAccordions,
         pending: false,
         singleBatchPending: false,
         error: false
       }
+    }
     case 'DELETE_SINGLE_ENTRY_ATTEMPT':
       return {
         ...state,

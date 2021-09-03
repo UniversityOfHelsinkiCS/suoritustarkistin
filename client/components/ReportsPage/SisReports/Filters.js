@@ -1,31 +1,42 @@
-import React from 'react'
-import { Form, Header, Input, Radio } from 'semantic-ui-react'
+import React, { useEffect, useState } from 'react'
+import { Form, Header, Input, Radio, Dropdown } from 'semantic-ui-react'
+import { useDispatch, useSelector } from 'react-redux'
 
+import { toggleFilterAction, setFilterAction } from 'Utilities/redux/sisReportsReducer'
 
-export const filterBatches = (report, filters) => {
-  let match = false
-  if (!filters.errors && !filters.missing && !filters.notSent && !filters.noEnrollment && !filters.partlyRegistered) match = true
+const STATE_OPTIONS = [{
+  text: 'All reports',
+  value: 'ALL',
+  key: 0
+}, {
+  text: 'Missing from Sisu',
+  value: 'NOT_REGISTERED',
+  key: 1
+}, {
+  text: 'Partly registered to Sisu',
+  value: 'PARTLY_REGISTERED',
+  key: 2
+}, {
+  text: 'Fully registered to Sisu',
+  value: 'REGISTERED',
+  key: 3
+}]
 
-  const containsErrors = report.some(({ entry }) => (!entry || ((entry.errors || {}).message)))
-  const notSent = report.every(({ entry }) => !entry || !entry.sent)
-  const missingFromSisu = report.some(({ entry }) => (!entry || (entry.sent && !(entry.errors || {}).message && !entry.registered)))
-  const missingEnrollment = report.some(({ entry }) => !entry || entry.missingEnrolment)
-  const partlyRegistered = report.some(({ entry }) => (!entry || (entry.sent && entry.registered === 'PARTLY_REGISTERED')))
-  
-  if (filters.errors && containsErrors) match = true
-  if (filters.missing && missingFromSisu) match = true
-  if (filters.notSent && notSent) match = true
-  if (filters.notSent && notSent) match = true
-  if (filters.noEnrollment && missingEnrollment) match = true
-  if (filters.partlyRegistered && partlyRegistered) match = true
+export default ({ reduxKey, action }) => {
+  const [mounted, setMounted] = useState(false)
+  const filters = useSelector((state) => state.sisReports.filters)
+  const dispatch = useDispatch()
+  const { offset, limit } = useSelector((state) => state.sisReports[reduxKey])
 
-  const studentNumberMatch = report.some((rawEntry) => rawEntry.studentNumber.includes(filters.search))
-  return match && (filters.search ? studentNumberMatch : true)
-}
+  const toggle = (name) => dispatch(toggleFilterAction(name))
+  const set = (name, value) => dispatch(setFilterAction(name, value))
 
-export default ({ filters, setFilters }) => {
-  const toggleFilter = (name) => setFilters({ ...filters, [name]: !filters[name] })
-  const setSearch = (event) => setFilters({ ...filters, search: event.target.value })
+  useEffect(() => {
+    // Prevent fetch when filters are initially rendered
+    if (mounted)
+      dispatch(action({ offset, limit, filters }))
+    setMounted(true)
+  }, [filters])
 
   return <>
     <Header as='h3'>Include reports with:</Header>
@@ -35,39 +46,35 @@ export default ({ filters, setFilters }) => {
           control={Radio}
           label='Contains errors'
           checked={filters.errors}
-          onChange={() => toggleFilter('errors')}
+          onChange={() => toggle('errors')}
           toggle />
         <Form.Field
           control={Radio}
           label='Not sent to Sisu'
           checked={filters.notSent}
-          onChange={() => toggleFilter('notSent')}
+          onChange={() => toggle('notSent')}
           toggle />
         <Form.Field
           control={Radio}
           label='Missing enrollments'
           checked={filters.noEnrollment}
-          onChange={() => toggleFilter('noEnrollment')}
+          onChange={() => toggle('noEnrollment')}
           toggle />
         <Form.Field
-          control={Radio}
-          label='Sent and not yet registered to Sisu'
-          checked={filters.missing}
-          onChange={() => toggleFilter('missing')}
-          toggle />
-        <Form.Field
-          control={Radio}
-          label='Sent and partly registered to Sisu (osasuoritus)'
-          checked={filters.partlyRegistered}
-          onChange={() => toggleFilter('partlyRegistered')}
-          toggle />
+          control={Dropdown}
+          label='Filter by attainment status'
+          value={filters.status || 'ALL'}
+          options={STATE_OPTIONS}
+          onChange={(_, data) => set('status', data.value)} />
       </Form.Group>
       <Form.Group>
         <Form.Field
           control={Input}
           label='Filter by student number'
           value={filters.search}
-          onChange={setSearch} />
+          onChange={(event) => set('student', event.target.value)} />
+      </Form.Group>
+      <Form.Group>
       </Form.Group>
     </Form>
   </>

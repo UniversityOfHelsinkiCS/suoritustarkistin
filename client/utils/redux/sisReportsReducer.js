@@ -4,20 +4,25 @@ import callBuilder from '../apiConnection'
  * Actions and reducers are in the same file for readability
  */
 
-export const getAllSisReportsAction = (offset = 0, limit) => {
-  const route = `/sis_reports?offset=${offset}${limit ? `&limit=${limit}` : ''}`
+const stringify = (params) => {
+  const query = new URLSearchParams(params)
+  return query.toString()
+}
+
+export const getAllSisReportsAction = ({ offset = 0, limit, filters }) => {
+  const route = `/sis_reports?${stringify({ offset, limit, ...filters })}`
   const prefix = 'GET_ALL_SIS_REPORTS'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
 
-export const getAllMoocSisReportsAction = (offset = 0, limit) => {
-  const route = `/sis_mooc_reports?offset=${offset}${limit ? `&limit=${limit}` : ''}`
+export const getAllMoocSisReportsAction = ({ offset = 0, limit, filters }) => {
+  const route = `/sis_mooc_reports?offset=${stringify({ offset, limit, ...filters })}`
   const prefix = 'GET_ALL_MOOC_SIS_REPORTS'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
 
 export const getAllEnrollmentLimboEntriesAction = (offset = 0, limit) => {
-  const route = `/enrollment_limbo?offset=${offset}${limit ? `&limit=${limit}` : ''}`
+  const route = `/enrollment_limbo?offset=${stringify({ offset, limit })}`
   const prefix = 'GET_ALL_ENROLLMENT_LIMBO'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
@@ -69,6 +74,17 @@ export const openReport = (id) => ({
   id
 })
 
+export const toggleFilterAction = (name) => ({
+  type: 'TOGGLE_FILTER',
+  name
+})
+
+export const setFilterAction = (name, value) => ({
+  type: 'SET_FILTER',
+  name,
+  value
+})
+
 const setOpenAccordions = (openAccordions, id) => {
   if (!openAccordions.includes(id)) {
     return [...openAccordions, id]
@@ -88,7 +104,14 @@ const INITIAL_STATE = {
   enrolmentLimbo: INITIAL_DATA,
   openAccordions: [],
   pending: false,
-  error: false
+  error: false,
+  filters: {
+    errors: false,
+    notSent: false,
+    noEnrollment: false,
+    student: '',
+    status: null
+  }
 }
 
 // Reducer
@@ -261,6 +284,27 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         [key]: { ...state[key], offset },
         allowFetch: true,
         mooc
+      }
+    }
+    case 'SET_FILTER': {
+      const { name, value } = action
+      return {
+        ...state,
+        filters: {
+          ...state.filters,
+          [name]: value
+        }
+      }
+    }
+    case 'TOGGLE_FILTER': {
+      const { name } = action
+      const value = state.filters[name]
+      return {
+        ...state,
+        filters: {
+          ...state.filters,
+          [name]: !value
+        }
       }
     }
     default:

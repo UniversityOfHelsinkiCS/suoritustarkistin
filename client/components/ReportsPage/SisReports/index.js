@@ -10,6 +10,7 @@ import SendToSisButton from './SendToSisButton'
 import ReportStatus from './ReportStatus'
 import ReportTable from './ReportTable'
 import Pagination from '../Pagination'
+import Filters from './Filters'
 import { openReport, refreshBatchStatus, getAllMoocSisReportsAction, getAllSisReportsAction, getOffsetForBatchAction } from 'Utilities/redux/sisReportsReducer'
 import './reportStyles.css'
 
@@ -166,22 +167,22 @@ export default withRouter(({ mooc, match }) => {
   const { pending, allowFetch } = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    const fetch = () => {
-      if (!reportsFetched && !pending) {
-        if (mooc)
-          dispatch(getAllMoocSisReportsAction(offset))
-        else
-          dispatch(getAllSisReportsAction(offset))
-      }
+    const fetch = (mooc) => {
+      if (mooc)
+        dispatch(getAllMoocSisReportsAction(offset))
+      else
+        dispatch(getAllSisReportsAction(offset))
     }
 
     // If we have batch id in url we need to wait
     // for correct offset before fetching batch
     const { activeBatch } = match.params
-    if (activeBatch) {
-      if (allowFetch) fetch()
-    } else fetch()
-  }, [mooc, reportsFetched, pending, match.params, allowFetch])
+    if (activeBatch && !reportsFetched && !pending) {
+      if (allowFetch)
+        fetch(mooc)
+    } else if (!reportsFetched && !pending)
+      fetch(mooc)
+  }, [allowFetch])
 
   useEffect(() => {
     // Fire fetch offset for batch in url
@@ -190,11 +191,7 @@ export default withRouter(({ mooc, match }) => {
       dispatch(openReport(activeBatch))
       dispatch(getOffsetForBatchAction(activeBatch))
     }
-  }, [match.params, reportsFetched])
-
-
-  if (!pending && !rows.length && reportsFetched)
-    return <div data-cy="no-reports">NO REPORTS FOUND.</div>
+  })
 
   const batchedReports = Object.values(_.groupBy(rows, 'batchId'))
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
@@ -215,9 +212,17 @@ export default withRouter(({ mooc, match }) => {
       }
     })
 
+  const action = mooc ? getAllMoocSisReportsAction : getAllSisReportsAction
+  const key = mooc ? 'moocReports' : 'reports'
+
   return <Segment loading={pending} basic>
     <Notification />
-    <Accordion panels={panels} exclusive={false} data-cy="reports-list" fluid styled />
-    <Pagination reduxKey={mooc ? 'moocReports' : 'reports'} action={mooc ? getAllMoocSisReportsAction : getAllSisReportsAction} />
+    <Filters reduxKey={key} action={action} />
+    {!rows.length && reportsFetched
+      ? <Message info>
+        <Message.Header>No reports found</Message.Header>
+      </Message>
+      : <Accordion panels={panels} exclusive={false} data-cy="reports-list" fluid styled />}
+    <Pagination reduxKey={key} action={action} />
   </Segment>
 })

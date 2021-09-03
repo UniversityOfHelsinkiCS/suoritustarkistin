@@ -34,8 +34,14 @@ const RAW_ENTRY_INCLUDES = [
   { model: db.courses, as: 'course' }
 ]
 
-const getMoocFilter = (isMooc) => {
-  return {
+const MISSING_ENROLLMENT_QUERY = [
+  { '$entry.courseUnitId$': null },
+  { '$entry.courseUnitRealisationId$': null },
+  { '$entry.assessmentItemId$': null }
+]
+
+const getFilters = ({ isMooc, status, student, errors, noEnrollment, userId, notSent }) => {
+  const query = {
     reporterId: {
       [isMooc
         ? Op.eq
@@ -43,30 +49,45 @@ const getMoocFilter = (isMooc) => {
       ]: null
     }
   }
+
+  if (userId)
+    query.graderId = userId
+  if (student)
+    query.studentNumber = student
+  if (status)
+    query['$entry.registered$'] = status
+  if (errors)
+    query['$entry.errors$'] = { [Op.not]: null }
+  if (noEnrollment) {
+    query[Op.or] = MISSING_ENROLLMENT_QUERY
+    query['$entry.sent$'] = { [Op.not]: null }
+  }
+  if (notSent)
+    query['$entry.sent$'] = { [Op.eq]: null }
+
+  return query
 }
 
 /**
  * Get full batches of reports using pagination.
  */
-const getBaches = async ({ offset, moocReports = false, userId }) => {
-  const filters = {
-    ...getMoocFilter(moocReports)
+const getBaches = async ({ offset, moocReports = false, filters }) => {
+  const query = {
+    ...getFilters({ ...filters, isMooc: moocReports })
   }
-  if (userId)
-    filters.graderId = userId
-
 
   // Get paginated distinct batch ids using limit and offset
   const batches = await db.raw_entries.findAll({
     where: {
-      ...filters
+      ...query
     },
     attributes: [
       [Sequelize.literal('DISTINCT "batchId"'), 'batchId'],
-      [Sequelize.fn('max', Sequelize.col('createdAt')), 'maxCreatedAt']
+      [Sequelize.fn('max', Sequelize.col('"raw_entries.createdAt"')), 'maxCreatedAt']
     ],
     group: ['batchId'],
     order: [[Sequelize.col('maxCreatedAt'), 'DESC']],
+    include: [{ model: db.entries, as: 'entry', attributes: [] }],
     raw: true,
     limit: PAGE_SIZE,
     offset
@@ -74,7 +95,7 @@ const getBaches = async ({ offset, moocReports = false, userId }) => {
 
   // Get total count of batch ids as db.raw_entries.findAndCountAll
   // returns count for raw entries and we need count for distinct batch ids
-  const count = await db.raw_entries.getBatchCount(filters)
+  const count = await db.raw_entries.getBatchCount(query)
 
   const batchIds = batches.map(({ batchId }) => batchId)
   const rows = await db.raw_entries.findAll({
@@ -91,9 +112,8 @@ const getBaches = async ({ offset, moocReports = false, userId }) => {
 
 const getAllSisReports = async (req, res) => {
   try {
-    const { offset } = req
-    const userId = !req.user.isAdmin ? req.user.id : null
-    const { rows, count } = await getBaches({ offset, userId })
+    const { offset, filters } = req
+    const { rows, count } = await getBaches({ offset, filters })
     return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
   } catch (error) {
     handleDatabaseError(res, error)
@@ -102,8 +122,8 @@ const getAllSisReports = async (req, res) => {
 
 const getAllSisMoocReports = async (req, res) => {
   try {
-    const { offset } = req
-    const { rows, count } = await getBaches({ offset, moocReports: true })
+    const { offset, filters } = req
+    const { rows, count } = await getBaches({ offset, filters, moocReports: true })
     return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
   } catch (error) {
     handleDatabaseError(res, error)
@@ -115,11 +135,7 @@ const getAllEnrollmentLimboEntries = async (req, res) => {
     const { offset } = req
     const { rows, count } = await db.raw_entries.findAndCountAll({
       where: {
-        [Op.or]: [
-          { '$entry.courseUnitId$': null },
-          { '$entry.courseUnitRealisationId$': null },
-          { '$entry.assessmentItemId$': null }
-        ]
+        [Op.or]: MISSING_ENROLLMENT_QUERY
       },
       include: [...RAW_ENTRY_INCLUDES],
       order: [['createdAt', 'DESC']],
@@ -146,7 +162,7 @@ const getOffset = async (req, res) => {
   if (!rawEntry) return res.status(404).send('Report not found!')
   const isMooc = !rawEntry.reporterId
 
-  const filters = { ...getMoocFilter(isMooc) }
+  const filters = { ...getFilters(isMooc) }
   if (!req.user.isAdmin)
     filters.graderId = req.user.id
 

@@ -62,7 +62,7 @@ const {
   deleteSingleEntry,
   checkGrader
 } = require('./permissions')
-const { paginateMiddleware } = require('./middleware')
+const { paginateMiddleware, useFilters } = require('./middleware')
 
 const router = Router()
 
@@ -99,6 +99,7 @@ router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 router.get('/oodi_reports', checkAdmin, getOodiReports)
 
 router.use(['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo'], paginateMiddleware)
+router.use(['/sis_reports', '/sis_mooc_reports'], useFilters)
 router.get('/sis_reports', checkGrader, getAllSisReports)
 router.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
 router.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)

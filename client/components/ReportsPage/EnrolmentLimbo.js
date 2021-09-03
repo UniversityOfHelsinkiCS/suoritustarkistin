@@ -115,7 +115,7 @@ const EnrolmentLimbo = () => {
               ))}
             </Table.Body>
           </Table>
-          <Pagination reduxKey="enrolmentLimbo" action={getAllEnrollmentLimboEntriesAction} />
+          <Pagination reduxKey="enrolmentLimbo" action={getAllEnrollmentLimboEntriesAction} disableFilters />
         </Segment>
       </>}
   </>

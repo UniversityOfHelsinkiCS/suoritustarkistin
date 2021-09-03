@@ -14,11 +14,19 @@ const styles = {
  * @param action action which fetches data, takes offset and limit
  * @returns
  */
-const Pagination = ({ reduxKey, action }) => {
+const Pagination = ({ reduxKey, action, disableFilters = false }) => {
   const { offset, limit, count } = useSelector((state) => state.sisReports[reduxKey])
+  const filters = useSelector((state) => state.sisReports.filters)
   const dispatch = useDispatch()
 
-  const fetch = (offset) => dispatch(action(offset, limit))
+  const getPayload = (offset) => {
+    const payload = { offset, limit }
+    if (!disableFilters)
+      payload.filters = filters
+    return payload
+  }
+
+  const fetch = (offset) => dispatch(action(getPayload(offset)))
 
   return <div style={styles}>
     <Button.Group>

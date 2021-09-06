@@ -16,13 +16,13 @@ export const getAllSisReportsAction = ({ offset = 0, limit, filters }) => {
 }
 
 export const getAllMoocSisReportsAction = ({ offset = 0, limit, filters }) => {
-  const route = `/sis_mooc_reports?offset=${stringify({ offset, limit, ...filters })}`
+  const route = `/sis_mooc_reports?${stringify({ offset, limit, ...filters })}`
   const prefix = 'GET_ALL_MOOC_SIS_REPORTS'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
 
-export const getAllEnrollmentLimboEntriesAction = (offset = 0, limit) => {
-  const route = `/enrollment_limbo?offset=${stringify({ offset, limit })}`
+export const getAllEnrollmentLimboEntriesAction = ({ offset = 0, limit }) => {
+  const route = `/enrollment_limbo?${stringify({ offset, limit })}`
   const prefix = 'GET_ALL_ENROLLMENT_LIMBO'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
@@ -139,13 +139,17 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         pending: false,
         error: false
       }
-    case 'GET_ALL_SIS_REPORTS_ATTEMPT' || 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT' || 'GET_ALL_ENROLLMENT_LIMBO_ATTEMPT':
+    case 'GET_ALL_SIS_REPORTS_ATTEMPT':
+    case 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT':
+    case 'GET_ALL_ENROLLMENT_LIMBO_ATTEMPT':
       return {
         ...state,
         pending: true,
         error: false
       }
-    case 'GET_ALL_SIS_REPORTS_FAILURE' || 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT' || 'GET_ALL_ENROLLMENT_LIMBO_FAILURE':
+    case 'GET_ALL_SIS_REPORTS_FAILURE':
+    case 'GET_ALL_MOOC_SIS_REPORTS_FAILURE':
+    case 'GET_ALL_ENROLLMENT_LIMBO_FAILURE':
       return {
         ...state,
         pending: false,

@@ -57,10 +57,9 @@ const EnrolmentLimbo = () => {
   const { pending } = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    if (!reportsFetched && !pending) {
+    if (!reportsFetched && !pending)
       dispatch(getAllEnrollmentLimboEntriesAction(offset))
-    }
-  }, [offset, reportsFetched, pending])
+  })
 
   return <>
     <Notification />

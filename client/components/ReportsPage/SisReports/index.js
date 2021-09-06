@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -9,8 +9,9 @@ import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import ReportStatus from './ReportStatus'
 import ReportTable from './ReportTable'
-import Filters, { filterBatches } from './Filters'
-import { openReport, refreshBatchStatus } from 'Utilities/redux/sisReportsReducer'
+import Pagination from '../Pagination'
+import Filters from './Filters'
+import { openReport, refreshBatchStatus, getAllMoocSisReportsAction, getAllSisReportsAction, getOffsetForBatchAction } from 'Utilities/redux/sisReportsReducer'
 import './reportStyles.css'
 
 
@@ -152,20 +153,50 @@ const title = (batch) => {
   )
 }
 
-export default withRouter(({ reports, user }) => {
+export default withRouter(({ mooc, match }) => {
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const batchLoading = useSelector((state) => state.sisReports.singleBatchPending)
-  const [filters, setFilters] = useState({ errors: false, missing: false, notSent: false, noEnrollment: false, search: '' })
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.user.data)
 
+  const { rows, offset, reportsFetched } = useSelector(
+    (state) => mooc
+      ? state.sisReports.moocReports
+      : state.sisReports.reports
+  )
+  const { pending, allowFetch } = useSelector((state) => state.sisReports)
 
-  if (!reports || reports.length === 0) return <div data-cy="no-reports">NO REPORTS FOUND.</div>
+  useEffect(() => {
+    const fetch = (mooc) => {
+      if (mooc)
+        dispatch(getAllMoocSisReportsAction(offset))
+      else
+        dispatch(getAllSisReportsAction(offset))
+    }
 
-  const batchedReports = Object.values(_.groupBy(reports, 'batchId'))
+    // If we have batch id in url we need to wait
+    // for correct offset before fetching batch
+    const { activeBatch } = match.params
+    if (activeBatch && !reportsFetched && !pending) {
+      if (allowFetch)
+        fetch(mooc)
+    } else if (!reportsFetched && !pending)
+      fetch(mooc)
+  }, [allowFetch, mooc])
+
+  useEffect(() => {
+    // Fire fetch offset for batch in url
+    if (match && match.params && match.params.activeBatch && !reportsFetched) {
+      const { activeBatch } = match.params
+      dispatch(openReport(activeBatch))
+      dispatch(getOffsetForBatchAction(activeBatch))
+    }
+  })
+
+  const batchedReports = Object.values(_.groupBy(rows, 'batchId'))
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
   const panels = batchedReports
-    .filter((report) => filterBatches(report, filters))
     .sort((a, b) => new Date(b[0].updatedAt) - new Date(a[0].updatedAt))
     .map((report, index) => {
       const reportWithEntries = report
@@ -181,9 +212,17 @@ export default withRouter(({ reports, user }) => {
       }
     })
 
-  return <>
+  const action = mooc ? getAllMoocSisReportsAction : getAllSisReportsAction
+  const key = mooc ? 'moocReports' : 'reports'
+
+  return <Segment loading={pending} basic>
     <Notification />
-    <Filters filters={filters} setFilters={setFilters} />
-    <Accordion panels={panels} exclusive={false} data-cy="reports-list" fluid styled />
-  </>
+    <Filters reduxKey={key} action={action} />
+    {!rows.length && reportsFetched
+      ? <Message info>
+        <Message.Header>No reports found</Message.Header>
+      </Message>
+      : <Accordion panels={panels} exclusive={false} data-cy="reports-list" fluid styled />}
+    <Pagination reduxKey={key} action={action} />
+  </Segment>
 })

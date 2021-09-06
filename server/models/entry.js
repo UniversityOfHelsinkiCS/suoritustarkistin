@@ -1,4 +1,8 @@
 'use strict'
+
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
+
 module.exports = (sequelize, DataTypes) => {
   const Entry = sequelize.define(
     'entries',
@@ -61,6 +65,18 @@ module.exports = (sequelize, DataTypes) => {
         GROUP BY raw_entries."batchId"
     ) as dummy`)
     return result[0][0].count
+  }
+  Entry.getMissingEnrollments = function () {
+    return this.findAll({
+      where: {
+        [Op.or]: [
+          { courseUnitId: null },
+          { courseUnitRealisationId: null },
+          { assessmentItemId: null }
+        ]
+      },
+      raw: true
+    })
   }
 
   return Entry

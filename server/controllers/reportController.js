@@ -9,6 +9,7 @@ const refreshEntries = require('../scripts/refreshEntries')
 const { sendSentryMessage } = require('@utils/sentry')
 
 const Op = Sequelize.Op
+const PAGE_SIZE = 10 // Batches, no single reports
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
 // otherwise use common api instance.
@@ -26,39 +27,161 @@ const handleDatabaseError = (res, error) => {
   return res.status(500).json({ error: 'Server went BOOM!' })
 }
 
+const RAW_ENTRY_INCLUDES = [
+  { model: db.entries, as: 'entry', include: ['sender'] },
+  { model: db.users, as: 'reporter' },
+  { model: db.users, as: 'grader' },
+  { model: db.courses, as: 'course' }
+]
+
+const MISSING_ENROLLMENT_QUERY = [
+  { '$entry.courseUnitId$': null },
+  { '$entry.courseUnitRealisationId$': null },
+  { '$entry.assessmentItemId$': null }
+]
+
+const getFilters = ({ isMooc, status, student, errors, noEnrollment, userId, notSent }) => {
+  const query = {
+    reporterId: {
+      [isMooc
+        ? Op.eq
+        : Op.not
+      ]: null
+    }
+  }
+
+  if (userId)
+    query.graderId = userId
+  if (student)
+    query.studentNumber = student
+  if (status)
+    query['$entry.registered$'] = status
+  if (errors)
+    query['$entry.errors$'] = { [Op.not]: null }
+  if (noEnrollment) {
+    query[Op.or] = MISSING_ENROLLMENT_QUERY
+    query['$entry.sent$'] = { [Op.not]: null }
+  }
+  if (notSent)
+    query['$entry.sent$'] = { [Op.eq]: null }
+
+  return query
+}
+
+/**
+ * Get full batches of reports using pagination.
+ */
+const getBaches = async ({ offset, moocReports = false, filters }) => {
+  const query = {
+    ...getFilters({ ...filters, isMooc: moocReports })
+  }
+
+  // Get paginated distinct batch ids using limit and offset
+  const batches = await db.raw_entries.findAll({
+    where: {
+      ...query
+    },
+    attributes: [
+      [Sequelize.literal('DISTINCT "batchId"'), 'batchId'],
+      [Sequelize.fn('max', Sequelize.col('"raw_entries.createdAt"')), 'maxCreatedAt']
+    ],
+    group: ['batchId'],
+    order: [[Sequelize.col('maxCreatedAt'), 'DESC']],
+    include: [{ model: db.entries, as: 'entry', attributes: [] }],
+    raw: true,
+    limit: PAGE_SIZE,
+    offset
+  })
+
+  // Get total count of batch ids as db.raw_entries.findAndCountAll
+  // returns count for raw entries and we need count for distinct batch ids
+  const count = await db.raw_entries.getBatchCount(query)
+
+  const batchIds = batches.map(({ batchId }) => batchId)
+  const rows = await db.raw_entries.findAll({
+    where: {
+      batchId: {
+        [Op.in]: batchIds
+      }
+    },
+    include: [...RAW_ENTRY_INCLUDES],
+    order: [['createdAt', 'DESC']]
+  })
+  return { rows, count: Number(count[0].count) }
+}
+
 const getAllSisReports = async (req, res) => {
   try {
-    const allRawEntries = await db.raw_entries.findAll({
-      include: [
-        { model: db.entries, as: 'entry', include: ['sender'] },
-        { model: db.users, as: 'reporter' },
-        { model: db.users, as: 'grader' },
-        { model: db.courses, as: 'course' }
-      ],
-      order: [['createdAt', 'DESC']]
-    })
-    return res.status(200).send(allRawEntries)
+    const { offset, filters } = req
+    const { rows, count } = await getBaches({ offset, filters })
+    return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
   } catch (error) {
     handleDatabaseError(res, error)
   }
 }
 
-const getUsersSisReports = async (req, res) => {
+const getAllSisMoocReports = async (req, res) => {
   try {
-    const usersRawEntries = await db.raw_entries.findAll({
-      where: { graderId: req.user.id },
-      include: [
-        { model: db.entries, as: 'entry', include: ['sender'] },
-        { model: db.users, as: 'grader' },
-        { model: db.users, as: 'reporter' },
-        { model: db.courses, as: 'course' }
-      ],
-      order: [['createdAt', 'DESC']]
-    })
-    return res.status(200).send(usersRawEntries)
+    const { offset, filters } = req
+    const { rows, count } = await getBaches({ offset, filters, moocReports: true })
+    return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
   } catch (error) {
     handleDatabaseError(res, error)
   }
+}
+
+const getAllEnrollmentLimboEntries = async (req, res) => {
+  try {
+    const { offset } = req
+    const { rows, count } = await db.raw_entries.findAndCountAll({
+      where: {
+        [Op.or]: MISSING_ENROLLMENT_QUERY
+      },
+      include: [...RAW_ENTRY_INCLUDES],
+      order: [['createdAt', 'DESC']],
+      raw: true,
+      nest: true,
+      limit: PAGE_SIZE,
+      offset
+    })
+    return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
+/**
+ * Get offset for given batch id.
+ */
+const getOffset = async (req, res) => {
+  const { batchId } = req.params
+  const rawEntry = await db.raw_entries.findOne({
+    where: { batchId },
+    raw: true
+  })
+  if (!rawEntry) return res.status(404).send('Report not found!')
+  const isMooc = !rawEntry.reporterId
+
+  const filters = { ...getFilters(isMooc) }
+  if (!req.user.isAdmin)
+    filters.graderId = req.user.id
+
+  const batches = await db.raw_entries.findAll({
+    where: {
+      ...filters
+    },
+    attributes: [[Sequelize.literal('DISTINCT "batchId"'), 'batchId'], 'createdAt', 'reporterId'],
+    groupBy: ['batchId'],
+    order: [['createdAt', 'DESC']],
+    raw: true
+  })
+
+  const index = batches.findIndex((batch) => batch.batchId === batchId)
+  if (index < 0) return res.status(404).send('Report not found!')
+  // Get offset for given batch id. Offset needs to be floored to nearest page size
+  // as we want offset to be divisible with page size
+  const offset = Math.floor(Math.max(index - 1, 0) / PAGE_SIZE) * PAGE_SIZE
+  res.send({ offset, mooc: !batches[offset].reporterId })
 }
 
 const deleteSingleSisEntry = async (req, res) => {
@@ -92,7 +215,8 @@ const refreshEnrollments = async (req, res) => {
     throw new Error('User is not authorized to report credits.')
 
   try {
-    const [amount, batchId] = await refreshEntries(req.body)
+    const entriesWithMissingEnrollment = await db.entries.getMissingEnrollments()
+    const [amount, batchId] = await refreshEntries(entriesWithMissingEnrollment.map(({ rawEntryId }) => rawEntryId))
     logger.info({ message: `${amount} entries refreshed successfully.` })
     return res.status(200).json({ amount, batchId })
   } catch (e) {
@@ -281,10 +405,12 @@ const updateSuccess = async (entryIds, senderId) =>
 
 module.exports = {
   getAllSisReports,
-  getUsersSisReports,
   deleteSingleSisEntry,
   deleteSisBatch,
   sendToSis,
   refreshSisStatus,
-  refreshEnrollments
+  refreshEnrollments,
+  getAllSisMoocReports,
+  getAllEnrollmentLimboEntries,
+  getOffset
 }

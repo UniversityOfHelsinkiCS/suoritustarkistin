@@ -67,7 +67,12 @@ const errorMiddleware = (req, res, next) => {
 
     const { statusCode } = res
     if (statusCode >= 400 && req.headers.uid !== 'ohj_tosk') {
-      const body = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+      let body
+      try {
+        body = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+      } catch {
+        body = ''
+      }
       const { originalUrl, method, query } = req
       const errorMsg = body.error || ''
       const message = `Response ${originalUrl} failed with status code ${statusCode} - ${errorMsg}`
@@ -86,7 +91,29 @@ const errorMiddleware = (req, res, next) => {
   next()
 }
 
+const paginateMiddleware = (req, res, next) => {
+  const { offset } = req.query
+  if (!offset) req.offset = 0
+  else req.offset = Number(offset) || 0
+  next()
+}
 
+const useFilters = (req, res, next) => {
+  const { student, errors, noEnrollment, status, notSent } = req.query
+  const userId = !req.user.isAdmin ? req.user.id : null
+  const filters = {
+    student: student || null,
+    errors: (errors === 'true'),
+    notSent: (notSent === 'true'),
+    noEnrollment: (noEnrollment === 'true'),
+    status: null,
+    userId
+  }
+  if (status && ['NOT_REGISTERED', 'PARTLY_REGISTERED', 'REGISTERED'].includes(status.toUpperCase()))
+    filters.status = status.toUpperCase()
+  req.filters = filters
+  next()
+}
 
 const requestLogger = (req, res, next) => {
   logger.info(`Method: ${req.method}`)
@@ -101,5 +128,7 @@ module.exports = {
   requestLogger,
   parseUser,
   currentUser,
-  errorMiddleware
+  errorMiddleware,
+  paginateMiddleware,
+  useFilters
 }

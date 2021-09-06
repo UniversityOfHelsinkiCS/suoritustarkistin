@@ -6,11 +6,11 @@ import moment from 'moment'
 import Notification from 'Components/Message'
 import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/validators'
 import {
-  getAllSisReportsAction,
-  getUsersSisReportsAction,
+  getAllEnrollmentLimboEntriesAction,
   handleEntryDeletionAction,
   refreshEnrollmentsAction
 } from 'Utilities/redux/sisReportsReducer'
+import Pagination from './Pagination'
 
 
 const getCourseCode = (rawEntry, course) => {
@@ -40,45 +40,42 @@ const DeleteButton = ({ id }) => {
   )
 }
 
-const RefreshEnrollmentsButton = ({ rawEntryIds }) => {
+const RefreshEnrollmentsButton = () => {
   const dispatch = useDispatch()
   return <Button
-    onClick={() => dispatch(refreshEnrollmentsAction(rawEntryIds))}
+    onClick={() => dispatch(refreshEnrollmentsAction())}
     icon
   >
     <Icon name="refresh" /> Refresh enrollments from Sisu
   </Button>
 }
 
-const EnrolmentLimbo = ({ rawEntries }) => {
-  const reports = useSelector((state) => state.sisReports)
-  const user = useSelector((state) => state.user.data)
+const EnrolmentLimbo = () => {
   const dispatch = useDispatch()
 
+  const { rows, offset, reportsFetched } = useSelector((state) => state.sisReports.enrolmentLimbo)
+  const { pending } = useSelector((state) => state.sisReports)
+
   useEffect(() => {
-    if (reports.refreshSuccess) {
-      if (user.adminMode)
-        dispatch(getAllSisReportsAction())
-      else
-        dispatch(getUsersSisReportsAction(user.id))
-    }
-  }, [reports.refreshSuccess])
+    if (!reportsFetched && !pending)
+      dispatch(getAllEnrollmentLimboEntriesAction(offset))
+  })
 
   return <>
     <Notification />
-    {!rawEntries.length
+    {!rows.length && !pending && reportsFetched
       ? <Message success>
         No completions without enrollment info!
       </Message>
       : <>
-        <Segment loading={reports.pending}>
+        <Segment loading={pending}>
           <Message style={{ maxWidth: 800 }} info>
             <Message.Header>What is enrollment limbo?</Message.Header>
             <Message.Content>
               Here is listed all individual completions without an enrollment in Sisu. Refresh enrollments button will check new enrollments from Sisu and create a new batch for entries with found enrollment. Refresh is done automatically once a week.
             </Message.Content>
           </Message>
-          <RefreshEnrollmentsButton rawEntryIds={rawEntries.map(({ id }) => id)} />
+          <RefreshEnrollmentsButton />
           <Table>
             <Table.Header>
               <Table.Row>
@@ -94,7 +91,7 @@ const EnrolmentLimbo = ({ rawEntries }) => {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {rawEntries.map((rawEntry) => (
+              {rows.map((rawEntry) => (
                 <Table.Row key={rawEntry.id}>
                   <Table.Cell data-cy={`report-course-code-${rawEntry.id}`}>{getCourseCode(rawEntry, rawEntry.course)}</Table.Cell>
                   <Table.Cell data-cy={`report-course-name-${rawEntry.id}`}>{getCourseName(rawEntry, rawEntry.course)}</Table.Cell>
@@ -117,6 +114,7 @@ const EnrolmentLimbo = ({ rawEntries }) => {
               ))}
             </Table.Body>
           </Table>
+          <Pagination reduxKey="enrolmentLimbo" action={getAllEnrollmentLimboEntriesAction} disableFilters />
         </Segment>
       </>}
   </>

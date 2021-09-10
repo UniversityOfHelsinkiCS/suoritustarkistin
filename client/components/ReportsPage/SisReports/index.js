@@ -164,7 +164,7 @@ export default withRouter(({ mooc, match }) => {
       ? state.sisReports.moocReports
       : state.sisReports.reports
   )
-  const { pending, allowFetch } = useSelector((state) => state.sisReports)
+  const { pending, allowFetch, mooc: offsetForMooc } = useSelector((state) => state.sisReports)
 
   useEffect(() => {
     const fetch = (mooc) => {
@@ -177,21 +177,25 @@ export default withRouter(({ mooc, match }) => {
     // If we have batch id in url we need to wait
     // for correct offset before fetching batch
     const { activeBatch } = match.params
-    if (activeBatch && !reportsFetched && !pending) {
-      if (allowFetch)
-        fetch(mooc)
-    } else if (!reportsFetched && !pending)
-      fetch(mooc)
-  }, [allowFetch, mooc])
+    if (activeBatch) {
+      if (!reportsFetched && !pending && allowFetch) {
+        fetch(offsetForMooc)
+        fetch()
+      }
+    } else {
+      if (!reportsFetched && !pending)
+        fetch()
+    }
+  }, [allowFetch, mooc, offsetForMooc])
 
   useEffect(() => {
     // Fire fetch offset for batch in url
-    if (match && match.params && match.params.activeBatch && !reportsFetched) {
+    if (match && match.params && match.params.activeBatch && !reportsFetched && !pending) {
       const { activeBatch } = match.params
       dispatch(openReport(activeBatch))
       dispatch(getOffsetForBatchAction(activeBatch))
     }
-  })
+  }, [])
 
   const batchedReports = Object.values(_.groupBy(rows, 'batchId'))
     .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))

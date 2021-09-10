@@ -162,7 +162,7 @@ const getOffset = async (req, res) => {
   if (!rawEntry) return res.status(404).send('Report not found!')
   const isMooc = !rawEntry.reporterId
 
-  const filters = { ...getFilters(isMooc) }
+  const filters = { ...getFilters({ isMooc }) }
   if (!req.user.isAdmin)
     filters.graderId = req.user.id
 

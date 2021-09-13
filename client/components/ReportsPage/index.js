@@ -9,6 +9,7 @@ import {
   getAllOodiReportsAction,
   getUsersOodiReportsAction
 } from 'Utilities/redux/oodiReportsReducer'
+import { resetFiltersAction } from 'Utilities/redux/sisReportsReducer'
 
 
 export default () => {
@@ -35,6 +36,7 @@ export default () => {
 
   const handleTabChange = (_, { activeIndex }) => {
     // Fetch old reports only if tab is opened
+    dispatch(resetFiltersAction())
     setActiveTab(activeIndex)
     if (user.adminMode && activeIndex > 2 && !reports.data.length)
       dispatch(getAllOodiReportsAction())

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Form, Header, Input, Radio, Dropdown } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
+import { debounce } from 'lodash'
 
 import { toggleFilterAction, setFilterAction } from 'Utilities/redux/sisReportsReducer'
 
@@ -30,6 +31,7 @@ export default ({ reduxKey, action }) => {
 
   const toggle = (name) => dispatch(toggleFilterAction(name))
   const set = (name, value) => dispatch(setFilterAction(name, value))
+  const debouncedSet = debounce(set, 250)
 
   useEffect(() => {
     // Prevent fetch when filters are initially rendered
@@ -41,7 +43,7 @@ export default ({ reduxKey, action }) => {
   return <>
     <Header as='h3'>Include reports with:</Header>
     <Form>
-      <Form.Group>
+      <Form.Group style={{ alignItems: 'center' }}>
         <Form.Field
           control={Radio}
           label='Contains errors'
@@ -62,7 +64,7 @@ export default ({ reduxKey, action }) => {
           toggle />
         <Form.Field
           control={Dropdown}
-          label='Filter by attainment status'
+          label='Attainment status'
           value={filters.status || 'ALL'}
           options={STATE_OPTIONS}
           onChange={(_, data) => set('status', data.value)} />
@@ -72,7 +74,7 @@ export default ({ reduxKey, action }) => {
           control={Input}
           label='Filter by student number'
           value={filters.search}
-          onChange={(event) => set('student', event.target.value)} />
+          onChange={(event) => debouncedSet('student', event.target.value)} />
       </Form.Group>
       <Form.Group>
       </Form.Group>

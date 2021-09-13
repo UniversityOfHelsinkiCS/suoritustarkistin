@@ -53,7 +53,7 @@ const getFilters = ({ isMooc, status, student, errors, noEnrollment, userId, not
   if (userId)
     query.graderId = userId
   if (student)
-    query.studentNumber = student
+    query.studentNumber = { [Op.startsWith]: student }
   if (status)
     query['$entry.registered$'] = status
   if (errors)

@@ -41,7 +41,7 @@ export default ({ reduxKey, action }) => {
   return <>
     <Header as='h3'>Include reports with:</Header>
     <Form>
-      <Form.Group>
+      <Form.Group style={{alignItems: 'center'}}>
         <Form.Field
           control={Radio}
           label='Contains errors'
@@ -62,7 +62,7 @@ export default ({ reduxKey, action }) => {
           toggle />
         <Form.Field
           control={Dropdown}
-          label='Filter by attainment status'
+          label='Attainment status'
           value={filters.status || 'ALL'}
           options={STATE_OPTIONS}
           onChange={(_, data) => set('status', data.value)} />

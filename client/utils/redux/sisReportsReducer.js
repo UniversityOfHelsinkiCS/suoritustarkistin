@@ -85,6 +85,10 @@ export const setFilterAction = (name, value) => ({
   value
 })
 
+export const resetFiltersAction = () => ({
+  type: 'RESET_FILTERS'
+})
+
 const setOpenAccordions = (openAccordions, id) => {
   if (!openAccordions.includes(id)) {
     return [...openAccordions, id]
@@ -309,6 +313,13 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
           ...state.filters,
           [name]: !value
         }
+      }
+    }
+    case 'RESET_FILTERS': {
+      const { filters } = INITIAL_STATE
+      return {
+        ...state,
+        filters
       }
     }
     default:

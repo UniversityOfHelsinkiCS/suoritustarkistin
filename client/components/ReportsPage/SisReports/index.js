@@ -110,7 +110,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
                 }
                 {entriesWithoutErrors.length &&
                   <div className="sis-report-table-container">
-                    <h4>Successfully sent entries</h4>
+                    {entriesNotSentOrErroneous.length ? <h4>Successfully sent entries</h4> : null}
                     <ReportTable
                       rows={entriesWithoutErrors}
                       allowDelete={false} // Never allow delete for successfully sent entries

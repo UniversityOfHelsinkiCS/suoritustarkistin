@@ -16,7 +16,7 @@ services:
       - 8000:8000
     container_name: suotar_dev
   db:
-    image: postgres:11
+    image: postgres:13.1
     container_name: suotar_db
     environment:
       - PGDATA=/data

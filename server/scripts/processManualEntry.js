@@ -51,7 +51,7 @@ const processManualEntry = async ({
     }
   })
 
-  if (!originalCourse) throw new Error('Course does not exist.')
+  if (!originalCourse) throw new Error('Course does not exist')
 
   let ayCourse = undefined
   let tktCourse = undefined

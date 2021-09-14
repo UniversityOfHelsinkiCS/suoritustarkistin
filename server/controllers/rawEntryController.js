@@ -19,9 +19,20 @@ const addRawEntries = async (req, res) => {
     }
 
     const { courseId, graderId, date, data } = req.body
-    if (!courseId || !graderId || !data) {
+
+    if (!courseId) {
       logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
-      return res.status(400).json({ error: 'invalid form values' })
+      return res.status(400).json({ error: 'Default course missing!' })
+    }
+
+    if (!graderId) {
+      logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
+      return res.status(400).json({ error: 'Grader missing!' })
+    }
+
+    if (!data) {
+      logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
+      return res.status(400).json({ error: 'Data missing!' })
     }
 
     logger.info({ message: 'Raw sis entries', data: JSON.stringify(req.body) })

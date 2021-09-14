@@ -130,7 +130,7 @@ const isValidRow = (row, date, courseId) => {
   if ((!row.credits && !courseId) || (row.credits && !isValidCreditAmount(row.credits))) return false
   if ((!row.language && !courseId) || (row.language && !isValidLanguage(row.language))) return false
   if ((row.attainmentDate && !isValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !isValidDate(date))) return false
-  if (row.course && !isValidCourseCode(row.course) || (!row.course && !courseId)) return false
+  if (row.course && !isValidCourseCode(row.course)) return false
   return true
 }
 
@@ -138,6 +138,7 @@ const areValidNewRawEntries = (rawEntries) => {
   if (!rawEntries) return false
   if (!rawEntries.graderId) return false
   if (!rawEntries.data) return false
+  if (!rawEntries.courseId) return false
   let allRowsValid = true
   rawEntries.data.forEach((row) => {
     if (!isValidRow(row, rawEntries.date, rawEntries.courseId)) {

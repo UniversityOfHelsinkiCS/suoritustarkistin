@@ -1,3 +1,8 @@
+.sis-report-table-container {
+  margin-top: 2em !important;
+}
+
+
 /* Overriding some of the the semantic-ui styles */
 .sis-report-table td {
   padding-top: 3px !important;
@@ -16,6 +21,7 @@
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
 }
+
 
 .hoverable-item:hover {
   filter: brightness(0.7);

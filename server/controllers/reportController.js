@@ -9,7 +9,7 @@ const refreshEntries = require('../scripts/refreshEntries')
 const { sendSentryMessage } = require('@utils/sentry')
 
 const Op = Sequelize.Op
-const PAGE_SIZE = 10 // Batches, no single reports
+const PAGE_SIZE = 25 // Batches, no single reports
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
 // otherwise use common api instance.

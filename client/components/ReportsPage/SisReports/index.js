@@ -37,37 +37,6 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
   const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors && entry.sent)
   const entriesNotSentOrErroneous = report.filter(({ entry }) => entry.errors || !entry.sent)
 
-  const panels = []
-
-  if (entriesWithoutErrors.length)
-    panels.push({
-      key: 'entries-without-errors',
-      title: 'Successfully sent entries',
-      content: (
-        <Accordion.Content>
-          <ReportTable
-            rows={entriesWithoutErrors}
-            allowDelete={false} // Never allow delete for successfully sent entries
-          />
-        </Accordion.Content>
-      )
-    })
-
-  if (entriesNotSentOrErroneous.length)
-    panels.unshift({
-      active: true,
-      key: 'entries-with-errors',
-      title: 'Entries with errors or missing enrollment',
-      content: (
-        <Accordion.Content>
-          <ReportTable
-            rows={entriesNotSentOrErroneous}
-            allowDelete={user.adminMode}
-          />
-        </Accordion.Content>
-      )
-    })
-
   const ViewAttainmentsInSisu = ({ rawEntry }) => !rawEntry.batchId.startsWith("limbo")
     ? <a href={getCourseUnitRealisationSisuUrl(rawEntry.entry.courseUnitRealisationId)} target="_blank" rel="noopener noreferrer">
       <Button icon>
@@ -128,11 +97,28 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
               rows={report}
               allowDelete={user.adminMode && !batchSent}
             />
-            : <Accordion.Accordion
-              data-cy={`entries-panel-${report[0].batchId}`}
-              panels={panels}
-              exclusive={false}
-            />
+            : (
+              <div data-cy={`entries-panel-${report[0].batchId}`}>
+                {entriesNotSentOrErroneous.length ?
+                  <div className="sis-report-table-container">
+                    <h4>Entries with errors or missing enrollment</h4>
+                    <ReportTable
+                      rows={entriesNotSentOrErroneous}
+                      allowDelete={user.adminMode}
+                    />
+                  </div> : null
+                }
+                {entriesWithoutErrors.length &&
+                  <div className="sis-report-table-container">
+                    {entriesNotSentOrErroneous.length ? <h4>Successfully sent entries</h4> : null}
+                    <ReportTable
+                      rows={entriesWithoutErrors}
+                      allowDelete={false} // Never allow delete for successfully sent entries
+                    />
+                  </div>
+                }
+              </div>
+            )
         }
       </Segment>
     </Accordion.Content>

@@ -2,7 +2,8 @@ const db = require('../models/index')
 const {
   isValidStudentId,
   isValidGrade,
-  isValidCreditAmount
+  isValidCreditAmount,
+  isValidCourseCode
 } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
 const { getRegistrations } = require('../services/eduweb')
@@ -16,7 +17,8 @@ const validateEntry = ({
   studentId,
   grade,
   credits,
-  language
+  language,
+  course
 }) => {
   if (!isValidStudentId(studentId)) {
     throw new Error(`'${studentId}' is not valid student id`)
@@ -29,6 +31,9 @@ const validateEntry = ({
   }
   if (language && !LANGUAGES.includes(language)) {
     throw new Error(`'${language}' is not valid language`)
+  }
+  if (course && !isValidCourseCode) {
+    throw new Error(`'${course}' is not a valid course in Suotar'`)
   }
 }
 
@@ -91,15 +96,22 @@ const processManualEntry = async ({
     ? await getRegistrations([ayCourse.courseCode])
     : undefined
 
+  const rawEntries = await Promise.all(data.map(async (rawEntry) => {
+    await validateEntry(rawEntry)
 
-
-  const rawEntries = data.map((rawEntry) => {
-    validateEntry(rawEntry)
+    if (rawEntry.course) {
+      tktCourse = await db.courses.findOne({
+        where: {
+          courseCode: rawEntry.course
+        }
+      })
+      if (!tktCourse) throw new Error(`'${rawEntry.course}' is not a valid course code`)
+    }
 
     // Separation for combo-courses
     // If the student has a registration to the Open uni -course,
     // they will be given a completion with an open university completion with AYXXXXXX -course code
-    if (registrations && registrations.find((r) => r.onro === rawEntry.studentId)) {
+    if (originalCourse.autoSeparate && registrations && registrations.find((r) => r.onro === rawEntry.studentId)) {
       return {
         studentNumber: rawEntry.studentId,
         batchId: batchId,
@@ -125,7 +137,7 @@ const processManualEntry = async ({
       reporterId: reporterId,
       courseId: tktCourse.id
     }
-  })
+  }))
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
 

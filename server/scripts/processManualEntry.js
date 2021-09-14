@@ -105,7 +105,7 @@ const processManualEntry = async ({
           courseCode: rawEntry.course
         }
       })
-      if (!tktCourse) throw new Error(`'${rawEntry.course}' is not a valid course code`)
+      if (!tktCourse) throw new Error(`Course with course code '${rawEntry.course}' can not be found in Suotar`)
     }
 
     // Separation for combo-courses

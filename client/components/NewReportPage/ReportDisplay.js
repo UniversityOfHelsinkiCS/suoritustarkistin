@@ -48,11 +48,22 @@ const getOpenUniCourseCell = (course) => {
   return <Table.Cell />
 }
 
-const getCourseCell = (course) => {
-  if (course) {
+const getCourseCell = (rowCourseCode, defaultCourse, courses) => {
+  if (rowCourseCode) {
+    const course = courses.find((c) => c.courseCode === rowCourseCode)
+    if (course) {
+      return (
+        <Table.Cell style={validStyle}>
+          {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[1] : course.courseCode})`}
+        </Table.Cell>
+      )  
+    }
+  }
+
+  if (defaultCourse) {
     return (
       <Table.Cell style={validStyle}>
-        {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[1] : course.courseCode})`}
+        {`${defaultCourse.name} (${defaultCourse.autoSeparate ? defaultCourse.courseCode.split('+')[1] : defaultCourse.courseCode})`}
       </Table.Cell>
     )
   }
@@ -263,7 +274,7 @@ export default () => {
       {row.registration ||
       hasOpenUniRegistration(course, row.studentId, registrations)
         ? getOpenUniCourseCell(course)
-        : getCourseCell(course)}
+        : getCourseCell(row.course, course, courses)}
       {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
       {getGradeCell(row.grade, defaultGrade)}
       {getCreditCell(row.credits, course)}

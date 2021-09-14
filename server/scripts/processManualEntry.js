@@ -32,18 +32,6 @@ const validateEntry = ({
   }
 }
 
-const validateCourse = (courseCode) => {
-  if (
-    courseCode.substring(0, 2) !== 'AY'
-    && courseCode.substring(0, 3) !== 'TKT'
-    && courseCode.substring(0, 3) !== 'CSM'
-    && courseCode.substring(0, 4) !== 'BSCS'
-    && courseCode.substring(0, 3) !== 'MAT'
-  ) {
-    throw new Error(`Unknown course organization ${courseCode}`)
-  }
-}
-
 const processManualEntry = async ({
   graderId,
   reporterId,
@@ -103,9 +91,10 @@ const processManualEntry = async ({
     ? await getRegistrations([ayCourse.courseCode])
     : undefined
 
+
+
   const rawEntries = data.map((rawEntry) => {
     validateEntry(rawEntry)
-    validateCourse(originalCourse.courseCode)
 
     // Separation for combo-courses
     // If the student has a registration to the Open uni -course,

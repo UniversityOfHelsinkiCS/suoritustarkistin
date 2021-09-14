@@ -30,7 +30,32 @@ const parseRawEntries = (rawEntries) => {
     sending: undefined,
     rawData: undefined
   }
-} 
+}
+
+const parseCourseName = (newRawEntries, defaultCourse, courses) => {
+  if (!newRawEntries.data || !courses) return <></>
+
+  let rowCourses = []
+  newRawEntries.data.forEach((row) => {
+    const course = courses.find((c) => c.courseCode === row.course)
+    if (course) rowCourses = [...rowCourses, course]
+    else if (defaultCourse) rowCourses = [...rowCourses, defaultCourse]
+  })
+
+  const amounts = _.countBy(rowCourses, 'courseCode')
+
+  if (rowCourses.length) {
+    return (
+      <>
+        {_.uniq(rowCourses).map((c) => <p key={c.name}>{`${amounts[c.courseCode]} x ${c.name} (${c.courseCode})`}</p>)}
+      </>
+    )
+  }
+
+  return (
+    <span>No courses chosen yet</span>
+  )
+}
 
 export default () => {
   const [showForm, setShowForm] = useState(false)
@@ -42,7 +67,7 @@ export default () => {
 
   if (!courses) return null
 
-  const course = courses.find((c) => c.id === newRawEntries.courseId)
+  const defaultCourse = courses.find((c) => c.id === newRawEntries.courseId)
 
   const sendRawEntries = () => {
     dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
@@ -58,15 +83,19 @@ export default () => {
       size="small"
     >
       <Modal.Content >
-        <Segment style={{ height: "18em", width: "50em", textAlign: "center", padding: "2em"}}>
+        <Segment style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "50em",
+          textAlign: "center",
+          verticalAlign: "center",
+          padding: "2em"
+        }}>
           <Header size="large">
-            {newRawEntries.data ? newRawEntries.data.length : 0} completion(s) will be reported for the course:
+            Following completion(s) will be reported:
           </Header>
-          <Header size="large">
-            {course
-              ? `${course.courseCode}: ${course.name}`
-              : <span style={{ color:"grey" }}>No course chosen yet</span>
-            }
+          <Header>
+            {parseCourseName(newRawEntries, defaultCourse, courses)}
           </Header>
           <div style={{ marginTop: "2em" }}>
             <Button

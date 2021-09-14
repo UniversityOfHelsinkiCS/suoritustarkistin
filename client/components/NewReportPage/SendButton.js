@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Header, Modal, Popup, Segment } from 'semantic-ui-react'
+import * as _ from 'lodash'
+
 import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { areValidNewRawEntries } from 'Root/utils/validators'
+
 
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries

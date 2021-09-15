@@ -126,7 +126,8 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
 }
 
 const title = (batch) => {
-  const [courseCode, date, time] = batch[0].batchId.split('-')
+  const [course, date, time] = batch[0].batchId.split('-')
+  const courseCode = batch[0].course ? batch[0].course.courseCode : ''
   const courseName = batch[0].course ? batch[0].course.name : ''
   const titleString = batch[0].batchId.startsWith("limbo")
     ? batch[0].batchId

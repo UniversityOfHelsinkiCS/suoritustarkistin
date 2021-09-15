@@ -45,13 +45,25 @@ const processManualEntry = async ({
   data
 }, transaction) => {
 
-  const originalCourse = await db.courses.findOne({
-    where: {
-      id: courseId
-    }
-  })
+  const courseCodes = data.map((rawEntry) => rawEntry.course) 
 
-  if (!originalCourse) throw new Error('Course does not exist')
+  let originalCourse = {}
+  
+  if (courseId) {
+    originalCourse = await db.courses.findOne({
+      where: {
+        id: courseId
+      }
+    })  
+  } else {
+    originalCourse = await db.courses.findOne({
+      where: {
+        courseCode: courseCodes[0]
+      }
+    })
+  }
+
+  if (!originalCourse) throw new Error('Course information missing! Check that you have given a default course or each completion has its own course')
 
   let ayCourse = undefined
   let tktCourse = undefined

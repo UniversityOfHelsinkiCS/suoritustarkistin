@@ -20,11 +20,6 @@ const addRawEntries = async (req, res) => {
 
     const { courseId, graderId, date, data } = req.body
 
-    if (!courseId) {
-      logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
-      return res.status(400).json({ error: 'Default course missing!' })
-    }
-
     if (!graderId) {
       logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
       return res.status(400).json({ error: 'Grader missing!' })

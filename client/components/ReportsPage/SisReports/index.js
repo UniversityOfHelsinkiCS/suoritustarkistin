@@ -126,6 +126,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
 }
 
 const title = (batch) => {
+  // eslint-disable-next-line no-unused-vars
   const [course, date, time] = batch[0].batchId.split('-')
   const courseCode = batch[0].course ? batch[0].course.courseCode : ''
   const courseName = batch[0].course ? batch[0].course.name : ''

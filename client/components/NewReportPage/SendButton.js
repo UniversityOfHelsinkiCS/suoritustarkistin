@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button, Header, Modal, Popup, Segment } from 'semantic-ui-react'
 import * as _ from 'lodash'
 
-import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { sendNewRawEntriesAction, setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { areValidNewRawEntries } from 'Root/utils/validators'
 
 
@@ -72,8 +72,16 @@ export default () => {
 
   const defaultCourse = courses.find((c) => c.id === newRawEntries.courseId)
 
-  const sendRawEntries = () => {
-    dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
+  const sendRawEntries = async () => {
+    await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
+    await dispatch(setNewRawEntriesAction({
+      ...newRawEntries,
+      courseId: null,
+      defaultGrade: false,
+      data: null,
+      sending: false,
+      rawData: ''
+    }))
     closeModal()
   }
 

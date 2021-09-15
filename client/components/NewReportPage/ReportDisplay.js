@@ -49,14 +49,20 @@ const getOpenUniCourseCell = (course) => {
 }
 
 const getCourseCell = (course) => {
-  if (course) {
+  if (course.courseCode) {
     return (
       <Table.Cell style={validStyle}>
         {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[1] : course.courseCode})`}
       </Table.Cell>
+    )  
+  }
+  if (course) {
+    return (
+      <Table.Cell style={invalidStyle}>
+        {course}
+      </Table.Cell>
     )
   }
-
   return <Table.Cell />
 }
 
@@ -134,9 +140,10 @@ const getCreditCell = (credits, course) => {
       </Table.Cell>
     )
   }
-  if (course) {
+  if (course && course.credits) {
     return <Table.Cell style={validStyle}>{course.credits}</Table.Cell>
   }
+
   return <Table.Cell />
 }
 
@@ -152,7 +159,7 @@ const getLanguageCell = (language, course) => {
       </Table.Cell>
     )
   }
-  if (course) {
+  if (course && course.language) {
     return <Table.Cell style={validStyle}>{course.language}</Table.Cell>
   }
   return <Table.Cell />
@@ -235,6 +242,16 @@ const getDeletionCell = (index, handleRowDeletion) => {
   )
 }
 
+const validCourse = (course, courses) => courses.find((c) => c.courseCode === course) 
+
+const getCourse = (row, courses, defaultCourse) => {
+  if (row.course && validCourse(row.course, courses)) return validCourse(row.course, courses)
+  if (row.course) return row.course
+  if (defaultCourse) return defaultCourse
+  return row.course
+}
+
+
 export default () => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
@@ -248,7 +265,7 @@ export default () => {
     (g) => g.employeeId === newRawEntries.graderId
   )
   const defaultGrade = newRawEntries.defaultGrade
-  const course = courses.find((c) => c.id === newRawEntries.courseId)
+  const defaultCourse = courses.find((c) => c.id === newRawEntries.courseId)
   const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
 
   const handleRowDeletion = (index) => {
@@ -258,26 +275,30 @@ export default () => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, rawData, data: newRawEntries.data.filter((s, i) => i !== index)}))
   }
 
-  const reportRows = newRawEntries.data.map((row, index) => (
-    <Table.Row key={row.studentId + index}>
-      {row.registration ||
-      hasOpenUniRegistration(course, row.studentId, registrations)
-        ? getOpenUniCourseCell(course)
-        : getCourseCell(course)}
-      {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
-      {getGradeCell(row.grade, defaultGrade)}
-      {getCreditCell(row.credits, course)}
-      {getLanguageCell(row.language, course)}
-      {grader ? (
-        <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
-      ) : (
-        <Table.Cell />
-      )}
-      {getDateCell(row.attainmentDate || date)}
-      {getErrorCell(newRawEntries, row.studentId)}
-      {getDeletionCell(index, handleRowDeletion)}
-    </Table.Row>
-  ))
+  const reportRows = newRawEntries.data.map((row, index) => {
+    const course = getCourse(row, courses, defaultCourse)
+
+    return (
+      <Table.Row key={row.studentId + index}>
+        {row.registration ||
+        hasOpenUniRegistration(course, row.studentId, registrations)
+          ? getOpenUniCourseCell(course)
+          : getCourseCell(course)}
+        {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
+        {getGradeCell(row.grade, defaultGrade)}
+        {getCreditCell(row.credits, course)}
+        {getLanguageCell(row.language, course)}
+        {grader ? (
+          <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
+        ) : (
+          <Table.Cell />
+        )}
+        {getDateCell(row.attainmentDate || date)}
+        {getErrorCell(newRawEntries, row.studentId)}
+        {getDeletionCell(index, handleRowDeletion)}
+      </Table.Row>
+    )
+  })
 
   return (
     <Table celled>

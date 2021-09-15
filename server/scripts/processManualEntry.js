@@ -2,7 +2,8 @@ const db = require('../models/index')
 const {
   isValidStudentId,
   isValidGrade,
-  isValidCreditAmount
+  isValidCreditAmount,
+  isValidCourseCode
 } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
 const { getRegistrations } = require('../services/eduweb')
@@ -16,7 +17,8 @@ const validateEntry = ({
   studentId,
   grade,
   credits,
-  language
+  language,
+  course
 }) => {
   if (!isValidStudentId(studentId)) {
     throw new Error(`'${studentId}' is not valid student id`)
@@ -30,17 +32,8 @@ const validateEntry = ({
   if (language && !LANGUAGES.includes(language)) {
     throw new Error(`'${language}' is not valid language`)
   }
-}
-
-const validateCourse = (courseCode) => {
-  if (
-    courseCode.substring(0, 2) !== 'AY'
-    && courseCode.substring(0, 3) !== 'TKT'
-    && courseCode.substring(0, 3) !== 'CSM'
-    && courseCode.substring(0, 4) !== 'BSCS'
-    && courseCode.substring(0, 3) !== 'MAT'
-  ) {
-    throw new Error(`Unknown course organization ${courseCode}`)
+  if (course && !isValidCourseCode) {
+    throw new Error(`'${course}' is not a valid course in Suotar'`)
   }
 }
 
@@ -52,13 +45,25 @@ const processManualEntry = async ({
   data
 }, transaction) => {
 
-  const originalCourse = await db.courses.findOne({
-    where: {
-      id: courseId
-    }
-  })
+  const courseCodes = data.map((rawEntry) => rawEntry.course) 
 
-  if (!originalCourse) throw new Error('Course does not exist.')
+  let originalCourse = {}
+  
+  if (courseId) {
+    originalCourse = await db.courses.findOne({
+      where: {
+        id: courseId
+      }
+    })  
+  } else {
+    originalCourse = await db.courses.findOne({
+      where: {
+        courseCode: courseCodes[0]
+      }
+    })
+  }
+
+  if (!originalCourse) throw new Error('Course information missing! Check that you have given a default course or each completion has its own course')
 
   let ayCourse = undefined
   let tktCourse = undefined
@@ -103,14 +108,22 @@ const processManualEntry = async ({
     ? await getRegistrations([ayCourse.courseCode])
     : undefined
 
-  const rawEntries = data.map((rawEntry) => {
-    validateEntry(rawEntry)
-    validateCourse(originalCourse.courseCode)
+  const rawEntries = await Promise.all(data.map(async (rawEntry) => {
+    await validateEntry(rawEntry)
+
+    if (rawEntry.course) {
+      tktCourse = await db.courses.findOne({
+        where: {
+          courseCode: rawEntry.course
+        }
+      })
+      if (!tktCourse) throw new Error(`Course with course code '${rawEntry.course}' can not be found in Suotar`)
+    }
 
     // Separation for combo-courses
     // If the student has a registration to the Open uni -course,
     // they will be given a completion with an open university completion with AYXXXXXX -course code
-    if (registrations && registrations.find((r) => r.onro === rawEntry.studentId)) {
+    if (originalCourse.autoSeparate && registrations && registrations.find((r) => r.onro === rawEntry.studentId)) {
       return {
         studentNumber: rawEntry.studentId,
         batchId: batchId,
@@ -136,7 +149,7 @@ const processManualEntry = async ({
       reporterId: reporterId,
       courseId: tktCourse.id
     }
-  })
+  }))
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
 

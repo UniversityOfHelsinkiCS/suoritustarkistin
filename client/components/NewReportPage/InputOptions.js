@@ -56,18 +56,6 @@ export default () => {
     }
   }, [user])
 
-
-  // Select course from first row if a valid course code is provided
-  useEffect(() => {
-    if (!newRawEntries.data || !newRawEntries.data.length) return
-    const { course: courseCode } = newRawEntries.data[0]
-    const course = courses.find((c) => c.courseCode.toLowerCase() === courseCode.toLowerCase())
-    if (!course) return
-    if (course.id === newRawEntries.courseId) return
-
-    handleCourseSelection(null, { value: course.id })
-  }, [newRawEntries])
-
   const handleGraderSelection = (e, data) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, graderId: data.value }))
   }

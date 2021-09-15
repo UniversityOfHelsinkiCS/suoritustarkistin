@@ -123,23 +123,24 @@ const isValidLanguage = (language) => {
   return (SIS_LANGUAGES.includes(language))
 }
 
-const isValidRow = (row, date) => {
+const isValidRow = (row, date, courseId) => {
   if (row.duplicate) return false
   if (!isValidStudentId(row.studentId)) return false
-  if (row.grade && !isValidGrade(row.grade)) return false
-  if (row.credits && !isValidCreditAmount(row.credits)) return false
-  if (row.language && !isValidLanguage(row.language)) return false
+  if (!row.grade || (row.grade && !isValidGrade(row.grade))) return false
+  if ((!row.credits && !courseId && !row.course) || (row.credits && !isValidCreditAmount(row.credits))) return false
+  if ((!row.language && !courseId && !row.course) || (row.language && !isValidLanguage(row.language))) return false
   if ((row.attainmentDate && !isValidDate(row.attainmentDate) && !isValidOodiDate(row.attainmentDate)) || (!row.attainmentDate && !isValidDate(date))) return false
+  if ((!row.course && !courseId) || (row.course && !isValidCourseCode(row.course))) return false
   return true
 }
 
 const areValidNewRawEntries = (rawEntries) => {
   if (!rawEntries) return false
-  if (!rawEntries.graderId || !rawEntries.courseId) return false
+  if (!rawEntries.graderId) return false
   if (!rawEntries.data) return false
   let allRowsValid = true
   rawEntries.data.forEach((row) => {
-    if (!isValidRow(row, rawEntries.date)) {
+    if (!isValidRow(row, rawEntries.date, rawEntries.courseId)) {
       allRowsValid = false
     }
   })

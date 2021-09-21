@@ -94,7 +94,7 @@ const isValidEmailAddress = (address) =>
   )
 
 const isValidHYCourseCode = (courseCode) =>
-  /^(TKT|BSCS|CSM|MAT|DATA|AY)[A-Za-z0-9-]{3,10}$/.test(courseCode)
+  /^(TKT|BSCS|CSM|MAT|DATA|AY|MFK)[A-Za-z0-9-]{3,10}$/.test(courseCode)
  
 const isValidCourseCode = (courseCode, combo) => combo ? true : isValidHYCourseCode(courseCode)
 

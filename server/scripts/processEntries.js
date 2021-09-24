@@ -152,10 +152,10 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
  * Note: Upcoming realisations (not started based on current date) is never accepted!
  */
 const filterEnrolments = (completionDate, { enrolments }) => {
-  const enrollmentToObject = ({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, assessmentItem, courseUnitRealisation }) => ({
+  const enrollmentToObject = ({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, assessmentItem, courseUnitRealisation, courseUnit }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: assessmentItem.gradeScaleId,
-    credits: assessmentItem.credits,
+    credits: courseUnit.credits,
     assessmentItemId,
     courseUnitRealisationId,
     courseUnitId,

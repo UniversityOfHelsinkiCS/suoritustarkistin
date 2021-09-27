@@ -62,11 +62,13 @@ const formatGrade = (grade, defaultGrade) => {
   return trimmedGrade
 }
 
+const addLeadingZero = (studentnumber) => {
+  if (isValidStudentId(`0${studentnumber.trim()}`)) return `0${studentnumber}`
+  return studentnumber
+}
+
 export const parseCSV = (string, defaultCourse) => {
-  const addLeadingZero = (studentnumber) => {
-    if (isValidStudentId(`0${studentnumber.trim()}`)) return `0${studentnumber}`
-    return studentnumber
-  }
+  if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
     const splitRow = row.split(CSV.detect(row))

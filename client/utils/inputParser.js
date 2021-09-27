@@ -57,8 +57,8 @@ const formatGrade = (grade, defaultGrade) => {
   if (!grade && defaultGrade) return 'Hyv.'
   if (!grade) return undefined
   const trimmedGrade = grade.trim()
-  if (trimmedGrade === 'Hyv' || trimmedGrade === 'hyv' || trimmedGrade === 'hyv.') return 'Hyv.'
-  if (trimmedGrade === 'Hyl' || trimmedGrade === 'hyl' || trimmedGrade === 'hyl.') return 'Hyl.'
+  if (['Hyv', 'hyv', 'hyv.', 'Hyv.'].includes(trimmedGrade)) return 'Hyv.'
+  if (['Hyl', 'hyl', 'hyl.', 'Hyl.'].includes(trimmedGrade)) return 'Hyl.'
   return trimmedGrade
 }
 

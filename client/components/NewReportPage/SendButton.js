@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Header, Modal, Popup, Segment } from 'semantic-ui-react'
+import { Button, Header, Message, Modal, Popup, Segment } from 'semantic-ui-react'
 import * as _ from 'lodash'
 
 import { sendNewRawEntriesAction, setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
@@ -105,11 +105,13 @@ export default () => {
           <Header size="large">
             Following completion(s) will be reported:
           </Header>
+          {newRawEntries.sending && <Message header="Sending the report" />}
           <Header>
             {parseCourseName(newRawEntries, defaultCourse, courses)}
           </Header>
           <div style={{ marginTop: "2em" }}>
             <Button
+              disabled={newRawEntries.sending}
               data-cy="confirm-sending-button"
               color="green"
               onClick={sendRawEntries}
@@ -117,6 +119,7 @@ export default () => {
               Create report
             </Button>
             <Button
+              disabled={newRawEntries.sending}
               onClick={closeModal}
               data-cy="cancel-sending-button"
             >
@@ -124,7 +127,6 @@ export default () => {
             </Button>
           </div>
         </Segment>
-
       </Modal.Content>
     </Modal>
     <Popup

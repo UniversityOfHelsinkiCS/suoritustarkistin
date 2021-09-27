@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button, Icon, Popup, Table } from 'semantic-ui-react'
 
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { parseCSV  } from 'Utilities/inputParser'
 
 const { commify } = require('Root/utils/commify')
 const {
@@ -251,7 +252,6 @@ const getCourse = (row, courses, defaultCourse) => {
   return row.course
 }
 
-
 export default () => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
@@ -272,7 +272,7 @@ export default () => {
     const rows = newRawEntries.rawData.trim().split('\n')
     const rowsWithoutTheStudent = rows.filter((r, i) => i !== index)
     const rawData = rowsWithoutTheStudent.join("\n")
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, rawData, data: newRawEntries.data.filter((s, i) => i !== index)}))
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, rawData, data: parseCSV(rawData, newRawEntries.defaultCourse)}))
   }
 
   const reportRows = newRawEntries.data.map((row, index) => {

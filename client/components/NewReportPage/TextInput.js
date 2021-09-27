@@ -23,7 +23,7 @@ export default () => {
         })
       )
     } else {
-      const data = parseCSV(rawData.trim())
+      const data = parseCSV(rawData.trim(), newRawEntries.defaultCourse)
       dispatch(
         setNewRawEntriesAction({
           ...newRawEntries,

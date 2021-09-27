@@ -19,6 +19,7 @@ import {
   getAllCoursesAction,
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
+import { parseCSV } from 'Utilities/inputParser'
 
 
 const formatGradersForSelection = (data) => {
@@ -74,10 +75,10 @@ export default () => {
     const course = courses.find((course) => course.id === courseId)
     if (!course) return
     if (course.autoSeparate) {
-      dispatch(setNewRawEntriesAction({ ...newRawEntries, courseId }))
+      dispatch(setNewRawEntriesAction({ ...newRawEntries, defaultCourse: course.courseCode, data: parseCSV(newRawEntries.rawData.trim(), course.courseCode), courseId }))
       dispatch(getCoursesRegistrationsAction(courseId))
     } else {
-      dispatch(setNewRawEntriesAction({ ...newRawEntries, courseId }))
+      dispatch(setNewRawEntriesAction({ ...newRawEntries, defaultCourse: course.courseCode, data: parseCSV(newRawEntries.rawData.trim(), course.courseCode), courseId }))
       dispatch(clearRegistrationsAction())
     }
   }

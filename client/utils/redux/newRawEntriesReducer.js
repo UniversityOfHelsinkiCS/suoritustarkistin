@@ -7,6 +7,7 @@ const initialState = {
   data: null, 
   courseId: null,
   defaultGrade: false,
+  defaultCourse: '',
   date: new Date()
 }
 
@@ -42,6 +43,7 @@ export default (state = initialState, action) => {
         courseId: null,
         sending: false,
         defaultGrade: false,
+        defaultCourse: "",
         rawData: '',
         error: ''
       }
@@ -55,17 +57,18 @@ export default (state = initialState, action) => {
     case 'GET_REGISTRATIONS_SUCCESS':
       return {
         ...state,
-        data: attachRegistrations(state.data, action.response)
+        data: attachRegistrations(state.data, action.response, state.defaultCourse)
       }
     case 'CLEAR_REGISTRATIONS':
       return {
         ...state,
-        data: stripRegistrations(state.data)
+        data: stripRegistrations(state.data, state.defaultCourse)
       }
     case 'LOGIN_SUCCESS':
       return {
         courseId: null,
         defaultGrade: false,
+        defaultCourse: "",
         graderId: action.response.employeeId,
         data: null,
         sending: false,

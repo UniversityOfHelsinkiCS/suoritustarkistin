@@ -75,10 +75,20 @@ export default () => {
     const course = courses.find((course) => course.id === courseId)
     if (!course) return
     if (course.autoSeparate) {
-      dispatch(setNewRawEntriesAction({ ...newRawEntries, defaultCourse: course.courseCode, data: parseCSV(newRawEntries.rawData.trim(), course.courseCode), courseId }))
+      dispatch(setNewRawEntriesAction({
+        ...newRawEntries,
+        defaultCourse: course.courseCode,
+        data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
+        courseId
+      }))
       dispatch(getCoursesRegistrationsAction(courseId))
     } else {
-      dispatch(setNewRawEntriesAction({ ...newRawEntries, defaultCourse: course.courseCode, data: parseCSV(newRawEntries.rawData.trim(), course.courseCode), courseId }))
+      dispatch(setNewRawEntriesAction({
+        ...newRawEntries,
+        defaultCourse: course.courseCode,
+        data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
+        courseId
+      }))
       dispatch(clearRegistrationsAction())
     }
   }

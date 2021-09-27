@@ -48,12 +48,12 @@ export default () => {
     reader.onerror = () => alert('file reading has failed')
     reader.onload = () => {
       const fileString = reader.result
-      const data = parseCSV(fileString)
+      const data = parseCSV(fileString, newRawEntries.defaultCourse)
       dispatch(
         setNewRawEntriesAction({
           ...newRawEntries,
           data,
-          rawData: ''
+          rawData: fileString
         })
       )
     }

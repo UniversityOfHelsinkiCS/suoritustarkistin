@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
 const moment = require('moment')
 const db = require('../models/index')
 const {
@@ -39,6 +40,8 @@ const fixAttainmentDate = async () => {
 
   const originalAttainmentDate = moment(rawEntry.attainmentDate)
 
+  console.log(`Original attainment date is ${JSON.stringify(originalAttainmentDate)}`)
+
   const enrolments = await getEnrolments([{ personId, code: courseCode }])
   const filteredEnrolment = filterEnrolments(originalAttainmentDate, enrolments[0])
   if (!filteredEnrolment)
@@ -68,24 +71,37 @@ const fixAttainmentDate = async () => {
   console.info(`New attainment date based on study right is ${newAttainmentDate}`)
 
   if (dryRun) return console.log("Dry run, exiting now")
+  if (!newAttainmentDate) return console.error("No new attainment date could be found")
 
-  const status = await db.raw_entries.update({
+  const [rows, status1] = await db.raw_entries.update({
     attainmentDate: newAttainmentDate
   }, {
     where: {
       id: rawEntry.id
-    }
+    },
+    returning: true
   })
-  const status2 = await db.entries.update({
+  const [rows2, status2] = await db.entries.update({
     completionDate: newAttainmentDate
   }, {
     where: {
       rawEntryId: rawEntry.id
-    }
+    },
+    returning: true
   })
 
-  console.log("Status of raw entry update", status)
-  console.log("Status of entry update", status2)
+  const entryStatus = JSON.stringify(status1)
+  const rawEntryStatus = JSON.stringify(status2)
+
+  console.log("")
+  console.log("SUCCESS!")
+  console.log("---- Changed entries ----- ")
+  console.log("New status of raw entry update:")
+  console.log(rawEntryStatus)
+  console.log("")
+  console.log("New status of entry update")
+  console.log(entryStatus)
+  console.log("--------------------------")
 }
 
 fixAttainmentDate()

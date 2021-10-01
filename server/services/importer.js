@@ -1,7 +1,7 @@
 const api = require('../config/importerApi')
 const qs = require('querystring')
 const _ = require('lodash')
-const logger = require('@utils/logger')
+const logger = require('../utils/logger')
 
 const handleImporterApiErrors = (e) => {
   if (e.code === "EAI_AGAIN") throw new Error("Network error. Reload the page and try again")
@@ -113,6 +113,15 @@ async function getResponsibles(courseCode) {
   }
 }
 
+const getStudyRight = async (id) => {
+  try {
+    const { data } = await api.get(`suotar/study-right/${id}`)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 
 module.exports = {
   getEmployees,
@@ -123,5 +132,6 @@ module.exports = {
   getEarlierAttainmentsWithoutSubstituteCourses,
   getAcceptorPersons,
   resolveUser,
-  getResponsibles
+  getResponsibles,
+  getStudyRight
 }

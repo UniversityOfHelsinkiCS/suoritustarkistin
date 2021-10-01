@@ -129,6 +129,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
       return Promise.resolve()
     }
 
+    delete filteredEnrolment.studyRightId
     success.push({
       ...filteredEnrolment,
       id: generateEntryId(),
@@ -152,22 +153,22 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
  * Note: Upcoming realisations (not started based on current date) is never accepted!
  */
 const filterEnrolments = (completionDate, { enrolments }) => {
-  const enrollmentToObject = ({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, assessmentItem, courseUnitRealisation, courseUnit }) => ({
+  const enrollmentToObject = ({ assessmentItemId, courseUnitRealisationId, courseUnitId, personId, assessmentItem, courseUnitRealisation, courseUnit, studyRightId }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: assessmentItem.gradeScaleId,
     credits: courseUnit.credits,
     assessmentItemId,
     courseUnitRealisationId,
     courseUnitId,
+    studyRightId,
     personId
   })
-
   if (!enrolments) return null
   const now = moment()
   const filteredEnrolments = enrolments
     .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(now))
     .filter((e) => e.courseUnitRealisation.name.fi && !e.courseUnitRealisation.name.fi.includes('MOOC Java'))
-    // Hacky solution to filter out MOOC Java enrolments, since there is no other way. Remove in the fall.
+  // Hacky solution to filter out MOOC Java enrolments, since there is no other way. Remove in the fall.
 
   if (!filteredEnrolments.length) return null
 
@@ -228,5 +229,6 @@ function generateEntryId() {
 
 
 module.exports = {
-  processEntries
+  processEntries,
+  filterEnrolments
 }

@@ -7,7 +7,8 @@ const {
   getEmployees,
   getStudents,
   getGrades,
-  getEnrolments
+  getEnrolments,
+  getMultipleStudyRights
 } = require('../services/importer')
 
 /**
@@ -28,7 +29,7 @@ const {
  *  [failedEntries, validEntries, isMissingEnrollment]
  */
 
-const processEntries = async (createdEntries, checkImprovements, requireEnrollment = false) => {
+const processEntries = async (createdEntries, requireEnrollment = false, checkStudyRights = false) => {
   const success = []
   const failed = []
   let isMissingEnrollment = false
@@ -52,6 +53,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
     code: courses.find((course) => course.id === rawEntry.courseId).courseCode
   }))
   const enrolments = await getEnrolments(studentCourseCodePairs)
+  const studyRights = checkStudyRights ? await getStudyRights(enrolments) : []
 
   // We need to flatten the final data, as one raw entry may be
   // mankeled to one or more attainment (entry)
@@ -84,6 +86,7 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
       .find((e) => e.personId === student.id && e.code === course.courseCode)
 
     const filteredEnrolment = filterEnrolments(rawEntry.attainmentDate, enrolmentsByPersonAndCourse)
+
 
     if (!filteredEnrolment) {
       if (requireEnrollment)
@@ -125,6 +128,15 @@ const processEntries = async (createdEntries, checkImprovements, requireEnrollme
                 Invalid grade "${rawEntry.grade}" for course "${course.courseCode}".
                 Available grades are: ${gradeScales[filteredEnrolment.gradeScaleId].map(({ abbreviation }) => abbreviation['fi'])}
               `
+      })
+      return Promise.resolve()
+    }
+
+    if (checkStudyRights && !validateStudyRight(studyRights, student.id, filteredEnrolment, completionDate)) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `Invalid studyright for student ${rawEntry.studentNumber}. Completion date ${completionDate.format('YYYY-MM-DD')} not within studyright. `
       })
       return Promise.resolve()
     }
@@ -198,6 +210,26 @@ const filterEnrolments = (completionDate, { enrolments }) => {
 
 const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
 
+const validateStudyRight = (studyRights, personId, filteredEnrolment, completionDate) => {
+  if (!studyRights || !personId || !completionDate) return false
+  const enrolmentStudyRight = studyRights.find((s) => s.id === filteredEnrolment.studyRightId && s.personId === personId)
+  
+  // If there is a studyright attached to the enrolment, the completion date
+  // needs to be in between studyright's start and end
+  if (enrolmentStudyRight) {
+    const { valid } = enrolmentStudyRight
+    const studyRightStart = moment(valid.startDate)
+    const studyRightEnd = moment(valid.endDate)
+
+    if (completionDate.isBetween(studyRightStart, studyRightEnd)) return true
+    return false
+  } 
+
+  // If there is no studyright attached to the enrolment, as long as the student
+  // has any enrolment for the time of the registration, it will pass
+  return true
+}
+
 const mapGrades = (gradeScales, id, rawEntry) => {
   let grade = rawEntry.grade
   if (id === "sis-0-5") {
@@ -221,6 +253,12 @@ const getCourses = async (rawEntries) => {
     },
     raw: true
   })
+}
+
+const getStudyRights = async (enrolments) => {
+  const enrolmentArrays = enrolments.flatMap((student) => student.enrolments)
+  const studyRightIds = enrolmentArrays.map((enrolment) => enrolment.studyRightId)
+  return await getMultipleStudyRights(studyRightIds)
 }
 
 function generateEntryId() {

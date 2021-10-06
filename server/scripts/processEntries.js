@@ -28,7 +28,7 @@ const {
  *  [failedEntries, validEntries, isMissingEnrollment]
  */
 
-const processEntries = async (createdEntries, checkImprovements, requireEnrollment = false) => {
+const processEntries = async (createdEntries, requireEnrollment = false) => {
   const success = []
   const failed = []
   let isMissingEnrollment = false

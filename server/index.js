@@ -18,7 +18,6 @@ const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 const { initializeDatabaseConnection } = require('./database/connection')
 const { checkAllEntriesFromSisu, checkRegisteredForMooc } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
-const refreshEntriesCron = require('./scripts/refreshEntryCron')
 
 const { IN_MAINTENANCE } = process.env
 
@@ -78,7 +77,6 @@ initializeDatabaseConnection()
       app.use(express.static(DIST_PATH))
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
       app.use(Sentry.Handlers.errorHandler())
-      
     }
     app.use((err, req, res) => {
       res.status(500).send(err.toString())

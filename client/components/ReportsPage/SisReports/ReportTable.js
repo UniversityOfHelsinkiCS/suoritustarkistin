@@ -16,6 +16,10 @@ const PLACEHOLDER_COURSE = {
   credits: 'COURSE DELETED'
 }
 
+const styles = {
+  extraEntry: { backgroundColor: '#F8FCFF' }
+}
+
 const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
   const { entry, graderId } = rawEntry
   if (entry.sent) return false
@@ -82,7 +86,7 @@ const TableBody = ({ user, rawEntries }) => {
     {rawEntries.map((rawEntry) => {
       const course = rawEntry.course || PLACEHOLDER_COURSE
       return <React.Fragment key={`row-${rawEntry.id}`}>
-        <Table.Row warning={rawEntry.entry.missingEnrolment}>
+        <Table.Row warning={rawEntry.entry.missingEnrolment} style={rawEntry.entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
           <Table.Cell data-cy="report-course-code">{getCourseCode(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy="report-course-name">{getCourseName(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy="report-student-number">{rawEntry.studentNumber}</Table.Cell>
@@ -159,8 +163,43 @@ const EntryCells = ({ entry }) => {
     sender,
     gradeScaleId,
     gradeId,
-    registered
+    registered,
+    studyRightId,
+    type,
+    missingEnrolment
   } = entry
+
+  const entryAccordionContent = () => <Accordion.Content
+    data-cy="report-course-content"
+    active={open}
+    style={{ padding: "0.75em 1em" }}
+  >
+    <strong>Course unit ID</strong>
+    <p>{courseUnitId || null}</p>
+    <strong>Course unit realisation ID</strong>
+    <p>{courseUnitRealisationId || null}</p>
+    <strong>Assessment item ID</strong>
+    <p>{assessmentItemId || null}</p>
+    <strong>Grader ID</strong>
+    <p>{verifierPersonId || null}</p>
+    <strong>Grade scale of the course</strong>
+    <p>{gradeScaleId || null}</p>
+  </Accordion.Content>
+
+  const extraEntryAccordionContent = () => <Accordion.Content
+    data-cy="report-course-content"
+    active={open}
+    style={{ padding: "0.75em 1em" }}
+  >
+    <strong>Course unit ID</strong>
+    <p>{courseUnitId || null}</p>
+    <strong>Study right id</strong>
+    <p>{studyRightId || null}</p>
+    <strong>Grader ID</strong>
+    <p>{verifierPersonId || null}</p>
+    <strong>Grade scale of the course</strong>
+    <p>{gradeScaleId || null}</p>
+  </Accordion.Content>
 
   return (
     <>
@@ -168,30 +207,15 @@ const EntryCells = ({ entry }) => {
         data-cy={`report-courseUnitRealisationName-${gradeId}`}
         colSpan='2'
       >
-        <Accordion className="report-table-accordion" >
+        <Accordion className="report-table-accordion" style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
           <Accordion.Title
             active
             onClick={() => setOpen(!open)}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`} />
-            {getSisUnitName(courseUnitRealisationName, completionLanguage)}
+            {type === 'ENTRY' ? getSisUnitName(courseUnitRealisationName, completionLanguage) : 'Erilliskirjaus'}
           </Accordion.Title>
-          <Accordion.Content
-            data-cy="report-course-content"
-            active={open}
-            style={{ padding: "0.75em 1em" }}
-          >
-            <strong>Course unit ID</strong>
-            <p>{courseUnitId || null}</p>
-            <strong>Course unit realisation ID</strong>
-            <p>{courseUnitRealisationId || null}</p>
-            <strong>Assessment item ID</strong>
-            <p>{assessmentItemId || null}</p>
-            <strong>Grader ID</strong>
-            <p>{verifierPersonId || null}</p>
-            <strong>Grade scale of the course</strong>
-            <p>{gradeScaleId || null}</p>
-          </Accordion.Content>
+          {type === 'ENTRY' ? entryAccordionContent() : extraEntryAccordionContent()}
         </Accordion>
       </Table.Cell>
       <Table.Cell data-cy="report-personId">
@@ -204,7 +228,7 @@ const EntryCells = ({ entry }) => {
         {completionLanguage ? completionLanguage : null}
       </Table.Cell>
       <Table.Cell data-cy="report-entry-grade">
-        {!entry.missingEnrolment ? getGrade(gradeScaleId, gradeId, completionLanguage) : gradeId}
+        {!missingEnrolment || type === 'EXTRA_ENTRY' ? getGrade(gradeScaleId, gradeId, completionLanguage) : gradeId}
       </Table.Cell>
       <Table.Cell data-cy="report-sent">
         {sent ? moment(sent).format("DD.MM.YYYY") : null}

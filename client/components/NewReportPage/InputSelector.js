@@ -6,6 +6,8 @@ import InputOptions from 'Components/NewReportPage/InputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
 import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 
+import { KandiInputOptions, KandiReportDisplay, KandiTextInput } from './KandiInput'
+
 export default () => {
   let panes = [
     {
@@ -35,6 +37,21 @@ export default () => {
           <Dropzone />
           <InputOptions />
           <ReportDisplay />
+        </Tab.Pane>
+      )
+    },
+    {
+      menuItem: (
+        <Menu.Item key="copypaste-kandi" data-cy="copypaste-kandi">
+          <Icon name="file alternate outline" />
+          Copy & Paste KANDI
+        </Menu.Item>
+      ),
+      render: () => (
+        <Tab.Pane>
+          <KandiTextInput />
+          <KandiInputOptions />
+          <KandiReportDisplay />
         </Tab.Pane>
       )
     }

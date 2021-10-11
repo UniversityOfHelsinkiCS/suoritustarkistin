@@ -67,6 +67,15 @@ async function getAcceptorPersons(courseUnitRealisationIds) {
   }
 }
 
+async function getAcceptorPersonsByCourseUnit(courseUnitIds) {
+  try {
+    const { data } = await api.post(`suotar/acceptors/course-unit`, courseUnitIds)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 async function resolveUser(formData) {
   try {
     const { data } = await api.post(`suotar/resolve_user/`, formData)
@@ -99,6 +108,15 @@ const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
   if (!data) return []
   try {
     return await chunkifyApi(data, 'suotar/attainments?noSubstitutions=true')
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
+const getStudentsWithStudyRight = async (studentNumbers) => {
+  try {
+    const { data } = await api.post(`students/study-rights`, studentNumbers)
+    return data
   } catch (e) {
     handleImporterApiErrors(e)
   }
@@ -143,5 +161,7 @@ module.exports = {
   resolveUser,
   getResponsibles,
   getStudyRight,
-  getMultipleStudyRights
+  getMultipleStudyRights,
+  getStudentsWithStudyRight,
+  getAcceptorPersonsByCourseUnit
 }

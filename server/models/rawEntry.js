@@ -47,9 +47,25 @@ module.exports = (sequelize, DataTypes) => {
       raw: true
     })
   }
+  RawEntry.deleteOrphans = async function (batchId) {
+    const orphans = await this.findAll({
+      where: {
+        batchId,
+        '$entry.id$': null
+      },
+      include: { association: 'entry', attributes: [] },
+      attributes: ['id']
+    })
+    return this.destroy({
+      where: {
+        id: orphans.map(({ id }) => id)
+      }
+    })
+  }
 
   RawEntry.associate = (models) => {
     RawEntry.hasOne(models.entries, { foreignKey: 'rawEntryId', as: 'entry', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    RawEntry.hasOne(models.extra_entries, { foreignKey: 'rawEntryId', as: 'extraEntry', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     RawEntry.belongsTo(models.users, { foreignKey: 'reporterId', as: 'reporter', onDelete: 'SET NULL' })
     RawEntry.belongsTo(models.users, { foreignKey: 'graderId', as: 'grader', onDelete: 'SET NULL' })
     RawEntry.belongsTo(models.courses, { foreignKey: 'courseId', as: 'course' })

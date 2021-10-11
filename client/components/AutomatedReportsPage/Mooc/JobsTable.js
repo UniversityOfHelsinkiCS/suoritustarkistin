@@ -38,7 +38,7 @@ export default () => {
             <Header as="h4">Actions</Header>
           </Grid.Column>
         </Grid.Row>
-        {_.sortBy(jobs.data, 'schedule').map((j) => (
+        {_.sortBy(jobs.data, 'slug').map((j) => (
           <JobRow job={j} jobs={jobs} key={j.id} />
         ))}
       </Grid>

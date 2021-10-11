@@ -1,15 +1,16 @@
 import React from 'react'
 import { Icon, Menu, Tab } from 'semantic-ui-react'
+import { useDispatch } from 'react-redux'
 
 import Dropzone from 'Components/NewReportPage/Dropzone'
 import InputOptions from 'Components/NewReportPage/InputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
 import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
-
-import { KandiInputOptions, KandiReportDisplay, KandiTextInput } from './KandiInput'
+import { resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 
 export default () => {
-  let panes = [
+  const dispatch = useDispatch()
+  const panes = [
     {
       menuItem: (
         <Menu.Item key="copypaste" data-cy="copypaste">
@@ -49,13 +50,13 @@ export default () => {
       ),
       render: () => (
         <Tab.Pane>
-          <KandiTextInput />
-          <KandiInputOptions />
-          <KandiReportDisplay />
+          <TextInput kandi />
+          <InputOptions kandi />
+          <ReportDisplay allowDelete={false} />
         </Tab.Pane>
       )
     }
   ]
 
-  return <Tab data-cy="input-form" panes={panes} />
+  return <Tab data-cy="input-form" panes={panes} onTabChange={() => dispatch(resetNewRawEntriesAction())} />
 }

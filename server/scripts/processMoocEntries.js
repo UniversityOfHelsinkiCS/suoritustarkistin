@@ -8,11 +8,20 @@ const { automatedAddToDb } = require('./automatedAddToDb')
 const { getBatchId } = require('@root/utils/common')
 
 
+const languageMap = {
+  "fi_FI" : "fi",
+  "en_US" : "en",
+  "sv_SE" : "sv"
+} 
+
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
   const courseLanguage = course.language
   if (!completionLanguage) {
     return courseLanguage
+  }
+  if (completionLanguage && ['fi_FI', 'en_US', 'sv_SE'].includes(completionLanguage)) {
+    return languageMap[completionLanguage]
   }
   if (completionLanguage && !SIS_LANGUAGES.includes(completionLanguage)) {
     return courseLanguage

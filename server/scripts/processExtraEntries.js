@@ -12,7 +12,7 @@ const logger = require('@utils/logger')
 
 const COMMON = {
   gradeId: "1",
-  gradeScaleId: "sis-hyv-hyl"
+  gradeScaleId: "sis-hyl-hyv"
 }
 
 const processExtraEntries = async (createdRawEntries) => {

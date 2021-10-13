@@ -176,9 +176,7 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     personId
   })
   if (!enrolments) return null
-  const now = moment()
   const filteredEnrolments = enrolments
-    .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(now))
     .filter((e) => e.courseUnitRealisation.name.fi && !e.courseUnitRealisation.name.fi.includes('MOOC Java'))
   // Hacky solution to filter out MOOC Java enrolments, since there is no other way. Remove in the fall.
 
@@ -213,7 +211,7 @@ const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits
 const validateStudyRight = (studyRights, personId, filteredEnrolment, completionDate) => {
   if (!studyRights || !personId || !completionDate) return false
   const enrolmentStudyRight = studyRights.find((s) => s.id === filteredEnrolment.studyRightId && s.personId === personId)
-  
+
   // If there is a studyright attached to the enrolment, the completion date
   // needs to be in between studyright's start and end
   if (enrolmentStudyRight) {
@@ -223,7 +221,7 @@ const validateStudyRight = (studyRights, personId, filteredEnrolment, completion
 
     if (completionDate.isBetween(studyRightStart, studyRightEnd)) return true
     return false
-  } 
+  }
 
   // If there is no studyright attached to the enrolment, as long as the student
   // has any enrolment for the time of the registration, it will pass

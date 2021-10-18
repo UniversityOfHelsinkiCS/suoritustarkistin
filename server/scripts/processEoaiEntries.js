@@ -6,14 +6,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { EOAI_CODES } = require('@root/utils/validators')
-const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
-
-
-const languageMap = {
-  "fi_FI" : "fi",
-  "en_US" : "en",
-  "sv_SE" : "sv"
-} 
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 
 const processEoaiEntries = async ({ grader }) => {
   try {
@@ -83,7 +76,7 @@ const processEoaiEntries = async ({ grader }) => {
           return matches
         }
 
-        const language = languageMap[completion.completion_language]
+        const language = moocLanguageMap[completion.completion_language]
         const courseVersion = courses.find((c) => c.language === language)
 
         const registration = registrations.find(

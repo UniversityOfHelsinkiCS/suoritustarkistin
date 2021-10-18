@@ -20,6 +20,12 @@ const gradeScales = [
   }
 ]
 
+const moocLanguageMap = {
+  "fi_FI" : "fi",
+  "en_US" : "en",
+  "sv_SE" : "sv"
+} 
+
 const getBatchId = (courseCode) => `${courseCode}-${moment().tz("Europe/Helsinki").format(
   'DD.MM.YY-HHmmss'
 )}`
@@ -191,6 +197,7 @@ const testRawEntriesHylHyv = [
 
 module.exports = {
   gradeScales,
+  moocLanguageMap,
   inProduction,
   inDevelopment,
   inTest,

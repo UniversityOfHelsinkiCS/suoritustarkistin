@@ -7,7 +7,7 @@ const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE } = require('@root/utils/validators')
 const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
-// const { getTestCompletions, getTestRegistrations } = require('../utils/testdataForMoocScripts')
+
 
 const processNewBaiIntermediateEntries = async ({
   job,
@@ -103,7 +103,6 @@ const processNewBaiIntermediateEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-
           const attainmentDate = getMoocAttainmentDate(
             completion.completion_registration_attempt_date,
             completion.completion_date,

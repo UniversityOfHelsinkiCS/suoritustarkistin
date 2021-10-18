@@ -5,14 +5,7 @@ const { getEarlierAttainments } = require('../services/importer')
 const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
-
-
-const languageMap = {
-  "fi_FI" : "fi",
-  "en_US" : "en",
-  "sv_SE" : "sv"
-} 
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
@@ -21,7 +14,7 @@ const selectLanguage = (completion, course) => {
     return courseLanguage
   }
   if (completionLanguage && ['fi_FI', 'en_US', 'sv_SE'].includes(completionLanguage)) {
-    return languageMap[completionLanguage]
+    return moocLanguageMap[completionLanguage]
   }
   if (completionLanguage && !SIS_LANGUAGES.includes(completionLanguage)) {
     return courseLanguage

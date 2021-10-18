@@ -12,7 +12,7 @@ const {
   NEW_BAI_INTERMEDIATE_CODE
 } = require('@root/utils/validators')
 const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
-// const { getTestRegistrations, getTestCompletions } = require('../utils/testdataForMoocScripts')
+
 
 const processNewBaiAdvancedEntries = async ({
   job,

@@ -39,9 +39,9 @@ const formatCoursesForSelection = (data) => {
 }
 
 const formatCoursesForKandi = (data) => data
-  .filter(({ courseCode, courseUnitId }) => courseCode === 'TKT20013' || courseUnitId)
+  .filter(({ courseCode, useAsExtra }) => courseCode === 'TKT20013' || useAsExtra)
   .map((c) => {
-    if (!c.courseUnitId) return {
+    if (!c.useAsExtra) return {
       key: c.id,
       text: `${c.name} (${c.courseCode})`,
       value: c.id
@@ -79,14 +79,15 @@ export default ({ kandi }) => {
   }, [user])
 
   useEffect(() => {
-    const { courseCode, id: courseId } = courses.find(({ courseCode }) => courseCode === 'TKT20013')
-    if (kandi)
+    if (kandi && courses) {
+      const { courseCode, id: courseId } = courses.find(({ courseCode }) => courseCode === 'TKT20013')
       dispatch(setNewRawEntriesAction({
         ...newRawEntries,
         defaultCourse: courseCode,
         data: null,
         courseId
       }))
+    }
   }, [courses, kandi])
 
   const handleGraderSelection = (e, data) => {

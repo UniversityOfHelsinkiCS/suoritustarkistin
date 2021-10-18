@@ -16,7 +16,7 @@ const cleanCourses = (courses) => {
     autoSeparate: course.autoSeparate,
     graders: course.graders,
     gradeScale: course.gradeScale,
-    courseUnitId: course.courseUnitId
+    useAsExtra: course.useAsExtra
   }))
 }
 

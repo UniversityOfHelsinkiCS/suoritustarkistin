@@ -9,11 +9,11 @@ const { getAcceptorPersons, getAcceptorPersonsByCourseUnit } = require('../servi
 
 
 const URLS = {
-  entries: 'suotars/',
-  extra_entries: 'suotar-extra/'
+  entries: 'suotar/',
+  extra_entries: 'suotar/send/course-unit-attainment'
 }
 
-const DRY_RUN = true
+const DRY_RUN = false
 
 // Create an api instance if a different url for posting entries to Sisu is defined,
 // otherwise use common api instance.

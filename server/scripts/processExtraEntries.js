@@ -5,7 +5,8 @@ const moment = require('moment')
 const {
   getEmployees,
   getStudentsWithStudyRight,
-  getEarlierAttainments
+  getEarlierAttainments,
+  getCourseUnitIds
 } = require('../services/importer')
 const { generateSisuId } = require('../utils/common')
 const logger = require('@utils/logger')
@@ -47,19 +48,19 @@ const processExtraEntries = async (createdRawEntries) => {
       return { courseCode, studentNumber }
     })
   )
-
+  const courseUnitIds = await getCourseUnitIds(courses.filter(({ useAsExtra }) => useAsExtra).map(({ courseCode }) => courseCode))
   createdRawEntries.forEach((rawEntry) => {
     const course = courses.find((c) => c.id === rawEntry.courseId)
     const completionDate = moment(rawEntry.attainmentDate)
     const grader = graders.find((g) => g.id === rawEntry.graderId)
     const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
 
-    if (earlierAttainments.find(({studentNumber, courseCode, attainments}) =>
+    if (earlierAttainments.find(({ studentNumber, courseCode, attainments }) =>
       rawEntry.studentNumber === studentNumber &&
       course.courseCode === courseCode &&
       attainments.length)
     ) {
-      logger.warn({message: `Attainment already registered with code ${course.courseCode} for student ${rawEntry.studentNumber}`})
+      logger.warn({ message: `Attainment already registered with code ${course.courseCode} for student ${rawEntry.studentNumber}` })
       return
     }
 
@@ -81,7 +82,9 @@ const processExtraEntries = async (createdRawEntries) => {
     }
 
     const { personId, studyRightId } = studentsWithStudyRight[rawEntry.studentNumber]
-    const { courseUnitId } = course
+    const { courseCode } = course
+    const { id: courseUnitId } = getActiveCourseUnitId(courseUnitIds[courseCode])
+
     success.push({
       ...COMMON,
       courseUnitId,
@@ -96,6 +99,14 @@ const processExtraEntries = async (createdRawEntries) => {
   })
 
   return [failed, success]
+}
+
+const getActiveCourseUnitId = (courseUnits) => {
+  const now = moment()
+  return courseUnits.find(({ validityPeriod }) =>
+    moment(validityPeriod.startDate).isSameOrBefore(now) &&
+    moment(validityPeriod.endDate).isAfter(now) // dates are half-open intervals, do not include end date
+  )
 }
 
 module.exports = processExtraEntries

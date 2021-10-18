@@ -14,7 +14,7 @@ export default ({ kandi }) => {
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const CSVParser = kandi ? parseKandiCSV : parseCSV
   const courses = useSelector((state) => state.courses.data)
-  const getExtras = () => courses.filter((c) => c.courseUnitId)
+  const getExtras = () => courses.filter((c) => c.useAsExtra)
 
   const handleDataChange = (event) => {
     const rawData = event.target.value

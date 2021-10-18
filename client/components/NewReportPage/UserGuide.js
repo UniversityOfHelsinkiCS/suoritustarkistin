@@ -79,7 +79,7 @@ export default () => (
         student number;grade;credits;language;date;course code
         <span>
           <Popup
-            on={'hover', 'click'}
+            on={['hover', 'click']}
             pinned
             trigger={
               <Icon

@@ -149,6 +149,15 @@ const getMultipleStudyRights = async (studyRightIds) => {
   }
 }
 
+const getCourseUnitIds = async (codes) => {
+  try {
+    const { data } = await api.post(`suotar/course-unit-ids`, codes)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 
 module.exports = {
   getEmployees,
@@ -163,5 +172,6 @@ module.exports = {
   getStudyRight,
   getMultipleStudyRights,
   getStudentsWithStudyRight,
-  getAcceptorPersonsByCourseUnit
+  getAcceptorPersonsByCourseUnit,
+  getCourseUnitIds
 }

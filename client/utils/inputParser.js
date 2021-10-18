@@ -76,7 +76,7 @@ const toRawEntry = (studentId, grade, credits, language, attainmentDate, course)
   attainmentDate: formatDate(attainmentDate),
   graderId: '',
   reporterId: '',
-  course: (course && course.trim()) || ''
+  course: course ? course.trim() : ''
 })
 
 export const parseCSV = (string, defaultCourse) => {
@@ -96,13 +96,12 @@ const COURSE_CODE_MAP = {
 }
 
 export const parseKandiCSV = (string, extraCourses) => {
-
   if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
-    const [studentId, grade, credits, language, attainmentDate, course, motherTongueLang, kypLang, researchLang] = row.split(CSV.detect(row))
-    const extras = extraCourses
-      .filter(({ courseCode }) => {
+    const [studentId, grade, credits, language, attainmentDate, motherTongueLang, kypLang, researchLang] = row.split(CSV.detect(row))
+    const extras = !['0', 'hyl.', 'hyl'].includes((grade || '').toLowerCase())
+      ? extraCourses.filter(({ courseCode }) => {
         // Filter out extras explicitly
         if (motherTongueLang === 'x' && COURSE_CODE_MAP[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ')
           return false
@@ -122,8 +121,9 @@ export const parseKandiCSV = (string, extraCourses) => {
 
         return true
       })
-      .map(({ courseCode }) => courseCode)
-    return [toRawEntry(studentId, grade, credits, language, attainmentDate, course, extras)]
+        .map(({ courseCode }) => courseCode)
+      : []
+    return [toRawEntry(studentId, grade, credits, language, attainmentDate)]
       .concat(extras
         .map((courseCode) => {
           let extraEntryLang = ''

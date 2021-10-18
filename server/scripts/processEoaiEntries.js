@@ -6,7 +6,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { EOAI_CODES } = require('@root/utils/validators')
-const { getBatchId } = require('@root/utils/common')
+const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
 
 
 const languageMap = {
@@ -93,7 +93,14 @@ const processEoaiEntries = async ({ grader }) => {
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.", completion.completion_date || date, courseVersion.credits)) {
+
+          const attainmentDate = getMoocAttainmentDate(
+            completion.completion_registration_attempt_date,
+            completion.completion_date,
+            date
+          )
+
+          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.", attainmentDate, courseVersion.credits)) {
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches
@@ -104,7 +111,7 @@ const processEoaiEntries = async ({ grader }) => {
               grade: "Hyv.",
               credits: courseVersion.credits,
               language: language,
-              attainmentDate: completion.completion_date || date,
+              attainmentDate: attainmentDate,
               graderId: grader.id,
               reporterId: null,
               courseId: courseVersion.id,

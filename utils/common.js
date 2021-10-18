@@ -24,6 +24,12 @@ const getBatchId = (courseCode) => `${courseCode}-${moment().tz("Europe/Helsinki
   'DD.MM.YY-HHmmss'
 )}`
 
+const getMoocAttainmentDate = (registrationAttemptDate, completionDate, today) => {
+  if (registrationAttemptDate) return registrationAttemptDate
+  if (completionDate) return completionDate
+  return today
+}
+
 const testCourses = [
   {
     name: "Ohjelmoinnin perusteet",
@@ -189,6 +195,7 @@ module.exports = {
   inDevelopment,
   inTest,
   getBatchId,
+  getMoocAttainmentDate,
   testCourses,
   testUsers,
   testCompletions,

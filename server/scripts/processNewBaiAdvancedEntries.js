@@ -11,7 +11,7 @@ const {
   OLD_BAI_ADVANCED_CODE,
   NEW_BAI_INTERMEDIATE_CODE
 } = require('@root/utils/validators')
-const { getBatchId } = require('@root/utils/common')
+const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
 // const { getTestRegistrations, getTestCompletions } = require('../utils/testdataForMoocScripts')
 
 const processNewBaiAdvancedEntries = async ({
@@ -144,8 +144,15 @@ const processNewBaiAdvancedEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
+
+          const attainmentDate = getMoocAttainmentDate(
+            completion.completion_registration_attempt_date,
+            completion.completion_date,
+            date
+          )
+
           // Check that the student does not have Advanced course completion yet
-          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, completion.completion_date)) {
+          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, attainmentDate)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
@@ -157,7 +164,7 @@ const processNewBaiAdvancedEntries = async ({
               grade: "Hyv.",
               credits: 1,
               language: 'en',
-              attainmentDate: completion.completion_date || date,
+              attainmentDate: attainmentDate,
               graderId: grader.id,
               reporterId: null,
               courseId: course.id,

@@ -5,7 +5,7 @@ const { getEarlierAttainments } = require('../services/importer')
 const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { getBatchId } = require('@root/utils/common')
+const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
 
 
 const languageMap = {
@@ -78,6 +78,12 @@ const processMoocEntries = async ({
         if (registration && registration.onro) {
           const grade = defineGrade(completion, course)
 
+          const attainmentDate = getMoocAttainmentDate(
+            completion.completion_registration_attempt_date,
+            completion.completion_date,
+            date
+          )
+
           if (!grade) {
             return matches
           }
@@ -93,7 +99,7 @@ const processMoocEntries = async ({
             grade: grade,
             credits: course.credits,
             language: language,
-            attainmentDate: completion.completion_date || date,
+            attainmentDate: attainmentDate,
             graderId: grader.id,
             reporterId: null,
             courseId: course.id,

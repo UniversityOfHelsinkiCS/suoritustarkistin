@@ -13,7 +13,7 @@ const selectLanguage = (completion, course) => {
   if (!completionLanguage) {
     return courseLanguage
   }
-  if (completionLanguage && ['fi_FI', 'en_US', 'sv_SE'].includes(completionLanguage)) {
+  if (completionLanguage && Object.keys(moocLanguageMap).includes(completionLanguage)) {
     return moocLanguageMap[completionLanguage]
   }
   if (completionLanguage && !SIS_LANGUAGES.includes(completionLanguage)) {

@@ -72,7 +72,7 @@ const processEoaiEntries = async ({ grader }) => {
     let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
-        if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)) {
+        if (!Object.keys(moocLanguageMap).includes(completion.completion_language)) {
           return matches
         }
 

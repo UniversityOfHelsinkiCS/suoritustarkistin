@@ -20,24 +20,6 @@ const processNewBaiAdvancedEntries = async ({
   grader
 }) => {
   try {
-    const oldIntermediateCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_INTERMEDIATE_CODE
-      }
-    })
-
-    const oldAdvancedCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_ADVANCED_CODE
-      }
-    })
-
-    const intermediateCourse = await db.courses.findOne({
-      where: {
-        courseCode: NEW_BAI_INTERMEDIATE_CODE
-      }
-    })
-
     const rawCredits = await db.credits.findAll({
       where: {
         courseId: OLD_BAI_CODE
@@ -48,15 +30,21 @@ const processNewBaiAdvancedEntries = async ({
     // Find all the already existing entries for the Advanced-courses, summer 2021 -one and the current one
     const advancedRawEntries = await db.raw_entries.findAll({ 
       where: {
-        courseId: [course.id, oldAdvancedCourse.id]
-      }
+        '$course.courseCode$': [course.courseCode, OLD_BAI_ADVANCED_CODE]
+      },
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
     })
 
     // Find all the already existing entries for the Intermediate-courses, summer 2021 -one and the current one
     const intermediateRawEntries = await db.raw_entries.findAll({
       where: {
-        courseId: [intermediateCourse.id, oldIntermediateCourse.id]
-      }
+        '$course.courseCode$': [NEW_BAI_INTERMEDIATE_CODE, OLD_BAI_INTERMEDIATE_CODE]
+      },
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
     })
 
     const registeredIncluded = true

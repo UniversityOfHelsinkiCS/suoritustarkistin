@@ -15,18 +15,6 @@ const processNewBaiIntermediateEntries = async ({
   grader
 }) => {
   try {
-    const oldBaiCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_CODE
-      }
-    })
-
-    const oldIntermediateCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_INTERMEDIATE_CODE
-      }
-    })
-
     const rawCredits = await db.credits.findAll({
       where: {
         courseId: [course.courseCode, OLD_BAI_INTERMEDIATE_CODE, OLD_BAI_CODE]
@@ -36,8 +24,11 @@ const processNewBaiIntermediateEntries = async ({
 
     const rawEntries = await db.raw_entries.findAll({ 
       where: {
-        courseId: [course.id, oldBaiCourse.id, oldIntermediateCourse.id]
-      }
+        '$course.courseCode$': [course.courseCode, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE]
+      }, 
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
     })
 
     const registrations = await getRegistrations(course.courseCode)
@@ -73,7 +64,7 @@ const processNewBaiIntermediateEntries = async ({
 
     const oldBaiCourseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
-        return pairs.concat({ courseCode: oldBaiCourse.courseCode, studentNumber: registration.onro })
+        return pairs.concat({ courseCode: OLD_BAI_CODE, studentNumber: registration.onro })
       } else {
         return pairs
       }
@@ -81,7 +72,7 @@ const processNewBaiIntermediateEntries = async ({
 
     const oldIntermediateCourseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
-        return pairs.concat({ courseCode: oldIntermediateCourse.courseCode, studentNumber: registration.onro })
+        return pairs.concat({ courseCode: OLD_BAI_INTERMEDIATE_CODE, studentNumber: registration.onro })
       } else {
         return pairs
       }

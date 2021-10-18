@@ -184,15 +184,10 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     studyRightId,
     personId
   })
-  if (!enrolments) return null
-  const filteredEnrolments = enrolments
-    .filter((e) => e.courseUnitRealisation.name.fi && !e.courseUnitRealisation.name.fi.includes('MOOC Java'))
-  // Hacky solution to filter out MOOC Java enrolments, since there is no other way. Remove in the fall.
-
-  if (!filteredEnrolments.length) return null
+  if (!enrolments || !enrolments.length) return null
 
   // Get enrollments for realisations already ended or currently active based on completion date
-  const activeOrPastByCompletionDate = filteredEnrolments
+  const activeOrPastByCompletionDate = enrolments
     .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(completionDate))
     .sort(
       (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate)
@@ -203,7 +198,7 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     return enrollmentToObject(activeOrPastByCompletionDate[0])
 
   // Get nearest realisation after completion date
-  const futureRelisationsByCompletionDate = filteredEnrolments
+  const futureRelisationsByCompletionDate = enrolments
     .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isAfter(completionDate))
     .sort(
       (a, b) => moment(a.courseUnitRealisation.activityPeriod.startDate)

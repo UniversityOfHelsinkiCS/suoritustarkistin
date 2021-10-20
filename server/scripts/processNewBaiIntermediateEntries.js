@@ -6,8 +6,8 @@ const { getCompletions } = require('../services/pointsmooc')
 const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE } = require('@root/utils/validators')
-const { getBatchId } = require('@root/utils/common')
-// const { getTestCompletions, getTestRegistrations } = require('../utils/testdataForMoocScripts')
+const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
+
 
 const processNewBaiIntermediateEntries = async ({
   job,
@@ -15,18 +15,6 @@ const processNewBaiIntermediateEntries = async ({
   grader
 }) => {
   try {
-    const oldBaiCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_CODE
-      }
-    })
-
-    const oldIntermediateCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_INTERMEDIATE_CODE
-      }
-    })
-
     const rawCredits = await db.credits.findAll({
       where: {
         courseId: [course.courseCode, OLD_BAI_INTERMEDIATE_CODE, OLD_BAI_CODE]
@@ -36,8 +24,11 @@ const processNewBaiIntermediateEntries = async ({
 
     const rawEntries = await db.raw_entries.findAll({ 
       where: {
-        courseId: [course.id, oldBaiCourse.id, oldIntermediateCourse.id]
-      }
+        '$course.courseCode$': [course.courseCode, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE]
+      }, 
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
     })
 
     const registrations = await getRegistrations(course.courseCode)
@@ -73,7 +64,7 @@ const processNewBaiIntermediateEntries = async ({
 
     const oldBaiCourseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
-        return pairs.concat({ courseCode: oldBaiCourse.courseCode, studentNumber: registration.onro })
+        return pairs.concat({ courseCode: OLD_BAI_CODE, studentNumber: registration.onro })
       } else {
         return pairs
       }
@@ -81,7 +72,7 @@ const processNewBaiIntermediateEntries = async ({
 
     const oldIntermediateCourseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
-        return pairs.concat({ courseCode: oldIntermediateCourse.courseCode, studentNumber: registration.onro })
+        return pairs.concat({ courseCode: OLD_BAI_INTERMEDIATE_CODE, studentNumber: registration.onro })
       } else {
         return pairs
       }
@@ -112,7 +103,13 @@ const processNewBaiIntermediateEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-          if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, completion.completion_date)) {
+          const attainmentDate = getMoocAttainmentDate(
+            completion.completion_registration_attempt_date,
+            completion.completion_date,
+            date
+          )
+
+          if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
@@ -124,7 +121,7 @@ const processNewBaiIntermediateEntries = async ({
               grade: "Hyv.",
               credits: 1,
               language: 'en',
-              attainmentDate: completion.completion_date || date,
+              attainmentDate: attainmentDate,
               graderId: grader.id,
               reporterId: null,
               courseId: course.id,

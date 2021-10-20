@@ -6,7 +6,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { OLD_BAI_CODE } = require('@root/utils/validators')
-const { getBatchId } = require('@root/utils/common')
+const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
 // const { getTestCompletions, getTestRegistrations } = require('../utils/testdataForMoocScripts')
 
 
@@ -91,7 +91,14 @@ const processBaiIntermediateEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-          if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, completion.completion_date)) {
+
+          const attainmentDate = getMoocAttainmentDate(
+            completion.completion_registration_attempt_date,
+            completion.completion_date,
+            date
+          )
+
+          if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
@@ -103,7 +110,7 @@ const processBaiIntermediateEntries = async ({
               grade: "Hyv.",
               credits: 1,
               language: 'en',
-              attainmentDate: completion.completion_date || date,
+              attainmentDate: attainmentDate,
               graderId: grader.id,
               reporterId: null,
               courseId: course.id,

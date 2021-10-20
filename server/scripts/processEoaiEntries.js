@@ -6,14 +6,7 @@ const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { EOAI_CODES } = require('@root/utils/validators')
-const { getBatchId } = require('@root/utils/common')
-
-
-const languageMap = {
-  "fi_FI" : "fi",
-  "en_US" : "en",
-  "sv_SE" : "sv"
-} 
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 
 const processEoaiEntries = async ({ grader }) => {
   try {
@@ -79,11 +72,11 @@ const processEoaiEntries = async ({ grader }) => {
     let matches = await completions.reduce(
       async (matchesPromise, completion) => {
         const matches = await matchesPromise
-        if (!['fi_FI', 'en_US', 'sv_SE'].includes(completion.completion_language)) {
+        if (!Object.keys(moocLanguageMap).includes(completion.completion_language)) {
           return matches
         }
 
-        const language = languageMap[completion.completion_language]
+        const language = moocLanguageMap[completion.completion_language]
         const courseVersion = courses.find((c) => c.language === language)
 
         const registration = registrations.find(
@@ -93,7 +86,14 @@ const processEoaiEntries = async ({ grader }) => {
         )
 
         if (registration && registration.onro) {
-          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.", completion.completion_date || date, courseVersion.credits)) {
+
+          const attainmentDate = getMoocAttainmentDate(
+            completion.completion_registration_attempt_date,
+            completion.completion_date,
+            date
+          )
+
+          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.", attainmentDate, courseVersion.credits)) {
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches
@@ -104,7 +104,7 @@ const processEoaiEntries = async ({ grader }) => {
               grade: "Hyv.",
               credits: courseVersion.credits,
               language: language,
-              attainmentDate: completion.completion_date || date,
+              attainmentDate: attainmentDate,
               graderId: grader.id,
               reporterId: null,
               courseId: courseVersion.id,

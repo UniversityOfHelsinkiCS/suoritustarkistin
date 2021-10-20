@@ -20,9 +20,41 @@ const gradeScales = [
   }
 ]
 
+const moocLanguageMap = {
+  "fi_FI" : "fi",
+  "en_US" : "en",
+  "sv_SE" : "sv"
+} 
+
 const getBatchId = (courseCode) => `${courseCode}-${moment().tz("Europe/Helsinki").format(
   'DD.MM.YY-HHmmss'
 )}`
+
+/** 
+ * Mooc completion dates:
+ * 1. Automatically generated completions (eg. Elements and CSB)
+ *    1.1. Mooc takes the moment the student clicks the registration button in the completion_registration_attempt_date.
+ *    This is the primary attainment date, which is in Sisu and also shows in Mooc.
+ *    1.2. If completion_registration_attempt_date cannot be found, the completion_date -field is used.
+ *    It contains the date the completion-object was made to the Mooc-system.
+ *    1.3. If neither can be found, today is used.
+ * 
+ * 2. Manually generated completions (courses with an exam, such as Ohpe and Ohja)
+ *    1.1. Mooc takes the moment the student clicks the registration button in the completion_registration_attempt_date.
+ *    This is NULL for manually generated completions.
+ *    1.2. Since completion_registration_attempt_date is null, the completion_date the teacher has manually inserted
+ *    will be selected as the completion date
+ *    1.3. If neither can be found, today is used
+ * 
+ * !! If the chosen date is NOT within the studyright it is attached to, it will be adjusted to be within 
+ * the studyright automatically when entries are processed. !!
+ * **/
+
+const getMoocAttainmentDate = (registrationAttemptDate, completionDate, today) => {
+  if (registrationAttemptDate) return registrationAttemptDate
+  if (completionDate) return completionDate
+  return today
+}
 
 const testCourses = [
   {
@@ -185,10 +217,12 @@ const testRawEntriesHylHyv = [
 
 module.exports = {
   gradeScales,
+  moocLanguageMap,
   inProduction,
   inDevelopment,
   inTest,
   getBatchId,
+  getMoocAttainmentDate,
   testCourses,
   testUsers,
   testCompletions,

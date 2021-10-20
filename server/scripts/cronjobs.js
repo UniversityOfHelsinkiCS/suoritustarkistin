@@ -46,7 +46,7 @@ const initializeCronJobs = async () => {
       let result = ""
 
       if (NEW_EOAI_CODE === course.courseCode) {
-        result = await processNewEoaiEntries({ grader })  
+        result = await processNewEoaiEntries({ course, grader })  
       } else if (NEW_BAI_INTERMEDIATE_CODE === course.courseCode) {
         result = await processNewBaiIntermediateEntries({ job, course, grader })
       } else if (NEW_BAI_ADVANCED_CODE === course.courseCode) {

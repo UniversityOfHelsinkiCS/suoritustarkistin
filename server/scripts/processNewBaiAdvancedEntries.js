@@ -11,8 +11,8 @@ const {
   OLD_BAI_ADVANCED_CODE,
   NEW_BAI_INTERMEDIATE_CODE
 } = require('@root/utils/validators')
-const { getBatchId } = require('@root/utils/common')
-// const { getTestRegistrations, getTestCompletions } = require('../utils/testdataForMoocScripts')
+const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
+
 
 const processNewBaiAdvancedEntries = async ({
   job,
@@ -20,24 +20,6 @@ const processNewBaiAdvancedEntries = async ({
   grader
 }) => {
   try {
-    const oldIntermediateCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_INTERMEDIATE_CODE
-      }
-    })
-
-    const oldAdvancedCourse = await db.courses.findOne({
-      where: {
-        courseCode: OLD_BAI_ADVANCED_CODE
-      }
-    })
-
-    const intermediateCourse = await db.courses.findOne({
-      where: {
-        courseCode: NEW_BAI_INTERMEDIATE_CODE
-      }
-    })
-
     const rawCredits = await db.credits.findAll({
       where: {
         courseId: OLD_BAI_CODE
@@ -48,15 +30,21 @@ const processNewBaiAdvancedEntries = async ({
     // Find all the already existing entries for the Advanced-courses, summer 2021 -one and the current one
     const advancedRawEntries = await db.raw_entries.findAll({ 
       where: {
-        courseId: [course.id, oldAdvancedCourse.id]
-      }
+        '$course.courseCode$': [course.courseCode, OLD_BAI_ADVANCED_CODE]
+      },
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
     })
 
     // Find all the already existing entries for the Intermediate-courses, summer 2021 -one and the current one
     const intermediateRawEntries = await db.raw_entries.findAll({
       where: {
-        courseId: [intermediateCourse.id, oldIntermediateCourse.id]
-      }
+        '$course.courseCode$': [NEW_BAI_INTERMEDIATE_CODE, OLD_BAI_INTERMEDIATE_CODE]
+      },
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
     })
 
     const registeredIncluded = true
@@ -144,8 +132,15 @@ const processNewBaiAdvancedEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
+
+          const attainmentDate = getMoocAttainmentDate(
+            completion.completion_registration_attempt_date,
+            completion.completion_date,
+            date
+          )
+
           // Check that the student does not have Advanced course completion yet
-          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, completion.completion_date)) {
+          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, attainmentDate)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
@@ -157,7 +152,7 @@ const processNewBaiAdvancedEntries = async ({
               grade: "Hyv.",
               credits: 1,
               language: 'en',
-              attainmentDate: completion.completion_date || date,
+              attainmentDate: attainmentDate,
               graderId: grader.id,
               reporterId: null,
               courseId: course.id,

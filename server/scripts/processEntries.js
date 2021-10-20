@@ -10,6 +10,7 @@ const {
   getEnrolments,
   getMultipleStudyRights
 } = require('../services/importer')
+const logger = require('../utils/logger')
 
 /**
  * Mankel raw entries to sis entries.
@@ -132,13 +133,21 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkSt
       return Promise.resolve()
     }
 
-    if (checkStudyRights && !validateStudyRight(studyRights, student.id, filteredEnrolment, completionDate)) {
-      failed.push({
-        id: rawEntry.id,
-        studentNumber: rawEntry.studentNumber,
-        message: `Invalid studyright for student ${rawEntry.studentNumber}. Completion date ${completionDate.format('YYYY-MM-DD')} not within studyright. `
-      })
-      return Promise.resolve()
+    let validAttainmentDate = completionDate
+
+    if (checkStudyRights) {
+      validAttainmentDate = getDateWithinStudyright(studyRights, student.id, filteredEnrolment, completionDate)
+      if (!validAttainmentDate || !moment(validAttainmentDate).isSame(completionDate)) {
+        const result = changeCompletionDate(rawEntry, completionDate, validAttainmentDate)
+        if (!result) {
+          failed.push({
+            id: rawEntry.id,
+            studentNumber: rawEntry.studentNumber,
+            message: `Invalid studyright for ${rawEntry.studentNumber}. Completion date ${completionDate.format('YYYY-MM-DD')} not within studyright. `
+          })
+          return Promise.resolve()
+        }
+      }
     }
 
     delete filteredEnrolment.studyRightId
@@ -148,7 +157,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkSt
       verifierPersonId: verifier.id,
       rawEntryId: rawEntry.id,
       gradeId: grade.localId,
-      completionDate: completionDate.format('YYYY-MM-DD'),
+      completionDate: validAttainmentDate.format('YYYY-MM-DD'),
       completionLanguage: rawEntry.language
     })
     return Promise.resolve()
@@ -175,15 +184,10 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     studyRightId,
     personId
   })
-  if (!enrolments) return null
-  const filteredEnrolments = enrolments
-    .filter((e) => e.courseUnitRealisation.name.fi && !e.courseUnitRealisation.name.fi.includes('MOOC Java'))
-  // Hacky solution to filter out MOOC Java enrolments, since there is no other way. Remove in the fall.
-
-  if (!filteredEnrolments.length) return null
+  if (!enrolments || !enrolments.length) return null
 
   // Get enrollments for realisations already ended or currently active based on completion date
-  const activeOrPastByCompletionDate = filteredEnrolments
+  const activeOrPastByCompletionDate = enrolments
     .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isSameOrBefore(completionDate))
     .sort(
       (a, b) => moment(b.courseUnitRealisation.activityPeriod.endDate)
@@ -194,7 +198,7 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     return enrollmentToObject(activeOrPastByCompletionDate[0])
 
   // Get nearest realisation after completion date
-  const futureRelisationsByCompletionDate = filteredEnrolments
+  const futureRelisationsByCompletionDate = enrolments
     .filter((e) => moment(e.courseUnitRealisation.activityPeriod.startDate).isAfter(completionDate))
     .sort(
       (a, b) => moment(a.courseUnitRealisation.activityPeriod.startDate)
@@ -208,8 +212,8 @@ const filterEnrolments = (completionDate, { enrolments }) => {
 
 const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
 
-const validateStudyRight = (studyRights, personId, filteredEnrolment, completionDate) => {
-  if (!studyRights || !personId || !completionDate) return false
+const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attainmentDate) => {
+  if (!studyRights || !personId || !attainmentDate) return null
   const enrolmentStudyRight = studyRights.find((s) => s.id === filteredEnrolment.studyRightId && s.personId === personId)
 
   // If there is a studyright attached to the enrolment, the completion date
@@ -219,13 +223,36 @@ const validateStudyRight = (studyRights, personId, filteredEnrolment, completion
     const studyRightStart = moment(valid.startDate)
     const studyRightEnd = moment(valid.endDate)
 
-    if (completionDate.isBetween(studyRightStart, studyRightEnd)) return true
-    return false
+    let newAttainmentDate
+    if (attainmentDate.isBetween(studyRightStart, studyRightEnd)) {
+      newAttainmentDate = attainmentDate
+    } else if (attainmentDate.isBefore(studyRightStart)) {
+      newAttainmentDate = studyRightStart
+    } else if (attainmentDate.isSameOrAfter(studyRightEnd)) {
+      newAttainmentDate = studyRightEnd.subtract(1, 'day')
+    }
+
+    return newAttainmentDate
   }
 
   // If there is no studyright attached to the enrolment, as long as the student
   // has any enrolment for the time of the registration, it will pass
-  return true
+  return attainmentDate
+}
+
+const changeCompletionDate = async (rawEntry, completionDate, validAttainmentDate) => {
+  if (!validAttainmentDate) return false
+  try {
+    // eslint-disable-next-line no-unused-vars
+    const [rows, status] = await db.raw_entries.update({ attainmentDate: validAttainmentDate },
+      { where: { id: rawEntry.id }, returning: true
+      })
+    logger.info({ message: `Changed date for ${rawEntry.studentNumber} from ${completionDate.format('YYYY-MM-DD')} to ${validAttainmentDate.format('YYYY-MM-DD')}`})
+    return true
+  } catch (error) {
+    logger.error({ message: `Error in changing completion date for ${rawEntry.studentNumber}: ${error}`})
+    return false
+  }
 }
 
 const mapGrades = (gradeScales, id, rawEntry) => {

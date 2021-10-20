@@ -97,7 +97,8 @@ const checkRegisteredForMooc = async () => {
         if (alreadyInSis) {
           return completionStudentPairs.concat({
             completion_id: rawEntry.moocCompletionId,
-            student_number: String(rawEntry.studentNumber)
+            student_number: String(rawEntry.studentNumber),
+            registration_date: rawEntry.attainmentDate
           })
         }
         return completionStudentPairs

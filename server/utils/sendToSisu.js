@@ -40,7 +40,7 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
     logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length })
     sendSentryMessage(`${data.length} entries sent successfully to Sisu!`, user)
   }
-  
+
   const { entryIds, extraEntryIds } = body
   const senderId = user.id
 
@@ -141,7 +141,6 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
     personId,
     courseUnitRealisationId,
     assessmentItemId,
-    completionDate,
     completionLanguage,
     courseUnitId,
     gradeScaleId,
@@ -156,7 +155,7 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
     acceptorPersons: acceptors[courseUnitRealisationId],
     courseUnitRealisationId,
     assessmentItemId,
-    completionDate,
+    completionDate: rawEntry.attainmentDate,
     completionLanguage,
     courseUnitId,
     gradeScaleId,
@@ -170,7 +169,6 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
   const {
     id,
     personId,
-    completionDate,
     completionLanguage,
     courseUnitId,
     gradeScaleId,
@@ -185,7 +183,8 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     studyRightId,
     verifierPersonId: verifier[0].id,
     acceptorPersons: acceptors[courseUnitId],
-    completionDate,
+    attainmentDate: rawEntry.attainmentDate,
+    registrationDate: new Date(),
     completionLanguage,
     courseUnitId,
     gradeScaleId,

@@ -137,7 +137,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkSt
 
     if (checkStudyRights) {
       validAttainmentDate = getDateWithinStudyright(studyRights, student.id, filteredEnrolment, completionDate)
-      if (!validAttainmentDate || validAttainmentDate !== completionDate) {
+      if (!validAttainmentDate || !moment(validAttainmentDate).isSame(completionDate)) {
         const result = changeCompletionDate(rawEntry, completionDate, validAttainmentDate)
         if (!result) {
           failed.push({

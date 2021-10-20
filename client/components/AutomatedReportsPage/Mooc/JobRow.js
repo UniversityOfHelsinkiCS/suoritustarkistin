@@ -66,13 +66,20 @@ export default ({ job, jobs }) => {
   )
   return (
     <Grid.Row>
-      <Grid.Column width={2}>{job.schedule}</Grid.Column>
+      <Grid.Column width={1}>{job.schedule}</Grid.Column>
       <Grid.Column width={2}>{getCourseCode()}</Grid.Column>
       <Grid.Column width={3}>{getCourseName()}</Grid.Column>
       <Grid.Column width={2}>{getGraderName()}</Grid.Column>
       <Grid.Column width={2}>{job.slug}</Grid.Column>
       <Grid.Column textAlign="center" width={1}>
         {job.active ? (
+          <Icon name="check" color="green" size="large" />
+        ) : (
+          <Icon name="close" color="red" size="large" />
+        )}
+      </Grid.Column>
+      <Grid.Column>
+        {job.useManualCompletionDate ? (
           <Icon name="check" color="green" size="large" />
         ) : (
           <Icon name="close" color="red" size="large" />

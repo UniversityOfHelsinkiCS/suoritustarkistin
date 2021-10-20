@@ -11,7 +11,7 @@ export default ({ close }) => {
   const dispatch = useDispatch()
   const courses = useSelector((state) => state.courses.data)
   const graders = useSelector((state) => state.graders.data)
-  const [data, setData] = useState({ active: false })
+  const [data, setData] = useState({ active: false, useManualCompletionDate: false })
 
   if (!courses || !graders) return null
 
@@ -80,6 +80,13 @@ export default ({ close }) => {
           label="Active"
           checked={data.active}
           onChange={(e, d) => setData({ ...data, active: d.checked })}
+        />
+        <Form.Field
+          data-cy="edit-job-completion-date"
+          control={Checkbox}
+          label="Use completion date, not registration attempt date"
+          checked={data.useManualCompletionDate}
+          onChange={(e, d) => setData({ ...data, useManualCompletionDate: d.checked })}
         />
         <Form.Group>
           <Form.Field

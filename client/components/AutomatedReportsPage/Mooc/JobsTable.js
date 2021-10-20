@@ -16,7 +16,7 @@ export default () => {
       <Loader size='big' active={jobs.pending} />
       <Grid celled="internally">
         <Grid.Row>
-          <Grid.Column width={2}>
+          <Grid.Column width={1}>
             <Header as="h4">Schedule</Header>
           </Grid.Column>
           <Grid.Column width={2}>
@@ -33,6 +33,9 @@ export default () => {
           </Grid.Column>
           <Grid.Column width={1}>
             <Header as="h4">Active</Header>
+          </Grid.Column>
+          <Grid.Column width={1}>
+            <Header as="h4">Use manual completion date</Header>
           </Grid.Column>
           <Grid.Column width={4}>
             <Header as="h4">Actions</Header>

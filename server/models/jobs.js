@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       schedule: DataTypes.STRING,
       active: DataTypes.BOOLEAN,
-      slug: DataTypes.STRING
+      slug: DataTypes.STRING,
+      useManualCompletionDate: DataTypes.BOOLEAN
     },
     {}
   )

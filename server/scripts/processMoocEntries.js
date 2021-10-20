@@ -74,7 +74,8 @@ const processMoocEntries = async ({
           const attainmentDate = getMoocAttainmentDate(
             completion.completion_registration_attempt_date,
             completion.completion_date,
-            date
+            date,
+            job.useManualCompletionDate
           )
 
           if (!grade) {

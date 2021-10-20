@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Grid, Header, Loader, Segment } from 'semantic-ui-react'
+import { Header, Loader, Segment, Table } from 'semantic-ui-react'
 import * as _ from 'lodash'
 
 import JobRow from 'Components/AutomatedReportsPage/Mooc/JobRow'
@@ -14,34 +14,39 @@ export default () => {
   return (
     <Segment>
       <Loader size='big' active={jobs.pending} />
-      <Grid celled="internally">
-        <Grid.Row>
-          <Grid.Column width={2}>
-            <Header as="h4">Schedule</Header>
-          </Grid.Column>
-          <Grid.Column width={2}>
-            <Header as="h4">Course code</Header>
-          </Grid.Column>
-          <Grid.Column width={3}>
-            <Header as="h4">Course name</Header>
-          </Grid.Column>
-          <Grid.Column width={2}>
-            <Header as="h4">Grader</Header>
-          </Grid.Column>
-          <Grid.Column width={2}>
-            <Header as="h4">Slug</Header>
-          </Grid.Column>
-          <Grid.Column width={1}>
-            <Header as="h4">Active</Header>
-          </Grid.Column>
-          <Grid.Column width={4}>
-            <Header as="h4">Actions</Header>
-          </Grid.Column>
-        </Grid.Row>
-        {_.sortBy(jobs.data, 'slug').map((j) => (
-          <JobRow job={j} jobs={jobs} key={j.id} />
-        ))}
-      </Grid>
+      <Table celled>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell width={1}>
+              <Header as="h4">Schedule</Header>
+            </Table.HeaderCell>
+            <Table.HeaderCell width={2}>
+              <Header as="h4">Course code</Header>
+            </Table.HeaderCell>
+            <Table.HeaderCell width={3}>
+              <Header as="h4">Course name</Header>
+            </Table.HeaderCell>
+            <Table.HeaderCell width={2}>
+              <Header as="h4">Grader</Header>
+            </Table.HeaderCell>
+            <Table.HeaderCell width={2}>
+              <Header as="h4">Slug</Header>
+            </Table.HeaderCell>
+            <Table.HeaderCell width={1}>
+              <Header as="h4">Active</Header>
+            </Table.HeaderCell>
+            <Table.HeaderCell width={1}>
+              <Header as="h4">Use manual completion date</Header>
+            </Table.HeaderCell>
+            <Table.HeaderCell width={4}>
+              <Header as="h4">Actions</Header>
+            </Table.HeaderCell>
+          </Table.Row>
+          {_.sortBy(jobs.data, 'slug').map((j) => (
+            <JobRow job={j} jobs={jobs} key={j.id} />
+          ))}
+        </Table.Header>
+      </Table>
     </Segment>
   )
 }

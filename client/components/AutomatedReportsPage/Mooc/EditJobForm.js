@@ -10,7 +10,7 @@ import { isValidJob, isValidSchedule } from 'Root/utils/validators'
 export default ({ job, close }) => {
   const dispatch = useDispatch()
   const courses = useSelector((state) => state.courses.data)
-  const [data, setData] = useState(job || { active: false })
+  const [data, setData] = useState(job || { active: false, useManualCompletionDate: false })
 
   if (!data.courseId || !courses) return null
 
@@ -79,6 +79,13 @@ export default ({ job, close }) => {
           label="Active"
           checked={data.active}
           onChange={(e, d) => setData({ ...data, active: d.checked })}
+        />
+        <Form.Field
+          data-cy="edit-job-completion-date"
+          control={Checkbox}
+          label="Use completion date, not registration attempt date"
+          checked={data.useManualCompletionDate}
+          onChange={(e, d) => setData({ ...data, useManualCompletionDate: d.checked })}
         />
         <Form.Group>
           <Form.Field

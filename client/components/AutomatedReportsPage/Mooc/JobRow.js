@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Grid, Icon } from 'semantic-ui-react'
+import { Button, Icon, Table } from 'semantic-ui-react'
 
 import { deleteJobAction, runJobAction } from 'Utilities/redux/moocJobsReducer'
 import EditJob from 'Components/AutomatedReportsPage/Mooc/EditJob'
@@ -65,24 +65,31 @@ export default ({ job, jobs }) => {
     </Button.Group>
   )
   return (
-    <Grid.Row>
-      <Grid.Column width={2}>{job.schedule}</Grid.Column>
-      <Grid.Column width={2}>{getCourseCode()}</Grid.Column>
-      <Grid.Column width={3}>{getCourseName()}</Grid.Column>
-      <Grid.Column width={2}>{getGraderName()}</Grid.Column>
-      <Grid.Column width={2}>{job.slug}</Grid.Column>
-      <Grid.Column textAlign="center" width={1}>
+    <Table.Row>
+      <Table.Cell width={1}>{job.schedule}</Table.Cell>
+      <Table.Cell width={2}>{getCourseCode()}</Table.Cell>
+      <Table.Cell width={3}>{getCourseName()}</Table.Cell>
+      <Table.Cell width={2}>{getGraderName()}</Table.Cell>
+      <Table.Cell width={2}>{job.slug}</Table.Cell>
+      <Table.Cell textAlign="center" width={1}>
         {job.active ? (
           <Icon name="check" color="green" size="large" />
         ) : (
           <Icon name="close" color="red" size="large" />
         )}
-      </Grid.Column>
-      <Grid.Column width={4}>
+      </Table.Cell>
+      <Table.Cell>
+        {job.useManualCompletionDate ? (
+          <Icon name="check" color="green" size="large" />
+        ) : (
+          <Icon name="close" color="red" size="large" />
+        )}
+      </Table.Cell>
+      <Table.Cell width={4}>
         <EditJob jobs={jobs} job={job} />
         <CreateReportButton />
         {really ? <Confirm /> : <DeleteButton />}
-      </Grid.Column>
-    </Grid.Row>
+      </Table.Cell>
+    </Table.Row>
   )
 }

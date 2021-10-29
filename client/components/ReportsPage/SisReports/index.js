@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import moment from 'moment'
 import { Accordion, Button, Icon, Message, Segment } from 'semantic-ui-react'
 
 import Notification from 'Components/Message'
@@ -127,12 +128,12 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
 
 const title = (batch) => {
   // eslint-disable-next-line no-unused-vars
-  const [course, date, time] = batch[0].batchId.split('-')
   const courseCode = batch[0].course ? batch[0].course.courseCode : ''
   const courseName = batch[0].course ? batch[0].course.name : ''
+  const date = moment(batch[0].createdAt).format('DD.MM.YY - HH:mm:SS')
   const titleString = batch[0].batchId.startsWith("limbo")
     ? batch[0].batchId
-    : `${courseName} - ${courseCode} - ${date} - ${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`
+    : `${courseName} - ${courseCode} - ${date}`
   return (
     <Accordion.Title data-cy={`report-${courseCode}`}>
       {titleString}

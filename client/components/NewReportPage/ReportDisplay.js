@@ -304,7 +304,7 @@ export default ({ allowDelete = true }) => {
   })
 
   return (
-    <Table celled>
+    <Table celled data-cy="new-report-table">
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell width={3}>Course</Table.HeaderCell>

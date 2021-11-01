@@ -62,13 +62,14 @@ const deleteAllJobs = async () => {
 const createTestCourses = async (courses) => {
   try {
     logger.info('Creating test courses')
-    for (const { name, courseCode, language, gradeScale } of courses) {
+    for (const { name, courseCode, language, gradeScale, credits, ...additional } of courses) {
       await db.courses.create({
         name,
         courseCode,
         language,
         gradeScale,
-        credits: "5,0"
+        credits: credits || "5,0",
+        ...additional
       })
     }
   } catch (error) {
@@ -91,7 +92,7 @@ const createTestUsers = async (users) => {
     }
   } catch (error) {
     logger.error(error.message)
-  }  
+  }
 }
 
 const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5) => {
@@ -184,22 +185,22 @@ const createTestOodiReports = async () => {
           courseCode: courseCode
         }
       })
-  
+
       const grader = await db.users.findOne({
         where: {
           name: graderName
         }
       })
-  
+
       const lastDownloaded = "2021-10-09T03:00:00.000Z"
       const reportDate = "15.09.21-162832"
       const completionDate = "8.9.2021"
       const fileName = course.name.includes('Avoin yo')
         ? `${course.courseCode}%${reportDate}_AUTOMATIC.dat`
         : `${course.courseCode}%${reportDate}_MANUAL.dat`
-      
-      const testReportData = course.gradeScale === "sis-hyl-hyv" ? testRawEntriesHylHyv : testRawEntries0to5 
-      
+
+      const testReportData = course.gradeScale === "sis-hyl-hyv" ? testRawEntriesHylHyv : testRawEntries0to5
+
       const data = testReportData.map(({ studentNumber, grade }) => {
         return `
           ${studentNumber}##1#
@@ -210,8 +211,8 @@ const createTestOodiReports = async () => {
           ${grader.employeeId}#2#H930#####
           ${course.credits}
         `
-      }).join('\n') 
-  
+      }).join('\n')
+
       await db.reports.create({
         fileName,
         lastDownloaded,
@@ -234,7 +235,7 @@ const seedTestCompletions = async (req, res) => {
     } = req.body
 
     await createTestSisCompletions(testCompletions, testRawEntriesHylHyv, testRawEntries0to5)
-    return res.status(200).send('OK') 
+    return res.status(200).send('OK')
   } catch (error) {
     logger.error(`Error seeding test completions: ${error.message}`)
     res.status(500).json({ error: error.message })
@@ -253,7 +254,7 @@ const seedDatabaseForTests = async (req, res) => {
     await createTestCourses(testCourses)
     await createTestUsers(testUsers)
     await createTestSisCompletions(testCompletions, testRawEntriesHylHyv, testRawEntries0to5)
-    await createTestOodiReports()   
+    await createTestOodiReports()
     return res.status(200).send('OK')
 
   } catch (error) {
@@ -262,8 +263,50 @@ const seedDatabaseForTests = async (req, res) => {
   }
 }
 
+const seedBachelorData = async (req, res) => {
+  const grader = await db.users.findOne({ where: { name: 'grader' } })
+  const courses = [
+    {
+      name: "Kandidaatin tutkielma",
+      courseCode: "TKT20013",
+      language: "fi",
+      gradeScale: "sis-0-5",
+      credits: "6"
+    },
+    {
+      name: "Kypsyysnäyte",
+      courseCode: "TKT20014",
+      language: "fi",
+      gradeScale: "sis-hyl-hyv",
+      credits: "0",
+      useAsExtra: true
+    },
+    {
+      name: "Tutkimustiedonhaku",
+      courseCode: "TKT50002",
+      language: "fi",
+      gradeScale: "sis-hyl-hyv",
+      credits: "1",
+      useAsExtra: true
+    },
+    {
+      name: "Äidinkielinen viestintä",
+      courseCode: "TKT50001",
+      language: "fi",
+      gradeScale: "sis-hyl-hyv",
+      credits: "3",
+      useAsExtra: true
+    }
+  ]
+  await createTestCourses(courses)
+  const courseInstances = await db.courses.findAll({ where: { courseCode: ['TKT20013', 'TKT20014', 'TKT50002', 'TKT50001'] } })
+  grader.setCourses(courseInstances.map(({ id }) => id))
+  return res.status(200).send('OK')
+}
+
 module.exports = {
   seedDatabaseForTests,
   createTestSisCompletions,
-  seedTestCompletions
+  seedTestCompletions,
+  seedBachelorData
 }

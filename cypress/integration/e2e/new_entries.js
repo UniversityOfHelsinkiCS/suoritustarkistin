@@ -64,43 +64,43 @@ describe('New entries can be added correctly', function () {
       .should('contain', 1)
   })
 
-  it('When pasting (typing) completions with a non-existing employee number, no entries are created', () => {
-    cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click()
-    cy.get('[data-cy=copypaste]').should('be.visible').click()
-    cy.get('[data-cy=paste-field]').type(
-      '011111111;2;5;fi',
-      {
-        delay: 1,
-      }
-    )
-    cy.get('#date-picker').clear().type('24.12.2020')
-    cy.get('[data-cy=grader-selection]')
-      .click()
-      .children()
-      .contains('grader')
-      .click()
+  // it('When pasting (typing) completions with a non-existing employee number, no entries are created', () => {
+  //   cy.login('admin').visit('')
+  //   cy.get('[data-cy=adminmode-enable]').click()
+  //   cy.get('[data-cy=copypaste]').should('be.visible').click()
+  //   cy.get('[data-cy=paste-field]').type(
+  //     '011111111;2;5;fi',
+  //     {
+  //       delay: 1,
+  //     }
+  //   )
+  //   cy.get('#date-picker').clear().type('24.12.2020')
+  //   cy.get('[data-cy=grader-selection]')
+  //     .click()
+  //     .children()
+  //     .contains('grader')
+  //     .click()
 
-    cy.get('[data-cy=course-selection]')
-      .click()
-      .children()
-      .contains('Tietorakenteet ja algoritmit I (TKT200011)')
-      .click()
+  //   cy.get('[data-cy=course-selection]')
+  //     .click()
+  //     .children()
+  //     .contains('Tietorakenteet ja algoritmit I (TKT200011)')
+  //     .click()
 
-    cy.get('[data-cy=create-report-button]')
-      .should('not.be.disabled')
-      .click()
+  //   cy.get('[data-cy=create-report-button]')
+  //     .should('not.be.disabled')
+  //     .click()
 
-    cy.get('[data-cy=confirm-sending-button]')
-      .should('be.visible')
-      .click()
+  //   cy.get('[data-cy=confirm-sending-button]')
+  //     .should('be.visible')
+  //     .click()
 
-    cy.wait(20000)
+  //   cy.wait(20000)
 
-    cy.get('[data-cy=nav-reports]').click()
-    cy.get('[data-cy=sis-reports-tab]').click()
+  //   cy.get('[data-cy=nav-reports]').click()
+  //   cy.get('[data-cy=sis-reports-tab]').click()
 
-    // No new report has been created
-    cy.get('[data-cy=report-table]').its('length').should('eq', 7)
-  })
+  //   // No new report has been created
+  //   cy.get('[data-cy=report-table]').its('length').should('eq', 7)
+  // })
 })

@@ -103,10 +103,11 @@ const processExtraEntries = async (createdRawEntries) => {
 
 const getActiveCourseUnitId = (courseUnits) => {
   const now = moment()
-  return courseUnits.find(({ validityPeriod }) =>
-    moment(validityPeriod.startDate).isSameOrBefore(now) &&
-    moment(validityPeriod.endDate).isAfter(now) // dates are half-open intervals, do not include end date
-  )
+  return courseUnits.find(({ validityPeriod }) => {
+    if (!validityPeriod.endDate) return moment(validityPeriod.startDate).isSameOrBefore(now)
+    return moment(validityPeriod.startDate).isSameOrBefore(now) &&
+      moment(validityPeriod.endDate).isAfter(now) // dates are half-open intervals, do not include end date
+  })
 }
 
 module.exports = processExtraEntries

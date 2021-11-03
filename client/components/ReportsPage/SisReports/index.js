@@ -141,14 +141,14 @@ const title = (batch) => {
   const [code, ...extraCodes] = Array.from(courseCodes)
   const [name, ...extraNames] = Array.from(courseNames)
   const date = moment(batch[0].createdAt).format('DD.MM.YY - HH:mm:SS')
-  const extras = extraCodes && extraCodes.length ? ` + ${extraCodes.length} others ` : ' '
+  const extras = extraCodes && extraCodes.length ? `+ ${extraCodes.length} others` : ''
   const titleString = batch[0].batchId.startsWith("limbo")
     ? batch[0].batchId
-    : `${name} - ${code}${extras}- ${date}`
+    : `${name} - ${code} ${extras} - ${date}`
   return <Accordion.Title data-cy={`report-${code}`}>
     {extraCodes.length
       ? <Popup
-        content={extraCodes.map((c, i) => `${extraNames[i]}  - ${c}`).join('\n') || 'aa'}
+        content={extraCodes.map((c, i) => `${extraNames[i] || name}  - ${c}`).join('\n') || 'aa'}
         trigger={<span>{titleString}</span>} />
       : titleString}
     <ReportStatus batch={batch} />

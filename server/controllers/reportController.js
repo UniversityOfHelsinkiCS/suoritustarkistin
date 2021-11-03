@@ -239,11 +239,11 @@ const sendToSis = async (req, res) => {
     throw new Error(`Verifier with employee number ${req.user.employeeId} not found`)
 
 
-  const { entryIds, extraEntryIds } = req.body
+  const { entryIds, extraEntryIds = [] } = req.body
   let [status, message] = await attainmentsToSisu('entries', verifier, req)
   if (message)
     return res.status(status).send(message)
-  if (extraEntryIds) {
+  if (extraEntryIds.length) {
     [status, message] = await attainmentsToSisu('extra_entries', verifier, req)
     if (message)
       return res.status(status).send(message)

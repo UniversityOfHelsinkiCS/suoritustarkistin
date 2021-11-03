@@ -13,8 +13,6 @@ const URLS = {
   extra_entries: 'suotar/send/course-unit-attainment'
 }
 
-const DRY_RUN = false
-
 // Create an api instance if a different url for posting entries to Sisu is defined,
 // otherwise use common api instance.
 const API = process.env.POST_IMPORTER_DB_API_URL
@@ -32,10 +30,7 @@ const API = process.env.POST_IMPORTER_DB_API_URL
 const attainmentsToSisu = async (model, verifier, { user, body }) => {
   const send = async (url, data, modelIds) => {
     logger.info({ message: 'Sending entries to Sisu', amount: data.length, user: user.name, payload: JSON.stringify(data) })
-    if (DRY_RUN)
-      logger.info(`Would post: ${JSON.stringify(data)} to ${url}`)
-    else
-      await API.post(url, data)
+    await API.post(url, data)
     await updateSuccess(model, modelIds, senderId)
     logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length })
     sendSentryMessage(`${data.length} entries sent successfully to Sisu!`, user)

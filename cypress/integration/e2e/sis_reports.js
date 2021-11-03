@@ -49,3 +49,23 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.logout()
   })
 })
+
+
+describe('BSc thesis reports are displayed correctly', () => {
+  before(function () {
+    cy.request('/api/seed/bsc_thesis')
+  })
+
+  it('Single entries can be deleted from the reports page', () => {
+    cy.login('grader').visit('')
+    cy.get('[data-cy=nav-reports]').click()
+
+    cy.wait(1000)
+
+    cy.get('[data-cy=sis-reports-tab]').click()
+    cy.get('[data-cy=report-TKT20013]').click()
+    cy.get('[data-cy=report-table]').children().should('have.length', 4)
+    cy.get('[data-cy=entry-course-name]:contains("Erilliskirjaus")').its('length').should('eq', 3)
+  })
+
+})

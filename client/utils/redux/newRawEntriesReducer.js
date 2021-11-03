@@ -4,7 +4,7 @@ import callBuilder from '../apiConnection'
 
 const initialState = {
   rawData: '',
-  data: null, 
+  data: null,
   courseId: null,
   defaultGrade: false,
   defaultCourse: '',
@@ -14,6 +14,10 @@ const initialState = {
 export const setNewRawEntriesAction = (rawEntries) => {
   return { type: 'SET_NEW_RAW_ENTRIES', payload: rawEntries }
 }
+
+export const resetNewRawEntriesAction = () => ({
+  type: 'SET_NEW_RAW_ENTRIES', payload: { ...initialState }
+})
 
 export const sendNewRawEntriesAction = (rawEntries) => {
   const route = `/sis_raw_entries`

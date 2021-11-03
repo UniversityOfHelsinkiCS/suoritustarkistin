@@ -10,7 +10,6 @@ services:
       - ./:/usr/src/app
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
-      - SUOTAR_TOKEN=token
       - NODE_ENV=development
     ports:
       - 8000:8000
@@ -18,6 +17,7 @@ services:
   db:
     image: postgres:13.1
     container_name: suotar_db
+    command: ["postgres", "-c", "log_statement=all"]
     environment:
       - PGDATA=/data
       - POSTGRES_PASSWORD=postgres

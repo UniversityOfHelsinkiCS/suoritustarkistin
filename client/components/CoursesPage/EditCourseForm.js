@@ -5,7 +5,10 @@ import {
   Button,
   Form,
   Input,
-  Segment
+  Segment,
+  Checkbox,
+  Popup,
+  Icon
 } from 'semantic-ui-react'
 import { editCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
@@ -15,6 +18,9 @@ import {
   isValidLanguage
 } from 'Root/utils/validators'
 import { gradeScales } from 'Root/utils/common'
+
+const Help = ({ text }) => <span style={{ marginLeft: '7px' }}><Popup content={text} trigger={<Icon name='help' circular />} /></span>
+
 
 export default ({ course, close: closeModal }) => {
   const dispatch = useDispatch()
@@ -30,7 +36,7 @@ export default ({ course, close: closeModal }) => {
       const responsibleUids = Object.keys(courseData.responsibles)
         .filter((r) => courseData.responsibles[r].person.eduPersonPrincipalName)
         .map((r) => courseData.responsibles[r].person.eduPersonPrincipalName.split("@")[0])
-      const newGraders = allGraders.filter((g) => responsibleUids.includes(g.uid)).map(({id}) => id)
+      const newGraders = allGraders.filter((g) => responsibleUids.includes(g.uid)).map(({ id }) => id)
       const graders = _.uniq(data.graders.concat(newGraders))
       setData({ ...data, graders })
     }
@@ -118,6 +124,19 @@ export default ({ course, close: closeModal }) => {
           icon="refresh"
           color="blue"
           basic
+        />
+        <Form.Field
+          label={
+            <label>
+              <>
+                Use as erilliskirjaus
+                <Help text='Select this only if course is used as "erilliskirjaus" together with bachelors thesis' />
+              </>
+            </label>
+          }
+          control={Checkbox}
+          checked={data.useAsExtra}
+          onChange={(e, d) => setData({ ...data, useAsExtra: d.checked })}
         />
         <Form.Group>
           <Form.Field

@@ -32,10 +32,12 @@ const deleteSingleEntry = (req, res, next) => permissionClass(
     if (req.user.isAdmin) return true
     const rawEntry = await db.raw_entries.findOne({
       where: { id: req.params.id },
-      include: [{ model: db.entries, as: 'entry' }],
+      include: [{ model: db.entries, as: 'entry' }, { model: db.extra_entries, as: 'extraEntry' }],
       attributes: ['graderId']
     })
-    return rawEntry.graderId === req.user.id && rawEntry.entry.missingEnrolment && !rawEntry.entry.sent
+    if (rawEntry.graderId !== req.user.id) return false
+    if (rawEntry.entry.sent) return false
+    return rawEntry.entry.missingEnrolment || rawEntry.extraEntry.id
   },
   'Unauthorized access'
 )

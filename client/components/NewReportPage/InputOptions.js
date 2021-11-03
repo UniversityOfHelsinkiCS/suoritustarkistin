@@ -38,7 +38,24 @@ const formatCoursesForSelection = (data) => {
   return []
 }
 
-export default () => {
+const formatCoursesForKandi = (data) => data
+  .filter(({ courseCode, useAsExtra }) => courseCode === 'TKT20013' || useAsExtra)
+  .map((c) => {
+    if (!c.useAsExtra) return {
+      key: c.id,
+      text: `${c.name} (${c.courseCode})`,
+      value: c.id
+    }
+    return {
+      key: c.id,
+      text: `${c.name} (${c.courseCode})`,
+      value: c.id,
+      disabled: true
+    }
+  })
+
+
+export default ({ kandi }) => {
   const dispatch = useDispatch()
   const [showingDate, setShowingDate] = useState()
   const [defaultGrade, setDefaultGrade] = useState(false)
@@ -46,6 +63,10 @@ export default () => {
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
+  const courseOptions = kandi
+    ? formatCoursesForKandi(courses)
+    : formatCoursesForSelection(courses)
+
 
   useEffect(() => {
     if (user.adminMode) {
@@ -56,6 +77,18 @@ export default () => {
       dispatch(getUsersGradersAction(user.id))
     }
   }, [user])
+
+  useEffect(() => {
+    if (kandi && courses) {
+      const { courseCode, id: courseId } = courses.find(({ courseCode }) => courseCode === 'TKT20013')
+      dispatch(setNewRawEntriesAction({
+        ...newRawEntries,
+        defaultCourse: courseCode,
+        data: null,
+        courseId
+      }))
+    }
+  }, [courses, kandi])
 
   const handleGraderSelection = (e, data) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, graderId: data.value }))
@@ -118,7 +151,7 @@ export default () => {
           onChange={handleCourseSelection}
           placeholder="Choose course"
           value={newRawEntries.courseId}
-          options={formatCoursesForSelection(courses)}
+          options={courseOptions}
         />
         <DatePicker
           id="date-picker"
@@ -129,14 +162,16 @@ export default () => {
           selected={showingDate}
           onChange={(date) => handleDateSelection(date)}
         />
-        <span style={{ paddingTop: "0.7em", paddingLeft: "1em" }}>
-          <Checkbox
-            data-cy="default-grade-election"
-            onChange={handleDefaultGradeSelection}
-            checked={defaultGrade}
-            label="Give all students grade 'Hyv.'"
-          />
-        </span>
+        {!kandi
+          ? <span style={{ paddingTop: "0.7em", paddingLeft: "1em" }}>
+            <Checkbox
+              data-cy="default-grade-election"
+              onChange={handleDefaultGradeSelection}
+              checked={defaultGrade}
+              label="Give all students grade 'Hyv.'"
+            />
+          </span>
+          : null}
         <SendButton />
       </div>
       <span style={{ paddingTop: "1.3em", width: "40em", height: "3em" }}>

@@ -51,10 +51,10 @@ export const handleBatchDeletionAction = (batchId) => {
   return callBuilder(route, prefix, 'delete')
 }
 
-export const sendEntriesToSisAction = (entryIds) => {
+export const sendEntriesToSisAction = (entryIds, extraEntryIds) => {
   const route = `/entries_to_sis`
   const prefix = 'POST_ENTRIES_TO_SIS'
-  return callBuilder(route, prefix, 'post', entryIds)
+  return callBuilder(route, prefix, 'post', { entryIds, extraEntryIds })
 }
 
 export const refreshBatchStatus = (entryIds) => {

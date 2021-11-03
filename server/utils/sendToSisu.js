@@ -70,11 +70,13 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
       return [400, { message: e.response ? e.response.data : '', genericError: true, user: user.name }] //res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, user: user.name })
     }
     const failedEntries = await writeErrorsToEntries(e.response, senderId)
+    logger.info(`failedEntries ${failedEntries}`)
     logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, user: user.name })
 
     // Entries without an error, is not sent successfully to Sisu so we need to send those a second time
     const successEntries = rawData
       .filter(({ id }) => !failedEntries.includes(id))
+    logger.info(`new to send ${successEntries}`)
     if (!successEntries.length)
       return [400]
 
@@ -106,6 +108,7 @@ const parseSisuErrors = ({ failingIds, violations }) => {
 
 const writeErrorsToEntries = async ({ data }, senderId) => {
   const failingIds = parseSisuErrors(data) || data
+  logger.info(`failingIds ${failingIds}`)
   await Promise.all(failingIds.map((id) => {
     db.entries.update({
       errors: { ...data.violations[id] },

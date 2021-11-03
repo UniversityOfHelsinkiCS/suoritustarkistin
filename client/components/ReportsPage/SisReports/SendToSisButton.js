@@ -26,7 +26,7 @@ export default ({ idsToSend }) => {
           content="Send completions to Sisu"
           loading={reports.pending}
           disabled={
-            reports.pending || !entries.length
+            reports.pending || (!entries.length && !extraEntries)
           }
         />
       }

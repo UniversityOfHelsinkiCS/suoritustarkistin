@@ -6,6 +6,7 @@ const initialState = {
   rawData: '',
   data: null,
   courseId: null,
+  graderId: '',
   defaultGrade: false,
   defaultCourse: '',
   date: new Date()
@@ -43,12 +44,8 @@ export default (state = initialState, action) => {
     case 'POST_RAW_ENTRIES_SUCCESS':
       return {
         ...state,
+        ...initialState,
         data: null,
-        courseId: null,
-        sending: false,
-        defaultGrade: false,
-        defaultCourse: "",
-        rawData: '',
         error: ''
       }
     case 'POST_RAW_ENTRIES_FAILURE':

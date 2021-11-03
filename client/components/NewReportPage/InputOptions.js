@@ -81,14 +81,17 @@ export default ({ kandi }) => {
   useEffect(() => {
     if (kandi && courses) {
       const { courseCode, id: courseId } = courses.find(({ courseCode }) => courseCode === 'TKT20013')
-      dispatch(setNewRawEntriesAction({
+      const data = {
         ...newRawEntries,
         defaultCourse: courseCode,
         data: null,
         courseId
-      }))
+      }
+      if (graders && graders.length === 1)
+        data.graderId = graders[0].employeeId
+      dispatch(setNewRawEntriesAction(data))
     }
-  }, [courses, kandi])
+  }, [courses, kandi, graders])
 
   const handleGraderSelection = (e, data) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, graderId: data.value }))

@@ -40,7 +40,7 @@ export default ({ idsToSend }) => {
           onClick={sendNewEntries}
           loading={reports.pending}
           disabled={
-            reports.pending || !entries.length
+            reports.pending || (!entries.length && !extraEntries)
           }
           content={getConfirmMessage()}
         />

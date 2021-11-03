@@ -69,19 +69,19 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: user.name })
       return [400, { message: e.response ? e.response.data : '', genericError: true, user: user.name }] //res.status(400).send({ message: e.response ? e.response.data : '', genericError: true, user: user.name })
     }
-    const failedEntries = await writeErrorsToEntries(e.response, senderId)
-    logger.info(`failedEntries ${failedEntries}`)
+    const failedEntries = await writeErrorsToEntries(e.response, senderId, model)
     logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, user: user.name })
 
     // Entries without an error, is not sent successfully to Sisu so we need to send those a second time
     const successEntries = rawData
       .filter(({ id }) => !failedEntries.includes(id))
-    logger.info(`new to send ${successEntries}`)
     if (!successEntries.length)
       return [400]
 
     try {
-      const payload = entriesToRequestData(successEntries, verifier, acceptors)
+      const payload = model === 'entries'
+        ? entriesToRequestData(successEntries, verifier, acceptors)
+        : extraEntriesToRequestData(successEntries, verifier, acceptors)
       send(URLS[model], payload, successEntries.map(({ id }) => id))
     } catch (e) {
       const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
@@ -106,11 +106,11 @@ const parseSisuErrors = ({ failingIds, violations }) => {
   return failingIds.filter((id) => id !== "non-identifiable")
 }
 
-const writeErrorsToEntries = async ({ data }, senderId) => {
+const writeErrorsToEntries = async ({ data }, senderId, model) => {
   const failingIds = parseSisuErrors(data) || data
   logger.info(`failingIds ${failingIds}`)
   await Promise.all(failingIds.map((id) => {
-    db.entries.update({
+    db[model].update({
       errors: { ...data.violations[id] },
       sent: new Date(),
       senderId

@@ -1,5 +1,6 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
+const { bscThesisEntryFactory } = require('../models/factory')
 const {
   testCourses,
   testUsers,
@@ -264,44 +265,56 @@ const seedDatabaseForTests = async (req, res) => {
 }
 
 const seedBachelorData = async (req, res) => {
-  const grader = await db.users.findOne({ where: { name: 'grader' } })
-  const courses = [
-    {
-      name: "Kandidaatin tutkielma",
-      courseCode: "TKT20013",
-      language: "fi",
-      gradeScale: "sis-0-5",
-      credits: "6"
-    },
-    {
-      name: "Kypsyysnäyte",
-      courseCode: "TKT20014",
-      language: "fi",
-      gradeScale: "sis-hyl-hyv",
-      credits: "0",
-      useAsExtra: true
-    },
-    {
-      name: "Tutkimustiedonhaku",
-      courseCode: "TKT50002",
-      language: "fi",
-      gradeScale: "sis-hyl-hyv",
-      credits: "1",
-      useAsExtra: true
-    },
-    {
-      name: "Äidinkielinen viestintä",
-      courseCode: "TKT50001",
-      language: "fi",
-      gradeScale: "sis-hyl-hyv",
-      credits: "3",
-      useAsExtra: true
-    }
-  ]
-  await createTestCourses(courses)
-  const courseInstances = await db.courses.findAll({ where: { courseCode: ['TKT20013', 'TKT20014', 'TKT50002', 'TKT50001'] } })
-  grader.setCourses(courseInstances.map(({ id }) => id))
-  return res.status(200).send('OK')
+  try {
+    await deleteAllSisReports()
+    await deleteAllOodiReports()
+    await deleteAllCourses()
+    await deleteAllUsers()
+    await deleteAllJobs()
+    await createTestUsers(testUsers)
+    const grader = await db.users.findOne({ where: { name: 'grader' } })
+    const courses = [
+      {
+        name: "Kandidaatin tutkielma",
+        courseCode: "TKT20013",
+        language: "fi",
+        gradeScale: "sis-0-5",
+        credits: "6"
+      },
+      {
+        name: "Kypsyysnäyte",
+        courseCode: "TKT20014",
+        language: "fi",
+        gradeScale: "sis-hyl-hyv",
+        credits: "0",
+        useAsExtra: true
+      },
+      {
+        name: "Tutkimustiedonhaku",
+        courseCode: "TKT50002",
+        language: "fi",
+        gradeScale: "sis-hyl-hyv",
+        credits: "1",
+        useAsExtra: true
+      },
+      {
+        name: "Äidinkielinen viestintä",
+        courseCode: "TKT50001",
+        language: "fi",
+        gradeScale: "sis-hyl-hyv",
+        credits: "3",
+        useAsExtra: true
+      }
+    ]
+    await createTestCourses(courses)
+    const courseInstances = await db.courses.findAll({ where: { courseCode: ['TKT20013', 'TKT20014', 'TKT50002', 'TKT50001'] } })
+    await grader.setCourses(courseInstances.map(({ id }) => id))
+    await bscThesisEntryFactory('grader')
+    return res.status(200).send('OK')
+  } catch (error) {
+    logger.error(`Error seeding the database: ${error.message}`)
+    res.status(500).json({ error: error.message })
+  }
 }
 
 module.exports = {

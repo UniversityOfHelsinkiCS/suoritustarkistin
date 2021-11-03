@@ -210,6 +210,7 @@ const EntryCells = ({ entry }) => {
         <Accordion className="report-table-accordion" style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
           <Accordion.Title
             active
+            data-cy="entry-course-name"
             onClick={() => setOpen(!open)}
           >
             <Icon name={`caret ${open ? 'down' : 'right'}`} />

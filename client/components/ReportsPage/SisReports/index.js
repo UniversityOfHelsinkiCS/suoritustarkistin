@@ -188,7 +188,7 @@ export default withRouter(({ mooc, match }) => {
       if (!reportsFetched && !pending)
         fetch()
     }
-  }, [allowFetch, mooc, offsetForMooc])
+  }, [allowFetch, mooc, offsetForMooc, reportsFetched, pending])
 
   useEffect(() => {
     // Fire fetch offset for batch in url

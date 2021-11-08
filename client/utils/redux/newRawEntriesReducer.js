@@ -9,7 +9,8 @@ const initialState = {
   graderId: '',
   defaultGrade: false,
   defaultCourse: '',
-  date: new Date()
+  date: new Date(),
+  sending: false
 }
 
 export const setNewRawEntriesAction = (rawEntries) => {
@@ -24,9 +25,7 @@ export const sendNewRawEntriesAction = (rawEntries) => {
   const route = `/sis_raw_entries`
   const prefix = 'POST_RAW_ENTRIES'
   return callBuilder(route, prefix, 'post', {
-    ...rawEntries,
-    rawData: undefined,
-    sending: undefined
+    ...rawEntries
   })
 }
 
@@ -67,13 +66,8 @@ export default (state = initialState, action) => {
       }
     case 'LOGIN_SUCCESS':
       return {
-        courseId: null,
-        defaultGrade: false,
-        defaultCourse: "",
-        graderId: action.response.employeeId,
-        data: null,
-        sending: false,
-        rawData: ''
+        ...state,
+        graderId: action.response.employeeId
       }
     default:
       return state

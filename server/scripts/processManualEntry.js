@@ -44,7 +44,8 @@ const processManualEntry = async ({
   reporterId,
   courseId,
   date,
-  data
+  data,
+  isKandi
 }, transaction) => {
   const toRawEntry = async (rawEntry) => {
     await validateEntry(rawEntry)
@@ -169,7 +170,7 @@ const processManualEntry = async ({
     course: originalCourse.courseCode,
     batchId
   })
-  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries)
+  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries, isKandi)
   const [failedExtras, successExtras] = await processExtraEntries(newExtraRawEntries)
   if (!failed.length && !failedExtras.length) {
     await db.entries.bulkCreate(success, { transaction })

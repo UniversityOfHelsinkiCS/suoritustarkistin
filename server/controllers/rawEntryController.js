@@ -59,6 +59,8 @@ const addRawEntries = async (req, res) => {
           html: newReport(withEnrollment, unsent, result.courseCode, result.batchId)
         })
       }
+      const orphans = await db.raw_entries.deleteOrphans(result.batchId)
+      logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
       return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment  })
     } else {
       await transaction.rollback()

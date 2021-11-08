@@ -76,7 +76,7 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
     const successEntries = rawData
       .filter(({ id }) => !failedEntries.includes(id))
     if (!successEntries.length)
-      return [400]
+      return [400, { message: 'Some entries failed in Sisu' }]
 
     try {
       const payload = model === 'entries'

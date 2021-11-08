@@ -240,7 +240,7 @@ const sendToSis = async (req, res) => {
 
 
   const { entryIds = [], extraEntryIds = [] } = req.body
-  let [status, message] = [200]
+  let [status, message] = []
   try {
     if (entryIds.length) {
       [status, message] = await attainmentsToSisu('entries', verifier, req)
@@ -263,7 +263,7 @@ const sendToSis = async (req, res) => {
     order: [['createdAt', 'DESC'], 'studentNumber']
   })
 
-  return res.status(status).json(updatedWithRawEntries)
+  return res.status(200).json(updatedWithRawEntries)
 }
 
 const refreshSisStatus = async (req, res) => {

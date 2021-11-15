@@ -105,7 +105,15 @@ const getBaches = async ({ offset, moocReports = false, filters }) => {
     if (extraEntry.id) {
       return { ...rest, entry: { ...extraEntry, type: 'EXTRA_ENTRY' } }
     }
-    return { ...row, entry: { ...entry, type: 'ENTRY' } }
+    return {
+      ...rest,
+      entry: {
+        ...entry,
+        // Sequelize somehow does not include virtual fields
+        missingEnrolment: !(entry.courseUnitId && entry.courseUnitRealisationId && entry.assessmentItemId),
+        type: 'ENTRY'
+      }
+    }
   })
   return { rows: transformedRows, count: Number(count[0].count) }
 }

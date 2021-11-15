@@ -59,6 +59,7 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
 
   try {
     await send(URLS[model], data, id)
+    return [200]
   } catch (e) {
     const payload = JSON.stringify(data)
     const errorMessage = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
@@ -87,9 +88,10 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
       const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })
       sendSentryMessage(`Sending entries to Sisu failed! (Round 2)`, user, { payload, errorMessage: err })
+      return [400, { message: 'No entries sent to Sisu' }]
     }
   }
-  return [200]
+  return [400, { message: 'Some entries failed in Sisu' }]
 
 }
 

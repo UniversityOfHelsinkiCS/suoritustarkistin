@@ -10,7 +10,7 @@ const instructionContainer = {
 
 const detailedInstructions = {
   textAlign: 'left',
-  width:"60em"
+  width: "60em"
 }
 
 const instruction = {
@@ -50,27 +50,19 @@ const DetailedInstructions = () => (
         <p style={instruction}>Date of completion</p>
         You can add date separately for each student.
         Any date chosen from date-picker will apply to completions that do not have a separately set date for them.
-        Please note that the course instance will be picked based automatically based on the completion date.  
-      </List.Item>
-      <List.Item>
-        <p style={instruction}>Course code</p>
-        Not used
-      </List.Item>
-      <List.Item>
-        <p style={instruction}>Course code</p>
-        Not used
+        Please note that the course instance will be picked based automatically based on the completion date.
       </List.Item>
       <List.Item>
         <p style={instruction}>Language of "Äidinkielinen viestintä"</p>
-        "fi", "en", "sv". Use "x" to opt out for student.
+        "fi", "en", "sv". Use "x" to opt-out for student.
       </List.Item>
       <List.Item>
         <p style={instruction}>Language of "Kypsyysnäyte"</p>
-        "fi", "en", "sv". Use "x" to opt out for student.
+        "fi", "en", "sv". Use "x" to opt-out for student.
       </List.Item>
       <List.Item>
         <p style={instruction}>Language of "Tutkimustiedonhaku"</p>
-        "fi", "en", "sv". Use "x" to opt out for student.
+        "fi", "en", "sv". Use "x" to opt-out for student.
       </List.Item>
     </List>
   </div>
@@ -83,25 +75,23 @@ export default () => (
         Reporting bachelor thesis completions through Suotar
       </Header>
       <p>
-        Suotar automates reporting completions for courses Äidinkielinen viestintä, Tutkimustiedonhaku and Kypsyysnäyte.
-        Language of extra courses is defaulted to language of bachelor thesis and can be controlled with last three columns in csv.
-        To opt out reporting a extra course use value "x". 
+        Suotar automates reporting completions for courses Äidinkielinen viestintä, Tutkimustiedonhaku and Kypsyysnäyte. The language of extra courses is defaulted to the language of bachelor thesis and can be controlled with the last three columns in CSV. To opt-out reporting, an extra course use value "x".
       </p>
       <p>
-        If bachelor thesis is reported in english the language of extra courses have to be defined explicitly.
+        If a bachelor thesis is reported in English the language of extra courses have to be defined explicitly.
       </p>
       <p style={subHeader}>
         Each completion should be its own line in the following format:
       </p>
       <p style={subHeader}>
-        student number;grade;credits;bsc language;date;<strike>course code</strike>;lang;lang;lang
+        student number;grade;credits;bsc language;date;lang;lang;lang
         <span>
           <Popup
             on={['hover', 'click']}
             pinned
             trigger={
               <Icon
-                style={{ marginLeft: "0.3em"}}
+                style={{ marginLeft: "0.3em" }}
                 name="question circle"
                 size="large"
               ></Icon>

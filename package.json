@@ -87,7 +87,8 @@
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
     "winston": "^3.2.1",
-    "winston-log2gelf": "^2.4.0"
+    "winston-log2gelf": "^2.4.0",
+    "faker": "^5.5.3"
   },
   "devDependencies": {
     "babel-preset-stage-2": "^6.24.1",

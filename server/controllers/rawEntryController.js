@@ -18,8 +18,7 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'User is not authorized to report completions.' })
     }
 
-    const { courseId, graderId, date, data } = req.body
-
+    const { courseId, graderId, date, data, isKandi } = req.body
     if (!graderId) {
       logger.error({ message: 'Unsuccessful upload: missing form fields', user: req.user.name, courseId, graderId, date })
       return res.status(400).json({ error: 'Grader missing!' })
@@ -37,9 +36,9 @@ const addRawEntries = async (req, res) => {
       reporterId: req.user.id,
       courseId,
       date: date ? date: new Date(),
-      data
+      data,
+      isKandi
     }, transaction)
-
     if (result.message === "success") {
       await transaction.commit()
       logger.info({ message: 'Report of new completions created successfully.' })
@@ -47,7 +46,7 @@ const addRawEntries = async (req, res) => {
         where: { batchId: result.batchId },
         include: [{ model: db.entries, as: 'entry' }]
       })
-      const withEnrollment = rawEntries.filter(({ entry }) => !entry.missingEnrolment).length
+      const withEnrollment = rawEntries.filter(({ entry }) => entry && !entry.missingEnrolment).length
       if (withEnrollment) {
         const unsent = await db.entries.getUnsentBatchCount()
         sendEmail({
@@ -60,6 +59,9 @@ const addRawEntries = async (req, res) => {
           html: newReport(withEnrollment, unsent, result.courseCode, result.batchId)
         })
       }
+      const orphans = await db.raw_entries.deleteOrphans(result.batchId)
+      if (orphans)
+        logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
       return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment  })
     } else {
       await transaction.rollback()
@@ -67,6 +69,7 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ message: "Processing new completions failed", failed: result.failed })
     }
   } catch (error) {
+    logger.error(error, error.stack)
     await transaction.rollback()
     handleDatabaseError(res, error)
   }

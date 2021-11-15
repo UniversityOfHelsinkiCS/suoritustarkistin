@@ -11,3 +11,5 @@ cypress/screenshots
 cypress/videos
 testdata.js
 .vscode/
+*.sql
+*.gz

@@ -4,24 +4,28 @@ import callBuilder from '../apiConnection'
 
 const initialState = {
   rawData: '',
-  data: null, 
+  data: null,
   courseId: null,
+  graderId: '',
   defaultGrade: false,
   defaultCourse: '',
-  date: new Date()
+  date: new Date(),
+  sending: false
 }
 
 export const setNewRawEntriesAction = (rawEntries) => {
   return { type: 'SET_NEW_RAW_ENTRIES', payload: rawEntries }
 }
 
+export const resetNewRawEntriesAction = () => ({
+  type: 'SET_NEW_RAW_ENTRIES', payload: { ...initialState }
+})
+
 export const sendNewRawEntriesAction = (rawEntries) => {
   const route = `/sis_raw_entries`
   const prefix = 'POST_RAW_ENTRIES'
   return callBuilder(route, prefix, 'post', {
-    ...rawEntries,
-    rawData: undefined,
-    sending: undefined
+    ...rawEntries
   })
 }
 
@@ -39,12 +43,8 @@ export default (state = initialState, action) => {
     case 'POST_RAW_ENTRIES_SUCCESS':
       return {
         ...state,
+        ...initialState,
         data: null,
-        courseId: null,
-        sending: false,
-        defaultGrade: false,
-        defaultCourse: "",
-        rawData: '',
         error: ''
       }
     case 'POST_RAW_ENTRIES_FAILURE':
@@ -66,13 +66,8 @@ export default (state = initialState, action) => {
       }
     case 'LOGIN_SUCCESS':
       return {
-        courseId: null,
-        defaultGrade: false,
-        defaultCourse: "",
-        graderId: action.response.employeeId,
-        data: null,
-        sending: false,
-        rawData: ''
+        ...state,
+        graderId: action.response.employeeId
       }
     default:
       return state

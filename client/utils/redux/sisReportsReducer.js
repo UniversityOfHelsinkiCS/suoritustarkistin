@@ -51,10 +51,10 @@ export const handleBatchDeletionAction = (batchId) => {
   return callBuilder(route, prefix, 'delete')
 }
 
-export const sendEntriesToSisAction = (entryIds) => {
+export const sendEntriesToSisAction = (entryIds, extraEntryIds) => {
   const route = `/entries_to_sis`
   const prefix = 'POST_ENTRIES_TO_SIS'
-  return callBuilder(route, prefix, 'post', entryIds)
+  return callBuilder(route, prefix, 'post', { entryIds, extraEntryIds })
 }
 
 export const refreshBatchStatus = (entryIds) => {
@@ -188,7 +188,6 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       return {
         ...state,
         ..._.cloneDeep(INITIAL_STATE),
-        reportsFetched: false,
         openAccordions: [],
         pending: false,
         error: false
@@ -216,7 +215,6 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       return {
         ...state,
         ..._.cloneDeep(INITIAL_STATE),
-        reportsFetched: false,
         pending: false,
         singleBatchPending: false,
         error: true
@@ -226,7 +224,6 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       return {
         ...state,
         ..._.cloneDeep(INITIAL_STATE),
-        reportsFetched: false,
         pending: false,
         singleBatchPending: false,
         error: false
@@ -282,7 +279,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     case 'POST_RAW_ENTRIES_SUCCESS':
       return {
         ...state,
-        reportsFetched: false
+        reports: { ...state.reports, reportsFetched: false, pending: false }
       }
     case 'GET_OFFSET_SUCCESS': {
       const key = action.response.mooc ? 'moocReports' : 'reports'

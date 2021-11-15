@@ -67,6 +67,15 @@ async function getAcceptorPersons(courseUnitRealisationIds) {
   }
 }
 
+async function getAcceptorPersonsByCourseUnit(courseUnitIds) {
+  try {
+    const { data } = await api.post(`suotar/acceptors/course-unit`, courseUnitIds)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 async function resolveUser(formData) {
   try {
     const { data } = await api.post(`suotar/resolve_user/`, formData)
@@ -104,6 +113,15 @@ const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
   }
 }
 
+const getStudentsWithStudyRight = async (studentNumbers) => {
+  try {
+    const { data } = await api.post(`students/study-rights`, studentNumbers)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 async function getResponsibles(courseCode) {
   try {
     const { data } = await api.get(`suotar/responsibles/${courseCode}`)
@@ -131,6 +149,15 @@ const getMultipleStudyRights = async (studyRightIds) => {
   }
 }
 
+const getCourseUnitIds = async (codes) => {
+  try {
+    const { data } = await api.post(`suotar/course-unit-ids`, codes)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 
 module.exports = {
   getEmployees,
@@ -143,5 +170,8 @@ module.exports = {
   resolveUser,
   getResponsibles,
   getStudyRight,
-  getMultipleStudyRights
+  getMultipleStudyRights,
+  getStudentsWithStudyRight,
+  getAcceptorPersonsByCourseUnit,
+  getCourseUnitIds
 }

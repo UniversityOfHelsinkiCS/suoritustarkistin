@@ -3,6 +3,10 @@
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
+/**
+ * This model represents assessment item attainment in Sisu. See:
+ * https://sis-helsinki.funidata.fi/ori/docs/index.html#_assessmentitemattainment
+ */
 module.exports = (sequelize, DataTypes) => {
   const Entry = sequelize.define(
     'entries',

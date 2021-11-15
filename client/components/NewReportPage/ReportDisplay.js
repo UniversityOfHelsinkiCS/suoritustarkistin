@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button, Icon, Popup, Table } from 'semantic-ui-react'
 
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { parseCSV  } from 'Utilities/inputParser'
+import { parseCSV } from 'Utilities/inputParser'
+
+import './reportDisplay.css'
+
 
 const { commify } = require('Root/utils/commify')
 const {
@@ -55,7 +58,7 @@ const getCourseCell = (course) => {
       <Table.Cell style={validStyle}>
         {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[1] : course.courseCode})`}
       </Table.Cell>
-    )  
+    )
   }
   if (course) {
     return (
@@ -120,7 +123,7 @@ const getGradeCell = (grade, defaultGrade) => {
       </Table.Cell>
     )
   }
-  
+
   return (
     <Table.Cell style={invalidStyle}>
       <Icon name="ban" />
@@ -243,7 +246,7 @@ const getDeletionCell = (index, handleRowDeletion) => {
   )
 }
 
-const validCourse = (course, courses) => courses.find((c) => c.courseCode === course) 
+const validCourse = (course, courses) => courses.find((c) => c.courseCode === course)
 
 const getCourse = (row, courses, defaultCourse) => {
   if (row.course && validCourse(row.course, courses)) return validCourse(row.course, courses)
@@ -252,7 +255,7 @@ const getCourse = (row, courses, defaultCourse) => {
   return row.course
 }
 
-export default () => {
+export default ({ allowDelete = true }) => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const graders = useSelector((state) => state.graders.data)
@@ -272,16 +275,16 @@ export default () => {
     const rows = newRawEntries.rawData.trim().split('\n')
     const rowsWithoutTheStudent = rows.filter((r, i) => i !== index)
     const rawData = rowsWithoutTheStudent.join("\n")
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, rawData, data: parseCSV(rawData, newRawEntries.defaultCourse)}))
+    dispatch(setNewRawEntriesAction({ ...newRawEntries, rawData, data: parseCSV(rawData, newRawEntries.defaultCourse) }))
   }
 
   const reportRows = newRawEntries.data.map((row, index) => {
     const course = getCourse(row, courses, defaultCourse)
 
     return (
-      <Table.Row key={row.studentId + index}>
+      <Table.Row key={row.studentId + index} className={row.isExtra ? 'extra-entry' : ''}>
         {row.registration ||
-        hasOpenUniRegistration(course, row.studentId, registrations)
+          hasOpenUniRegistration(course, row.studentId, registrations)
           ? getOpenUniCourseCell(course)
           : getCourseCell(course)}
         {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
@@ -295,13 +298,13 @@ export default () => {
         )}
         {getDateCell(row.attainmentDate || date)}
         {getErrorCell(newRawEntries, row.studentId)}
-        {getDeletionCell(index, handleRowDeletion)}
+        {allowDelete ? getDeletionCell(index, handleRowDeletion) : null}
       </Table.Row>
     )
   })
 
   return (
-    <Table celled>
+    <Table celled data-cy="new-report-table">
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell width={3}>Course</Table.HeaderCell>
@@ -310,9 +313,9 @@ export default () => {
           <Table.HeaderCell width={1}>Credits (op)</Table.HeaderCell>
           <Table.HeaderCell width={1}>Language</Table.HeaderCell>
           <Table.HeaderCell width={2}>Grader</Table.HeaderCell>
-          <Table.HeaderCell>Completion date</Table.HeaderCell>
+          <Table.HeaderCell width={2}>Completion date</Table.HeaderCell>
           {newRawEntries.failed && <Table.HeaderCell>Errors</Table.HeaderCell>}
-          <Table.HeaderCell width={1}>Remove from report</Table.HeaderCell>
+          {allowDelete ? <Table.HeaderCell width={1}>Remove from report</Table.HeaderCell> : null}
         </Table.Row>
       </Table.Header>
       <Table.Body>{reportRows}</Table.Body>

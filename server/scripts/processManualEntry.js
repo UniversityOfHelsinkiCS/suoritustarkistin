@@ -1,4 +1,5 @@
 const db = require('../models/index')
+const { flatten } = require('lodash')
 const {
   isValidStudentId,
   isValidGrade,
@@ -6,6 +7,7 @@ const {
   isValidCourseCode
 } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
+const processExtraEntries = require('./processExtraEntries')
 const { getRegistrations } = require('../services/eduweb')
 const logger = require('@utils/logger')
 const { getBatchId } = require('@root/utils/common')
@@ -42,73 +44,10 @@ const processManualEntry = async ({
   reporterId,
   courseId,
   date,
-  data
+  data,
+  isKandi
 }, transaction) => {
-
-  const courseCodes = data.map((rawEntry) => rawEntry.course) 
-
-  let originalCourse = {}
-  
-  if (courseId) {
-    originalCourse = await db.courses.findOne({
-      where: {
-        id: courseId
-      }
-    })  
-  } else {
-    originalCourse = await db.courses.findOne({
-      where: {
-        courseCode: courseCodes[0]
-      }
-    })
-  }
-
-  if (!originalCourse) throw new Error('Course information missing! Check that you have given a default course or each completion has its own course')
-
-  let ayCourse = undefined
-  let tktCourse = undefined
-
-  if (originalCourse.autoSeparate) {
-    const courses = originalCourse.courseCode.split('+')
-
-    const firstCourse = courses[0] ? courses[0].trim() : undefined
-    const secondCourse = courses[1] ? courses[1].trim() : undefined
-
-    if (!firstCourse || !secondCourse) throw new Error('Erroneous coursecode for a combocourse') 
-
-    ayCourse = await db.courses.findOne({
-      where: {
-        courseCode: firstCourse.startsWith('AY') ? firstCourse : secondCourse
-      }
-    })
-
-    tktCourse = await db.courses.findOne({
-      where: {
-        courseCode: firstCourse.startsWith('AY') ? secondCourse : firstCourse
-      }
-    })
-
-    if (!ayCourse) throw new Error('AY-version of the course is missing!')
-    if (!tktCourse) throw new Error('TKT-version of the course is missing!')
-  } else {
-    tktCourse = originalCourse
-  }
-
-  const grader = await db.users.findOne({
-    where: {
-      employeeId: graderId
-    }
-  })
-
-  if (!grader) throw new Error('Grader employee id does not exist.')
-
-  const batchId = getBatchId(originalCourse.courseCode)
-
-  const registrations = originalCourse.autoSeparate
-    ? await getRegistrations([ayCourse.courseCode])
-    : undefined
-
-  const rawEntries = await Promise.all(data.map(async (rawEntry) => {
+  const toRawEntry = async (rawEntry) => {
     await validateEntry(rawEntry)
 
     if (rawEntry.course) {
@@ -149,9 +88,81 @@ const processManualEntry = async ({
       reporterId: reporterId,
       courseId: tktCourse.id
     }
-  }))
+  }
+
+  const courseCodes = data.map((rawEntry) => rawEntry.course)
+
+  let originalCourse = {}
+
+  if (courseId) {
+    originalCourse = await db.courses.findOne({
+      where: {
+        id: courseId
+      }
+    })
+  } else {
+    originalCourse = await db.courses.findOne({
+      where: {
+        courseCode: courseCodes[0]
+      }
+    })
+  }
+
+  if (!originalCourse) throw new Error('Course information missing! Check that you have given a default course or each completion has its own course')
+
+  let ayCourse = undefined
+  let tktCourse = undefined
+
+  if (originalCourse.autoSeparate) {
+    const courses = originalCourse.courseCode.split('+')
+
+    const firstCourse = courses[0] ? courses[0].trim() : undefined
+    const secondCourse = courses[1] ? courses[1].trim() : undefined
+
+    if (!firstCourse || !secondCourse) throw new Error('Erroneous coursecode for a combocourse')
+
+    ayCourse = await db.courses.findOne({
+      where: {
+        courseCode: firstCourse.startsWith('AY') ? firstCourse : secondCourse
+      }
+    })
+
+    tktCourse = await db.courses.findOne({
+      where: {
+        courseCode: firstCourse.startsWith('AY') ? secondCourse : firstCourse
+      }
+    })
+
+    if (!ayCourse) throw new Error('AY-version of the course is missing!')
+    if (!tktCourse) throw new Error('TKT-version of the course is missing!')
+  } else {
+    tktCourse = originalCourse
+  }
+
+  const grader = await db.users.findOne({
+    where: {
+      employeeId: graderId
+    }
+  })
+
+  if (!grader) throw new Error('Grader employee id does not exist.')
+
+  const batchId = getBatchId(originalCourse.courseCode)
+
+  const registrations = originalCourse.autoSeparate
+    ? await getRegistrations([ayCourse.courseCode])
+    : undefined
+
+  const rawEntries = await Promise.all(data
+    .filter(({ isExtra }) => !isExtra)
+    .map(toRawEntry))
+
+  const extraRawEntries = await Promise.all(data
+    .filter(({ isExtra }) => isExtra)
+    .map(toRawEntry))
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
+  const newExtraRawEntries = await db.raw_entries.bulkCreate(flatten(extraRawEntries), { returning: true, transaction })
 
   logger.info({
     message: 'Raw entries created successfully',
@@ -159,16 +170,18 @@ const processManualEntry = async ({
     course: originalCourse.courseCode,
     batchId
   })
-  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries)
-  if (!failed.length) {
+  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries, isKandi)
+  const [failedExtras, successExtras] = await processExtraEntries(newExtraRawEntries)
+  if (!failed.length && !failedExtras.length) {
     await db.entries.bulkCreate(success, { transaction })
+    await db.extra_entries.bulkCreate(successExtras, { transaction })
     logger.info({
       message: 'Entries success',
-      amount: success.length
+      amount: success.length + successExtras.length
     })
-    return { message: "success", success, failed, batchId, isMissingEnrollment, courseCode: originalCourse.courseCode }
+    return { message: "success", success: success.concat(successExtras), failed: failed.concat(failedExtras), batchId, isMissingEnrollment, courseCode: originalCourse.courseCode }
   } else {
-    return { message: "error", success, failed, batchId, courseCode: originalCourse.courseCode }
+    return { message: "error", success: success.concat(successExtras), failed: failed.concat(failedExtras), batchId, courseCode: originalCourse.courseCode }
   }
 }
 

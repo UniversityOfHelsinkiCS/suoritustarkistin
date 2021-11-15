@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
     language: DataTypes.STRING,
     credits: DataTypes.STRING,
     autoSeparate: DataTypes.BOOLEAN,
-    gradeScale: DataTypes.STRING
+    gradeScale: DataTypes.STRING,
+    useAsExtra: DataTypes.BOOLEAN
   })
 
   Courses.associate = function (models) {

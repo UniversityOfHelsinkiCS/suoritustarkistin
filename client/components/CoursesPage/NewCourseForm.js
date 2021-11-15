@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
-import { Button, Form, Input, Segment } from 'semantic-ui-react'
+import { Button, Form, Input, Segment, Popup, Icon, Checkbox } from 'semantic-ui-react'
 import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
 import {
   isValidCourse,
@@ -11,11 +11,13 @@ import {
 } from 'Root/utils/validators'
 import { gradeScales } from 'Root/utils/common'
 
+const Help = ({ text }) => <span style={{ marginLeft: '7px' }}><Popup content={text} trigger={<Icon name='help' circular />} /></span>
+
 export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
   const graders = useSelector((state) => state.graders.data)
   const courseData = useSelector((state) => state.courses)
-  const [data, setData] = useState({ autoSeparate: false, graders: [] })
+  const [data, setData] = useState({ autoSeparate: false, graders: [], useAsExtra: false })
 
   useEffect(() => {
     if (courseData.responsibles && !courseData.pending) {
@@ -94,10 +96,7 @@ export default ({ close: closeModal }) => {
         />
         <Form.Dropdown
           data-cy="add-course-grader"
-          search
           label="Grader"
-          multiple
-          selection
           options={_.sortBy(graders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,
@@ -105,6 +104,9 @@ export default ({ close: closeModal }) => {
           }))}
           value={data.graders}
           onChange={(e, d) => setData({ ...data, graders: d.value })}
+          search
+          multiple
+          selection
         />
         <Form.Field
           data-cy="fetch-graders"
@@ -115,6 +117,19 @@ export default ({ close: closeModal }) => {
           icon="refresh"
           color="blue"
           basic
+        />
+        <Form.Field
+          label={
+            <label>
+              <>
+                Use as erilliskirjaus
+                <Help text='Select this only if course is used as "erilliskirjaus" together with bachelors thesis' />
+              </>
+            </label>
+          }
+          control={Checkbox}
+          value={data.useAsExtra}
+          onChange={(e, d) => setData({ ...data, useAsExtra: d.checked })}
         />
         <Form.Group>
           <Form.Field

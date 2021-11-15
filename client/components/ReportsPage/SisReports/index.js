@@ -3,7 +3,7 @@ import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import moment from 'moment'
-import { Accordion, Button, Icon, Message, Segment } from 'semantic-ui-react'
+import { Accordion, Button, Icon, Message, Segment, Popup } from 'semantic-ui-react'
 
 import Notification from 'Components/Message'
 import DeleteBatchButton from './DeleteBatchButton'
@@ -79,9 +79,15 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
         {user.adminMode && (
           <>
             <SendToSisButton
-              entries={report
+              idsToSend={report
                 .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
-                .map(({ entry }) => entry.id)
+                .reduce((acc, { entry }) => {
+                  if (entry.type === 'ENTRY')
+                    acc.entries.push(entry.id)
+                  else
+                    acc.extraEntries.push(entry.id)
+                  return acc
+                }, { entries: [], extraEntries: [] })
               } />
             {!batchSent ? <DeleteBatchButton batchId={report[0].batchId} /> : null}
             <ViewAttainmentsInSisu rawEntry={report[0]} />
@@ -127,19 +133,26 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
 }
 
 const title = (batch) => {
-  // eslint-disable-next-line no-unused-vars
-  const courseCode = batch[0].course ? batch[0].course.courseCode : ''
-  const courseName = batch[0].course ? batch[0].course.name : ''
+  const { courseCodes, courseNames } = batch.reduce((acc, { course }) => {
+    acc.courseCodes.add(course.courseCode)
+    acc.courseNames.add(course.name)
+    return acc
+  }, { courseCodes: new Set(), courseNames: new Set() })
+  const [code, ...extraCodes] = Array.from(courseCodes)
+  const [name, ...extraNames] = Array.from(courseNames)
   const date = moment(batch[0].createdAt).format('DD.MM.YY - HH:mm:SS')
+  const extras = extraCodes && extraCodes.length ? `+ ${extraCodes.length} others` : ''
   const titleString = batch[0].batchId.startsWith("limbo")
     ? batch[0].batchId
-    : `${courseName} - ${courseCode} - ${date}`
-  return (
-    <Accordion.Title data-cy={`report-${courseCode}`}>
-      {titleString}
-      <ReportStatus batch={batch} />
-    </Accordion.Title>
-  )
+    : `${name} - ${code} ${extras} - ${date}`
+  return <Accordion.Title data-cy={`report-${code}`}>
+    {extraCodes.length
+      ? <Popup
+        content={extraCodes.map((c, i) => `${extraNames[i] || name}  - ${c}`).join('\n') || 'aa'}
+        trigger={<span>{titleString}</span>} />
+      : titleString}
+    <ReportStatus batch={batch} />
+  </Accordion.Title>
 }
 
 export default withRouter(({ mooc, match }) => {
@@ -173,7 +186,7 @@ export default withRouter(({ mooc, match }) => {
       if (!reportsFetched && !pending)
         fetch(mooc)
     }
-  }, [allowFetch, mooc, offsetForMooc])
+  }, [allowFetch, mooc, offsetForMooc, reportsFetched, pending])
 
   useEffect(() => {
     // Fire fetch offset for batch in url
@@ -185,14 +198,17 @@ export default withRouter(({ mooc, match }) => {
   }, [])
 
   const batchedReports = Object.values(_.groupBy(rows, 'batchId'))
-    .sort((a, b) => b[0].createdAt.localeCompare(a[0].createdAt))
 
   const panels = batchedReports
     .sort((a, b) => new Date(b[0].updatedAt) - new Date(a[0].updatedAt))
     .map((report, index) => {
       const reportWithEntries = report
         .filter((e) => e && e.entry)
-        .sort((a, b) => a.entry.missingEnrolment - b.entry.missingEnrolment)
+        .sort((a, b) => {
+          if (!a.entry.missingEnrolment && !b.entry.missingEnrolment)
+            return a.entry.type.localeCompare(b.entry.type)
+          return a.entry.missingEnrolment - b.entry.missingEnrolment
+        })
       if (!reportWithEntries || !reportWithEntries.length) return null
 
       return {

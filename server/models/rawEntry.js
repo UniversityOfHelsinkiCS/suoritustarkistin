@@ -51,10 +51,17 @@ module.exports = (sequelize, DataTypes) => {
     const orphans = await this.findAll({
       where: {
         batchId,
-        '$entry.id$': null
+        [sequelize.Sequelize.Op.and]: [
+          {'$entry.id$': null},
+          {'$extraEntry.id$': null}
+        ]
       },
-      include: { association: 'entry', attributes: [] },
-      attributes: ['id']
+      include: [
+        { association: 'entry', attributes: [] },
+        { association: 'extraEntry', attributes: [] }
+      ],
+      attributes: ['id'],
+      raw: true
     })
     return this.destroy({
       where: {

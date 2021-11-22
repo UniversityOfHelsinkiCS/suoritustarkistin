@@ -29,11 +29,13 @@ const formatGradersForSelection = (data) => {
 }
 
 const formatCoursesForSelection = (data) => {
-  const courses = data.map((c) => ({
-    key: c.id,
-    text: `${c.name} (${c.courseCode})`,
-    value: c.id
-  }))
+  const courses = data
+    .filter(({ useAsExtra }) => !useAsExtra)
+    .map((c) => ({
+      key: c.id,
+      text: `${c.name} (${c.courseCode})`,
+      value: c.id
+    }))
   if (courses) return _.sortBy(courses, ['text'])
   return []
 }
@@ -53,6 +55,7 @@ const formatCoursesForKandi = (data) => data
       disabled: true
     }
   })
+  .sort((a, b) => (a.disabled || false) - (b.disabled || false))
 
 
 export default ({ kandi }) => {

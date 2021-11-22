@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       gradeScaleId: DataTypes.STRING,
       gradeId: DataTypes.STRING,
       sent: DataTypes.DATE,
+      extraCompletions: DataTypes.BOOLEAN,
       registered: {
         type: DataTypes.STRING,
         validate: {

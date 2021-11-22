@@ -2,26 +2,33 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Form, TextArea } from 'semantic-ui-react'
 import { setNewRawEntriesAction, resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { parseCSV, parseKandiCSV } from 'Utilities/inputParser'
+import { parseCSV, parseKandiCSV, parseExtraCSV } from 'Utilities/inputParser'
+import { isKandiExtraCourse } from 'Root/utils/common'
 
 const textAreaStyle = {
   padding: '20px'
 }
 
 
-export default ({ kandi }) => {
+const defineParser = (kandi, extra) => {
+  if (kandi) return parseKandiCSV
+  if (extra) return parseExtraCSV
+  return parseCSV
+} 
+
+export default ({ kandi, extra }) => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
-  const CSVParser = kandi ? parseKandiCSV : parseCSV
   const courses = useSelector((state) => state.courses.data)
-  const getExtras = () => courses.filter((c) => c.useAsExtra)
+  const CSVParser = defineParser(kandi, extra)
+  const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
 
   const handleDataChange = (event) => {
     const rawData = event.target.value
     if (rawData === '')
       return dispatch(resetNewRawEntriesAction())
 
-    const defaultCourses = kandi ? getExtras() : newRawEntries.defaultCourse
+    const defaultCourses = kandi ? getKandiExtras() : newRawEntries.defaultCourse
     const data = CSVParser(rawData.trim(), defaultCourses)
 
     dispatch(

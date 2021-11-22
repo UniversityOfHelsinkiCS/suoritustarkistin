@@ -7,6 +7,7 @@ import {
   isValidOodiDate,
   isValidStudentId
 } from 'Root/utils/validators'
+import { KANDI_EXTRA_COURSES } from 'Root/utils/common'
 
 
 const markDuplicates = (data, defaultCourse) => {
@@ -89,10 +90,14 @@ export const parseCSV = (string, defaultCourse) => {
   return markDuplicates(data, defaultCourse)
 }
 
-const COURSE_CODE_MAP = {
-  TKT50001: 'ÄIDINKIELINEN_VIESTINTÄ',
-  TKT20014: 'KYPSYYSNÄYTE',
-  TKT50002: 'TUTKIMUSTIEDONHAKU'
+export const parseExtraCSV = (string, defaultCourse) => {
+  if (!string) return []
+  const rows = string.trim().split('\n')
+  const data = rows.map((row) => {
+    const [studentId, grade, credits, language, attainmentDate, course] = row.split(CSV.detect(row))
+    return { ...toRawEntry(studentId, grade, credits, language, attainmentDate, course), isExtra: true }
+  })
+  return markDuplicates(data, defaultCourse)
 }
 
 export const parseKandiCSV = (string, extraCourses) => {
@@ -103,20 +108,20 @@ export const parseKandiCSV = (string, extraCourses) => {
     const extras = !['0', 'hyl.', 'hyl'].includes((grade || '').toLowerCase())
       ? extraCourses.filter(({ courseCode }) => {
         // Filter out extras explicitly
-        if (motherTongueLang === 'x' && COURSE_CODE_MAP[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ')
+        if (motherTongueLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ')
           return false
-        if (kypLang === 'x' && COURSE_CODE_MAP[courseCode] === 'KYPSYYSNÄYTE')
+        if (kypLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'KYPSYYSNÄYTE')
           return false
-        if (researchLang === 'x' && COURSE_CODE_MAP[courseCode] === 'TUTKIMUSTIEDONHAKU')
+        if (researchLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'TUTKIMUSTIEDONHAKU')
           return false
 
         // Filter out extras when kandi language is english
         // and extras lang not explicitly defined
-        if (language === 'en' && COURSE_CODE_MAP[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ' && !motherTongueLang)
+        if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ' && !motherTongueLang)
           return false
-        if (language === 'en' && COURSE_CODE_MAP[courseCode] === 'KYPSYYSNÄYTE' && !kypLang)
+        if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'KYPSYYSNÄYTE' && !kypLang)
           return false
-        if (language === 'en' && COURSE_CODE_MAP[courseCode] === 'TUTKIMUSTIEDONHAKU' && !researchLang)
+        if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'TUTKIMUSTIEDONHAKU' && !researchLang)
           return false
 
         return true
@@ -127,7 +132,7 @@ export const parseKandiCSV = (string, extraCourses) => {
       .concat(extras
         .map((courseCode) => {
           let extraEntryLang = ''
-          switch (COURSE_CODE_MAP[courseCode]) {
+          switch (KANDI_EXTRA_COURSES[courseCode]) {
             case 'ÄIDINKIELINEN_VIESTINTÄ':
               extraEntryLang = motherTongueLang || language
               break

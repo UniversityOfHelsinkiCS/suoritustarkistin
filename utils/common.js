@@ -30,6 +30,17 @@ const getBatchId = (courseCode) => `${courseCode}-${moment().tz("Europe/Helsinki
   'DD.MM.YY-HHmmss'
 )}`
 
+
+const KANDI_EXTRA_COURSES = {
+  TKT50001: 'ÄIDINKIELINEN_VIESTINTÄ',
+  TKT20014: 'KYPSYYSNÄYTE',
+  TKT50002: 'TUTKIMUSTIEDONHAKU'
+}
+
+const isKandiCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode) || course.courseCode === "TKT20013"
+const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
+const isRegularExtraCourse = (course) => !Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode) && course.useAsExtra
+
 /** 
  * Mooc completion dates:
  * 1. Automatically generated completions (eg. Elements and CSB, useManualCompletionDate = false)
@@ -216,6 +227,10 @@ const testRawEntriesHylHyv = [
 
 module.exports = {
   gradeScales,
+  KANDI_EXTRA_COURSES,
+  isKandiCourse,
+  isKandiExtraCourse,
+  isRegularExtraCourse,
   moocLanguageMap,
   inProduction,
   inDevelopment,

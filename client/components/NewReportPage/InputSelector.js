@@ -11,12 +11,15 @@ import InputOptions from 'Components/NewReportPage/InputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
 import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 import { resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { isRegularExtraCourse, isKandiCourse } from 'Root/utils/common'
 
 export default () => {
   const dispatch = useDispatch()
   const [displayBscUserGuide, setDisplayBscUserGuide] = useState(false)
   const courses = useSelector((state) => state.courses.data)
-  const hasKandi = courses.some(({ courseCode }) => courseCode === 'TKT20013')
+  const hasKandi = courses.some((course) => isKandiCourse(course))
+  const hasErillisKirjaus = courses.some((course) => isRegularExtraCourse(course)) 
+
   const panes = [
     {
       menuItem: (
@@ -63,6 +66,23 @@ export default () => {
       </Tab.Pane>
     )
   })
+  if (hasErillisKirjaus) panes.push({
+    menuItem: (
+      <Menu.Item key="copypaste-erilliskirjaus" data-cy="copypaste-erilliskirjaus">
+        <Icon name="file alternate outline" />
+        Copy & Paste ERILLISKIRJAUS
+      </Menu.Item>
+    ),
+    render: () => (
+      <Tab.Pane>
+        <TextInput extra />
+        <InputOptions extra />
+        <ReportDisplay allowDelete={false} />
+      </Tab.Pane>
+    )
+  })
+
+
 
   return <>
     {!displayBscUserGuide ? <UserGuide /> : <BachelorThesisUserGuide />}

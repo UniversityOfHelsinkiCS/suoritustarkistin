@@ -1,6 +1,6 @@
 const logger = require('@utils/logger')
-const db = require('../models/index')
 const { eduwebGet, getRegistrationsByInstance } = require('../services/eduweb')
+const { checkCompletions } = require('../services/pointsmooc')
 
 
 const handleDatabaseError = (res, error) => {
@@ -20,8 +20,7 @@ const checkEduweb = async (req, res) => {
 
 const checkMooc = async (req, res) => {
   try {
-    const result = []
-    
+    const result = await checkCompletions(req.params.id)
     return res.status(200).send(result)
   } catch (error) {
     handleDatabaseError(res, error)

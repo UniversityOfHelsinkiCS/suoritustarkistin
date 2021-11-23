@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Input, Header, Form } from 'semantic-ui-react'
 import { checkEduWeb } from 'Utilities/redux/apiCheckReducer'
-import Instance from './Instance'
+import EduwebInstance from 'Components/ApiChecks/EduwebInstance'
 
 
 export default () => {
@@ -23,7 +23,7 @@ export default () => {
   
     return (
       <div style={{ marginTop: '50px' }}>
-        {eduweb.instances.map((instance) => <Instance instance={instance} active={active} setActive={setActive} />)}
+        {eduweb.instances.map((instance) => <EduwebInstance instance={instance} active={active} setActive={setActive} />)}
       </div>
     )
   }
@@ -31,7 +31,7 @@ export default () => {
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
       <Header>Eduweb check</Header>
-      <Form onSubmit={handleCheck} style={{ marginBottom: '60px', maxWidth: '1000px' }}>
+      <Form onSubmit={handleCheck} style={{ marginBottom: '60px' }}>
         <Form.Field
           control={Input}
           label='Enter course code'

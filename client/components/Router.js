@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import ProtectedRoute from 'Components/ProtectedRoute'
+import ApiChecks from 'Components/ApiChecks'
 import NewReportPage from 'Components/NewReportPage'
 import ReportsPage from 'Components/ReportsPage'
 import CoursesPage from 'Components/CoursesPage'
@@ -19,6 +20,7 @@ export default () => (
       <ProtectedRoute exact path="/courses" component={CoursesPage} />
       <ProtectedRoute exact path="/users" component={UsersPage} />
       <ProtectedRoute exact path="/automated-reports" component={AutomatedReportsPage} />
+      <ProtectedRoute exact path="/apichecks" component={ApiChecks} />
       <ProtectedRoute exact path="/sandbox" component={SandboxPage} />
       <Route exact path="/unauthorized" component={UnauthorizedPage} />
       <Route path="*" render={() => <div>Page not found!</div>} />

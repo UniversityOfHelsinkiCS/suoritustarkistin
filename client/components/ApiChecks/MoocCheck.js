@@ -8,7 +8,7 @@ import MoocInstance from './MoocInstance'
 export default () => {
   const dispatch = useDispatch()
   const { pending } = useSelector((state) => state.apiChecks)
-  const [data, setData] = useState({})
+  const [data, setData] = useState({ course: '' })
 
   const handleCheck = (event) => {
     event.preventDefault()
@@ -22,16 +22,16 @@ export default () => {
       <Form onSubmit={handleCheck} style={{ marginBottom: '60px' }}>
         <Form.Field
           control={Input}
-          label='Enter course code'
+          label='Enter course code or mooc-slug'
           action={{
             icon: 'search',
             color: 'blue',
             labelPosition: 'right',
             content: 'Check'
           }} 
-          value={data.course}
+          value={data.course || ''}
           placeholder="TKT10002"
-          onChange={(e, d) => setData({ course: e.target.value })}
+          onChange={(e) => setData({ course: e.target.value })}
         />
       </Form >
       <MoocInstance />

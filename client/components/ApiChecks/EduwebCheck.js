@@ -8,7 +8,7 @@ import EduwebInstance from 'Components/ApiChecks/EduwebInstance'
 export default () => {
   const dispatch = useDispatch()
   const { eduweb, pending } = useSelector((state) => state.apiChecks)
-  const [data, setData] = useState({})
+  const [data, setData] = useState({ course: '' })
   const [active, setActive] = useState(0)
 
   const handleCheck = (event) => {
@@ -42,9 +42,9 @@ export default () => {
             labelPosition: 'right',
             content: 'Check'
           }} 
-          value={data.course}
+          value={data.course || ''}
           placeholder="TKT10002"
-          onChange={(e, d) => setData({ course: e.target.value })}
+          onChange={(e) => setData({ course: e.target.value })}
         />
       </Form >
       {getInstanceCards(eduweb)}

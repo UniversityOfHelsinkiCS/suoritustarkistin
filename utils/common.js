@@ -37,8 +37,11 @@ const KANDI_EXTRA_COURSES = {
   TKT50002: 'TUTKIMUSTIEDONHAKU'
 }
 
-const isKandiCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode) || course.courseCode === "TKT20013"
+const THESIS_COURSES = ['TKT20013']
+
+const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
 const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
+const isOneOfKandiCourses = (course) => isThesisCourse(course) || isKandiExtraCourse(course)
 const isRegularExtraCourse = (course) => !Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode) && course.useAsExtra
 
 /** 
@@ -228,8 +231,9 @@ const testRawEntriesHylHyv = [
 module.exports = {
   gradeScales,
   KANDI_EXTRA_COURSES,
-  isKandiCourse,
+  isThesisCourse,
   isKandiExtraCourse,
+  isOneOfKandiCourses,
   isRegularExtraCourse,
   moocLanguageMap,
   inProduction,

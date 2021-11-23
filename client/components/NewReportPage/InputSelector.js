@@ -11,7 +11,7 @@ import InputOptions from 'Components/NewReportPage/InputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
 import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 import { resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { isRegularExtraCourse, isKandiCourse } from 'Root/utils/common'
+import { isRegularExtraCourse, isThesisCourse } from 'Root/utils/common'
 import { parseCSV, parseKandiCSV, parseExtraCSV } from 'Utilities/inputParser'
 
 
@@ -19,7 +19,7 @@ export default () => {
   const dispatch = useDispatch()
   const [displayBscUserGuide, setDisplayBscUserGuide] = useState(false)
   const courses = useSelector((state) => state.courses.data)
-  const hasKandi = courses.some((course) => isKandiCourse(course))
+  const hasKandi = courses.some((course) => isThesisCourse(course))
   const hasErillisKirjaus = courses.some((course) => isRegularExtraCourse(course)) 
 
   const panes = [

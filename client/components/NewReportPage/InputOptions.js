@@ -19,7 +19,7 @@ import {
   getAllCoursesAction,
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
-import { isKandiCourse, isRegularExtraCourse } from 'Utilities/common'
+import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
 
 
 const formatGradersForSelection = (data) => {
@@ -58,7 +58,7 @@ const formatCoursesForKandi = (courses) => courses
 
 
 const defineCourseOptions = (courses, kandi, extra) => {
-  if (kandi) return formatCoursesForKandi(courses.filter((course) => isKandiCourse(course)))
+  if (kandi) return formatCoursesForKandi(courses.filter((course) => isOneOfKandiCourses(course)))
   if (extra) return formatCoursesForSelection(courses.filter((course) => isRegularExtraCourse(course)))
   return formatCoursesForSelection(courses.filter(({ useAsExtra }) => !useAsExtra))
 }

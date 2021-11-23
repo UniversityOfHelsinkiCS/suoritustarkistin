@@ -18,8 +18,8 @@ export default ({ instance, active, setActive }) => {
 
     return (
       <div>
-        {enrollments.map((s) => (
-          <div>
+        {enrollments.map((s, i) => (
+          <div key={`${s.email}+${i}`}>
             {getCardRow(s, 'onro')}
             {getCardRow(s, 'email')}
             {getCardRow(s, 'mooc')}

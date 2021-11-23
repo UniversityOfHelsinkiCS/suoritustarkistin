@@ -19,7 +19,7 @@ export default () => {
     return (
       <Card fluid style={{ padding: '20px' }}>
         {mooc.map((s) => (
-          <div>
+          <div key={s.id}>
             {getCardRow(s, 'user_upstream_id')}
             {getCardRow(s, 'email')}
             {getCardRow(s, 'student_number')}

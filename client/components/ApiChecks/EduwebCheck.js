@@ -23,7 +23,7 @@ export default () => {
   
     return (
       <div>
-        {eduweb.instances.map((instance) => <EduwebInstance instance={instance} active={active} setActive={setActive} />)}
+        {eduweb.instances.map((instance) => <EduwebInstance key={instance.oodi_id} instance={instance} active={active} setActive={setActive} />)}
       </div>
     )
   }

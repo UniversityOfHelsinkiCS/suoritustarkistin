@@ -13,8 +13,8 @@ export default () => {
   const handleCheck = (event) => {
     event.preventDefault()
     dispatch(checkMooc(data.course))
-  } 
-
+  }
+  
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
       <Header>Mooc check</Header>

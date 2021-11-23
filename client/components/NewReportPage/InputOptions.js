@@ -19,7 +19,6 @@ import {
   getAllCoursesAction,
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
-import { parseCSV } from 'Utilities/inputParser'
 import { isKandiCourse, isRegularExtraCourse } from 'Utilities/common'
 
 
@@ -65,7 +64,7 @@ const defineCourseOptions = (courses, kandi, extra) => {
 }
 
 
-export default ({ kandi, extra }) => {
+export default ({ kandi, extra, parseCSV }) => {
   const dispatch = useDispatch()
   const [showingDate, setShowingDate] = useState()
   const [defaultGrade, setDefaultGrade] = useState(false)

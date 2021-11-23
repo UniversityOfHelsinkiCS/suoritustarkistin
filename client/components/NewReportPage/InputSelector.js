@@ -12,6 +12,8 @@ import TextInput from 'Components/NewReportPage/TextInput'
 import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 import { resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { isRegularExtraCourse, isKandiCourse } from 'Root/utils/common'
+import { parseCSV, parseKandiCSV, parseExtraCSV } from 'Utilities/inputParser'
+
 
 export default () => {
   const dispatch = useDispatch()
@@ -30,8 +32,8 @@ export default () => {
       ),
       render: () => (
         <Tab.Pane>
-          <TextInput />
-          <InputOptions />
+          <TextInput parseCSV={parseCSV}/>
+          <InputOptions parseCSV={parseCSV} />
           <ReportDisplay />
         </Tab.Pane>
       )
@@ -45,8 +47,8 @@ export default () => {
       ),
       render: () => (
         <Tab.Pane>
-          <Dropzone />
-          <InputOptions />
+          <Dropzone parseCSV={parseCSV} />
+          <InputOptions parseCSV={parseCSV} />
           <ReportDisplay />
         </Tab.Pane>
       )
@@ -60,8 +62,8 @@ export default () => {
     ),
     render: () => (
       <Tab.Pane>
-        <TextInput kandi />
-        <InputOptions kandi />
+        <TextInput kandi parseCSV={parseKandiCSV}/>
+        <InputOptions kandi parseCSV={parseKandiCSV}/>
         <ReportDisplay allowDelete={false} />
       </Tab.Pane>
     )
@@ -75,8 +77,8 @@ export default () => {
     ),
     render: () => (
       <Tab.Pane>
-        <TextInput extra />
-        <InputOptions extra />
+        <TextInput extra parseCSV={parseExtraCSV}/>
+        <InputOptions extra parseCSV={parseExtraCSV}/>
         <ReportDisplay allowDelete={false} />
       </Tab.Pane>
     )

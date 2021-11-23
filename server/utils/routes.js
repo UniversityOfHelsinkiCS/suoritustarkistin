@@ -126,8 +126,8 @@ router.delete('/jobs/:id', checkAdmin, deleteJob)
 router.get('/kurki/courses', checkAdmin, getKurkiCourses)
 router.post('/kurki/raw_entries', checkAdmin, addKurkiRawEntries)
 
-router.get('/apicheck/eduweb/:id', checkEduweb)
-router.get('/apicheck/mooc/:id', checkMooc)
+router.get('/apicheck/eduweb/:id', checkAdmin, checkEduweb)
+router.get('/apicheck/mooc/:id', checkAdmin, checkMooc)
 
 router.get('/status', (req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
 

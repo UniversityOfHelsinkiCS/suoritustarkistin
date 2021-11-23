@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { Form, Header, Input } from 'semantic-ui-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Form, Header, Input, Loader } from 'semantic-ui-react'
 import { checkMooc } from 'Utilities/redux/apiCheckReducer'
 import MoocInstance from './MoocInstance'
 
 
 export default () => {
   const dispatch = useDispatch()
+  const { pending } = useSelector((state) => state.apiChecks)
   const [data, setData] = useState({})
 
   const handleCheck = (event) => {
@@ -17,6 +18,7 @@ export default () => {
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
       <Header>Mooc check</Header>
+      <Loader size='big' active={pending} />
       <Form onSubmit={handleCheck} style={{ marginBottom: '60px' }}>
         <Form.Field
           control={Input}

@@ -14,7 +14,7 @@ export default ({ instance, active, setActive }) => {
   
   const getEnrollments = (url) => {
     const enrollments = eduweb?.enrollments[url]
-    if (!enrollments || !enrollments.length) return 'Instance has no enrollments'
+    if (!enrollments || !enrollments.length) return <b>Instance has no enrollments</b>
 
     return (
       <div>
@@ -31,7 +31,7 @@ export default ({ instance, active, setActive }) => {
   }
 
   return (
-    <Card style={{ width: '1000px', padding: '20px' }}>
+    <Card fluid style={{ padding: '20px' }}>
       {getCardRow(instance, 'oodi_id')}
       {getCardRow(instance, 'url')}
       {getCardRow(instance, 'alkupvm')}

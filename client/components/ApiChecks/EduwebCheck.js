@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Input, Header, Form } from 'semantic-ui-react'
+import { Input, Header, Form, Loader } from 'semantic-ui-react'
 import { checkEduWeb } from 'Utilities/redux/apiCheckReducer'
 import EduwebInstance from 'Components/ApiChecks/EduwebInstance'
 
 
 export default () => {
   const dispatch = useDispatch()
-  const { eduweb } = useSelector((state) => state.apiChecks)
+  const { eduweb, pending } = useSelector((state) => state.apiChecks)
   const [data, setData] = useState({})
   const [active, setActive] = useState(0)
 
@@ -19,10 +19,10 @@ export default () => {
   const getInstanceCards = (eduweb) => {
     const instances = eduweb?.instances
     if (!eduweb) return ''
-    if (!instances || !instances.length) return 'No instances found from Eduweb-api with the course code'
+    if (!instances || !instances.length) return <b>No instances found from Eduweb-api with the course code</b>
   
     return (
-      <div style={{ marginTop: '50px' }}>
+      <div>
         {eduweb.instances.map((instance) => <EduwebInstance instance={instance} active={active} setActive={setActive} />)}
       </div>
     )
@@ -31,7 +31,8 @@ export default () => {
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
       <Header>Eduweb check</Header>
-      <Form onSubmit={handleCheck} style={{ marginBottom: '60px' }}>
+      <Loader size='big' active={pending} />
+      <Form onSubmit={handleCheck} style={{ marginBottom: '100px' }}>
         <Form.Field
           control={Input}
           label='Enter course code'

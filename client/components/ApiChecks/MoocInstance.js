@@ -13,10 +13,11 @@ export default () => {
   )
   
   const getEnrollments = () => {
-    if (!mooc || !mooc.length) return 'The course has no completions'
+    if (!mooc) return ''
+    if (mooc && !mooc.length && !mooc.error) return 'The course has no completions'
 
     return (
-      <div>
+      <Card fluid style={{ padding: '20px' }}>
         {mooc.map((s) => (
           <div>
             {getCardRow(s, 'user_upstream_id')}
@@ -32,13 +33,14 @@ export default () => {
             ------------------------
           </div>
         ))}
-      </div>
+      </Card>
     )
   }
 
   return (
-    <Card style={{ width: '1000px', padding: '20px' }}>
+    <div>
       {getEnrollments()}
-    </Card>
+    </div>
+  
   )
 }

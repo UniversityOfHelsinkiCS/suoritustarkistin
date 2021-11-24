@@ -195,6 +195,18 @@ export default (state = null, action) => {
         content: action.error,
         type: 'negative'
       }
+    case 'CHECK_EDUWEB_API_FAILURE':
+      return {
+        header: 'Checking the course failed',
+        content: action.error,
+        type: 'negative'
+      }
+    case 'CHECK_MOOC_API_FAILURE':
+      return {
+        header: 'Checking the course failed',
+        content: action.error,
+        type: 'negative'
+      }
     default:
       return state
   }

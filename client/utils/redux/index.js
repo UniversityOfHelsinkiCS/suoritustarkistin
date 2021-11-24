@@ -13,6 +13,7 @@ import message from './messageReducer'
 import users from './usersReducer'
 import moocJobs from './moocJobsReducer'
 import systemStatus from './systemStatusReducer'
+import apiChecks from './apiCheckReducer'
 
 export default combineReducers({
   user,
@@ -27,5 +28,6 @@ export default combineReducers({
   message,
   users,
   moocJobs,
-  systemStatus
+  systemStatus,
+  apiChecks
 })

@@ -64,7 +64,7 @@ export default () => {
       <Tab.Pane>
         <TextInput kandi parseCSV={parseKandiCSV}/>
         <InputOptions kandi parseCSV={parseKandiCSV}/>
-        <ReportDisplay allowDelete={false} />
+        <ReportDisplay kandi allowDelete={false} />
       </Tab.Pane>
     )
   })

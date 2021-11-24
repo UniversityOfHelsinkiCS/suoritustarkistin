@@ -4,11 +4,13 @@ const Op = Sequelize.Op
 const moment = require('moment')
 const {
   getEmployees,
-  getStudentsWithStudyRight,
+  getStudents,
   getEarlierAttainments,
-  getCourseUnitIds
+  getCourseUnitIds,
+  getMultipleStudyRightsByPersons
 } = require('../services/importer')
 const { generateSisuId } = require('../utils/common')
+const resolveStudyRight = require('../utils/resolveStudyRight')
 const logger = require('@utils/logger')
 
 const COMMON = {
@@ -16,7 +18,7 @@ const COMMON = {
   gradeScaleId: "sis-hyl-hyv"
 }
 
-const processExtraEntries = async (createdRawEntries) => {
+const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) => {
   const success = []
   const failed = []
 
@@ -24,7 +26,7 @@ const processExtraEntries = async (createdRawEntries) => {
   const courseIds = [...new Set(createdRawEntries.map(({ courseId }) => courseId))]
   const studentNumbers = [...new Set(createdRawEntries.map((rawEntry) => rawEntry.studentNumber))]
 
-  const [graders, courses, studentsWithStudyRight] = await Promise.all([
+  const [graders, courses, students] = await Promise.all([
     await db.users.findAll({
       where: {
         id: { [Op.in]: graderIds }
@@ -37,8 +39,9 @@ const processExtraEntries = async (createdRawEntries) => {
       },
       raw: true
     }),
-    getStudentsWithStudyRight(studentNumbers)
+    getStudents(studentNumbers)
   ])
+  const studyRights = await getMultipleStudyRightsByPersons(students.map(({ id }) => id))
 
   const employeeIds = graders.map((grader) => grader.employeeId)
   const employees = await getEmployees(employeeIds)
@@ -54,6 +57,7 @@ const processExtraEntries = async (createdRawEntries) => {
     const completionDate = moment(rawEntry.attainmentDate)
     const grader = graders.find((g) => g.id === rawEntry.graderId)
     const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
+    const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
 
     if (earlierAttainments.find(({ studentNumber, courseCode, attainments }) =>
       rawEntry.studentNumber === studentNumber &&
@@ -64,7 +68,7 @@ const processExtraEntries = async (createdRawEntries) => {
       return
     }
 
-    if (!(rawEntry.studentNumber in studentsWithStudyRight)) {
+    if (!student) {
       failed.push({
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,
@@ -81,16 +85,18 @@ const processExtraEntries = async (createdRawEntries) => {
       return
     }
 
-    const { personId, studyRightId } = studentsWithStudyRight[rawEntry.studentNumber]
+    const { id: studyRightId } = resolveStudyRight(
+      studyRights.filter(({ personId }) => student.id === personId), rawEntry.attainmentDate, requireMatluStudyRight
+    )
     const { courseCode } = course
     const { id: courseUnitId } = getActiveCourseUnitId(courseUnitIds[courseCode])
 
     success.push({
       ...COMMON,
       courseUnitId,
-      personId,
       studyRightId,
       id: generateSisuId(),
+      personId: student.id,
       verifierPersonId: verifier.id,
       rawEntryId: rawEntry.id,
       completionDate: completionDate.format('YYYY-MM-DD'),

@@ -171,7 +171,7 @@ const processManualEntry = async ({
     batchId
   })
   const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries, isKandi)
-  const [failedExtras, successExtras] = await processExtraEntries(newExtraRawEntries)
+  const [failedExtras, successExtras] = await processExtraEntries(newExtraRawEntries, isKandi)
   if (!failed.length && !failedExtras.length) {
     await db.entries.bulkCreate(success, { transaction })
     await db.extra_entries.bulkCreate(successExtras, { transaction })

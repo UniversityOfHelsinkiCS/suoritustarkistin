@@ -11,12 +11,17 @@ import InputOptions from 'Components/NewReportPage/InputOptions'
 import TextInput from 'Components/NewReportPage/TextInput'
 import ReportDisplay from 'Components/NewReportPage/ReportDisplay'
 import { resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { isRegularExtraCourse, isThesisCourse } from 'Root/utils/common'
+import { parseCSV, parseKandiCSV, parseExtraCSV } from 'Utilities/inputParser'
+
 
 export default () => {
   const dispatch = useDispatch()
   const [displayBscUserGuide, setDisplayBscUserGuide] = useState(false)
   const courses = useSelector((state) => state.courses.data)
-  const hasKandi = courses.some(({ courseCode }) => courseCode === 'TKT20013')
+  const hasKandi = courses.some((course) => isThesisCourse(course))
+  const hasErillisKirjaus = courses.some((course) => isRegularExtraCourse(course)) 
+
   const panes = [
     {
       menuItem: (
@@ -27,8 +32,8 @@ export default () => {
       ),
       render: () => (
         <Tab.Pane>
-          <TextInput />
-          <InputOptions />
+          <TextInput parseCSV={parseCSV}/>
+          <InputOptions parseCSV={parseCSV} />
           <ReportDisplay />
         </Tab.Pane>
       )
@@ -42,8 +47,8 @@ export default () => {
       ),
       render: () => (
         <Tab.Pane>
-          <Dropzone />
-          <InputOptions />
+          <Dropzone parseCSV={parseCSV} />
+          <InputOptions parseCSV={parseCSV} />
           <ReportDisplay />
         </Tab.Pane>
       )
@@ -57,12 +62,29 @@ export default () => {
     ),
     render: () => (
       <Tab.Pane>
-        <TextInput kandi />
-        <InputOptions kandi />
+        <TextInput kandi parseCSV={parseKandiCSV}/>
+        <InputOptions kandi parseCSV={parseKandiCSV}/>
+        <ReportDisplay kandi allowDelete={false} />
+      </Tab.Pane>
+    )
+  })
+  if (hasErillisKirjaus) panes.push({
+    menuItem: (
+      <Menu.Item key="copypaste-erilliskirjaus" data-cy="copypaste-erilliskirjaus">
+        <Icon name="file alternate outline" />
+        Copy & Paste ERILLISKIRJAUS
+      </Menu.Item>
+    ),
+    render: () => (
+      <Tab.Pane>
+        <TextInput extra parseCSV={parseExtraCSV}/>
+        <InputOptions extra parseCSV={parseExtraCSV}/>
         <ReportDisplay allowDelete={false} />
       </Tab.Pane>
     )
   })
+
+
 
   return <>
     {!displayBscUserGuide ? <UserGuide /> : <BachelorThesisUserGuide />}

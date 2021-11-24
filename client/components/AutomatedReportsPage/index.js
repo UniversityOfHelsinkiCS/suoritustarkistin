@@ -50,7 +50,8 @@ export default () => {
           <JobsTable />
         </Tab.Pane>
       )
-    }]
+    }
+  ]
 
   return <Tab data-cy="automated-reports-tab" panes={panes} />
 }

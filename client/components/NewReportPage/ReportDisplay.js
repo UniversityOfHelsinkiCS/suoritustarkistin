@@ -255,7 +255,7 @@ const getCourse = (row, courses, defaultCourse) => {
   return row.course
 }
 
-export default ({ allowDelete = true }) => {
+export default ({ allowDelete = true, kandi }) => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const graders = useSelector((state) => state.graders.data)
@@ -282,7 +282,7 @@ export default ({ allowDelete = true }) => {
     const course = getCourse(row, courses, defaultCourse)
 
     return (
-      <Table.Row key={row.studentId + index} className={row.isExtra ? 'extra-entry' : ''}>
+      <Table.Row key={row.studentId + index} className={(kandi && row.isExtra) ? 'extra-entry' : ''}>
         {row.registration ||
           hasOpenUniRegistration(course, row.studentId, registrations)
           ? getOpenUniCourseCell(course)

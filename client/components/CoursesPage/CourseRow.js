@@ -29,8 +29,13 @@ export default ({ course, graders }) => {
       <Grid.Column width={1}>{course.credits}</Grid.Column>
       <Grid.Column width={3}>{getGradersNames()}</Grid.Column>
       <Grid.Column width={2}>{course.gradeScale}</Grid.Column>
-      <Grid.Column textAlign="center" width={2}>
+      <Grid.Column textAlign="center" width={1}>
         {course.autoSeparate ? (
+          <Icon name="check" color="green" size="large" />
+        ) : null}
+      </Grid.Column>
+      <Grid.Column textAlign="center" width={1}>
+        {course.useAsExtra ? (
           <Icon name="check" color="green" size="large" />
         ) : null}
       </Grid.Column>

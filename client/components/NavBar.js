@@ -103,6 +103,21 @@ export default () => {
     )
   }
 
+  const ApiChecks = () => {
+    return (
+      <Menu.Item
+        data-cy="nav-apichecks"
+        as={Link}
+        to={'/apichecks'}
+        name="apichecks"
+        active={activeItem === 'apichecks'}
+        onClick={handleItemClick}
+      >
+        API Checks
+      </Menu.Item>
+    )
+  }
+
   const handleUnhijack = () => {
     window.localStorage.removeItem('adminLoggedInAs')
     window.location.reload()
@@ -161,6 +176,7 @@ export default () => {
         View reports
       </Menu.Item>
       {user.adminMode ? <AutomatedReportsButton /> : null}
+      {user.adminMode ? <ApiChecks /> : null}
       {user.adminMode ? <CoursesButton /> : null}
       {user.adminMode ? <UsersButton /> : null}
       {user.isAdmin ? getSandboxButton() : null}

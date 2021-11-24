@@ -19,7 +19,7 @@ import {
   getAllCoursesAction,
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
-import { parseCSV } from 'Utilities/inputParser'
+import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
 
 
 const formatGradersForSelection = (data) => {
@@ -28,9 +28,9 @@ const formatGradersForSelection = (data) => {
   return []
 }
 
+
 const formatCoursesForSelection = (data) => {
   const courses = data
-    .filter(({ useAsExtra }) => !useAsExtra)
     .map((c) => ({
       key: c.id,
       text: `${c.name} (${c.courseCode})`,
@@ -40,8 +40,7 @@ const formatCoursesForSelection = (data) => {
   return []
 }
 
-const formatCoursesForKandi = (data) => data
-  .filter(({ courseCode, useAsExtra }) => courseCode === 'TKT20013' || useAsExtra)
+const formatCoursesForKandi = (courses) => courses
   .map((c) => {
     if (!c.useAsExtra) return {
       key: c.id,
@@ -58,7 +57,14 @@ const formatCoursesForKandi = (data) => data
   .sort((a, b) => (a.disabled || false) - (b.disabled || false))
 
 
-export default ({ kandi }) => {
+const defineCourseOptions = (courses, kandi, extra) => {
+  if (kandi) return formatCoursesForKandi(courses.filter((course) => isOneOfKandiCourses(course)))
+  if (extra) return formatCoursesForSelection(courses.filter((course) => isRegularExtraCourse(course)))
+  return formatCoursesForSelection(courses.filter(({ useAsExtra }) => !useAsExtra))
+}
+
+
+export default ({ kandi, extra, parseCSV }) => {
   const dispatch = useDispatch()
   const [showingDate, setShowingDate] = useState()
   const [defaultGrade, setDefaultGrade] = useState(false)
@@ -66,10 +72,7 @@ export default ({ kandi }) => {
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
-  const courseOptions = kandi
-    ? formatCoursesForKandi(courses)
-    : formatCoursesForSelection(courses)
-
+  const courseOptions = defineCourseOptions(courses, kandi, extra)
 
   useEffect(() => {
     if (user.adminMode) {

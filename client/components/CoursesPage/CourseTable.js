@@ -35,9 +35,6 @@ export default () => {
             <Header as="h4">Grade scale</Header>
           </Grid.Column>
           <Grid.Column width={1}>
-            <Header as="h4">Combo course</Header>
-          </Grid.Column>
-          <Grid.Column width={1}>
             <Header as="h4">Extra completions</Header>
           </Grid.Column>
           <Grid.Column width={2} />

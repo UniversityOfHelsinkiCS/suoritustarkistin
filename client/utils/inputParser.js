@@ -3,7 +3,6 @@ import * as _ from 'lodash'
 import {
   isDateObject,
   isValidDate,
-  isValidEmailAddress,
   isValidOodiDate,
   isValidStudentId
 } from 'Root/utils/validators'
@@ -16,7 +15,7 @@ const markDuplicates = (data, defaultCourse) => {
     .map((row, index) => {
       return {
         index,
-        studentnumber: row.registration ? row.registration.onro : row.studentId,
+        studentnumber: row.studentId,
         course: row.course.length ? row.course : defaultCourse
       }
     })
@@ -151,33 +150,4 @@ export const parseKandiCSV = (string, extraCourses) => {
       )
   })
   return markDuplicates(_.flatten(data))
-}
-
-export const attachRegistrations = (data, registrations, defaultCourse) => {
-  if (!data) return null
-  return markDuplicates(
-    data.map((row) => {
-      const cleanedEmail = row.studentId.trim().toLowerCase()
-      if (isValidEmailAddress(cleanedEmail)) {
-        const registration = registrations.find(
-          (reg) =>
-            reg.email.toLowerCase() === cleanedEmail ||
-            reg.mooc.toLowerCase() === cleanedEmail
-        )
-        return { ...row, registration }
-      }
-      return { ...row, registration: undefined }
-    }),
-    defaultCourse
-  )
-}
-
-export const stripRegistrations = (data, defaultCourse) => {
-  if (!data) return null
-  return markDuplicates(
-    data.map((row) => {
-      return { ...row, registration: undefined }
-    }),
-    defaultCourse
-  )
 }

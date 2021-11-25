@@ -93,10 +93,8 @@ const isValidEmailAddress = (address) =>
     address
   )
 
-const isValidHYCourseCode = (courseCode) =>
+const isValidCourseCode = (courseCode) =>
   /^(TKT|BSCS|CSM|MAT|DATA|AY|MFK|JODG|JODG-)[A-Za-z0-9-]{3,12}$/.test(courseCode)
- 
-const isValidCourseCode = (courseCode, combo) => combo ? true : isValidHYCourseCode(courseCode)
 
 const areValidGraders = (graders) => {
   if (!Array.isArray(graders)) return false
@@ -110,7 +108,7 @@ const isValidGradeScale = (gradeScale) => {
 }
 
 const isValidCourse = (course) => {
-  if (!course.autoSeparate && !isValidCourseCode(course.courseCode)) return false
+  if (!isValidCourseCode(course.courseCode)) return false
   if (!course.name) return false
   if (!isValidLanguage(course.language)) return false
   if (!isValidCreditAmount(course.credits)) return false
@@ -185,7 +183,6 @@ module.exports = {
   isValidEmailAddress,
   areValidNewRawEntries,
   isValidCourse,
-  isValidHYCourseCode,
   isValidCourseCode,
   isValidJob,
   isValidSchedule

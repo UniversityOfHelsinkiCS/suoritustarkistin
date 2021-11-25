@@ -4,56 +4,49 @@ const logger = require('@utils/logger')
 const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
 
-const checkEntries = async (entries) => {
-  const postData = entries.map(({ personId, assessmentItemId, gradeId, courseUnitId, id }) => ({
-    id, personId, assessmentItemId, gradeId, courseUnitId
-  }))
+const checkEntries = async (entries, model) => {
+  const postData = entries.map(({ personId, id }) => ({ id, personId }))
 
   try {
     const { data } = await api.post('/suotar/verify', postData)
-    const amountUpdated = await markAsRegistered(data)
-    const stats = await getRegisteredStatusStats()
+    if (!data.length) return true
+    const amountUpdated = await markAsRegistered(data, model)
     logger.info({
-      message: `Checked total ${entries.length} entries, found ${amountUpdated} new registrations.`,
+      message: `Checked total ${entries.length} ${model}, found ${amountUpdated} new registrations.`,
       newRegistrations: data.length,
-      missingRegistrations: (entries.length - data.length),
-      stats
+      missingRegistrations: (entries.length - data.length)
     })
     return true
   } catch (e) {
-    logger.error({ message: 'Failed to check Sisu entries', error: e.toString() })
+    logger.error({ message: 'Failed to check Sisu entries 2', error: e.toString() })
     return false
   }
 }
 
-const getRegisteredStatusStats = async () => {
-  return await db.entries.findAll({
-    where: {
-      sent: {[Sequelize.Op.not]: null},
-      errors: {[Sequelize.Op.eq]: null}
-    },
-    attributes: ['registered', [Sequelize.fn('COUNT', 'registered'), 'count']],
-    group: ['registered'],
-    raw: true
-  })
-}
-
-const markAsRegistered = async (entries) => {
+const markAsRegistered = async (entries, model) => {
   const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
   const registeredIds = entries.filter(({ registered }) => registered === 'CourseUnitAttainment').map(({ id }) => id)
-  const partlyAffected = await db.entries.update({ registered: 'PARTLY_REGISTERED' }, {
-    where: {
-      id: { [Sequelize.Op.in]: partlyIds },
-      registered: {[Sequelize.Op.not]: 'PARTLY_REGISTERED'}
-    }
-  })
-  const registeredAffected = await db.entries.update({ registered: 'REGISTERED' }, {
-    where: {
-      id: { [Sequelize.Op.in]: registeredIds },
-      registered: {[Sequelize.Op.not]: 'REGISTERED'}
-    }
-  })
-  return partlyAffected[0] + registeredAffected[0]
+  let partlyAffected = 0
+  let registeredAffected = 0
+  if (partlyIds.length) {
+    const result = await db[model].update({ registered: 'PARTLY_REGISTERED' }, {
+      where: {
+        id: { [Sequelize.Op.in]: partlyIds },
+        registered: { [Sequelize.Op.not]: 'PARTLY_REGISTERED' }
+      }
+    })
+    partlyAffected = result[0]
+  }
+  if (registeredIds.length) {
+    const result = await db[model].update({ registered: 'REGISTERED' }, {
+      where: {
+        id: { [Sequelize.Op.in]: registeredIds },
+        registered: { [Sequelize.Op.not]: 'REGISTERED' }
+      }
+    })
+    registeredAffected = result[0]
+  }
+  return partlyAffected + registeredAffected
 }
 
 const checkAllEntriesFromSisu = async () => {
@@ -64,7 +57,15 @@ const checkAllEntriesFromSisu = async () => {
       sent: { [Sequelize.Op.not]: null }
     }
   })
-  await checkEntries(entries)
+  const extraEntries = await db.extra_entries.findAll({
+    where: {
+      registered: { [Sequelize.Op.not]: 'REGISTERED' },
+      errors: { [Sequelize.Op.eq]: null },
+      sent: { [Sequelize.Op.not]: null }
+    }
+  })
+  await checkEntries(entries, 'entries')
+  await checkEntries(extraEntries, 'extra_entries')
 }
 
 const markAsRegisteredToMooc = async (completionStudentPairs) => {
@@ -93,7 +94,7 @@ const checkRegisteredForMooc = async () => {
 
     const completionStudentPairs = unregistered.reduce(
       (completionStudentPairs, rawEntry) => {
-        const alreadyInSis = rawEntry.entry && (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED') 
+        const alreadyInSis = rawEntry.entry && (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED')
         if (alreadyInSis) {
           return completionStudentPairs.concat({
             completion_id: rawEntry.moocCompletionId,

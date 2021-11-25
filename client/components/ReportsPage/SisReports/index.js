@@ -53,7 +53,10 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
 
   const RefreshBatch = ({ report }) => <Button
     onClick={() => dispatch(
-      refreshBatchStatus(report.map(({ entry }) => entry.id))
+      refreshBatchStatus({
+        entryIds: report.filter(({entry}) => entry.type === 'ENTRY').map(({entry}) => entry.id),
+        extraEntryIds: report.filter(({entry}) => entry.type === 'EXTRA_ENTRY').map(({entry}) => entry.id)
+      })
     )}
     disabled={report.every(({ entry }) => !entry.sent)}
     icon

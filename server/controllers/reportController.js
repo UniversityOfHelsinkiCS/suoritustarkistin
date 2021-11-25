@@ -8,7 +8,7 @@ const refreshEntries = require('../scripts/refreshEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
 
 const Op = Sequelize.Op
-const PAGE_SIZE = 25 // Batches, no single reports
+const PAGE_SIZE = 15 // Batches, no single reports
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
@@ -279,25 +279,22 @@ const refreshSisStatus = async (req, res) => {
     throw new Error('User is not authorized')
   }
 
-  const entryIds = req.body
+  const { entryIds, extraEntryIds } = req.body
   const entries = await db.entries.findAll({
     where: {
-      id: { [Sequelize.Op.in]: entryIds }
+      id: entryIds
     }
   })
-  const success = await checkEntries(entries)
-  if (!success)
-    return res.status(400).send('Failed to refresh entries from Sisu')
-  const updatedWithRawEntries = await db.raw_entries.findAll({
+  const extraEntries = await db.extra_entries.findAll({
     where: {
-      '$entry.id$': { [Op.in]: entryIds }
-    },
-    include: [
-      { model: db.entries, as: 'entry', include: ['sender'] },
-      { model: db.users, as: 'reporter' }
-    ]
+      id: extraEntryIds
+    }
   })
-  return res.json(updatedWithRawEntries)
+  const success = await checkEntries(entries, 'entries')
+  const successExtras = await checkEntries(extraEntries, 'extra_entries')
+  if (!success || !successExtras)
+    return res.status(400).send('Failed to refresh entries from Sisu')
+  return res.status(200).send()
 }
 
 module.exports = {

@@ -8,10 +8,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import SendButton from 'Components/NewReportPage/SendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import {
-  clearRegistrationsAction,
-  getCoursesRegistrationsAction
-} from 'Utilities/redux/registrationsReducer'
-import {
   getAllGradersAction,
   getUsersGradersAction
 } from 'Utilities/redux/gradersReducer'

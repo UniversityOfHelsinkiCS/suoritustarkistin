@@ -26,19 +26,27 @@ const checkEntries = async (entries, model) => {
 const markAsRegistered = async (entries, model) => {
   const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
   const registeredIds = entries.filter(({ registered }) => registered === 'CourseUnitAttainment').map(({ id }) => id)
-  const partlyAffected = await db[model].update({ registered: 'PARTLY_REGISTERED' }, {
-    where: {
-      id: { [Sequelize.Op.in]: partlyIds },
-      registered: { [Sequelize.Op.not]: 'PARTLY_REGISTERED' }
-    }
-  })
-  const registeredAffected = await db[model].update({ registered: 'REGISTERED' }, {
-    where: {
-      id: { [Sequelize.Op.in]: registeredIds },
-      registered: { [Sequelize.Op.not]: 'REGISTERED' }
-    }
-  })
-  return partlyAffected[0] + registeredAffected[0]
+  let partlyAffected = 0
+  let registeredAffected = 0
+  if (partlyIds.length) {
+    const result = await db[model].update({ registered: 'PARTLY_REGISTERED' }, {
+      where: {
+        id: { [Sequelize.Op.in]: partlyIds },
+        registered: { [Sequelize.Op.not]: 'PARTLY_REGISTERED' }
+      }
+    })
+    partlyAffected = result[0]
+  }
+  if (registeredIds.length) {
+    const result = await db[model].update({ registered: 'REGISTERED' }, {
+      where: {
+        id: { [Sequelize.Op.in]: registeredIds },
+        registered: { [Sequelize.Op.not]: 'REGISTERED' }
+      }
+    })
+    registeredAffected = result[0]
+  }
+  return partlyAffected + registeredAffected
 }
 
 const checkAllEntriesFromSisu = async () => {

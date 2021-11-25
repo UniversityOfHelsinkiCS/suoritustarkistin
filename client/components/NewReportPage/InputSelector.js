@@ -64,7 +64,7 @@ export default () => {
       <Tab.Pane>
         <TextInput kandi parseCSV={parseKandiCSV}/>
         <InputOptions kandi parseCSV={parseKandiCSV}/>
-        <ReportDisplay allowDelete={false} />
+        <ReportDisplay kandi allowDelete={false} />
       </Tab.Pane>
     )
   })
@@ -93,7 +93,7 @@ export default () => {
       panes={panes}
       onTabChange={(_, { activeIndex }) => {
         dispatch(resetNewRawEntriesAction())
-        if (activeIndex === 2) setDisplayBscUserGuide(true)
+        if (activeIndex === 2 && hasKandi) setDisplayBscUserGuide(true)
         else setDisplayBscUserGuide(false)
       }} />
   </>

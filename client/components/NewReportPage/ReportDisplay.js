@@ -28,35 +28,15 @@ const warningStyle = {
   background: '#f7d96a'
 }
 
-const changedStyle = {
-  background: '#d6eaf8'
-}
-
 const invalidStyle = {
   background: '#fddede'
-}
-
-const hasOpenUniRegistration = (course, studentId, registrations) => {
-  if (!course || !course.autoSeparate || !registrations) return false
-  return registrations.find((r) => r.onro === studentId)
-}
-
-const getOpenUniCourseCell = (course) => {
-  if (course) {
-    return (
-      <Table.Cell style={changedStyle}>
-        {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[0] : course.courseCode})`}
-      </Table.Cell>
-    )
-  }
-  return <Table.Cell />
 }
 
 const getCourseCell = (course) => {
   if (course.courseCode) {
     return (
       <Table.Cell style={validStyle}>
-        {`${course.name} (${course.autoSeparate ? course.courseCode.split('+')[1] : course.courseCode})`}
+        {`${course.name} (${course.courseCode})`}
       </Table.Cell>
     )
   }
@@ -70,15 +50,7 @@ const getCourseCell = (course) => {
   return <Table.Cell />
 }
 
-const getStudentIdCell = (studentId, registration, duplicate) => {
-  if (duplicate && registration) {
-    return (
-      <Table.Cell style={invalidStyle}>
-        <Icon name="ban" />
-        {`${studentId} (${registration.onro})`} DUPLICATE!
-      </Table.Cell>
-    )
-  }
+const getStudentIdCell = (studentId, duplicate) => {
   if (duplicate) {
     return (
       <Table.Cell style={invalidStyle}>
@@ -89,13 +61,6 @@ const getStudentIdCell = (studentId, registration, duplicate) => {
   }
   if (isValidStudentId(studentId)) {
     return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
-  }
-  if (registration) {
-    return (
-      <Table.Cell style={changedStyle}>
-        {`${studentId} (${registration.onro})`}
-      </Table.Cell>
-    )
   }
   return (
     <Table.Cell style={invalidStyle}>
@@ -260,7 +225,6 @@ export default ({ allowDelete = true, kandi }) => {
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
-  const registrations = useSelector((state) => state.registrations.data)
 
   if (!newRawEntries.data) return null
 
@@ -283,10 +247,7 @@ export default ({ allowDelete = true, kandi }) => {
 
     return (
       <Table.Row key={row.studentId + index} className={(kandi && row.isExtra) ? 'extra-entry' : ''}>
-        {row.registration ||
-          hasOpenUniRegistration(course, row.studentId, registrations)
-          ? getOpenUniCourseCell(course)
-          : getCourseCell(course)}
+        {getCourseCell(course)}
         {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
         {getGradeCell(row.grade, defaultGrade)}
         {getCreditCell(row.credits, course)}

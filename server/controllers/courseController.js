@@ -13,7 +13,6 @@ const cleanCourses = (courses) => {
     courseCode: course.courseCode,
     language: course.language,
     credits: course.credits,
-    autoSeparate: course.autoSeparate,
     graders: course.graders,
     gradeScale: course.gradeScale,
     useAsExtra: course.useAsExtra

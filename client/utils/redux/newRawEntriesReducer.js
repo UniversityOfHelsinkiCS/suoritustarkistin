@@ -1,4 +1,3 @@
-import { attachRegistrations, stripRegistrations } from 'Utilities/inputParser'
 import callBuilder from '../apiConnection'
 
 
@@ -53,16 +52,6 @@ export default (state = initialState, action) => {
         sending: false,
         error: action.error.message,
         failed: action.error.failed
-      }
-    case 'GET_REGISTRATIONS_SUCCESS':
-      return {
-        ...state,
-        data: attachRegistrations(state.data, action.response, state.defaultCourse)
-      }
-    case 'CLEAR_REGISTRATIONS':
-      return {
-        ...state,
-        data: stripRegistrations(state.data, state.defaultCourse)
       }
     case 'LOGIN_SUCCESS':
       return {

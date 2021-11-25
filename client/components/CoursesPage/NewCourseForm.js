@@ -17,7 +17,7 @@ export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
   const graders = useSelector((state) => state.graders.data)
   const courseData = useSelector((state) => state.courses)
-  const [data, setData] = useState({ autoSeparate: false, graders: [], useAsExtra: false })
+  const [data, setData] = useState({ graders: [], useAsExtra: false })
 
   useEffect(() => {
     if (courseData.responsibles && !courseData.pending) {
@@ -38,7 +38,6 @@ export default ({ close: closeModal }) => {
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(addCourseAction(data))
-    setData({ autoSeparate: false })
     close()
   }
 
@@ -64,7 +63,7 @@ export default ({ close: closeModal }) => {
           placeholder="TKT00000"
           value={data.courseCode || ''}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={(data.autoSeparate || (!data.autoSeparate && isValidCourseCode(data.courseCode))) ? 'check' : 'times'}
+          icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
         <Form.Field
           data-cy="add-course-language"

@@ -8,10 +8,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import SendButton from 'Components/NewReportPage/SendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import {
-  clearRegistrationsAction,
-  getCoursesRegistrationsAction
-} from 'Utilities/redux/registrationsReducer'
-import {
   getAllGradersAction,
   getUsersGradersAction
 } from 'Utilities/redux/gradersReducer'
@@ -116,23 +112,12 @@ export default ({ kandi, extra, parseCSV }) => {
   const handleCourseSelection = (e, { value: courseId }) => {
     const course = courses.find((course) => course.id === courseId)
     if (!course) return
-    if (course.autoSeparate) {
-      dispatch(setNewRawEntriesAction({
-        ...newRawEntries,
-        defaultCourse: course.courseCode,
-        data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
-        courseId
-      }))
-      dispatch(getCoursesRegistrationsAction(courseId))
-    } else {
-      dispatch(setNewRawEntriesAction({
-        ...newRawEntries,
-        defaultCourse: course.courseCode,
-        data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
-        courseId
-      }))
-      dispatch(clearRegistrationsAction())
-    }
+    dispatch(setNewRawEntriesAction({
+      ...newRawEntries,
+      defaultCourse: course.courseCode,
+      data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
+      courseId
+    }))
   }
 
   const handleDefaultGradeSelection = () => {

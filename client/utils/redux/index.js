@@ -5,7 +5,6 @@ import oodiReports from './oodiReportsReducer'
 import sisReports from './sisReportsReducer'
 import courses from './coursesReducer'
 import graders from './gradersReducer'
-import registrations from './registrationsReducer'
 import newRawEntries from './newRawEntriesReducer'
 import newEntries from './newEntriesReducer'
 import kurki from './kurkiReducer'
@@ -21,7 +20,6 @@ export default combineReducers({
   sisReports,
   courses,
   graders,
-  registrations,
   newRawEntries,
   newEntries,
   kurki,

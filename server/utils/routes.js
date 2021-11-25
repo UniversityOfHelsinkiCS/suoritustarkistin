@@ -55,9 +55,6 @@ const {
   getKurkiCourses,
   addKurkiRawEntries
 } = require('@controllers/kurkiController')
-const {
-  getCourseRegistrations
-} = require('@controllers/registrationController')
 const { login, logout } = require('@controllers/loginController')
 
 const {
@@ -86,7 +83,6 @@ router.post('/logout', logout)
 
 router.get('/courses', checkAdmin, getCourses)
 router.post('/courses', addCourse)
-router.get('/courses/:id/registrations', getCourseRegistrations)
 router.put('/courses/:id', editCourse)
 router.get('/courses/:id/confirm_deletion', checkAdmin, confirmDeletion)
 router.delete('/courses/:id/', checkAdmin, deleteCourse)

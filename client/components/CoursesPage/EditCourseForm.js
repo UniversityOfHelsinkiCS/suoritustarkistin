@@ -26,10 +26,7 @@ export default ({ course, close: closeModal }) => {
   const dispatch = useDispatch()
   const allGraders = useSelector((state) => state.graders.data)
   const courseData = useSelector((state) => state.courses)
-  const [data, setData] = useState(
-    { ...course, graders: course.graders.map((g) => g.id) }
-    || { autoSeparate: false, graders: [] }
-  )
+  const [data, setData] = useState({ ...course, graders: course.graders.map((g) => g.id) } || { graders: [] })
 
   useEffect(() => {
     if (courseData.responsibles && !courseData.pending) {
@@ -75,7 +72,7 @@ export default ({ course, close: closeModal }) => {
           placeholder="TKT00000"
           value={data.courseCode}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={(data.autoSeparate || (!data.autoSeparate && isValidCourseCode(data.courseCode))) ? 'check' : 'times'}
+          icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
         <Form.Field
           required={true}

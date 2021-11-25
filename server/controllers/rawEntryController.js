@@ -35,7 +35,7 @@ const addRawEntries = async (req, res) => {
       graderId,
       reporterId: req.user.id,
       courseId,
-      date: date ? date: new Date(),
+      date: date ? date : new Date(),
       data,
       isKandi
     }, transaction)
@@ -44,10 +44,11 @@ const addRawEntries = async (req, res) => {
       logger.info({ message: 'Report of new completions created successfully.' })
       const rawEntries = await db.raw_entries.findAll({
         where: { batchId: result.batchId },
-        include: [{ model: db.entries, as: 'entry' }]
+        include: [{ model: db.entries, as: 'entry' }, { model: db.extra_entries, as: 'extraEntry' }]
       })
+      const onlyExtraEntries = rawEntries.every(({ extraEntry, entry }) => extraEntry && extraEntry.id && !entry)
       const withEnrollment = rawEntries.filter(({ entry }) => entry && !entry.missingEnrolment).length
-      if (withEnrollment) {
+      if (withEnrollment || onlyExtraEntries) {
         const unsent = await db.entries.getUnsentBatchCount()
         sendEmail({
           subject: `Uusia kurssisuorituksia: ${result.courseCode}`,
@@ -62,7 +63,7 @@ const addRawEntries = async (req, res) => {
       const orphans = await db.raw_entries.deleteOrphans(result.batchId)
       if (orphans)
         logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
-      return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment  })
+      return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment })
     } else {
       await transaction.rollback()
       logger.error({ message: `Processing new completions failed` })

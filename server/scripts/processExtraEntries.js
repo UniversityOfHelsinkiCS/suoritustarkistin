@@ -62,7 +62,8 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
     if (earlierAttainments.find(({ studentNumber, courseCode, attainments }) =>
       rawEntry.studentNumber === studentNumber &&
       course.courseCode === courseCode &&
-      attainments.length)
+      attainments.length) &&
+      requireMatluStudyRight // Skip earlier completions only for kandi
     ) {
       logger.warn({ message: `Attainment already registered with code ${course.courseCode} for student ${rawEntry.studentNumber}` })
       return

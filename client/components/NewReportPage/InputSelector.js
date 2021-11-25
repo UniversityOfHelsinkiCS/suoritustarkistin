@@ -93,7 +93,7 @@ export default () => {
       panes={panes}
       onTabChange={(_, { activeIndex }) => {
         dispatch(resetNewRawEntriesAction())
-        if (activeIndex === 2) setDisplayBscUserGuide(true)
+        if (activeIndex === 2 && hasKandi) setDisplayBscUserGuide(true)
         else setDisplayBscUserGuide(false)
       }} />
   </>

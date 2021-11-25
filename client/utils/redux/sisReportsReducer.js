@@ -57,10 +57,10 @@ export const sendEntriesToSisAction = (entryIds, extraEntryIds) => {
   return callBuilder(route, prefix, 'post', { entryIds, extraEntryIds })
 }
 
-export const refreshBatchStatus = (entryIds) => {
+export const refreshBatchStatus = (data) => {
   const route = `/refresh_sis_status`
   const prefix = 'REFRESH_BATCH_STATUS'
-  return callBuilder(route, prefix, 'post', entryIds)
+  return callBuilder(route, prefix, 'post', data)
 }
 
 export const refreshEnrollmentsAction = (rawEntryIds) => {
@@ -215,6 +215,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       return {
         ...state,
         ..._.cloneDeep(INITIAL_STATE),
+        openAccordions: state.openAccordions,
         pending: false,
         singleBatchPending: false,
         error: true
@@ -224,6 +225,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       return {
         ...state,
         ..._.cloneDeep(INITIAL_STATE),
+        openAccordions: state.openAccordions,
         pending: false,
         singleBatchPending: false,
         error: false
@@ -239,6 +241,8 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     case 'REFRESH_BATCH_STATUS_SUCCESS': {
       return {
         ...state,
+        ..._.cloneDeep(INITIAL_STATE),
+        openAccordions: state.openAccordions,
         pending: false,
         singleBatchPending: false,
         error: false

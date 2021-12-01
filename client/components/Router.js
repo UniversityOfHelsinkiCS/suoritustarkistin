@@ -26,7 +26,7 @@ export default () => (
       <ProtectedRoute exact path="/automated-reports" component={Wrap} childComponent={AutomatedReportsPage} />
       <ProtectedRoute exact path="/apichecks" component={Wrap} childComponent={ApiChecks} narrow />
       <ProtectedRoute exact path="/sandbox" component={Wrap} childComponent={SandboxPage} narrow />
-      <Route exact path="/unauthorized" component={Wrap} childComponent={UnauthorizedPage} />
+      <Route exact path="/unauthorized" component={UnauthorizedPage} />
       <Route path="*" render={() => <div>Page not found!</div>} />
     </Switch>
   </>

@@ -1,3 +1,18 @@
 .extra-entry, .extra-entry > td  {
     background-color: #F8FCFF !important;
 }
+
+.user-guide-card {
+    background-color: #f9f9f9 !important;
+    color: black !important;
+}
+
+.default-grade {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.react-datepicker-wrapper {
+    width: 100%;
+}

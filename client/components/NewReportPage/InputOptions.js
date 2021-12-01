@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Checkbox, Select } from 'semantic-ui-react'
+import { Checkbox, Select, Form } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -16,6 +16,20 @@ import {
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
 import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
+
+const styles = {
+  sendButton: {
+    display: 'flex',
+    justifyContent: 'end',
+    alignItems: 'center'
+  },
+  info: {
+    marginTop: '1rem'
+  },
+  form: {
+    marginTop: '1rem'
+  }
+}
 
 
 const formatGradersForSelection = (data) => {
@@ -128,49 +142,61 @@ export default ({ kandi, extra, parseCSV }) => {
 
   return (
     <>
-      <div style={{ marginBlock: '10px', marginBottom: '10px', display: 'flex' }}>
-        <Select
-          search
-          className="input"
-          data-cy="grader-selection"
-          placeholder="Choose grader"
-          onChange={handleGraderSelection}
-          value={newRawEntries.graderId}
-          options={formatGradersForSelection(graders)}
-        />
-        <Select
-          search
-          className="input"
-          data-cy="course-selection"
-          onChange={handleCourseSelection}
-          placeholder="Choose course"
-          value={newRawEntries.courseId}
-          options={courseOptions}
-        />
-        <DatePicker
-          id="date-picker"
-          className="date-picker"
-          style={{ height: "20px" }}
-          dateFormat="dd.MM.yyyy"
-          placeholderText="Set date for completions"
-          selected={showingDate}
-          onChange={(date) => handleDateSelection(date)}
-        />
-        {!kandi
-          ? <span style={{ paddingTop: "0.7em", paddingLeft: "1em" }}>
-            <Checkbox
-              data-cy="default-grade-election"
-              onChange={handleDefaultGradeSelection}
-              checked={defaultGrade}
-              label="Give all students grade 'Hyv.'"
+      <Form style={styles.form}>
+        <Form.Group widths='equal'>
+          <Form.Field
+            control={Select}
+            search
+            className="input"
+            data-cy="grader-selection"
+            placeholder="Choose grader"
+            label="Choose grader"
+            onChange={handleGraderSelection}
+            value={newRawEntries.graderId}
+            options={formatGradersForSelection(graders)}
+          />
+          <Form.Field
+            control={Select}
+            search
+            className="input"
+            data-cy="course-selection"
+            onChange={handleCourseSelection}
+            placeholder="Choose course"
+            label="Choose course"
+            value={newRawEntries.courseId}
+            options={courseOptions}
+          />
+          <Form.Field>
+            <label>Set date for completions</label>
+            <DatePicker
+              id="date-picker"
+              className="date-picker"
+              style={{ height: "20px", width: '100%' }}
+              dateFormat="dd.MM.yyyy"
+              selected={showingDate}
+              onChange={(date) => handleDateSelection(date)}
             />
-          </span>
-          : null}
+          </Form.Field>
+          {!kandi
+            ? <>
+              <Form.Field
+                className="default-grade"
+                control={Checkbox}
+                data-cy="default-grade-election"
+                onChange={handleDefaultGradeSelection}
+                checked={defaultGrade}
+                label="Give all students grade 'Hyv.'"
+              />
+            </>
+            : null}
+        </Form.Group>
+      </Form>
+      <div style={styles.sendButton}>
         <SendButton />
       </div>
-      <span style={{ paddingTop: "1.3em", width: "40em", height: "3em" }}>
+      <div style={styles.info}>
         Remember to report completions for the correct academic year (1.8. – 31.7.)
-      </span>
+      </div>
     </>
   )
 }

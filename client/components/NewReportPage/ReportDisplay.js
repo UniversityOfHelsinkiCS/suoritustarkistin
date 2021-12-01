@@ -265,18 +265,18 @@ export default ({ allowDelete = true, kandi }) => {
   })
 
   return (
-    <Table celled data-cy="new-report-table">
+    <Table celled data-cy="new-report-table" basic compact>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell width={3}>Course</Table.HeaderCell>
-          <Table.HeaderCell width={2}>Student number</Table.HeaderCell>
-          <Table.HeaderCell width={1}>Grade</Table.HeaderCell>
-          <Table.HeaderCell width={1}>Credits (op)</Table.HeaderCell>
-          <Table.HeaderCell width={1}>Language</Table.HeaderCell>
-          <Table.HeaderCell width={2}>Grader</Table.HeaderCell>
-          <Table.HeaderCell width={2}>Completion date</Table.HeaderCell>
+          <Table.HeaderCell>Course</Table.HeaderCell>
+          <Table.HeaderCell>Student number</Table.HeaderCell>
+          <Table.HeaderCell>Grade</Table.HeaderCell>
+          <Table.HeaderCell>Credits (op)</Table.HeaderCell>
+          <Table.HeaderCell>Language</Table.HeaderCell>
+          <Table.HeaderCell>Grader</Table.HeaderCell>
+          <Table.HeaderCell>Completion date</Table.HeaderCell>
           {newRawEntries.failed && <Table.HeaderCell>Errors</Table.HeaderCell>}
-          {allowDelete ? <Table.HeaderCell width={1}>Remove from report</Table.HeaderCell> : null}
+          {allowDelete ? <Table.HeaderCell>Remove from report</Table.HeaderCell> : null}
         </Table.Row>
       </Table.Header>
       <Table.Body>{reportRows}</Table.Body>

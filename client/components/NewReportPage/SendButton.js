@@ -79,51 +79,50 @@ export default () => {
 
   return (
     <>
-    <Modal
-      basic
-      open={showForm}
-      onClose={closeModal}
-      size="small"
-    >
-      <Modal.Content >
-        <Segment style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "50em",
-          textAlign: "center",
-          verticalAlign: "center",
-          padding: "2em"
-        }}>
-          <Header size="large">
-            Following completion(s) will be reported:
-          </Header>
-          {newRawEntries.sending && <Message header="Sending the report" />}
-          <Header>
-            {parseCourseName(newRawEntries, defaultCourse, courses)}
-          </Header>
-          <div style={{ marginTop: "2em" }}>
-            <Button
-              disabled={newRawEntries.sending}
-              data-cy="confirm-sending-button"
-              color="green"
-              onClick={sendRawEntries}
-            >
-              Create report
-            </Button>
-            <Button
-              disabled={newRawEntries.sending}
-              onClick={closeModal}
-              data-cy="cancel-sending-button"
-            >
-              Cancel
-            </Button>
-          </div>
-        </Segment>
-      </Modal.Content>
-    </Modal>
-    <Popup
-      trigger={
-        <div style={{ position: "absolute", right: "1em" }}>
+      <Modal
+        basic
+        open={showForm}
+        onClose={closeModal}
+        size="small"
+      >
+        <Modal.Content >
+          <Segment style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "50em",
+            textAlign: "center",
+            verticalAlign: "center",
+            padding: "2em"
+          }}>
+            <Header size="large">
+              Following completion(s) will be reported:
+            </Header>
+            {newRawEntries.sending && <Message header="Sending the report" />}
+            <Header>
+              {parseCourseName(newRawEntries, defaultCourse, courses)}
+            </Header>
+            <div style={{ marginTop: "2em" }}>
+              <Button
+                disabled={newRawEntries.sending}
+                data-cy="confirm-sending-button"
+                color="green"
+                onClick={sendRawEntries}
+              >
+                Create report
+              </Button>
+              <Button
+                disabled={newRawEntries.sending}
+                onClick={closeModal}
+                data-cy="cancel-sending-button"
+              >
+                Cancel
+              </Button>
+            </div>
+          </Segment>
+        </Modal.Content>
+      </Modal>
+      <Popup
+        trigger={
           <Button
             positive
             data-cy="create-report-button"
@@ -133,12 +132,11 @@ export default () => {
             }
             content="Create report"
           />
-        </div>
-      }
-      content={newRawEntries.data && newRawEntries.data.length > 100 ? 'Currently single report can contain max 100 completions' :"Report contains validation errors, see table below."}
-      disabled={!newRawEntries.data || areValidNewRawEntries(parseRawEntries(newRawEntries) || newRawEntries.data && newRawEntries.data.length <= 100)}
-      style={{ color: 'red' }}
-    />
-  </>
+        }
+        content={newRawEntries.data && newRawEntries.data.length > 100 ? 'Currently single report can contain max 100 completions' : "Report contains validation errors, see table below."}
+        disabled={!newRawEntries.data || areValidNewRawEntries(parseRawEntries(newRawEntries) || newRawEntries.data && newRawEntries.data.length <= 100)}
+        style={{ color: 'red' }}
+      />
+    </>
   )
 }

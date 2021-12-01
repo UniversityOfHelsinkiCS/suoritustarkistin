@@ -40,22 +40,22 @@ export default () => {
     <Segment>
       <Grid celled="internally" style={{wordWrap: 'anywhere'}}>
         <Grid.Row>
-          <Grid.Column width={8}>
+          <Grid.Column width={4}>
             {getCustomHeader({ name: 'Name (uid)', field: 'name' })}
           </Grid.Column>
-          <Grid.Column textAlign="center" width={1}>
+          <Grid.Column textAlign="center">
             {getCustomHeader({ name: 'Grader', field: 'isGrader' })}
           </Grid.Column>
-          <Grid.Column textAlign="center" width={1}>
+          <Grid.Column textAlign="center">
             {getCustomHeader({ name: 'Admin', field: 'isAdmin' })}
           </Grid.Column>
           <Grid.Column textAlign="center" width={2}>
             {getCustomHeader({ name: 'Last login', field: 'lastLogin', sortable: false })}
           </Grid.Column>
-          <Grid.Column textAlign="center" width={3}>
+          <Grid.Column textAlign="center" width={6}>
             <Header as="h4">Edit</Header>
           </Grid.Column>
-          <Grid.Column width={1} />
+          <Grid.Column />
         </Grid.Row>
         {sortedItems(users, sorter, reverse).map((u) => (
           <User user={u} key={u.id} />

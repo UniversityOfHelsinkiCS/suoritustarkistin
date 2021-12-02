@@ -16,7 +16,7 @@ const instruction = {
 }
 
 const code = {
-  fontSize: '1.1rem',
+  fontSize: '1rem',
   padding: "2px 4px",
   color: '#1f1f1f',
   backgroundColor: '#f0f0f0',
@@ -26,7 +26,7 @@ const code = {
 const code2 = {
   ...code,
   maxWidth: '30rem',
-  fontSize: '0.9rem'
+  fontSize: '0.93rem'
 }
 
 const DetailedInstructions = () => (
@@ -98,7 +98,6 @@ export default () => (
     <Header as="h3">
       Examples of valid lines:
     </Header>
-
     <pre style={code2}>
       010000003;2;5;fi<br />
       011000002;;2,0<br />

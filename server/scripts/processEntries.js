@@ -49,10 +49,12 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkSt
   const employeeIds = graders.map((grader) => grader.employeeId)
   const employees = await getEmployees(employeeIds)
 
-  const studentCourseCodePairs = createdEntries.map((rawEntry) => ({
-    personId: (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id,
-    code: courses.find((course) => course.id === rawEntry.courseId).courseCode
-  }))
+  const studentCourseCodePairs = createdEntries
+    .map((rawEntry) => ({
+      personId: (students.find((person) => person.studentNumber === rawEntry.studentNumber) || {}).id,
+      code: courses.find((course) => course.id === rawEntry.courseId).courseCode
+    }))
+    .filter(({ personId, code }) => personId && code)
   const enrolments = await getEnrolments(studentCourseCodePairs)
   const studyRights = checkStudyRights ? await getStudyRights(enrolments) : []
 
@@ -245,12 +247,13 @@ const changeCompletionDate = async (rawEntry, completionDate, validAttainmentDat
   try {
     // eslint-disable-next-line no-unused-vars
     const [rows, status] = await db.raw_entries.update({ attainmentDate: validAttainmentDate },
-      { where: { id: rawEntry.id }, returning: true
+      {
+        where: { id: rawEntry.id }, returning: true
       })
-    logger.info({ message: `Changed date for ${rawEntry.studentNumber} from ${completionDate.format('YYYY-MM-DD')} to ${validAttainmentDate.format('YYYY-MM-DD')}`})
+    logger.info({ message: `Changed date for ${rawEntry.studentNumber} from ${completionDate.format('YYYY-MM-DD')} to ${validAttainmentDate.format('YYYY-MM-DD')}` })
     return true
   } catch (error) {
-    logger.error({ message: `Error in changing completion date for ${rawEntry.studentNumber}: ${error}`})
+    logger.error({ message: `Error in changing completion date for ${rawEntry.studentNumber}: ${error}` })
     return false
   }
 }

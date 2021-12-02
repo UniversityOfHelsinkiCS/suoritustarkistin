@@ -2,10 +2,7 @@ import React from 'react'
 import { Header, Icon, List, Popup, Segment } from 'semantic-ui-react'
 
 const instructionContainer = {
-  textAlign: 'center',
-  width: "70em",
-  margin: "auto",
-  marginBottom: "1em"
+  padding: '1rem'
 }
 
 const detailedInstructions = {
@@ -14,14 +11,21 @@ const detailedInstructions = {
 }
 
 const instruction = {
-  margin: "0.5em 0em 0.3em 0em",
-  fontWeight: 700
+  padding: '1rem'
 }
 
-const subHeader = {
-  fontWeight: "700",
-  margin: "1em",
-  fontSize: "1.1em"
+const code = {
+  fontSize: '1ren',
+  padding: "2px 4px",
+  color: '#1f1f1f',
+  backgroundColor: '#f0f0f0',
+  borderRadius: '4px'
+}
+
+const code2 = {
+  ...code,
+  maxWidth: '30rem',
+  fontSize: '0.93rem'
 }
 
 
@@ -69,46 +73,48 @@ const DetailedInstructions = () => (
 )
 
 export default () => (
-  <Segment data-cy="userguide">
-    <div style={instructionContainer}>
-      <Header>
-        Reporting bachelor thesis completions through Suotar
-      </Header>
-      <p>
-        Suotar automates reporting completions for courses Äidinkielinen viestintä, Tutkimustiedonhaku and Kypsyysnäyte. The language of extra courses is defaulted to the language of bachelor thesis and can be controlled with the last three columns in CSV. To opt-out reporting, an extra course use value "x".
-      </p>
-      <p>
-        If a bachelor thesis is reported in English the language of extra courses have to be defined explicitly.
-      </p>
-      <p style={subHeader}>
-        Each completion should be its own line in the following format:
-      </p>
-      <p style={subHeader}>
-        student number;grade;credits;bsc language;date;lang;lang;lang
-        <span>
-          <Popup
-            on={['hover', 'click']}
-            pinned
-            trigger={
-              <Icon
-                style={{ marginLeft: "0.3em" }}
-                name="question circle"
-                size="large"
-              ></Icon>
-            }
-            content={DetailedInstructions}
-          >
-          </Popup>
-        </span>
-      </p>
-      Valid example lines:
-      <List>
-        <List.Item>011000002;3</List.Item>
-        <List.Item>010000003;3;;sv</List.Item>
-        <List.Item>011110002;4;;;01.11.2021</List.Item>
-        <List.Item>011110002;5;;en;;en;fi;en</List.Item>
-        <List.Item>011110002;5;;fi;;x;;x</List.Item>
-      </List>
-    </div>
+  <Segment data-cy="userguide" style={instructionContainer}>
+    <Header as="h2">
+      Reporting bachelor thesis completions through Suotar
+    </Header>
+    <p>
+      Suotar automates reporting completions for courses Äidinkielinen viestintä, Tutkimustiedonhaku and Kypsyysnäyte.The language of extra courses is defaulted to the language of bachelor thesis and can be controlled with the last three columns in CSV.
+      <br />
+      To opt-out reporting, an extra course use value "x".
+    </p>
+    <p>
+      If a bachelor thesis is reported in English the language of extra courses have to be defined explicitly.
+    </p>
+    <Header as="h3">
+      Each completion should be its own line in the following format:
+      <span>
+        <Popup
+          on={['hover', 'click']}
+          pinned
+          trigger={
+            <Icon
+              style={{ marginLeft: "0.3em" }}
+              name="question circle"
+              size="large"
+            ></Icon>
+          }
+          content={DetailedInstructions}
+        >
+        </Popup>
+      </span>
+    </Header>
+    <code style={code}>
+      student number; grade; credits; bsc language; date; lang; lang; lang
+    </code>
+    <Header as="h3">
+      Examples of valid lines:
+    </Header>
+    <pre style={code2}>
+      011000002;3<br />
+      010000003;3;;sv<br />
+      011110002;4;;;01.11.2021<br />
+      011110002;5;;en;;en;fi;en<br />
+      011110002;5;;fi;;x;;x<br />
+    </pre>
   </Segment>
 )

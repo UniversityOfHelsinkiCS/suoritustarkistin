@@ -176,11 +176,11 @@ export default ({ user }) => {
 
   return (
     <Grid.Row>
-      <Grid.Column width={8}>{user.name} ({user.uid})</Grid.Column>
-      <Grid.Column textAlign="center" width={1}>
+      <Grid.Column width={4}>{user.name} ({user.uid})</Grid.Column>
+      <Grid.Column textAlign="center">
         <GraderBadge />
       </Grid.Column>
-      <Grid.Column textAlign="center" width={1}>
+      <Grid.Column textAlign="center">
         <AdminBadge />
       </Grid.Column>
       <Grid.Column textAlign="center" width={2}>
@@ -189,11 +189,11 @@ export default ({ user }) => {
           : <span style={{ color: 'gray' }}>Not saved</span>
         }
       </Grid.Column>
-      <Grid.Column textAlign="center" width={3}>
+      <Grid.Column textAlign="center" width={6}>
         <EditUser />
         <DeleteUser />
       </Grid.Column>
-      <Grid.Column width={1}>
+      <Grid.Column>
         <Icon onClick={logInAs} size="large" name="sign-in" style={{cursor: 'pointer'}} />
       </Grid.Column>
     </Grid.Row>

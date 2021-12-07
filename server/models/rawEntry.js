@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       grade: DataTypes.STRING,
       credits: DataTypes.STRING, // Credits as String??
       language: DataTypes.STRING,
-      attainmentDate: DataTypes.DATE,
+      attainmentDate: DataTypes.DATE, // This date should not be used, entry mankel might adjust the date
       moocUserId: DataTypes.INTEGER,
       moocCompletionId: DataTypes.STRING,
       registeredToMooc: DataTypes.DATE,

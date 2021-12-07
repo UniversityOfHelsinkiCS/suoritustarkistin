@@ -145,6 +145,7 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
     courseUnitId,
     gradeScaleId,
     gradeId,
+    completionDate,
     rawEntry
   } = entry
 
@@ -155,7 +156,7 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
     acceptorPersons: acceptors[courseUnitRealisationId],
     courseUnitRealisationId,
     assessmentItemId,
-    completionDate: rawEntry.attainmentDate,
+    completionDate,
     completionLanguage,
     courseUnitId,
     gradeScaleId,
@@ -173,6 +174,7 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     courseUnitId,
     gradeScaleId,
     gradeId,
+    completionDate,
     rawEntry,
     studyRightId
   } = entry
@@ -183,7 +185,7 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     studyRightId,
     verifierPersonId: verifier[0].id,
     acceptorPersons: acceptors[courseUnitId],
-    attainmentDate: rawEntry.attainmentDate,
+    completionDate,
     registrationDate: new Date(),
     completionLanguage,
     courseUnitId,

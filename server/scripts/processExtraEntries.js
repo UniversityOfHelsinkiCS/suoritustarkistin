@@ -10,7 +10,7 @@ const {
   getMultipleStudyRightsByPersons
 } = require('../services/importer')
 const { generateSisuId } = require('../utils/common')
-const resolveStudyRight = require('../utils/resolveStudyRight')
+const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
 const logger = require('@utils/logger')
 
 const COMMON = {
@@ -54,7 +54,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
   const courseUnitIds = await getCourseUnitIds(courses.filter(({ useAsExtra }) => useAsExtra).map(({ courseCode }) => courseCode))
   createdRawEntries.forEach((rawEntry) => {
     const course = courses.find((c) => c.id === rawEntry.courseId)
-    const completionDate = moment(rawEntry.attainmentDate)
+    let completionDate = moment(rawEntry.attainmentDate)
     const grader = graders.find((g) => g.id === rawEntry.graderId)
     const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
     const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
@@ -86,9 +86,12 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       return
     }
 
-    const { id: studyRightId } = resolveStudyRight(
-      studyRights.filter(({ personId }) => student.id === personId), rawEntry.attainmentDate, requireMatluStudyRight
+    const studyRightsForPerson = studyRights.filter(({ personId }) => student.id === personId)
+    let { id: studyRightId } = resolveStudyRight(
+      studyRightsForPerson, rawEntry.attainmentDate, requireMatluStudyRight
     )
+    if (!studyRightId)
+      [studyRightId, completionDate] = getClosestStudyRight(studyRightsForPerson, rawEntry.attainmentDate)
     const { courseCode } = course
     const { id: courseUnitId } = getActiveCourseUnitId(courseUnitIds[courseCode])
 

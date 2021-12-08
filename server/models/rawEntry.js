@@ -43,7 +43,10 @@ module.exports = (sequelize, DataTypes) => {
         ...filters
       },
       attributes: [[sequelize.literal('COUNT(DISTINCT "batchId")'), 'count']],
-      include: { association: 'entry', attributes: [] },
+      include: [
+        { association: 'entry', attributes: []  },
+        { association: 'extraEntry', attributes: []  }
+      ],
       raw: true
     })
   }

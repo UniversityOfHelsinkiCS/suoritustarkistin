@@ -48,8 +48,10 @@ const getFilters = ({ isMooc, status, student, errors, noEnrollment, userId, not
   if (errors)
     query['$entry.errors$'] = { [Op.not]: null }
   if (noEnrollment) {
-    query[Op.or] = MISSING_ENROLLMENT_QUERY
-    query['$entry.sent$'] = { [Op.not]: null }
+    query[Op.and] = [
+      { [Op.or]: MISSING_ENROLLMENT_QUERY },
+      {'$extraEntry.id$': { [Op.eq]: null }}
+    ]
   }
   if (notSent)
     query['$entry.sent$'] = { [Op.eq]: null }
@@ -77,7 +79,8 @@ const getBaches = async ({ offset, moocReports = false, filters }) => {
     group: ['batchId'],
     order: [[Sequelize.col('maxCreatedAt'), 'DESC']],
     include: [
-      { model: db.entries, as: 'entry', attributes: [] }
+      { model: db.entries, as: 'entry', attributes: [] },
+      { model: db.extra_entries, as: 'extraEntry', attributes: [] }
     ],
     raw: true,
     limit: PAGE_SIZE,

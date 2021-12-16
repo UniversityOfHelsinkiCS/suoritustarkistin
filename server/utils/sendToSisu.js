@@ -186,7 +186,7 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     studyRightId,
     verifierPersonId: verifier[0].id,
     acceptorPersons: acceptors[courseUnitId],
-    completionDate: moment(completionDate).format('YYYY-MM-DD'),
+    attainmentDate: moment(completionDate).format('YYYY-MM-DD'),
     registrationDate: moment().format('YYYY-MM-DD'),
     completionLanguage,
     courseUnitId,

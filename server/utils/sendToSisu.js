@@ -4,6 +4,7 @@
 const logger = require('@utils/logger')
 const { sendSentryMessage } = require('@utils/sentry')
 const axios = require('axios')
+const moment = require('moment')
 const db = require('../models/index')
 const { getAcceptorPersons, getAcceptorPersonsByCourseUnit } = require('../services/importer')
 
@@ -185,8 +186,8 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     studyRightId,
     verifierPersonId: verifier[0].id,
     acceptorPersons: acceptors[courseUnitId],
-    completionDate,
-    registrationDate: new Date(),
+    completionDate: moment(completionDate).format('YYYY-MM-DD'),
+    registrationDate: moment().format('YYYY-MM-DD'),
     completionLanguage,
     courseUnitId,
     gradeScaleId,

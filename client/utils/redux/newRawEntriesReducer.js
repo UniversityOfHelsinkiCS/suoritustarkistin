@@ -9,7 +9,8 @@ const initialState = {
   defaultGrade: false,
   defaultCourse: '',
   date: new Date(),
-  sending: false
+  sending: false,
+  entriesToConfirm: {}
 }
 
 export const setNewRawEntriesAction = (rawEntries) => {
@@ -18,6 +19,10 @@ export const setNewRawEntriesAction = (rawEntries) => {
 
 export const resetNewRawEntriesAction = () => ({
   type: 'SET_NEW_RAW_ENTRIES', payload: { ...initialState }
+})
+
+export const resetNewRawEntriesConfirmAction = () => ({
+  type: 'RESET_NEW_RAW_ENTRIES_CONFIRM'
 })
 
 export const sendNewRawEntriesAction = (rawEntries) => {
@@ -42,9 +47,9 @@ export default (state = initialState, action) => {
     case 'POST_RAW_ENTRIES_SUCCESS':
       return {
         ...state,
-        ...initialState,
-        data: null,
-        error: ''
+        sending: false,
+        error: null,
+        entriesToConfirm: action.response
       }
     case 'POST_RAW_ENTRIES_FAILURE':
       return {
@@ -52,6 +57,13 @@ export default (state = initialState, action) => {
         sending: false,
         error: action.error.message,
         failed: action.error.failed
+      }
+    case 'RESET_NEW_RAW_ENTRIES_CONFIRM':
+      return {
+        ...state,
+        sending: false,
+        error: null,
+        entriesToConfirm: {}
       }
     case 'LOGIN_SUCCESS':
       return {

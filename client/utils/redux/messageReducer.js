@@ -12,20 +12,6 @@ export default (state = null, action) => {
       return action.payload
     case 'CLEAR_MESSAGE':
       return null
-    case 'POST_REPORT_SUCCESS':
-      return {
-        header: 'Report sent!',
-        content:
-          'Course completions have now been sent for reporting. You can see the created report on the "View reports" -page',
-        type: 'positive'
-      }
-    case 'POST_REPORT_FAILURE':
-      return {
-        header: 'Sending the report failed!',
-        content:
-          'Sending the course completions failed. If the error persists, please contact grp-toska@cs.helsinki.fi.',
-        type: 'negative'
-      }
     case 'ADD_COURSE_SUCCESS':
       return {
         header: `Course ${action.response[0].name} has been created.`,
@@ -64,35 +50,11 @@ export default (state = null, action) => {
         content: `${action.error}`,
         type: 'negative'
       }
-    case 'DELETE_BATCH_SUCCESS':
-      return {
-        header: 'Completions successfully deleted',
-        content:
-          "Course completions have now been deleted. This won't affect any entries already sent to SIS.",
-        type: 'positive'
-      }
     case 'POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,
         content: `${(action.error && action.error.failed) ? "Check out the errors below" : `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi'.`}`,
         type: 'negative'
-      }
-    case 'POST_RAW_ENTRIES_SUCCESS':
-      if (action.response.isMissingEnrollment)
-        return {
-          header: 'Report sent with missing enrollments',
-          content: `
-          Course completions have now been sent for reporting.
-          You can see the created report on the "View reports" -page.
-          Note that some of the completions is missing enrolment and won't be registered to Sisu before student is enrolled.
-          `,
-          type: 'orange'
-        }
-      return {
-        header: 'Report sent!',
-        content:
-          'Course completions have now been sent for reporting. You can see the created report on the "View reports" -page',
-        type: 'positive'
       }
     case 'POST_ENTRIES_TO_SIS_FAILURE':
       if (action.error && action.error.genericError) {

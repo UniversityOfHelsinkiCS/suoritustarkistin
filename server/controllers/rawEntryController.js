@@ -42,11 +42,11 @@ const addRawEntries = async (req, res) => {
     if (result.message === "success") {
       await transaction.commit()
       logger.info({ message: 'Report of new completions created successfully.' })
-      const rawEntries = await db.raw_entries.findAll({
-        where: { batchId: result.batchId },
-        include: [{ model: db.entries, as: 'entry' }, { model: db.extra_entries, as: 'extraEntry' }]
-      })
-      const onlyExtraEntries = rawEntries.every(({ extraEntry, entry }) => extraEntry && extraEntry.id && !entry)
+      const orphans = await db.raw_entries.deleteOrphans(result.batchId)
+      if (orphans)
+        logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
+      const rawEntries = await db.raw_entries.getByBatch(result.batchId)
+      const onlyExtraEntries = rawEntries.every(({ entry }) => entry && entry.type === 'EXTRA_ENTRY')
       const withEnrollment = rawEntries.filter(({ entry }) => entry && !entry.missingEnrolment).length
       if (withEnrollment || onlyExtraEntries) {
         const unsent = await db.entries.getUnsentBatchCount()
@@ -60,10 +60,7 @@ const addRawEntries = async (req, res) => {
           html: newReport(withEnrollment, unsent, result.courseCode, result.batchId)
         })
       }
-      const orphans = await db.raw_entries.deleteOrphans(result.batchId)
-      if (orphans)
-        logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
-      return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment })
+      return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment, rows: rawEntries, batchId: result.batchId })
     } else {
       await transaction.rollback()
       logger.error({ message: `Processing new completions failed` })

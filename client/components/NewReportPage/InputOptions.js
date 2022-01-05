@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Checkbox, Select, Form } from 'semantic-ui-react'
+import { Checkbox, Select, Form, Button } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 
-import SendButton from 'Components/NewReportPage/SendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import {
   getAllGradersAction,
@@ -73,6 +73,33 @@ const defineCourseOptions = (courses, kandi, extra) => {
   return formatCoursesForSelection(courses.filter(({ useAsExtra }) => !useAsExtra))
 }
 
+const parseRawEntries = (rawEntries) => {
+  if (!rawEntries.data) return rawEntries
+
+  const defaultGrade = rawEntries.defaultGrade
+  return {
+    ...rawEntries,
+    data: rawEntries.data.map((row) => {
+      if (row.registration && !row.grade) {
+        return {
+          ...row,
+          grade: defaultGrade ? 'Hyv.' : null,
+          studentId: row.registration.onro,
+          registration: undefined
+        }
+      }
+      if (!row.grade && defaultGrade) {
+        return {
+          ...row,
+          grade: 'Hyv.'
+        }
+      }
+      return row
+    }),
+    sending: undefined,
+    rawData: undefined
+  }
+}
 
 export default ({ kandi, extra, parseCSV }) => {
   const dispatch = useDispatch()
@@ -83,6 +110,8 @@ export default ({ kandi, extra, parseCSV }) => {
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
   const courseOptions = defineCourseOptions(courses, kandi, extra)
+
+  const sendRawEntries = async () => await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
 
   useEffect(() => {
     if (user.adminMode) {
@@ -192,7 +221,14 @@ export default ({ kandi, extra, parseCSV }) => {
         </Form.Group>
       </Form>
       <div style={styles.sendButton}>
-        <SendButton />
+        <Button
+          disabled={newRawEntries.sending}
+          data-cy="confirm-sending-button"
+          color="green"
+          onClick={sendRawEntries}
+        >
+          Create report
+        </Button>
       </div>
       <div style={styles.info}>
         Remember to report completions for the correct academic year (1.8. – 31.7.)

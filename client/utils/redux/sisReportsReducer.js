@@ -208,7 +208,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       return {
         ...state,
         singleBatchPending: true,
-        pending: false,
+        pending: true,
         error: false
       }
     case 'POST_ENTRIES_TO_SIS_FAILURE': {

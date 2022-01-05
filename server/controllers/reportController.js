@@ -3,7 +3,6 @@ const Sequelize = require('sequelize')
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { checkEntries } = require('../scripts/checkSisEntries')
-const { getEmployees } = require('../services/importer')
 const refreshEntries = require('../scripts/refreshEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
 
@@ -245,21 +244,16 @@ const sendToSis = async (req, res) => {
     throw new Error('User is not authorized to report credits.')
   }
 
-  const verifier = await getEmployees([req.user.employeeId])
-  if (!verifier.length)
-    throw new Error(`Verifier with employee number ${req.user.employeeId} not found`)
-
-
   const { entryIds = [], extraEntryIds = [] } = req.body
   let [status, message] = []
   try {
     if (entryIds.length) {
-      [status, message] = await attainmentsToSisu('entries', verifier, req)
+      [status, message] = await attainmentsToSisu('entries', req)
       if (message)
         return res.status(status).send(message)
     }
     if (extraEntryIds.length) {
-      [status, message] = await attainmentsToSisu('extra_entries', verifier, req)
+      [status, message] = await attainmentsToSisu('extra_entries', req)
       if (message)
         return res.status(status).send(message)
     }

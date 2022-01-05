@@ -28,13 +28,12 @@ const API = process.env.POST_IMPORTER_DB_API_URL
 /**
  *
  */
-const attainmentsToSisu = async (model, verifier, { user, body }) => {
+const attainmentsToSisu = async (model, { user, body }) => {
   const send = async (url, data, modelIds) => {
     logger.info({ message: 'Sending entries to Sisu', amount: data.length, user: user.name, payload: JSON.stringify(data) })
     await API.post(url, data)
     await updateSuccess(model, modelIds, senderId)
-    logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length })
-    sendSentryMessage(`${data.length} entries sent successfully to Sisu!`, user)
+    logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, user: user.name })
   }
 
   const { entryIds, extraEntryIds } = body
@@ -55,8 +54,8 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
     : await getAcceptorPersonsByCourseUnit(rawData.map(({ courseUnitId }) => courseUnitId))
 
   const data = model === 'entries'
-    ? entriesToRequestData(rawData, verifier, acceptors)
-    : extraEntriesToRequestData(rawData, verifier, acceptors)
+    ? entriesToRequestData(rawData, acceptors)
+    : extraEntriesToRequestData(rawData, acceptors)
 
   try {
     await send(URLS[model], data, id)
@@ -82,8 +81,8 @@ const attainmentsToSisu = async (model, verifier, { user, body }) => {
 
     try {
       const payload = model === 'entries'
-        ? entriesToRequestData(successEntries, verifier, acceptors)
-        : extraEntriesToRequestData(successEntries, verifier, acceptors)
+        ? entriesToRequestData(successEntries, acceptors)
+        : extraEntriesToRequestData(successEntries, acceptors)
       send(URLS[model], payload, successEntries.map(({ id }) => id))
     } catch (e) {
       const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
@@ -136,7 +135,7 @@ const updateSuccess = async (model, entryIds, senderId) =>
     }
   })
 
-const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entry) => {
+const entriesToRequestData = (entries, acceptors) => entries.map((entry) => {
   const {
     id,
     personId,
@@ -153,7 +152,6 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
   return {
     id,
     personId,
-    verifierPersonId: verifier[0].id,
     acceptorPersons: acceptors[courseUnitRealisationId],
     courseUnitRealisationId,
     assessmentItemId,
@@ -167,7 +165,7 @@ const entriesToRequestData = (entries, verifier, acceptors) => entries.map((entr
   }
 })
 
-const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEntries.map((entry) => {
+const extraEntriesToRequestData = (extraEntries, acceptors) => extraEntries.map((entry) => {
   const {
     id,
     personId,
@@ -184,7 +182,6 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     id,
     personId,
     studyRightId,
-    verifierPersonId: verifier[0].id,
     acceptorPersons: acceptors[courseUnitId],
     attainmentDate: moment(completionDate).format('YYYY-MM-DD'),
     registrationDate: moment().format('YYYY-MM-DD'),

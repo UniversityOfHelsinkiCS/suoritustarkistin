@@ -1,8 +1,9 @@
 import moment from 'moment'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Table, Button, Popup, Segment, Header, Divider, Message, Icon } from 'semantic-ui-react'
+import NotificationMessage from 'Components/Message'
 
 import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { handleBatchDeletionAction, sendEntriesToSisAction, openReport } from 'Utilities/redux/sisReportsReducer'
@@ -27,7 +28,17 @@ const styles = {
 export default withRouter(({ rows, batchId, history }) => {
   const dispatch = useDispatch()
   const { pending, error } = useSelector((state) => state.sisReports)
+  const [sent, setSent] = useState(false)
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
+
+  useEffect(() => {
+    console.log(pending, error, sent)
+    if (sent && !pending && !error) {
+      dispatch(openReport(batchId))
+      dispatch(resetNewRawEntriesAction())
+      history.push('/reports')
+    }
+  }, [pending, error, sent])
 
   const entriesToSisu = rows
     .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
@@ -115,11 +126,7 @@ export default withRouter(({ rows, batchId, history }) => {
       }, { entries: [], extraEntries: [] })
     if (entries.length || extraEntries.length)
       await dispatch(sendEntriesToSisAction(entries, extraEntries))
-    if (!pending && !error) {
-      dispatch(openReport(batchId))
-      dispatch(resetNewRawEntriesAction())
-      history.push('/reports')
-    }
+    setSent(true)
   }
 
   return <Segment>
@@ -130,6 +137,7 @@ export default withRouter(({ rows, batchId, history }) => {
       <p>Entries with missing enrollments are saved to Suotar and the completions will be sent to Sisu automatically after student enrolls to the course. </p>
       <MissingEnrollmentsInfo />
     </Segment>
+    {sent && error ? <Segment basic><NotificationMessage /></Segment> : null}
     <Segment loading={pending} basic>
       <Table compact celled>
         <Table.Header>

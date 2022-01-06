@@ -6,7 +6,8 @@ const {
 const {
   seedDatabaseForTests,
   seedTestCompletions,
-  seedBachelorData
+  seedBachelorData,
+  seedNoEntries
 } = require('@controllers/cypressController')
 const {
   getCourses,
@@ -74,6 +75,7 @@ router.get('/sandbox', () => {
 
 // Routes for seeding the test database
 router.get('/seed/all', notInProduction, seedDatabaseForTests)
+router.get('/seed/no-entries', notInProduction, seedNoEntries)
 router.get('/seed/bsc_thesis', notInProduction, seedBachelorData)
 router.post('/seed/sis_completions', notInProduction, seedTestCompletions)
 

@@ -218,7 +218,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         openAccordions: state.openAccordions,
         pending: false,
         singleBatchPending: false,
-        error: true
+        error: action.error
       }
     }
     case 'POST_ENTRIES_TO_SIS_SUCCESS': {

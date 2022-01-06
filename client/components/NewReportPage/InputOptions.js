@@ -16,6 +16,7 @@ import {
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
 import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
+import { areValidNewRawEntries } from 'Root/utils/validators'
 
 const styles = {
   sendButton: {
@@ -105,6 +106,7 @@ export default ({ kandi, extra, parseCSV }) => {
   const dispatch = useDispatch()
   const [showingDate, setShowingDate] = useState()
   const [defaultGrade, setDefaultGrade] = useState(false)
+  const [isValid, setIsValid] = useState(false)
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
@@ -122,6 +124,12 @@ export default ({ kandi, extra, parseCSV }) => {
       dispatch(getUsersGradersAction(user.id))
     }
   }, [user])
+
+  useEffect(() => {
+    if (areValidNewRawEntries(parseRawEntries(newRawEntries)))
+      setIsValid(true)
+    else setIsValid(false)
+  }, [newRawEntries])
 
   useEffect(() => {
     if (kandi && courses) {
@@ -222,7 +230,7 @@ export default ({ kandi, extra, parseCSV }) => {
       </Form>
       <div style={styles.sendButton}>
         <Button
-          disabled={newRawEntries.sending || !newRawEntries.data}
+          disabled={newRawEntries.sending || !newRawEntries.data || !isValid}
           data-cy="confirm-sending-button"
           color="green"
           onClick={sendRawEntries}

@@ -1,8 +1,6 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
-const sendEmail = require('../utils/sendEmail')
-const { newReport } = require('../utils/emailFactory')
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
@@ -46,20 +44,6 @@ const addRawEntries = async (req, res) => {
       if (orphans)
         logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
       const rawEntries = await db.raw_entries.getByBatch(result.batchId)
-      const onlyExtraEntries = rawEntries.every(({ entry }) => entry && entry.type === 'EXTRA_ENTRY')
-      const withEnrollment = rawEntries.filter(({ entry }) => entry && !entry.missingEnrolment).length
-      if (withEnrollment || onlyExtraEntries) {
-        const unsent = await db.entries.getUnsentBatchCount()
-        sendEmail({
-          subject: `Uusia kurssisuorituksia: ${result.courseCode}`,
-          attachments: [{
-            filename: 'suotar.png',
-            path: `${process.cwd()}/client/assets/suotar.png`,
-            cid: 'toskasuotarlogoustcid'
-          }],
-          html: newReport(withEnrollment, unsent, result.courseCode, result.batchId)
-        })
-      }
       return res.status(200).json({ message: 'report created successfully', isMissingEnrollment: result.isMissingEnrollment, rows: rawEntries, batchId: result.batchId })
     } else {
       await transaction.rollback()
@@ -67,7 +51,8 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ message: "Processing new completions failed", failed: result.failed })
     }
   } catch (error) {
-    logger.error(error, error.stack)
+    logger.error(error)
+    logger.error(error.stack)
     await transaction.rollback()
     handleDatabaseError(res, error)
   }

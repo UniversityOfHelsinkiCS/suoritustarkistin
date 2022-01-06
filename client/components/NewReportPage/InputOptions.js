@@ -222,7 +222,7 @@ export default ({ kandi, extra, parseCSV }) => {
       </Form>
       <div style={styles.sendButton}>
         <Button
-          disabled={newRawEntries.sending}
+          disabled={newRawEntries.sending || !newRawEntries.data}
           data-cy="confirm-sending-button"
           color="green"
           onClick={sendRawEntries}

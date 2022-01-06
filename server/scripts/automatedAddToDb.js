@@ -1,8 +1,6 @@
 const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./processEntries')
-const sendEmail = require('../utils/sendEmail')
-const { newAutoReport } = require('../utils/emailFactory')
 const { sendSentryMessage } = require('@utils/sentry')
 
 const automatedAddToDb = async (matches, course, batchId, sendMail = true) => {
@@ -46,20 +44,6 @@ const automatedAddToDb = async (matches, course, batchId, sendMail = true) => {
     await db.entries.bulkCreate(success, { transaction })
     logger.info({ message: `${success.length} new entries created`, amount: success.length })
     await transaction.commit()
-
-    if (sendMail) {
-      const unsent = await db.entries.getUnsentBatchCount()
-      sendEmail({
-        subject: 'Uusia automaattisesti luotuja suorituksia valmiina lähetettäväksi Sisuun!',
-        html: newAutoReport(success.length, unsent, course.courseCode, batchId),
-        attachments: [{
-          filename: 'suotar.png',
-          path: `${process.cwd()}/client/assets/suotar.png`,
-          cid: 'toskasuotarlogoustcid'
-        }]
-      })
-    }
-
     return { message: "success" }
   } catch (error) {
     await transaction.rollback()

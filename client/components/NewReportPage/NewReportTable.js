@@ -65,13 +65,14 @@ export default withRouter(({ rows, batchId, history }) => {
           icon="send"
           content="Approve"
           disabled={pending}
+          data-cy="confirm-entries-send"
           positive
         />
       }
       content={
         <Button
           positive
-          data-cy="sendButton"
+          data-cy="confirm-entries-send-confirm"
           onClick={send}
           content={`Are you sure? Sending ${entriesToSisu.entries.length + entriesToSisu.extraEntries.length} completion(s) to Sisu`}
         />
@@ -141,10 +142,8 @@ export default withRouter(({ rows, batchId, history }) => {
             <Table.HeaderCell>Course realisation name</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
-        <Table.Body>
+        <Table.Body data-cy="confirm-entries-table">
           {rows.map(({ entry, ...rawEntry }) => {
-
-            console.log(entry.completionDate, rawEntry.attainmentDate)
             return <Table.Row key={entry.id} warning={entry.missingEnrolment} style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
               <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
               <Table.Cell>{!entry.missingEnrolment || entry.type === 'EXTRA_ENTRY' ? getGrade(entry.gradeScaleId, entry.gradeId, entry.completionLanguage) : rawEntry.grade}</Table.Cell>
@@ -165,6 +164,7 @@ export default withRouter(({ rows, batchId, history }) => {
         content="Cancel"
         disabled={pending}
         onClick={revert}
+        data-cy="confirm-entries-cancel"
         negative />
     </Segment>
   </Segment>

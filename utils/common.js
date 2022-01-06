@@ -131,7 +131,7 @@ const testUsers = [
   },
   {
     name: "grader",
-    employeeId: 2222,
+    employeeId: 9111111,
     email: "grader-user-email@helsinki-cypress-test.com",
     isGrader: true,
     isAdmin: false,

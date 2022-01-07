@@ -21,10 +21,10 @@ const gradeScales = [
 ]
 
 const moocLanguageMap = {
-  "fi_FI" : "fi",
-  "en_US" : "en",
-  "sv_SE" : "sv"
-} 
+  "fi_FI": "fi",
+  "en_US": "en",
+  "sv_SE": "sv"
+}
 
 const getBatchId = (courseCode) => `${courseCode}-${moment().tz("Europe/Helsinki").format(
   'DD.MM.YY-HHmmss'
@@ -81,7 +81,7 @@ const testCourses = [
     courseCode: "TKT10003",
     language: "fi",
     gradeScale: "sis-0-5"
-  }, 
+  },
   {
     name: "Elements of AI",
     courseCode: "TKT21018",
@@ -117,6 +117,14 @@ const testCourses = [
     courseCode: "AYTKT100051",
     language: "fi",
     gradeScale: "sis-hyl-hyv"
+  },
+  {
+    name: "Versionhallinta",
+    courseCode: "TKT21015",
+    language: "fi",
+    gradeScale: "sis-hyl-hyv",
+    credits: "1",
+    useAsExtra: true
   }
 ]
 

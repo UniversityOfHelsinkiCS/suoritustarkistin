@@ -335,10 +335,39 @@ const seedBachelorData = async (req, res) => {
   }
 }
 
+
+const seedErilliskirjaus = async (req, res) => {
+  try {
+    await deleteAllSisReports()
+    await deleteAllOodiReports()
+    await deleteAllCourses()
+    await deleteAllUsers()
+    await deleteAllJobs()
+    console.log("WWWHHHHAT")
+    await createTestUsers(testUsers)
+    const courses = [
+      {
+        name: "Versionhallinta",
+        courseCode: "TKT21015",
+        language: "fi",
+        gradeScale: "sis-hyl-hyv",
+        credits: "1",
+        useAsExtra: true
+      }
+    ]
+    await createTestCourses(courses)
+    return res.status(200).send('OK')
+  } catch (error) {
+    logger.error(`Error seeding the database: ${error.message}`)
+    res.status(500).json({ error: error.message })
+  }
+}
+
 module.exports = {
   seedDatabaseForTests,
   createTestSisCompletions,
   seedTestCompletions,
   seedBachelorData,
-  seedNoEntries
+  seedNoEntries,
+  seedErilliskirjaus
 }

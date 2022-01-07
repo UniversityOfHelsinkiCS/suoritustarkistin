@@ -20,6 +20,27 @@
       "secondaryEmail": "suotar-tester@helsinki.fi",
       "createdAt": "2021-08-18T06:11:55.036Z",
       "updatedAt": "2021-12-28T04:00:00.282Z"
+    },
+    {
+      "id": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "studentNumber": "015448314",
+      "dateOfBirth": "1933-10-10T00:00:00.000Z",
+      "firstNames": "Tuula Testi",
+      "lastName": "Andersson-Testi",
+      "eduPersonPrincipalName": null,
+      "employeeNumber": null,
+      "primaryEmail": "hakija-33745639@oph.fi",
+      "oppijaId": "1.2.246.562.24.13240286862",
+      "genderUrn": "urn:code:gender:male",
+      "countryUrn": "urn:code:country:246",
+      "citizenships": [
+        "urn:code:country:246"
+      ],
+      "dead": false,
+      "preferredLanguageUrn": "urn:code:preferred-language:fi",
+      "secondaryEmail": "hakija-33745639@oph.fi",
+      "createdAt": "2021-12-16T15:57:17.880Z",
+      "updatedAt": "2021-12-16T15:57:17.880Z"
     }
   ],
   "employees": [
@@ -91,6 +112,11 @@
           }
         }
       ]
+    },
+    {
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "code": "TKT10003",
+      "enrolments": []
     }
   ],
   "studyRights": [
@@ -104,6 +130,193 @@
       "snapshotDateTime": null
     }
   ],
+  "studyRightsByPeron": [
+    {
+      "id": "otm-32620291-8952-4034-a7d2-d5ffbc0f4007",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "endDate": "2028-08-01",
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": "2021-08-01T04:12:14.077Z",
+      "organisation": {
+        "code": "H50"
+      },
+      "term_registrations": {
+        "studyRightId": "otm-32620291-8952-4034-a7d2-d5ffbc0f4007",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "b91df27b-b18a-42e3-962e-a12e4987b149",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-27",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "ae1e32e1-7fb3-44e5-86c3-1f6bb7c57123",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-27",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:17:26.633Z",
+        "updatedAt": "2021-12-16T16:17:26.633Z"
+      }
+    },
+    {
+      "id": "otm-cf7ae2be-e89b-4921-bc24-6ea74b3ca123",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "endDate": "2028-08-01",
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": "2021-08-01T04:12:14.097Z",
+      "organisation": {
+        "code": "H50"
+      },
+      "term_registrations": {
+        "studyRightId": "otm-cf7ae2be-e89b-4921-bc24-6ea74b3ca123",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "1ee2eb4c-0f75-4ec4-a712-fb1b5661efc6",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "e980ac35-399c-414f-a3e9-dcfc6a61ab09",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:17:26.633Z",
+        "updatedAt": "2021-12-16T16:17:26.633Z"
+      }
+    },
+    {
+      "id": "otm-6588fde8-daa1-4744-8e68-b59159cff004",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": null,
+      "organisation": {
+        "code": null
+      },
+      "term_registrations": {
+        "studyRightId": "otm-6588fde8-daa1-4744-8e68-b59159cff004",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "526e7986-5343-4db4-8328-6f4698a7aa00",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "cfecb6a8-9a61-4705-bc12-6aacabb1d7f7",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:16:50.714Z",
+        "updatedAt": "2021-12-16T16:16:50.714Z"
+      }
+    },
+    {
+      "id": "otm-c825d8b8-94ff-49e2-a10f-43a8a145103b",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "endDate": "2028-08-01",
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": "2021-08-01T02:19:45.367Z",
+      "organisation": {
+        "code": "H50"
+      },
+      "term_registrations": {
+        "studyRightId": "otm-c825d8b8-94ff-49e2-a10f-43a8a145103b",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "54bb0b4e-e5fc-485c-b0c1-1571e80da0fb",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "f1ee39d3-75e3-416d-a1b3-0a34e4dc4135",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "d88a92fd-53ee-4aee-9afd-7dc4468c5d9e",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2022
+            },
+            "statutoryAbsence": false,
+            "termRegistrationType": "MISSING"
+          },
+          {
+            "localId": "51ad6815-e102-43ca-83bd-94d378a40f93",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2022
+            },
+            "statutoryAbsence": false,
+            "termRegistrationType": "MISSING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:14:48.541Z",
+        "updatedAt": "2021-12-16T16:14:48.541Z"
+      }
+    }
+  ],
   "acceptors": [
     {
       "otm-5680ea93-6e5f-4913-a219-5e668cc884c3": [
@@ -112,6 +325,37 @@
           "personId": "hy-hlo-131122009"
         }
       ]
+    }
+  ],
+  "courseUnitIds": {
+    "TKT21015": [
+      {
+        "id": "hy-CU-137765567-2020-08-01",
+        "name": {
+          "en": "Introduction to Programming, addition (Python)",
+          "fi": "Ohjelmoinnin perusteet, lisäosa (Python)",
+          "sv": "Introduktion till programmering, tillägg (Python)"
+        },
+        "validityPeriod": {
+          "startDate": "2020-08-01"
+        },
+        "code": "TKT21015"
+      }
+    ]
+  },
+  "acceptorsCourseUnits": {
+    "hy-CU-137765567-2020-08-01": [
+      {
+        "roleUrn": "urn:code:attainment-acceptor-type:approved-by",
+        "personId": "hy-hlo-45690824"
+      }
+    ]
+  },
+  "attainments": [
+    {
+      "studentNumber": "015448314",
+      "courseCode": "TKT21015",
+      "attainments": []
     }
   ],
   "grades": {

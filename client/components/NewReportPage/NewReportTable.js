@@ -67,6 +67,7 @@ export default withRouter(({ rows, batchId, history }) => {
         content="Approve"
         onClick={send}
         disabled={pending}
+        data-cy="confirm-entries-send-missing-enrolment"
         positive
       />
 

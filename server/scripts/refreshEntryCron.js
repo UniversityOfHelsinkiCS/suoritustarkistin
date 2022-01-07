@@ -30,7 +30,7 @@ const refreshEntriesCron = async () => {
 
   const entriesToSend = await db.entries.findAll({
     where: {
-      '$rawEntry.batchId': batch
+      '$rawEntry.batchId$': batchId
     },
     attributes: [[col("entries.id"), 'id']],
     include: [{ model: db.raw_entries, as: 'rawEntry', attributes: [] }],

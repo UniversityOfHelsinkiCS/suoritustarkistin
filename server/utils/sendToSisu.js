@@ -194,7 +194,7 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     completionLanguage,
     courseUnitId,
     gradeScaleId,
-    gradeId,
+    gradeId
   }
 })
 

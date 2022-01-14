@@ -181,19 +181,20 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
   } = entry
 
   return {
-    id,
-    personId,
-    studyRightId,
     verifierPersonId: verifier[0].id,
     acceptorPersons: acceptors[courseUnitId],
     attainmentDate: moment(completionDate).format('YYYY-MM-DD'),
     registrationDate: moment().format('YYYY-MM-DD'),
+    state: 'ATTAINED',
+    credits: parseFloat(rawEntry.credits),
+    privateComment: 'Kurjen kautta tuotu erilliskirjaus',
+    id,
+    personId,
+    studyRightId,
     completionLanguage,
     courseUnitId,
     gradeScaleId,
     gradeId,
-    state: 'ATTAINED',
-    credits: parseFloat(rawEntry.credits)
   }
 })
 

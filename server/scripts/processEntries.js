@@ -2,6 +2,7 @@ const db = require('../models/index')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
+const { flatMap } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
 const {
   getEmployees,
@@ -10,7 +11,6 @@ const {
   getEnrolments,
   getMultipleStudyRights
 } = require('../services/importer')
-const logger = require('../utils/logger')
 
 /**
  * Mankel raw entries to sis entries.
@@ -30,7 +30,7 @@ const logger = require('../utils/logger')
  *  [failedEntries, validEntries, isMissingEnrollment]
  */
 
-const processEntries = async (createdEntries, requireEnrollment = false, checkStudyRights = false) => {
+const processEntries = async (createdEntries, requireEnrollment = false) => {
   const success = []
   const failed = []
   let isMissingEnrollment = false
@@ -56,10 +56,8 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkSt
     }))
     .filter(({ personId, code }) => personId && code)
   const enrolments = await getEnrolments(studentCourseCodePairs)
-  const studyRights = checkStudyRights ? await getStudyRights(enrolments) : []
+  const studyRights = await getStudyRights(enrolments)
 
-  // We need to flatten the final data, as one raw entry may be
-  // mankeled to one or more attainment (entry)
   await Promise.all(createdEntries.map(async (rawEntry) => {
     const grader = graders.find((g) => g.id === rawEntry.graderId)
     const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
@@ -135,22 +133,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkSt
       return Promise.resolve()
     }
 
-    let validAttainmentDate = completionDate
-
-    if (checkStudyRights) {
-      validAttainmentDate = getDateWithinStudyright(studyRights, student.id, filteredEnrolment, completionDate)
-      if (!validAttainmentDate || !moment(validAttainmentDate).isSame(completionDate)) {
-        const result = changeCompletionDate(rawEntry, completionDate, validAttainmentDate)
-        if (!result) {
-          failed.push({
-            id: rawEntry.id,
-            studentNumber: rawEntry.studentNumber,
-            message: `Invalid studyright for ${rawEntry.studentNumber}. Completion date ${completionDate.format('YYYY-MM-DD')} not within studyright. `
-          })
-          return Promise.resolve()
-        }
-      }
-    }
+    const validAttainmentDate = getDateWithinStudyright(studyRights, student.id, filteredEnrolment, completionDate)
 
     delete filteredEnrolment.studyRightId
     success.push({
@@ -159,7 +142,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkSt
       verifierPersonId: verifier.id,
       rawEntryId: rawEntry.id,
       gradeId: grade.localId,
-      completionDate: validAttainmentDate.format('YYYY-MM-DD'),
+      completionDate: validAttainmentDate,
       completionLanguage: rawEntry.language
     })
     return Promise.resolve()
@@ -242,22 +225,6 @@ const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attai
   return attainmentDate
 }
 
-const changeCompletionDate = async (rawEntry, completionDate, validAttainmentDate) => {
-  if (!validAttainmentDate) return false
-  try {
-    // eslint-disable-next-line no-unused-vars
-    const [rows, status] = await db.raw_entries.update({ attainmentDate: validAttainmentDate },
-      {
-        where: { id: rawEntry.id }, returning: true
-      })
-    logger.info({ message: `Changed date for ${rawEntry.studentNumber} from ${completionDate.format('YYYY-MM-DD')} to ${validAttainmentDate.format('YYYY-MM-DD')}` })
-    return true
-  } catch (error) {
-    logger.error({ message: `Error in changing completion date for ${rawEntry.studentNumber}: ${error}` })
-    return false
-  }
-}
-
 const mapGrades = (gradeScales, id, rawEntry) => {
   let grade = rawEntry.grade
   if (id === "sis-0-5") {
@@ -284,7 +251,7 @@ const getCourses = async (rawEntries) => {
 }
 
 const getStudyRights = async (enrolments) => {
-  const enrolmentArrays = enrolments.flatMap((student) => student.enrolments)
+  const enrolmentArrays = flatMap(enrolments, (student) => student.enrolments)
   const studyRightIds = enrolmentArrays.map((enrolment) => enrolment.studyRightId)
   return await getMultipleStudyRights(studyRightIds)
 }

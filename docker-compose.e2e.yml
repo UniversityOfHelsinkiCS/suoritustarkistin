@@ -15,6 +15,8 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@e2e-db:5432/postgres
       - NODE_ENV=test
       - PORT=8001
+      - IMPORTER_DB_API_URL=http://importer-mock:3000/
+      - POST_IMPORTER_DB_API_URL=http://importer-mock:3000/
     volumes:
       - ./:/usr/src/app
       - node_modules:/usr/src/app/node_modules
@@ -22,6 +24,15 @@ services:
       - 8001:8001
     depends_on:
       - e2e-db
-
+      - importer-mock
+  importer-mock:
+    build:
+      context: ./e2e-importer
+      dockerfile: Dockerfile
+    environment:
+      - DEBUG=express:router
+    container_name: importer
+    ports:
+      - 3000:3000
 volumes:
   node_modules:

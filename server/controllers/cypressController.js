@@ -264,6 +264,24 @@ const seedDatabaseForTests = async (req, res) => {
   }
 }
 
+const seedNoEntries = async (req, res) => {
+  try {
+    logger.info('Seeding the test database')
+    await deleteAllSisReports()
+    await deleteAllOodiReports()
+    await deleteAllCourses()
+    await deleteAllUsers()
+    await deleteAllJobs()
+    await createTestCourses(testCourses)
+    await createTestUsers(testUsers)
+    return res.status(200).send('OK')
+  } catch (error) {
+    logger.error(`Error seeding the database: ${error.message}`)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+
 const seedBachelorData = async (req, res) => {
   try {
     await deleteAllSisReports()
@@ -317,9 +335,38 @@ const seedBachelorData = async (req, res) => {
   }
 }
 
+
+const seedErilliskirjaus = async (req, res) => {
+  try {
+    await deleteAllSisReports()
+    await deleteAllOodiReports()
+    await deleteAllCourses()
+    await deleteAllUsers()
+    await deleteAllJobs()
+    await createTestUsers(testUsers)
+    const courses = [
+      {
+        name: "Versionhallinta",
+        courseCode: "TKT21015",
+        language: "fi",
+        gradeScale: "sis-hyl-hyv",
+        credits: "1",
+        useAsExtra: true
+      }
+    ]
+    await createTestCourses(courses)
+    return res.status(200).send('OK')
+  } catch (error) {
+    logger.error(`Error seeding the database: ${error.message}`)
+    res.status(500).json({ error: error.message })
+  }
+}
+
 module.exports = {
   seedDatabaseForTests,
   createTestSisCompletions,
   seedTestCompletions,
-  seedBachelorData
+  seedBachelorData,
+  seedNoEntries,
+  seedErilliskirjaus
 }

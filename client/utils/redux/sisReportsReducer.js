@@ -208,7 +208,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       return {
         ...state,
         singleBatchPending: true,
-        pending: false,
+        pending: true,
         error: false
       }
     case 'POST_ENTRIES_TO_SIS_FAILURE': {
@@ -218,7 +218,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         openAccordions: state.openAccordions,
         pending: false,
         singleBatchPending: false,
-        error: true
+        error: action.error
       }
     }
     case 'POST_ENTRIES_TO_SIS_SUCCESS': {

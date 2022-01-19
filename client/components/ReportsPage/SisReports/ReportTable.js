@@ -35,7 +35,7 @@ export default ({ rows }) => {
     return null
 
   const includeDelete = rows.some((r) => allowDelete(user, r))
-  return <Table className="report-table">
+  return <Table compact className="report-table">
     <TableColumns allowDelete={includeDelete} />
     <TableBody
       key={rows[0].batchId}
@@ -48,18 +48,14 @@ export default ({ rows }) => {
 const TableColumns = ({ allowDelete }) => (
   <Table.Header>
     <Table.Row>
-      <Table.HeaderCell>Course code</Table.HeaderCell>
-      <Table.HeaderCell>Course name</Table.HeaderCell>
       <Table.HeaderCell>Student number</Table.HeaderCell>
       <Table.HeaderCell>Credits</Table.HeaderCell>
-      <Table.HeaderCell>Grader</Table.HeaderCell>
-      <Table.HeaderCell colSpan='2'>Course Unit</Table.HeaderCell>
-      <Table.HeaderCell>Student ID</Table.HeaderCell>
+      <Table.HeaderCell>Grade</Table.HeaderCell>
       <Table.HeaderCell>Completion date</Table.HeaderCell>
       <Table.HeaderCell>Language</Table.HeaderCell>
-      <Table.HeaderCell>Grade</Table.HeaderCell>
       <Table.HeaderCell>Date sent</Table.HeaderCell>
-      <Table.HeaderCell>Sender name</Table.HeaderCell>
+      <Table.HeaderCell>Grader</Table.HeaderCell>
+      <Table.HeaderCell >Sisu details</Table.HeaderCell>
       <Popup
         content={
           <div>
@@ -87,12 +83,13 @@ const TableBody = ({ user, rawEntries }) => {
       const course = rawEntry.course || PLACEHOLDER_COURSE
       return <React.Fragment key={`row-${rawEntry.id}`}>
         <Table.Row warning={rawEntry.entry.missingEnrolment} style={rawEntry.entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
-          <Table.Cell data-cy="report-course-code">{getCourseCode(rawEntry, course)}</Table.Cell>
-          <Table.Cell data-cy="report-course-name">{getCourseName(rawEntry, course)}</Table.Cell>
           <Table.Cell data-cy="report-student-number">{rawEntry.studentNumber}</Table.Cell>
           <Table.Cell data-cy="report-credits">{rawEntry.credits}</Table.Cell>
-          <Table.Cell>{rawEntry.grader ? rawEntry.grader.name : 'Grader not found'}</Table.Cell>
-          <EntryCells entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }} />
+          <EntryCells
+            entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }}
+            course={getCourseName(rawEntry, course)}
+            grader={rawEntry.grader}
+          />
           {allowDelete(user, rawEntry)
             ? <Table.Cell>
               <DeleteEntryButton rawEntryId={rawEntry.id} batchId={rawEntry.batchId} />
@@ -148,7 +145,7 @@ const getSisuStatusCell = (sent, registered) => (
   </>
 )
 
-const EntryCells = ({ entry }) => {
+const EntryCells = ({ entry, course, grader }) => {
   const [open, setOpen] = useState(false)
   const {
     personId,
@@ -160,7 +157,6 @@ const EntryCells = ({ entry }) => {
     completionDate,
     completionLanguage,
     sent,
-    sender,
     gradeScaleId,
     gradeId,
     registered,
@@ -174,12 +170,16 @@ const EntryCells = ({ entry }) => {
     active={open}
     style={{ padding: "0.75em 1em" }}
   >
+    <strong>Realisation name</strong>
+    <p>{getSisUnitName(courseUnitRealisationName, completionLanguage) || null}</p>
     <strong>Course unit ID</strong>
     <p>{courseUnitId || null}</p>
     <strong>Course unit realisation ID</strong>
     <p>{courseUnitRealisationId || null}</p>
     <strong>Assessment item ID</strong>
     <p>{assessmentItemId || null}</p>
+    <strong>Student id</strong>
+    <p>{personId || null}</p>
     <strong>Grader ID</strong>
     <p>{verifierPersonId || null}</p>
     <strong>Grade scale of the course</strong>
@@ -203,24 +203,8 @@ const EntryCells = ({ entry }) => {
 
   return (
     <>
-      <Table.Cell
-        data-cy={`report-courseUnitRealisationName-${gradeId}`}
-        colSpan='2'
-      >
-        <Accordion className="report-table-accordion" style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
-          <Accordion.Title
-            active
-            data-cy="entry-course-name"
-            onClick={() => setOpen(!open)}
-          >
-            <Icon name={`caret ${open ? 'down' : 'right'}`} />
-            {type === 'ENTRY' ? getSisUnitName(courseUnitRealisationName, completionLanguage) : 'Erilliskirjaus'}
-          </Accordion.Title>
-          {type === 'ENTRY' ? entryAccordionContent() : extraEntryAccordionContent()}
-        </Accordion>
-      </Table.Cell>
-      <Table.Cell data-cy="report-personId">
-        {personId ? personId : null}
+      <Table.Cell data-cy="report-entry-grade">
+        {!missingEnrolment || type === 'EXTRA_ENTRY' ? getGrade(gradeScaleId, gradeId, completionLanguage) : gradeId}
       </Table.Cell>
       <Table.Cell data-cy="report-completionDate">
         {completionDate ? moment(completionDate).format("DD.MM.YYYY") : null}
@@ -228,14 +212,24 @@ const EntryCells = ({ entry }) => {
       <Table.Cell data-cy="report-completionLanguage">
         {completionLanguage ? completionLanguage : null}
       </Table.Cell>
-      <Table.Cell data-cy="report-entry-grade">
-        {!missingEnrolment || type === 'EXTRA_ENTRY' ? getGrade(gradeScaleId, gradeId, completionLanguage) : gradeId}
-      </Table.Cell>
       <Table.Cell data-cy="report-sent">
         {sent ? moment(sent).format("DD.MM.YYYY") : null}
       </Table.Cell>
-      <Table.Cell data-cy="report-senderName">
-        {sender ? sender.name : null}
+      <Table.Cell>{grader ? grader.name : 'Grader not found'}</Table.Cell>
+      <Table.Cell
+        data-cy={`report-courseUnitRealisationName-${gradeId}`}
+      >
+        <Accordion className="report-table-accordion" style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
+          <Accordion.Title
+            active
+            data-cy="entry-accordion"
+            onClick={() => setOpen(!open)}
+          >
+            <Icon name={`caret ${open ? 'down' : 'right'}`} />
+            {course}
+          </Accordion.Title>
+          {type === 'ENTRY' ? entryAccordionContent() : extraEntryAccordionContent()}
+        </Accordion>
       </Table.Cell>
       <Table.Cell data-cy="report-registered">
         {getSisuStatusCell(sent, registered)}
@@ -281,17 +275,11 @@ const getSisUnitName = (name, language) => {
 }
 
 const getCourseName = (rawEntry, course) => {
-  if (EOAI_CODES.includes(course.courseCode)) {
-    return EOAI_NAMEMAP[rawEntry.entry.completionLanguage].name
-  }
-  return course.name
-}
-
-const getCourseCode = (rawEntry, course) => {
-  if (EOAI_CODES.includes(course.courseCode)) {
-    return EOAI_NAMEMAP[rawEntry.entry.completionLanguage].code
-  }
-  return course.courseCode
+  if (rawEntry.entry.type === 'EXTRA_ENTRY')
+    return `Erilliskirjaus (${course.courseCode})`
+  if (EOAI_CODES.includes(course.courseCode))
+    return `${EOAI_NAMEMAP[rawEntry.entry.completionLanguage].name} (${course.courseCode})`
+  return `${course.name} (${course.courseCode})`
 }
 
 const getGrade = (gradeScaleId, gradeId, language) => {

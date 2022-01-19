@@ -4,10 +4,6 @@
 
 
 /* Overriding some of the the semantic-ui styles */
-.sis-report-table td {
-  padding-top: 3px !important;
-  padding-bottom: 3px !important;
-}
 
 .delete-popup {
   display: flex;

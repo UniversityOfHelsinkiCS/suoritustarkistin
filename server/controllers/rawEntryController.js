@@ -1,6 +1,7 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
+const { getCourseUnitEnrolments } = require('../services/importer')
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
@@ -58,6 +59,13 @@ const addRawEntries = async (req, res) => {
   }
 }
 
+const importStudents = async (req, res) => {
+  const { code } = req.params
+  const data = await getCourseUnitEnrolments(code)
+  return res.send(data)
+}
+
 module.exports = {
-  addRawEntries
+  addRawEntries,
+  importStudents
 }

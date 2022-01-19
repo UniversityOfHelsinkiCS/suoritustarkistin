@@ -10,7 +10,10 @@ const initialState = {
   defaultCourse: '',
   date: new Date(),
   sending: false,
-  entriesToConfirm: {}
+  entriesToConfirm: {},
+  importStudents: {
+    data: []
+  }
 }
 
 export const setNewRawEntriesAction = (rawEntries) => {
@@ -24,6 +27,12 @@ export const resetNewRawEntriesAction = () => ({
 export const resetNewRawEntriesConfirmAction = () => ({
   type: 'RESET_NEW_RAW_ENTRIES_CONFIRM'
 })
+
+export const importStudentsAction = (courseCode) => {
+  const route = `/import-students/${courseCode}`
+  const prefix = 'IMPORT_STUDENTS'
+  return callBuilder(route, prefix, 'get')
+}
 
 export const sendNewRawEntriesAction = (rawEntries) => {
   const route = `/sis_raw_entries`
@@ -64,6 +73,34 @@ export default (state = initialState, action) => {
         sending: false,
         error: null,
         entriesToConfirm: {}
+      }
+    case 'IMPORT_STUDENTS_ATTEMPT':
+      return {
+        ...state,
+        importStudents: {
+          ...state.importStudents,
+          pending: true,
+          error: false
+        }
+      }
+    case 'IMPORT_STUDENTS_FAILURE':
+      return {
+        ...state,
+        importStudents: {
+          ...state.importStudents,
+          pending: false,
+          error: action.response || true
+        }
+      }
+    case 'IMPORT_STUDENTS_SUCCESS':
+      return {
+        ...state,
+        importStudents: {
+          ...state.importStudents,
+          data: action.response,
+          pending: false,
+          error: false
+        }
       }
     case 'LOGIN_SUCCESS':
       return {

@@ -17,11 +17,12 @@ import {
 } from 'Utilities/redux/coursesReducer'
 import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
 import { areValidNewRawEntries } from 'Root/utils/validators'
+import ImportStudents from './ImportStudents'
 
 const styles = {
   sendButton: {
     display: 'flex',
-    justifyContent: 'end',
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
   info: {
@@ -105,6 +106,7 @@ const parseRawEntries = (rawEntries) => {
 export default ({ kandi, extra, parseCSV }) => {
   const dispatch = useDispatch()
   const [showingDate, setShowingDate] = useState()
+  const [importIsOpen, setImportIsOpen] = useState(false)
   const [defaultGrade, setDefaultGrade] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const newRawEntries = useSelector((state) => state.newRawEntries)
@@ -177,8 +179,24 @@ export default ({ kandi, extra, parseCSV }) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, defaultGrade: newDefaultGrade }))
   }
 
+  const importRows = (rows) => {
+    const rowsAsCSV = Object.keys(rows).map((studentNumner) => `${studentNumner};${rows[studentNumner].grade}`)
+    const data = parseCSV(rowsAsCSV.join('\n'), newRawEntries.defaultCourse)
+    dispatch(
+      setNewRawEntriesAction({
+        ...newRawEntries,
+        data,
+        rawData: rowsAsCSV.join('\n')
+      })
+    )
+  }
+
   return (
     <>
+      <ImportStudents
+        isOpen={importIsOpen}
+        setIsOpen={setImportIsOpen}
+        importRows={importRows} />
       <Form style={styles.form}>
         <Form.Group widths='equal'>
           <Form.Field
@@ -229,6 +247,13 @@ export default ({ kandi, extra, parseCSV }) => {
         </Form.Group>
       </Form>
       <div style={styles.sendButton}>
+        <Button
+          disabled={!newRawEntries.defaultCourse}
+          color="primary"
+          onClick={() => setImportIsOpen(true)}
+        >
+          Import students
+        </Button>
         <Button
           disabled={newRawEntries.sending || !newRawEntries.data || !isValid}
           data-cy="confirm-sending-button"

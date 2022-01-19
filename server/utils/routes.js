@@ -33,7 +33,8 @@ const {
   getUsersOodiReports
 } = require('@controllers/oodiReportController')
 const {
-  addRawEntries
+  addRawEntries,
+  importStudents
 } = require('@controllers/rawEntryController')
 const {
   getAllSisReports,
@@ -112,6 +113,7 @@ router.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
 router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
 router.delete('/sis_reports/batch/:batchId', checkAdmin, deleteSisBatch)
 router.post('/sis_raw_entries', addRawEntries)
+router.get('/import-students/:code', importStudents)
 router.post('/entries_to_sis', checkAdmin, sendToSis)
 router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
 router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)

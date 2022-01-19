@@ -19,8 +19,8 @@ export default () => (
   <>
     <Switch>
       <ProtectedRoute exact path="/" component={Wrap} childComponent={NewReportPage} narrow />
-      <ProtectedRoute exact path="/reports" component={Wrap} childComponent={ReportsPage} />
-      <ProtectedRoute exact path="/reports/sisu/:activeBatch" component={Wrap} childComponent={ReportsPage} />
+      <ProtectedRoute exact path="/reports" component={Wrap} childComponent={ReportsPage} narrow />
+      <ProtectedRoute exact path="/reports/sisu/:activeBatch" component={Wrap} childComponent={ReportsPage} narrow />
       <ProtectedRoute exact path="/courses" component={Wrap} childComponent={CoursesPage} />
       <ProtectedRoute exact path="/users" component={Wrap} childComponent={UsersPage} narrow />
       <ProtectedRoute exact path="/automated-reports" component={Wrap} childComponent={AutomatedReportsPage} />

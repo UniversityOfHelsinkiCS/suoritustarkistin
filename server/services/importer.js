@@ -167,6 +167,15 @@ const getCourseUnitIds = async (codes) => {
   }
 }
 
+const getCourseUnitEnrolments = async (code) => {
+  try {
+    const { data } = await api.get(`suotar/course-unit-enrolments/${code}`)
+    return data
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 
 module.exports = {
   getEmployees,
@@ -183,5 +192,6 @@ module.exports = {
   getStudentsWithStudyRight,
   getAcceptorPersonsByCourseUnit,
   getCourseUnitIds,
-  getMultipleStudyRightsByPersons
+  getMultipleStudyRightsByPersons,
+  getCourseUnitEnrolments
 }

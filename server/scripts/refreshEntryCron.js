@@ -4,7 +4,6 @@ const { Op, col } = require("sequelize")
 const logger = require('@utils/logger')
 const { sendSentryMessage } = require('@utils/sentry')
 const attainmentsToSisu = require('../utils/sendToSisu')
-const { batch } = require('react-redux')
 
 
 const refreshEntriesCron = async () => {

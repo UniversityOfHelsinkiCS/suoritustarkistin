@@ -343,7 +343,6 @@ const seedErilliskirjaus = async (req, res) => {
     await deleteAllCourses()
     await deleteAllUsers()
     await deleteAllJobs()
-    console.log("WWWHHHHAT")
     await createTestUsers(testUsers)
     const courses = [
       {

@@ -3,7 +3,7 @@ const logger = require('@utils/logger')
 const { processEntries } = require('./processEntries')
 const { sendSentryMessage } = require('@utils/sentry')
 
-const automatedAddToDb = async (matches, course, batchId, sendMail = true) => {
+const automatedAddToDb = async (matches, course, batchId) => {
   const transaction = await db.sequelize.transaction()
 
   if (!matches.length) {

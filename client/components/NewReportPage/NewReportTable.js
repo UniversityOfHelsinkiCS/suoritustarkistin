@@ -32,7 +32,6 @@ export default withRouter(({ rows, batchId, history }) => {
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
 
   useEffect(() => {
-    console.log(pending, error, sent)
     if (sent && !pending && !error) {
       dispatch(openReport(batchId))
       dispatch(resetNewRawEntriesAction())

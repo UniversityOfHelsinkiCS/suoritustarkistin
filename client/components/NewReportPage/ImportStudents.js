@@ -93,28 +93,31 @@ export default ({ isOpen, setIsOpen, importRows }) => {
           : null}
         <Segment loading={pending} style={styles.table} basic>
           {
-            data.length
-              ? <Table compact celled>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell>Grade</Table.HeaderCell>
-                    <Table.HeaderCell>Student</Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {data.map((r) => {
-                    const title = getTitle(r)
-                    return <Accordion
-                      title={title}
-                      rows={r.enrollments}
-                      key={title}
-                      isOpen={openAccordions.has(title)}
-                      close={closeAccordion}
-                      open={openAccordion} />
-                  }
-                  )}
-                </Table.Body>
-              </Table>
+            data.length || pending
+              ? <>
+                <Message info>Select students by typing a grade for each student to import.</Message>
+                <Table compact celled>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>Grade</Table.HeaderCell>
+                      <Table.HeaderCell>Student</Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {data.map((r) => {
+                      const title = getTitle(r)
+                      return <Accordion
+                        title={title}
+                        rows={r.enrollments}
+                        key={title}
+                        isOpen={openAccordions.has(title)}
+                        close={closeAccordion}
+                        open={openAccordion} />
+                    }
+                    )}
+                  </Table.Body>
+                </Table>
+              </>
               : <Message info>{`No enrollments found for course ${defaultCourse}`}</Message>
           }
         </Segment>

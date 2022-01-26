@@ -8,6 +8,8 @@ const { isEnabled, messageOptions, smtpOptions } = require('../config/email')
 const sendEmail = async (options) => {
   if (!isEnabled) {
     logger.error('Email disabled, set EMAIL_ENABLED=true to enable.')
+    logger.info('Would send')
+    logger.info(JSON.stringify(options))
     return
   }
 

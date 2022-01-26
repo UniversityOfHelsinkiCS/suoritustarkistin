@@ -5,6 +5,8 @@ const logger = require('@utils/logger')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const refreshEntries = require('../scripts/refreshEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
+const { failedInSisuReport, missingEnrolmentReport } = require('../utils/emailFactory')
+const sendEmail = require('../utils/sendEmail')
 
 const Op = Sequelize.Op
 const PAGE_SIZE = 15 // Batches, no single reports
@@ -28,7 +30,24 @@ const MISSING_ENROLLMENT_QUERY = [
   { '$entry.assessmentItemId$': null }
 ]
 
-const getFilters = ({ isMooc, status, student, errors, noEnrollment, userId, notSent }) => {
+const transformRows = (row) => {
+  const { extraEntry, entry, ...rest } = row
+  if (extraEntry.id) {
+    return { ...rest, entry: { ...extraEntry, type: 'EXTRA_ENTRY' } }
+  }
+  return {
+    ...rest,
+    entry: {
+      ...entry,
+      // Sequelize somehow does not include virtual fields when using raw: true
+      missingEnrolment: !(entry.courseUnitId && entry.courseUnitRealisationId && entry.assessmentItemId),
+      type: 'ENTRY'
+    }
+  }
+}
+
+
+const getFilters = ({ isMooc, status, student, errors, noEnrollment, userId }) => {
   const query = {
     reporterId: {
       [isMooc
@@ -49,11 +68,9 @@ const getFilters = ({ isMooc, status, student, errors, noEnrollment, userId, not
   if (noEnrollment) {
     query[Op.and] = [
       { [Op.or]: MISSING_ENROLLMENT_QUERY },
-      {'$extraEntry.id$': { [Op.eq]: null }}
+      { '$extraEntry.id$': { [Op.eq]: null } }
     ]
   }
-  if (notSent)
-    query['$entry.sent$'] = { [Op.eq]: null }
 
   return query
 }
@@ -102,22 +119,7 @@ const getBaches = async ({ offset, moocReports = false, filters }) => {
     raw: true,
     nest: true
   })
-  const transformedRows = rows.map((row) => {
-    const { extraEntry, entry, ...rest } = row
-    if (extraEntry.id) {
-      return { ...rest, entry: { ...extraEntry, type: 'EXTRA_ENTRY' } }
-    }
-    return {
-      ...rest,
-      entry: {
-        ...entry,
-        // Sequelize somehow does not include virtual fields
-        missingEnrolment: !(entry.courseUnitId && entry.courseUnitRealisationId && entry.assessmentItemId),
-        type: 'ENTRY'
-      }
-    }
-  })
-  return { rows: transformedRows, count: Number(count[0].count) }
+  return { rows: rows.map(transformRows), count: Number(count[0].count) }
 }
 
 const getAllSisReports = async (req, res) => {
@@ -143,10 +145,11 @@ const getAllSisMoocReports = async (req, res) => {
 const getAllEnrollmentLimboEntries = async (req, res) => {
   try {
     const { offset } = req
-    const { rows, count } = await db.raw_entries.findAndCountAll({
-      where: {
-        [Op.or]: MISSING_ENROLLMENT_QUERY
-      },
+    const query = {
+      [Op.or]: MISSING_ENROLLMENT_QUERY
+    }
+    const { rows } = await db.raw_entries.findAndCountAll({
+      where: query,
       include: [...RAW_ENTRY_INCLUDES],
       order: [['createdAt', 'DESC']],
       raw: true,
@@ -154,7 +157,10 @@ const getAllEnrollmentLimboEntries = async (req, res) => {
       limit: PAGE_SIZE,
       offset
     })
-    return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
+    const count = await db.raw_entries.getBatchCount(query)
+
+    const transformedRows = rows.map(transformRows).filter(({ entry }) => entry.type === 'ENTRY')
+    return res.status(200).send({ rows: transformedRows, offset, count: Number(count[0].count), limit: PAGE_SIZE })
   } catch (error) {
     handleDatabaseError(res, error)
   }
@@ -245,18 +251,42 @@ const sendToSis = async (req, res) => {
   }
 
   const { entryIds = [], extraEntryIds = [] } = req.body
+
+  if (!entryIds.length && !extraEntryIds.length)
+    return res.status(400).send({ message: 'No entries to send' })
+
+  const email = async (failedInSisu) => {
+    const pick = entryIds[0] || extraEntryIds[0]
+    const model = entryIds.length ? 'entry' : 'extraEntry'
+
+    const rawEntry = await db.raw_entries.findOne({
+      where: {
+        [`$${model}.id$`]: pick
+      },
+      attributes: ['batchId'],
+      include: [
+        { model: db.entries, as: 'entry', attributes: ['id'] },
+        { model: db.extra_entries, as: 'extraEntry', attributes: ['id'] }
+      ],
+      raw: true
+    })
+    const batchId = rawEntry ? rawEntry.batchId : null
+    const rawEntries = await db.raw_entries.getByBatch(batchId)
+    const amountMissingEnrollment = rawEntries.filter(({ entry }) => entry.missingEnrolment).length
+    sendEmails(req.user.email, { amountMissingEnrollment, batchId, failedInSisu })
+  }
+
   let [status, message] = []
   try {
     if (entryIds.length) {
       [status, message] = await attainmentsToSisu('entries', req)
-      if (message)
-        return res.status(status).send(message)
     }
     if (extraEntryIds.length) {
       [status, message] = await attainmentsToSisu('extra_entries', req)
-      if (message)
-        return res.status(status).send(message)
     }
+    email(message && !message.genericError)
+    if (message)
+      return res.status(status).send(message)
   } catch (e) {
     logger.error({ message: e.toString(), error: e })
   }
@@ -292,6 +322,32 @@ const refreshSisStatus = async (req, res) => {
   if (!success || !successExtras)
     return res.status(400).send('Failed to refresh entries from Sisu')
   return res.status(200).send()
+}
+
+const sendEmails = async (ccEmail, { amountMissingEnrollment, batchId, failedInSisu }) => {
+  const cc = ccEmail ? `${process.env.CC_RECEIVER},${ccEmail}` : process.env.CC_RECEIVER
+  if (amountMissingEnrollment)
+    sendEmail({
+      subject: `New completions reported with missing enrollment`,
+      attachments: [{
+        filename: 'suotar.png',
+        path: `${process.cwd()}/client/assets/suotar.png`,
+        cid: 'toskasuotarlogoustcid'
+      }],
+      html: missingEnrolmentReport(amountMissingEnrollment, batchId),
+      cc
+    })
+  if (failedInSisu)
+    sendEmail({
+      subject: `Some completions failed in Sisu`,
+      attachments: [{
+        filename: 'suotar.png',
+        path: `${process.cwd()}/client/assets/suotar.png`,
+        cid: 'toskasuotarlogoustcid'
+      }],
+      html: failedInSisuReport(batchId),
+      cc
+    })
 }
 
 module.exports = {

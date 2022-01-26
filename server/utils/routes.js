@@ -34,7 +34,8 @@ const {
 } = require('@controllers/oodiReportController')
 const {
   addRawEntries,
-  importStudents
+  importStudents,
+  notifyMissingEnrollment
 } = require('@controllers/rawEntryController')
 const {
   getAllSisReports,
@@ -118,6 +119,7 @@ router.post('/entries_to_sis', checkAdmin, sendToSis)
 router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
 router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
 router.get('/sis_reports/offset/:batchId', checkGrader, getOffset)
+router.get('/sis_reports/missing_enrollment_email/:batchId', notifyMissingEnrollment)
 
 router.get('/jobs', checkAdmin, getJobs)
 router.post('/jobs', checkAdmin, addJob)

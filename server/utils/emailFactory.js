@@ -127,15 +127,15 @@ const Template = (content, title) => `
 </html>
 `
 
-const ReportTemplate = (title, amount, unsentAmount, courseCode, batchId) => Template(
+const MissingEnrollmentTemplate = (title, amount, batchId) => Template(
   `
 <tr>
   <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
       <tr>
         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><b>Uusia suorituksia kurssille ${courseCode}!</b></p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Uusi raportti luotu kurssille ${courseCode}, raportti sisältää ${amount > 1 ? `${amount} suoritusta` : 'yhden suorituksen'}.</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><b>Missing enrollments</b></p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">New report created with ${amount > 1 ? `${amount} missing enrollments` : 'missing enrollment'}.</p>
           <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
             <tbody>
               <tr>
@@ -151,8 +151,6 @@ const ReportTemplate = (title, amount, unsentAmount, courseCode, batchId) => Tem
               </tr>
             </tbody>
           </table>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Suotarissa yhteensä ${unsentAmount} lähettämätöntä raporttia.</p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilanteissa ota yhteys <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a></p>
         </td>
       </tr>
     </table>
@@ -160,19 +158,14 @@ const ReportTemplate = (title, amount, unsentAmount, courseCode, batchId) => Tem
 </tr>
 `, title)
 
-const newReport = (amount, unsentAmount, courseCode, batchId) => ReportTemplate(`Uusia suorituksia kurssille ${courseCode}!`, amount, unsentAmount, courseCode, batchId)
-
-const newAutoReport = (amount, unsentAmount, courseCode, batchId) => ReportTemplate(`Uusia automaattisesti luotuja suorituksia kurssille ${courseCode}!`, amount, unsentAmount, courseCode, batchId)
-
-const newLimboReport = (amount, batchId, unsentAmount) => Template(
+const FailedInSisuTemplate = (title, batchId) => Template(
   `
-  <tr>
+<tr>
   <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
       <tr>
         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><b>Uusia suorituksia valmiina lähetettäväksi Sisuun!</b></p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Puuttuvia ilmottautumisia on löytynyt yhteesä ${amount} kappale(tta) ja näistä on luotu uusi raportti. </p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><b>Some entries failed validation in Sisu</b></p>
           <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
             <tbody>
               <tr>
@@ -188,14 +181,16 @@ const newLimboReport = (amount, batchId, unsentAmount) => Template(
               </tr>
             </tbody>
           </table>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Suotarissa yhteensä ${unsentAmount} lähettämätöntä raporttia.</p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Ongelmatilanteissa ota yhteys <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a></p>
         </td>
       </tr>
     </table>
   </td>
 </tr>
-`, 'Uusia suorituksia valmiina lähetettäväksi Sisuun!')
+`, title)
+
+const missingEnrolmentReport = (amount, batchId) => MissingEnrollmentTemplate(`New completions reported with missing enrollment `, amount, batchId)
+
+const failedInSisuReport = (batchId) => FailedInSisuTemplate(`Some completions failed in Sisu`, batchId)
 
 const forNewUser = (name) => Template(`
 <tr>
@@ -257,4 +252,4 @@ const newUserForAdmin = (name, email) => Template(`
   </td>
 </tr>`, 'New user in Suotar 👀')
 
-module.exports = { newReport, newUserForAdmin, forNewUser, newLimboReport, newAutoReport }
+module.exports = { newUserForAdmin, forNewUser, missingEnrolmentReport, failedInSisuReport }

@@ -6,7 +6,7 @@ import { Table, Button, Popup, Segment, Header, Divider, Message, Icon } from 's
 import NotificationMessage from 'Components/Message'
 
 import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { handleBatchDeletionAction, sendEntriesToSisAction, openReport } from 'Utilities/redux/sisReportsReducer'
+import { handleBatchDeletionAction, sendEntriesToSisAction, openReport, sendMissingEnrollmentEmail } from 'Utilities/redux/sisReportsReducer'
 
 const styles = {
   extraEntry: {
@@ -32,7 +32,7 @@ export default withRouter(({ rows, batchId, history }) => {
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
 
   useEffect(() => {
-    if (sent && !pending && !error) {
+    if (sent && !pending && !(error || {}).genericError) {
       dispatch(openReport(batchId))
       dispatch(resetNewRawEntriesAction())
       history.push('/reports')
@@ -126,6 +126,8 @@ export default withRouter(({ rows, batchId, history }) => {
       }, { entries: [], extraEntries: [] })
     if (entries.length || extraEntries.length)
       await dispatch(sendEntriesToSisAction(entries, extraEntries))
+    else
+      dispatch(sendMissingEnrollmentEmail(batchId))
     setSent(true)
   }
 

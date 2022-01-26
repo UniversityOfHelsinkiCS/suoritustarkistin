@@ -12,10 +12,15 @@ const SHIBBOLETH_HEADERS = [
 
 const generateSisuId = () => `hy-kur-${uuidv4()}`
 
+const ALLOW_SEND_TO_SISU = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
+  ? true
+  : process.env.SEND_TO_SISU || false
+
 module.exports = {
   ...common,
   DB_URL: process.env.DB_URL,
   PORT: process.env.NODE_ENV === 'test' ? 8001 : process.env.PORT || 8000,
+  ALLOW_SEND_TO_SISU,
   SHIBBOLETH_HEADERS,
   generateSisuId
 }

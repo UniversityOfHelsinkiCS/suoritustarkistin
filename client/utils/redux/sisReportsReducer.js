@@ -69,6 +69,12 @@ export const refreshEnrollmentsAction = (rawEntryIds) => {
   return callBuilder(route, prefix, 'post', rawEntryIds)
 }
 
+export const sendMissingEnrollmentEmail = (batchId) => {
+  const route = `/sis_reports/missing_enrollment_email/${batchId}`
+  const prefix = 'SEND_MISSING_ENROLLMENT_EMAIL'
+  return callBuilder(route, prefix, 'get', batchId)
+}
+
 export const openReport = (id) => ({
   type: 'OPEN_REPORT',
   id
@@ -111,7 +117,6 @@ const INITIAL_STATE = {
   error: false,
   filters: {
     errors: false,
-    notSent: false,
     noEnrollment: false,
     student: '',
     status: null

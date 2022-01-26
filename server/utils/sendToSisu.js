@@ -188,10 +188,10 @@ const extraEntriesToRequestData = (extraEntries, verifier, acceptors) => extraEn
     state: 'ATTAINED',
     credits: parseFloat(rawEntry.credits),
     privateComment: 'Kurjen kautta tuotu erilliskirjaus',
+    completionLanguage: `urn:code:language:${completionLanguage}`,
     id,
     personId,
     studyRightId,
-    completionLanguage,
     courseUnitId,
     gradeScaleId,
     gradeId

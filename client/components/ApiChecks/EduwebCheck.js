@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Input, Header, Form, Loader } from 'semantic-ui-react'
+import { Input, Header, Form } from 'semantic-ui-react'
 import { checkEduWeb } from 'Utilities/redux/apiCheckReducer'
 import EduwebInstance from 'Components/ApiChecks/EduwebInstance'
 
 
 export default () => {
   const dispatch = useDispatch()
-  const { eduweb, pending } = useSelector((state) => state.apiChecks)
+  const { eduweb } = useSelector((state) => state.apiChecks)
   const [data, setData] = useState({ course: '' })
   const [active, setActive] = useState(0)
 
@@ -31,7 +31,6 @@ export default () => {
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
       <Header>Eduweb check</Header>
-      <Loader size='big' active={pending} />
       <Form onSubmit={handleCheck} style={{ marginBottom: '100px' }}>
         <Form.Field
           control={Input}

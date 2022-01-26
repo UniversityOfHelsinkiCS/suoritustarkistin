@@ -124,11 +124,6 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
         return 'NOT_REGISTERED'
       }
 
-      const getSentStatus = () => {
-        if (course.courseCode === "TKT10002" || course.courseCode === "TKT10003") return new Date()
-        return null
-      }
-
       // With individual completions
       for (const { studentNumber, grade } of testRawEntries) {
 
@@ -164,7 +159,7 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
             "en": `courseUnitRealisationName-en-${rawEntry.grade}`,
             "sv": `courseUnitRealisationName-sv-${rawEntry.grade}`
           },
-          sent: getSentStatus(course.courseCode),
+          sent: new Date(),
           registered: getRegisteredStatus(course.courseCode)
         }, { transaction })
       }

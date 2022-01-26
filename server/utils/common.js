@@ -12,9 +12,10 @@ const SHIBBOLETH_HEADERS = [
 
 const generateSisuId = () => `hy-kur-${uuidv4()}`
 
-const ALLOW_SEND_TO_SISU = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
-  ? true
-  : process.env.SEND_TO_SISU || false
+// Acually send to Sisu if in prod/staging or explicitly enabled
+const ALLOW_SEND_TO_SISU = process.env.SEND_TO_SISU
+  ? process.env.SEND_TO_SISU
+  : (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
 
 module.exports = {
   ...common,

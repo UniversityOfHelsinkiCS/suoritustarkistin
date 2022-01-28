@@ -56,7 +56,7 @@ const deleteUnsent = async () => {
     nest: true,
     raw: true
   })
-  if (!entries.length && !extraEntries.length) return
+  if (!entries.length || !extraEntries.length) return
 
   const rawEntryIds = entries.map(({ rawEntry }) => rawEntry.id).concat(extraEntries.map(({ rawEntry }) => rawEntry.id))
 

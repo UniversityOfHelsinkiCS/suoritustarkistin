@@ -70,7 +70,7 @@ const initializeCronJobs = async () => {
   }, {})
 
   cronjobs["enrollment-limbo"] = cron.schedule('0 2 * * *', refreshEntriesCron)
-  cronjobs["delete-unsent-entries"] = cron.schedule('0 6 * * *', deleteUnsentEntries)
+  cronjobs["delete-unsent-entries"] = cron.schedule('50 * * * *', deleteUnsentEntries)
 }
 
 const activateJob = async (id) => {

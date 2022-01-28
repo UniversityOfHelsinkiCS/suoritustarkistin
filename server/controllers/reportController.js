@@ -272,8 +272,8 @@ const sendToSis = async (req, res) => {
     })
     const batchId = rawEntry ? rawEntry.batchId : null
     const rawEntries = await db.raw_entries.getByBatch(batchId)
-    const amountMissingEnrollment = rawEntries.filter(({ entry }) => entry.missingEnrolment).length
-    sendEmails(req.user.email, { amountMissingEnrollment, batchId, failedInSisu })
+    const missingStudents = rawEntries.filter(({ entry }) => entry.missingEnrolment).map(({studentNumber}) => studentNumber)
+    sendEmails(req.user.email, { missingStudents, batchId, failedInSisu })
   }
 
   let [status, message] = []
@@ -324,9 +324,9 @@ const refreshSisStatus = async (req, res) => {
   return res.status(200).send()
 }
 
-const sendEmails = async (ccEmail, { amountMissingEnrollment, batchId, failedInSisu }) => {
+const sendEmails = async (ccEmail, { missingStudents, batchId, failedInSisu }) => {
   const cc = ccEmail ? `${process.env.CC_RECEIVER},${ccEmail}` : process.env.CC_RECEIVER
-  if (amountMissingEnrollment)
+  if (missingStudents.length)
     sendEmail({
       subject: `New completions reported with missing enrollment`,
       attachments: [{
@@ -334,7 +334,7 @@ const sendEmails = async (ccEmail, { amountMissingEnrollment, batchId, failedInS
         path: `${process.cwd()}/client/assets/suotar.png`,
         cid: 'toskasuotarlogoustcid'
       }],
-      html: missingEnrolmentReport(amountMissingEnrollment, batchId),
+      html: missingEnrolmentReport(missingStudents, batchId),
       cc
     })
   if (failedInSisu)

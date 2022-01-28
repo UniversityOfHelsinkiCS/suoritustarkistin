@@ -70,7 +70,7 @@ const importStudents = async (req, res) => {
 const notifyMissingEnrollment = async (req, res) => {
   const { batchId } = req.params
   const rawEntries = await db.raw_entries.getByBatch(batchId)
-  const amountMissingEnrollment = rawEntries.filter(({ entry }) => entry.missingEnrolment).length
+  const missingStudents = rawEntries.filter(({ entry }) => entry.missingEnrolment).map(({ studentNumber }) => studentNumber)
   const cc = req.user.email ? `${process.env.CC_RECEIVER},${req.user.email}` : process.env.CC_RECEIVER
 
   await sendEmail({
@@ -80,7 +80,7 @@ const notifyMissingEnrollment = async (req, res) => {
       path: `${process.cwd()}/client/assets/suotar.png`,
       cid: 'toskasuotarlogoustcid'
     }],
-    html: missingEnrolmentReport(amountMissingEnrollment, batchId),
+    html: missingEnrolmentReport(missingStudents, batchId),
     cc
   })
   return res.status(200).send()

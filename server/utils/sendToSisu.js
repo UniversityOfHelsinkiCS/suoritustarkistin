@@ -29,13 +29,13 @@ const API = process.env.POST_IMPORTER_DB_API_URL
  *
  */
 const attainmentsToSisu = async (model, { user, body }) => {
-  const send = async (url, data, modelIds) => {
+  const send = async (url, data, modelIds, uid) => {
     logger.info({ message: 'Sending entries to Sisu', amount: data.length, user: user.name, payload: JSON.stringify(data) })
     if (ALLOW_SEND_TO_SISU)
       await API.post(url, data)
-    else logger.info('Dry run, nothing sent to Sisu')
+    else logger.info(`Dry run, would send to Sisu: ${JSON.stringify(data)}`)
     await updateSuccess(model, modelIds, senderId)
-    logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, user: user.name })
+    logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, sentToSisu: true, uid })
   }
 
   const { entryIds, extraEntryIds } = body
@@ -60,7 +60,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
     : extraEntriesToRequestData(rawData, acceptors)
 
   try {
-    await send(URLS[model], data, id)
+    await send(URLS[model], data, id, user.uid)
     return [200]
   } catch (e) {
     const payload = JSON.stringify(data)
@@ -85,7 +85,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
       const payload = model === 'entries'
         ? entriesToRequestData(successEntries, acceptors)
         : extraEntriesToRequestData(successEntries, acceptors)
-      send(URLS[model], payload, successEntries.map(({ id }) => id))
+      send(URLS[model], payload, successEntries.map(({ id }) => id), user.uid)
     } catch (e) {
       const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })

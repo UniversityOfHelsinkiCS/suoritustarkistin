@@ -14,17 +14,11 @@ const deleteUnsent = async () => {
   const timestamp = moment().subtract(2, 'hours').toDate()
   const entries = await db.entries.findAll({
     where: {
-      [Op.and]: [
-        { sent: null },
-        {
-          [Op.and]: [
-            { '$entry.courseUnitId$': { [Op.not]: null } },
-            { '$entry.courseUnitRealisationId$': { [Op.not]: null } },
-            { '$entry.assessmentItemId$': { [Op.not]: null } }
-          ]
-        },
-        { createdAt: { [Op.lte]: timestamp } }
-      ]
+      courseUnitId: { [Op.not]: null },
+      courseUnitRealisationId: { [Op.not]: null },
+      assessmentItemId: { [Op.not]: null },
+      sent: null,
+      createdAt: { [Op.lte]: timestamp }
     },
     include: [{
       model: db.raw_entries,
@@ -38,7 +32,7 @@ const deleteUnsent = async () => {
     raw: true
   })
 
-  const extraEntries = await db.extraEntries.findAll({
+  const extraEntries = await db.extra_entries.findAll({
     where: {
       sent: null,
       createdAt: {

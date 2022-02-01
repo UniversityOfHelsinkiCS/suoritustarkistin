@@ -68,7 +68,7 @@ export default (state = null, action) => {
       return {
         header: 'Some entries failed validation in Sisu',
         type: 'negative',
-        content: 'See batch for Sisu error messages'
+        content: 'See batch for Sisu error messages. Failed entries are reported for the study coordinator, please wait for further actions.'
       }
     case 'REFRESH_BATCH_STATUS_FAILURE': {
       const content = action.error.message.message || action.error.message

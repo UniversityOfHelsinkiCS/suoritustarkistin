@@ -247,13 +247,17 @@ export default ({ kandi, extra, parseCSV }) => {
         </Form.Group>
       </Form>
       <div style={styles.sendButton}>
-        <Button
-          disabled={!newRawEntries.defaultCourse}
-          color="blue"
-          onClick={() => setImportIsOpen(true)}
-        >
-          Import students
-        </Button>
+        {!extra
+          ? <Button
+            disabled={!newRawEntries.defaultCourse}
+            color="blue"
+            onClick={() => setImportIsOpen(true)}
+          >
+            Import students
+          </Button>
+          :
+          <span /> // Add empty element to align send button to right with justify-content space-between
+        }
         <Button
           disabled={newRawEntries.sending || !newRawEntries.data || !isValid}
           data-cy="confirm-sending-button"

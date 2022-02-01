@@ -91,10 +91,10 @@ export default () => {
       icon="bullhorn"
       header="New in Suotar"
       content={<>
-        <p>New version of Suotar is released! Now new <b>completions will be reported immediately to Sisu</b> after the grades are saved into Suotar and no confirmation from study coordinator is required.</p>
-        <p>Teacher might also import enrolled students into the text field from course instance after selecting a course.</p>
+        <p>New version of Suotar is released! Now new <b>completions will be reported immediately to Sisu</b> after the grades are saved into Suotar. No extra confirmation from study coordinator is required.</p>
+        <p>When reporting completions user might also import enrolled students from different course instances after selecting a course.</p>
       </>}
-      style={{ maxWidth: 700, marginLeft: 'auto', marginRight: 'auto' }}
+      style={{ maxWidth: 800, marginLeft: 'auto', marginRight: 'auto' }}
       info />
 
     {!displayBscUserGuide ? <UserGuide /> : <BachelorThesisUserGuide />}

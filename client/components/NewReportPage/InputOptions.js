@@ -249,7 +249,7 @@ export default ({ kandi, extra, parseCSV }) => {
       <div style={styles.sendButton}>
         <Button
           disabled={!newRawEntries.defaultCourse}
-          color="primary"
+          color="blue"
           onClick={() => setImportIsOpen(true)}
         >
           Import students

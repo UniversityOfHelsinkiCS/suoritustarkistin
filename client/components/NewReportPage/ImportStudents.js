@@ -13,8 +13,7 @@ const styles = {
   },
   table: {
     maxHeight: '600px',
-    overflow: 'auto',
-    marginTop: '1.5rem'
+    overflow: 'auto'
   },
   confirmTable: {
     width: '50%',
@@ -33,8 +32,10 @@ export default ({ isOpen, setIsOpen, importRows }) => {
   const { data, pending, error } = useSelector((state) => state.newRawEntries.importStudents)
 
   useEffect(() => {
-    if (defaultCourse)
+    if (defaultCourse) {
       dispatch(importStudentsAction(defaultCourse))
+      setGrades({})
+    }
   }, [defaultCourse])
 
   const set = ({ value: grade }, person) => setGrades({
@@ -46,6 +47,11 @@ export default ({ isOpen, setIsOpen, importRows }) => {
   const get = (studentNumber) => {
     if (!grades[studentNumber]) return ''
     return grades[studentNumber].grade
+  }
+
+  const close = () => {
+    setGrades({})
+    setIsOpen(false)
   }
 
   const openAccordion = (key) => setOpenAccordions(new Set(openAccordions.add(key)))
@@ -80,7 +86,8 @@ export default ({ isOpen, setIsOpen, importRows }) => {
 
   return <Modal
     open={isOpen}
-    onClose={() => setIsOpen(false)}
+    size="large"
+    onClose={close}
   >
     <Modal.Header>Select students to import</Modal.Header>
     {confirm
@@ -129,7 +136,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
         onClick={() => {
           if (confirm)
             return setConfirm(false)
-          setIsOpen(false)
+          close()
         }}
         disabled={pending}
         negative>
@@ -140,7 +147,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
           if (!confirm)
             return setConfirm(true)
           importRows(grades)
-          setIsOpen(false)
+          close()
         }}
         disabled={pending || !Object.keys(grades).length}>
         {!confirm ? 'Import' : 'Confirm'}

@@ -99,7 +99,7 @@ export const parseExtraCSV = (string, defaultCourse) => {
   return markDuplicates(data, defaultCourse)
 }
 
-export const parseKandiCSV = (string, extraCourses) => {
+export const parseKandiCSV = (string, extraCourses = []) => {
   if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {

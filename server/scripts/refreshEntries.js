@@ -4,6 +4,7 @@ const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./processEntries')
 const { sendSentryMessage } = require('@utils/sentry')
+const moment = require('moment')
 
 
 /**
@@ -30,7 +31,7 @@ const refreshEntries = async (rawEntryIds) => {
       updateOnDuplicate: ['courseUnitRealisationId', 'courseUnitRealisationName', 'assessmentItemId', 'courseUnitId', 'gradeScaleId', 'gradeId'],
       transaction
     })
-    const batchId = `limbo-${new Date().getMilliseconds()}`
+    const batchId = `limbo-${moment().format('YYYYMMDDhmmss')}`
     await db.raw_entries.update(
       { batchId },
       {

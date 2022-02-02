@@ -2,9 +2,8 @@ const refreshEntries = require('../scripts/refreshEntries')
 const db = require('../models/index')
 const { Op, col } = require("sequelize")
 const logger = require('@utils/logger')
-const sendEmail = require('../utils/sendEmail')
-const { newLimboReport } = require('../utils/emailFactory')
 const { sendSentryMessage } = require('@utils/sentry')
+const attainmentsToSisu = require('../utils/sendToSisu')
 
 
 const refreshEntriesCron = async () => {
@@ -28,16 +27,18 @@ const refreshEntriesCron = async () => {
   if (!amount) return
   sendSentryMessage(`${amount} new enrollments found. New batch created with id ${batchId}`)
 
-  const unsent = await db.entries.getUnsentBatchCount()
-  sendEmail({
-    subject: 'Uusia suorituksia valmiina lähetettäväksi Sisuun!',
-    html: newLimboReport(amount, batchId, unsent),
-    attachments: [{
-      filename: 'suotar.png',
-      path: `${process.cwd()}/client/assets/suotar.png`,
-      cid: 'toskasuotarlogoustcid'
-    }]
+  const entriesToSend = await db.entries.findAll({
+    where: {
+      '$rawEntry.batchId$': batchId
+    },
+    attributes: [[col("entries.id"), 'id']],
+    include: [{ model: db.raw_entries, as: 'rawEntry', attributes: [] }],
+    raw: true
   })
+  const [status, message] = await attainmentsToSisu('entries', { user: {}, body: { entryIds: entriesToSend.map(({ id }) => id) } })
+  if (status > 200)
+    return sendSentryMessage(`Sending enrollment limbo entries to Sisu failed with message: ${message}`)
+  return sendSentryMessage('Successfully sent enrollment limbo entries to Sisu!')
 }
 
 module.exports = refreshEntriesCron

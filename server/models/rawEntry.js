@@ -44,8 +44,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       attributes: [[sequelize.literal('COUNT(DISTINCT "batchId")'), 'count']],
       include: [
-        { association: 'entry', attributes: []  },
-        { association: 'extraEntry', attributes: []  }
+        { association: 'entry', attributes: [] },
+        { association: 'extraEntry', attributes: [] }
       ],
       raw: true
     })
@@ -55,8 +55,8 @@ module.exports = (sequelize, DataTypes) => {
       where: {
         batchId,
         [sequelize.Sequelize.Op.and]: [
-          {'$entry.id$': null},
-          {'$extraEntry.id$': null}
+          { '$entry.id$': null },
+          { '$extraEntry.id$': null }
         ]
       },
       include: [
@@ -66,9 +66,29 @@ module.exports = (sequelize, DataTypes) => {
       attributes: ['id'],
       raw: true
     })
+    if (!orphans.length) return false
     return this.destroy({
       where: {
         id: orphans.map(({ id }) => id)
+      }
+    })
+  }
+  RawEntry.getByBatch = async function (batchId) {
+    const rows = await this.findAll({
+      where: { batchId },
+      include: [
+        { association: 'entry' },
+        { association: 'extraEntry' }
+      ]
+    })
+
+    return rows.map((row) => {
+      const item = row.get({ plain: true })
+      const { extraEntry, entry, ...rest } = item
+      if (extraEntry && extraEntry.id)
+        return { ...rest, entry: { ...extraEntry, type: 'EXTRA_ENTRY' } }
+      return {
+        ...rest, entry: { ...entry, type: 'ENTRY' }
       }
     })
   }

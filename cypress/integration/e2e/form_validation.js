@@ -10,7 +10,7 @@ describe('Form validation', () => {
       cy.login('admin').visit('')
       cy.get('[data-cy=adminmode-enable]').click()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
-      cy.get('[data-cy=create-report-button]').should('be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
       cy.get('[data-cy=paste-field]').type(
         '010000002;7;2,2;se\n011000002;;2,0\n011100009\n011110002;;;fi',
         { delay: 1 }
@@ -31,7 +31,7 @@ describe('Form validation', () => {
         .contains('Ohjelmoinnin perusteet (TKT10002)')
         .click()
 
-      cy.get('[data-cy=create-report-button]').should('be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
       cy.logout()
     })
 
@@ -40,7 +40,7 @@ describe('Form validation', () => {
       cy.login('admin').visit('')
       cy.get('[data-cy=adminmode-enable]').click()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
-      cy.get('[data-cy=create-report-button]').should('be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
 
       // missing course
       cy.get('[data-cy=paste-field]').type(
@@ -56,17 +56,17 @@ describe('Form validation', () => {
         .children()
         .contains('grader')
         .click()
-      cy.get('[data-cy=create-report-button]').should('be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
       cy.get('[data-cy=course-selection]')
         .click()
         .children()
         .contains('Tietorakenteet ja algoritmit I (TKT200011)')
         .click()
-      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
 
       // missing data
       cy.get('[data-cy=paste-field]').clear()
-      cy.get('[data-cy=create-report-button]').should('be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
       cy.get('[data-cy=course-selection]')
         .click()
         .children()
@@ -81,7 +81,7 @@ describe('Form validation', () => {
         '010000003;2;5;fi\n011000002;2;2,0\n011100009;2\n011110002;2;;fi',
         { delay: 1 }
       )
-      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
       cy.logout()
     })
   })
@@ -133,7 +133,7 @@ describe("Bachelor thesis form validation", () => {
       )
 
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 16)
-      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
     })
 
     it("no extras when completion in english or opt-out", () => {
@@ -142,7 +142,7 @@ describe("Bachelor thesis form validation", () => {
         { delay: 1 }
       )
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 2)
-      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
     })
 
     it("opt-out äidinkielinen viestintä", () => {
@@ -152,7 +152,7 @@ describe("Bachelor thesis form validation", () => {
       )
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 3)
       cy.get('[data-cy=new-report-table] > tbody').should('not.contain', 'Äidinkielinen viestintä')
-      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
     })
 
     it("opt-out kypsyysnäyte", () => {
@@ -162,7 +162,7 @@ describe("Bachelor thesis form validation", () => {
       )
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 3)
       cy.get('[data-cy=new-report-table] > tbody').should('not.contain', 'Kypsyysnäyte')
-      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
     })
 
     it("opt-out tutkimustiedonhaku", () => {
@@ -172,7 +172,7 @@ describe("Bachelor thesis form validation", () => {
       )
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 3)
       cy.get('[data-cy=new-report-table] > tbody').should('not.contain', 'Tutkimustiedonhaku')
-      cy.get('[data-cy=create-report-button]').should('not.be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
     })
 
     it("form is not submittable with invalid data", () => {
@@ -181,7 +181,7 @@ describe("Bachelor thesis form validation", () => {
         { delay: 1 }
       )
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 16)
-      cy.get('[data-cy=create-report-button]').should('be.disabled')
+      cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
     })
 
   })

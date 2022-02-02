@@ -56,6 +56,7 @@ const entryFactory = async (courseCode, graderName, options) => {
     courseUnitRealisationName: { fi: faker.name.jobTitle() },
     assessmentItemId: faker.sisu.assessmentItem(),
     completionDate: new Date(),
+    sent: new Date(),
     completionLanguage: 'fi',
     courseUnitId: faker.sisu.courseUnit(),
     gradeScaleId: 'sis-0-5',

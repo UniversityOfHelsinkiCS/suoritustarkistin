@@ -1,0 +1,5548 @@
+{
+  "students": [
+    {
+      "id": "hy-hlo-125563414",
+      "studentNumber": "014979622",
+      "dateOfBirth": "1972-10-15T00:00:00.000Z",
+      "firstNames": "Alpo",
+      "lastName": "Petras",
+      "eduPersonPrincipalName": "suotar-tester@helsinki.fi",
+      "employeeNumber": null,
+      "primaryEmail": null,
+      "oppijaId": null,
+      "genderUrn": "urn:code:gender:female",
+      "countryUrn": "urn:code:country:246",
+      "citizenships": [
+        "urn:code:country:246"
+      ],
+      "dead": false,
+      "preferredLanguageUrn": "urn:code:preferred-language:fi",
+      "secondaryEmail": "suotar-tester@helsinki.fi",
+      "createdAt": "2021-08-18T06:11:55.036Z",
+      "updatedAt": "2021-12-28T04:00:00.282Z"
+    },
+    {
+      "id": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "studentNumber": "015448314",
+      "dateOfBirth": "1933-10-10T00:00:00.000Z",
+      "firstNames": "Tuula Testi",
+      "lastName": "Andersson-Testi",
+      "eduPersonPrincipalName": null,
+      "employeeNumber": null,
+      "primaryEmail": "hakija-33745639@oph.fi",
+      "oppijaId": "1.2.246.562.24.13240286862",
+      "genderUrn": "urn:code:gender:male",
+      "countryUrn": "urn:code:country:246",
+      "citizenships": [
+        "urn:code:country:246"
+      ],
+      "dead": false,
+      "preferredLanguageUrn": "urn:code:preferred-language:fi",
+      "secondaryEmail": "hakija-33745639@oph.fi",
+      "createdAt": "2021-12-16T15:57:17.880Z",
+      "updatedAt": "2021-12-16T15:57:17.880Z"
+    }
+  ],
+  "employees": [
+    {
+      "id": "hy-hlo-121175556",
+      "studentNumber": "014862438",
+      "dateOfBirth": "1994-06-20T00:00:00.000Z",
+      "firstNames": "Suotar",
+      "lastName": "Employee",
+      "eduPersonPrincipalName": "suotar-employee@helsinki.fi",
+      "employeeNumber": "9111111",
+      "primaryEmail": "suotar-employee@helsinki.fi",
+      "genderUrn": "urn:code:gender:male",
+      "countryUrn": "urn:code:country:246",
+      "citizenships": [
+        "urn:code:country:246"
+      ],
+      "dead": false,
+      "preferredLanguageUrn": "urn:code:preferred-language:fi",
+      "createdAt": "2021-08-18T06:11:49.345Z",
+      "updatedAt": "2021-12-13T06:26:40.230Z"
+    }
+  ],
+  "enrolments": [
+    {
+      "personId": "hy-hlo-125563414",
+      "code": "TKT10002",
+      "enrolments": [
+        {
+          "id": "hy-avoin-ew-reg-C4C04",
+          "modificationOrdinal": "5025845",
+          "personId": "hy-hlo-125563414",
+          "verifierPersonId": null,
+          "studyRightId": "hy-avoin-ew-sr-C4C04",
+          "assessmentItemId": "otm-3bc48e11-0378-4aed-9e3b-b615f5d409ac",
+          "courseUnitRealisationId": "otm-5680ea93-6e5f-4913-a219-5e668cc884c3",
+          "courseUnitId": "otm-97377a67-f268-41e6-97d0-16cd886adf51",
+          "enrolmentDateTime": "2021-12-27T10:48:12.000Z",
+          "state": "ENROLLED",
+          "documentState": "ACTIVE",
+          "studySubGroups": [],
+          "createdAt": "2021-12-27T09:00:01.426Z",
+          "updatedAt": "2021-12-27T09:00:01.426Z",
+          "assessmentItem": {
+            "credits": {
+              "max": 5,
+              "min": 5
+            },
+            "gradeScaleId": "sis-0-5"
+          },
+          "courseUnitRealisation": {
+            "activityPeriod": {
+              "endDate": "2022-09-01",
+              "startDate": "2021-10-20"
+            },
+            "name": {
+              "en": "Online teaching",
+              "fi": "Ohjelmoinnin perusteet",
+              "sv": "Nätundervisning"
+            }
+          },
+          "courseUnit": {
+            "credits": {
+              "max": 5,
+              "min": 5
+            },
+            "gradeScaleId": "sis-0-5",
+            "code": "TKT10002"
+          }
+        }
+      ]
+    },
+    {
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "code": "TKT10003",
+      "enrolments": []
+    }
+  ],
+  "studyRights": [
+    {
+      "id": "hy-avoin-ew-sr-C4C04",
+      "personId": "hy-hlo-125563414",
+      "valid": {
+        "endDate": "2022-08-31",
+        "startDate": "2021-10-21"
+      },
+      "snapshotDateTime": null
+    }
+  ],
+  "studyRightsByPeron": [
+    {
+      "id": "otm-32620291-8952-4034-a7d2-d5ffbc0f4007",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "endDate": "2028-08-01",
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": "2021-08-01T04:12:14.077Z",
+      "organisation": {
+        "code": "H50"
+      },
+      "term_registrations": {
+        "studyRightId": "otm-32620291-8952-4034-a7d2-d5ffbc0f4007",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "b91df27b-b18a-42e3-962e-a12e4987b149",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-27",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "ae1e32e1-7fb3-44e5-86c3-1f6bb7c57123",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-27",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:17:26.633Z",
+        "updatedAt": "2021-12-16T16:17:26.633Z"
+      }
+    },
+    {
+      "id": "otm-cf7ae2be-e89b-4921-bc24-6ea74b3ca123",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "endDate": "2028-08-01",
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": "2021-08-01T04:12:14.097Z",
+      "organisation": {
+        "code": "H50"
+      },
+      "term_registrations": {
+        "studyRightId": "otm-cf7ae2be-e89b-4921-bc24-6ea74b3ca123",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "1ee2eb4c-0f75-4ec4-a712-fb1b5661efc6",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "e980ac35-399c-414f-a3e9-dcfc6a61ab09",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:17:26.633Z",
+        "updatedAt": "2021-12-16T16:17:26.633Z"
+      }
+    },
+    {
+      "id": "otm-6588fde8-daa1-4744-8e68-b59159cff004",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": null,
+      "organisation": {
+        "code": null
+      },
+      "term_registrations": {
+        "studyRightId": "otm-6588fde8-daa1-4744-8e68-b59159cff004",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "526e7986-5343-4db4-8328-6f4698a7aa00",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "cfecb6a8-9a61-4705-bc12-6aacabb1d7f7",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:16:50.714Z",
+        "updatedAt": "2021-12-16T16:16:50.714Z"
+      }
+    },
+    {
+      "id": "otm-c825d8b8-94ff-49e2-a10f-43a8a145103b",
+      "personId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+      "valid": {
+        "endDate": "2028-08-01",
+        "startDate": "2021-08-01"
+      },
+      "snapshotDateTime": "2021-08-01T02:19:45.367Z",
+      "organisation": {
+        "code": "H50"
+      },
+      "term_registrations": {
+        "studyRightId": "otm-c825d8b8-94ff-49e2-a10f-43a8a145103b",
+        "studentId": "otm-c2ed29e2-e472-495d-bee7-abe533450a26",
+        "termRegistrations": [
+          {
+            "localId": "54bb0b4e-e5fc-485c-b0c1-1571e80da0fb",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "f1ee39d3-75e3-416d-a1b3-0a34e4dc4135",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2021
+            },
+            "registrationDate": "2021-04-28",
+            "statutoryAbsence": false,
+            "termRegistrationType": "ATTENDING",
+            "tuitionFeePaymentState": "OUTSTANDING"
+          },
+          {
+            "localId": "d88a92fd-53ee-4aee-9afd-7dc4468c5d9e",
+            "studyTerm": {
+              "termIndex": 0,
+              "studyYearStartYear": 2022
+            },
+            "statutoryAbsence": false,
+            "termRegistrationType": "MISSING"
+          },
+          {
+            "localId": "51ad6815-e102-43ca-83bd-94d378a40f93",
+            "studyTerm": {
+              "termIndex": 1,
+              "studyYearStartYear": 2022
+            },
+            "statutoryAbsence": false,
+            "termRegistrationType": "MISSING"
+          }
+        ],
+        "createdAt": "2021-12-16T16:14:48.541Z",
+        "updatedAt": "2021-12-16T16:14:48.541Z"
+      }
+    }
+  ],
+  "acceptors": [
+    {
+      "otm-5680ea93-6e5f-4913-a219-5e668cc884c3": [
+        {
+          "roleUrn": "urn:code:attainment-acceptor-type:approved-by",
+          "personId": "hy-hlo-131122009"
+        }
+      ]
+    }
+  ],
+  "courseUnitIds": {
+    "TKT21015": [
+      {
+        "id": "hy-CU-137765567-2020-08-01",
+        "name": {
+          "en": "Introduction to Programming, addition (Python)",
+          "fi": "Ohjelmoinnin perusteet, lisäosa (Python)",
+          "sv": "Introduktion till programmering, tillägg (Python)"
+        },
+        "validityPeriod": {
+          "startDate": "2020-08-01"
+        },
+        "code": "TKT21015"
+      }
+    ]
+  },
+  "acceptorsCourseUnits": {
+    "hy-CU-137765567-2020-08-01": [
+      {
+        "roleUrn": "urn:code:attainment-acceptor-type:approved-by",
+        "personId": "hy-hlo-45690824"
+      }
+    ]
+  },
+  "attainments": [
+    {
+      "studentNumber": "015448314",
+      "courseCode": "TKT21015",
+      "attainments": []
+    }
+  ],
+  "grades": {
+    "hy-arvast-102": [
+      {
+        "name": {
+          "en": "1 point",
+          "fi": "1 piste",
+          "sv": "1 poäng"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "1 p",
+          "fi": "1 p",
+          "sv": "1 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "1+",
+          "fi": "1+",
+          "sv": "1+"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "1+",
+          "fi": "1+",
+          "sv": "1+"
+        },
+        "numericCorrespondence": 1.25
+      },
+      {
+        "name": {
+          "en": "1+",
+          "fi": "1+",
+          "sv": "1+"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "1+",
+          "fi": "1+",
+          "sv": "1+"
+        },
+        "numericCorrespondence": 1.33
+      },
+      {
+        "name": {
+          "en": "1-",
+          "fi": "1-",
+          "sv": "1-"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "1-",
+          "fi": "1-",
+          "sv": "1-"
+        },
+        "numericCorrespondence": 0.67
+      },
+      {
+        "name": {
+          "en": "1-",
+          "fi": "1-",
+          "sv": "1-"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "1-",
+          "fi": "1-",
+          "sv": "1-"
+        },
+        "numericCorrespondence": 0.75
+      },
+      {
+        "name": {
+          "en": "1.5",
+          "fi": "1.5",
+          "sv": "1.5"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "1.5",
+          "fi": "1.5",
+          "sv": "1.5"
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "10 points",
+          "fi": "10 pistettä",
+          "sv": "10 poäng"
+        },
+        "passed": true,
+        "localId": "6",
+        "abbreviation": {
+          "en": "10 p",
+          "fi": "10 p",
+          "sv": "10 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "2 points",
+          "fi": "2 pistettä",
+          "sv": "2 poäng"
+        },
+        "passed": true,
+        "localId": "8",
+        "abbreviation": {
+          "en": "2 p",
+          "fi": "2 p",
+          "sv": "2 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "2+",
+          "fi": "2+",
+          "sv": "2+"
+        },
+        "passed": true,
+        "localId": "9",
+        "abbreviation": {
+          "en": "2+",
+          "fi": "2+",
+          "sv": "2+"
+        },
+        "numericCorrespondence": 2.25
+      },
+      {
+        "name": {
+          "en": "2+",
+          "fi": "2+",
+          "sv": "2+"
+        },
+        "passed": true,
+        "localId": "10",
+        "abbreviation": {
+          "en": "2+",
+          "fi": "2+",
+          "sv": "2+"
+        },
+        "numericCorrespondence": 2.33
+      },
+      {
+        "name": {
+          "en": "2-",
+          "fi": "2-",
+          "sv": "2-"
+        },
+        "passed": true,
+        "localId": "11",
+        "abbreviation": {
+          "en": "2-",
+          "fi": "2-",
+          "sv": "2-"
+        },
+        "numericCorrespondence": 1.67
+      },
+      {
+        "name": {
+          "en": "2-",
+          "fi": "2-",
+          "sv": "2-"
+        },
+        "passed": true,
+        "localId": "12",
+        "abbreviation": {
+          "en": "2-",
+          "fi": "2-",
+          "sv": "2-"
+        },
+        "numericCorrespondence": 1.75
+      },
+      {
+        "name": {
+          "en": "2.5",
+          "fi": "2.5",
+          "sv": "2.5"
+        },
+        "passed": true,
+        "localId": "13",
+        "abbreviation": {
+          "en": "2.5",
+          "fi": "2.5",
+          "sv": "2.5"
+        },
+        "numericCorrespondence": 2.5
+      },
+      {
+        "name": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "passed": true,
+        "localId": "14",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "3 points",
+          "fi": "3 pistettä",
+          "sv": "3 poäng"
+        },
+        "passed": true,
+        "localId": "15",
+        "abbreviation": {
+          "en": "3 p",
+          "fi": "3 p",
+          "sv": "3 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "3+",
+          "fi": "3+",
+          "sv": "3+"
+        },
+        "passed": true,
+        "localId": "16",
+        "abbreviation": {
+          "en": "3+",
+          "fi": "3+",
+          "sv": "3+"
+        },
+        "numericCorrespondence": 3.25
+      },
+      {
+        "name": {
+          "en": "3-",
+          "fi": "3-",
+          "sv": "3-"
+        },
+        "passed": true,
+        "localId": "17",
+        "abbreviation": {
+          "en": "3-",
+          "fi": "3-",
+          "sv": "3-"
+        },
+        "numericCorrespondence": 2.67
+      },
+      {
+        "name": {
+          "en": "3-",
+          "fi": "3-",
+          "sv": "3-"
+        },
+        "passed": true,
+        "localId": "18",
+        "abbreviation": {
+          "en": "3-",
+          "fi": "3-",
+          "sv": "3-"
+        },
+        "numericCorrespondence": 2.75
+      },
+      {
+        "name": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "passed": true,
+        "localId": "19",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "4 points",
+          "fi": "4 pistettä",
+          "sv": "4 poäng"
+        },
+        "passed": true,
+        "localId": "20",
+        "abbreviation": {
+          "en": "4 p",
+          "fi": "4 p",
+          "sv": "4 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "5 points",
+          "fi": "5 pistettä",
+          "sv": "5 poäng"
+        },
+        "passed": true,
+        "localId": "21",
+        "abbreviation": {
+          "en": "5 p",
+          "fi": "5 p",
+          "sv": "5 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "6 points",
+          "fi": "6 pistettä",
+          "sv": "6 poäng"
+        },
+        "passed": true,
+        "localId": "22",
+        "abbreviation": {
+          "en": "6 p",
+          "fi": "6 p",
+          "sv": "6 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "7 points",
+          "fi": "7 pistettä",
+          "sv": "7 poäng"
+        },
+        "passed": true,
+        "localId": "23",
+        "abbreviation": {
+          "en": "7 p",
+          "fi": "7 p",
+          "sv": "7 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "8 points",
+          "fi": "8 pistettä",
+          "sv": "8 poäng"
+        },
+        "passed": true,
+        "localId": "24",
+        "abbreviation": {
+          "en": "8 p",
+          "fi": "8 p",
+          "sv": "8 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "9 points",
+          "fi": "9 pistettä",
+          "sv": "9 poäng"
+        },
+        "passed": true,
+        "localId": "25",
+        "abbreviation": {
+          "en": "9 p",
+          "fi": "9 p",
+          "sv": "9 p"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Approbatur",
+          "fi": "Approbatur",
+          "sv": "Approbatur"
+        },
+        "passed": true,
+        "localId": "26",
+        "abbreviation": {
+          "en": "A",
+          "fi": "A",
+          "sv": "A"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Cum laude approbatur",
+          "fi": "Cum laude approbatur",
+          "sv": "Cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "27",
+        "abbreviation": {
+          "en": "CL",
+          "fi": "CL",
+          "sv": "CL"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "Eximia cum laude approb.",
+          "fi": "Eximia cum laude approb.",
+          "sv": "Eximia cum laude approb."
+        },
+        "passed": true,
+        "localId": "28",
+        "abbreviation": {
+          "en": "ECLA",
+          "fi": "ECLA",
+          "sv": "ECLA"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "Eximia cum laude approbatur",
+          "fi": "Eximia cum laude approbatur",
+          "sv": "Eximia cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "29",
+        "abbreviation": {
+          "en": "ECLA",
+          "fi": "ECLA",
+          "sv": "ECLA"
+        },
+        "numericCorrespondence": 2.75
+      },
+      {
+        "name": {
+          "en": "No show",
+          "fi": "Ei saapunut",
+          "sv": "Kom ej"
+        },
+        "passed": false,
+        "localId": "30",
+        "abbreviation": {
+          "en": "NS",
+          "fi": "EISA",
+          "sv": "EJ"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Excellent",
+          "fi": "Erinomainen",
+          "sv": "Utmärkt"
+        },
+        "passed": true,
+        "localId": "31",
+        "abbreviation": {
+          "en": "EXC",
+          "fi": "ERIN",
+          "sv": "UTM."
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "Excellent",
+          "fi": "Erinomaiset tiedot",
+          "sv": "Utmärkta insikter"
+        },
+        "passed": true,
+        "localId": "32",
+        "abbreviation": {
+          "en": "EXC",
+          "fi": "ET",
+          "sv": "UI"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "Very good",
+          "fi": "Hyvin hyvä",
+          "sv": "Mycket god"
+        },
+        "passed": true,
+        "localId": "33",
+        "abbreviation": {
+          "en": "VG",
+          "fi": "HH",
+          "sv": "MGOD"
+        },
+        "numericCorrespondence": 2.5
+      },
+      {
+        "name": {
+          "en": "Very satisfactory",
+          "fi": "Hyvin tyydyttävä",
+          "sv": "Mycket tillfredsställande"
+        },
+        "passed": true,
+        "localId": "34",
+        "abbreviation": {
+          "en": "VSAT",
+          "fi": "HTYY",
+          "sv": "MTFS"
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "Hyvät tiedot",
+          "sv": "Goda insikter"
+        },
+        "passed": true,
+        "localId": "35",
+        "abbreviation": {
+          "en": "G",
+          "fi": "HT",
+          "sv": "GI"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "Failed",
+          "fi": "Hylätty",
+          "sv": "Improbatur"
+        },
+        "passed": false,
+        "localId": "36",
+        "abbreviation": {
+          "en": "FAIL",
+          "fi": "HYL",
+          "sv": "IMPR"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Failed",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": false,
+        "localId": "37",
+        "abbreviation": {
+          "en": "FAIL",
+          "fi": "HYL",
+          "sv": "UNDK"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Hylätty",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": true,
+        "localId": "38",
+        "abbreviation": {
+          "en": "FAIL",
+          "fi": "HYL",
+          "sv": "UNDK"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "Hyvä",
+          "sv": "God"
+        },
+        "passed": true,
+        "localId": "39",
+        "abbreviation": {
+          "en": "GOOD",
+          "fi": "HYVÄ",
+          "sv": "GOD"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "Hyvä",
+          "sv": "God"
+        },
+        "passed": true,
+        "localId": "40",
+        "abbreviation": {
+          "en": "G",
+          "fi": "HYVÄ",
+          "sv": "GOD"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "Substituted",
+          "fi": "Korvattu",
+          "sv": "Ersatt"
+        },
+        "passed": true,
+        "localId": "41",
+        "abbreviation": {
+          "en": "SUBS",
+          "fi": "KORV",
+          "sv": "ERS"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Korvattu",
+          "fi": "Korvattu",
+          "sv": "Korvattu"
+        },
+        "passed": true,
+        "localId": "42",
+        "abbreviation": {
+          "en": "SUBS",
+          "fi": "KORV",
+          "sv": "ERS"
+        },
+        "numericCorrespondence": 0.01
+      },
+      {
+        "name": {
+          "en": "Lubenter approbatur",
+          "fi": "Lubenter approbatur",
+          "sv": "Lubenter approbatur"
+        },
+        "passed": true,
+        "localId": "43",
+        "abbreviation": {
+          "en": "LUB",
+          "fi": "LUB",
+          "sv": "LUB"
+        },
+        "numericCorrespondence": 1.25
+      },
+      {
+        "name": {
+          "en": "Lubenter approbatur",
+          "fi": "Lubenter approbatur",
+          "sv": "Lubenter approbatur"
+        },
+        "passed": true,
+        "localId": "44",
+        "abbreviation": {
+          "en": "LUB",
+          "fi": "LUB",
+          "sv": "LUB"
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "Incomplete",
+          "fi": "Luopunut",
+          "sv": "Resignerad"
+        },
+        "passed": false,
+        "localId": "45",
+        "abbreviation": {
+          "en": "INC",
+          "fi": "LUOP",
+          "sv": "RES"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Laudatur",
+          "fi": "Laudatur",
+          "sv": "Laudatur"
+        },
+        "passed": true,
+        "localId": "46",
+        "abbreviation": {
+          "en": "L",
+          "fi": "L",
+          "sv": "L"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "Magna cum laude approbatur",
+          "fi": "Magna cum laude approbatur",
+          "sv": "Magna cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "47",
+        "abbreviation": {
+          "en": "MCLA",
+          "fi": "MCLA",
+          "sv": "MCLA"
+        },
+        "numericCorrespondence": 2.25
+      },
+      {
+        "name": {
+          "en": "Magna cum laude approbatur",
+          "fi": "Magna cum laude approbatur",
+          "sv": "Magna cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "48",
+        "abbreviation": {
+          "en": "MCLA",
+          "fi": "MCLA",
+          "sv": "MCLA"
+        },
+        "numericCorrespondence": 2.5
+      },
+      {
+        "name": {
+          "en": "Non sine laude appr.",
+          "fi": "Non sine laude appr.",
+          "sv": "Non sine laude appr."
+        },
+        "passed": true,
+        "localId": "49",
+        "abbreviation": {
+          "en": "NSLA",
+          "fi": "NSLA",
+          "sv": "NSLA"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "Non sine laude approbatur",
+          "fi": "Non sine laude approbatur",
+          "sv": "Non sine laude approbatur"
+        },
+        "passed": true,
+        "localId": "50",
+        "abbreviation": {
+          "en": "NSLA",
+          "fi": "NSLA",
+          "sv": "NSLA"
+        },
+        "numericCorrespondence": 1.75
+      },
+      {
+        "name": {
+          "en": "Summa cum laude approb.",
+          "fi": "Summa cum laude approb.",
+          "sv": "Summa cum laude approb."
+        },
+        "passed": true,
+        "localId": "51",
+        "abbreviation": {
+          "en": "SCLA",
+          "fi": "SCLA",
+          "sv": "SCLA"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "Summa cum laude approbatur",
+          "fi": "Summa cum laude approbatur",
+          "sv": "Summa cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "52",
+        "abbreviation": {
+          "en": "SCLA",
+          "fi": "SCLA",
+          "sv": "SCLA"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": "Godkänd"
+        },
+        "passed": true,
+        "localId": "53",
+        "abbreviation": {
+          "en": "PASS",
+          "fi": "SUOR",
+          "sv": "GODK"
+        },
+        "numericCorrespondence": 0.01
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": "Godkänd"
+        },
+        "passed": true,
+        "localId": "54",
+        "abbreviation": {
+          "en": "PASS",
+          "fi": "SUOR",
+          "sv": "GODK"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Hyväksytty",
+          "fi": "Hyväksytty",
+          "sv": "Hyväksytty"
+        },
+        "passed": true,
+        "localId": "55",
+        "abbreviation": {
+          "en": "PASS",
+          "fi": "SUOR",
+          "sv": "GODK"
+        },
+        "numericCorrespondence": 0.01
+      },
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "Tyydyttävät tiedot",
+          "sv": "Nöjaktiga insikter"
+        },
+        "passed": true,
+        "localId": "56",
+        "abbreviation": {
+          "en": "SAT",
+          "fi": "TT",
+          "sv": "NI"
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "Tyydyttävät tiedot",
+          "sv": "Nöjaktiga insikter"
+        },
+        "passed": true,
+        "localId": "57",
+        "abbreviation": {
+          "en": "SAT",
+          "fi": "TT",
+          "sv": "NI"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "Tyydyttävä",
+          "sv": "Nöjaktig"
+        },
+        "passed": true,
+        "localId": "58",
+        "abbreviation": {
+          "en": "SAT",
+          "fi": "TYYD",
+          "sv": "NÖJ."
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "Tekn",
+          "fi": "Tekn",
+          "sv": "Tekn"
+        },
+        "passed": true,
+        "localId": "59",
+        "abbreviation": {
+          "en": "Tekn",
+          "fi": "Tekn",
+          "sv": "Tekn"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "1 (HLL)",
+          "fi": "1 (HLL)",
+          "sv": "1 (HLL)"
+        },
+        "passed": true,
+        "localId": "60",
+        "abbreviation": {
+          "en": "h1",
+          "fi": "h1",
+          "sv": "h1"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "2 (HLL)",
+          "fi": "2 (HLL)",
+          "sv": "2 (HLL)"
+        },
+        "passed": true,
+        "localId": "61",
+        "abbreviation": {
+          "en": "h2",
+          "fi": "h2",
+          "sv": "h2"
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "3 (HLL)",
+          "fi": "3 (HLL)",
+          "sv": "3 (HLL)"
+        },
+        "passed": true,
+        "localId": "62",
+        "abbreviation": {
+          "en": "h3",
+          "fi": "h3",
+          "sv": "h3"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "4 (HLL)",
+          "fi": "4 (HLL)",
+          "sv": "4 (HLL)"
+        },
+        "passed": true,
+        "localId": "63",
+        "abbreviation": {
+          "en": "h4",
+          "fi": "h4",
+          "sv": "h4"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "5 (HLL)",
+          "fi": "5 (HLL)",
+          "sv": "5 (HLL)"
+        },
+        "passed": true,
+        "localId": "64",
+        "abbreviation": {
+          "en": "h5",
+          "fi": "h5",
+          "sv": "h5"
+        },
+        "numericCorrespondence": 2.5
+      },
+      {
+        "name": {
+          "en": "6 (HLL)",
+          "fi": "6 (HLL)",
+          "sv": "6 (HLL)"
+        },
+        "passed": true,
+        "localId": "65",
+        "abbreviation": {
+          "en": "h6",
+          "fi": "h6",
+          "sv": "h6"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "virhe",
+          "fi": "virhe",
+          "sv": "virhe"
+        },
+        "passed": true,
+        "localId": "66",
+        "abbreviation": {
+          "en": "x",
+          "fi": "x",
+          "sv": "x"
+        },
+        "numericCorrespondence": 0
+      }
+    ],
+    "uta-grade-opsu": [
+      {
+        "name": {
+          "en": "1",
+          "fi": "1",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "2",
+          "fi": "2",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": null
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "3",
+          "fi": "3",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": null
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "4",
+          "fi": "4",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "4",
+          "fi": "4",
+          "sv": null
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "5",
+          "fi": "5",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "5",
+          "fi": "5",
+          "sv": null
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "approbatur",
+          "fi": "approbatur",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "A",
+          "fi": "A",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "lubenter approbatur",
+          "fi": "lubenter approbatur",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "6",
+        "abbreviation": {
+          "en": "B",
+          "fi": "B",
+          "sv": null
+        },
+        "numericCorrespondence": 1.667
+      },
+      {
+        "name": {
+          "en": "cum laude approbatur",
+          "fi": "cum laude approbatur",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "C",
+          "fi": "C",
+          "sv": null
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "eximia cum laude approbatur",
+          "fi": "eximia cum laude approbatur",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "8",
+        "abbreviation": {
+          "en": "E",
+          "fi": "E",
+          "sv": null
+        },
+        "numericCorrespondence": 4.333
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "erinomainen",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "9",
+        "abbreviation": {
+          "en": "ER",
+          "fi": "ER",
+          "sv": null
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "erinomaiset tiedot",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "10",
+        "abbreviation": {
+          "en": "ET",
+          "fi": "ET",
+          "sv": null
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvät tiedot",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "11",
+        "abbreviation": {
+          "en": "HT",
+          "fi": "HT",
+          "sv": null
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvä",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "12",
+        "abbreviation": {
+          "en": "HV",
+          "fi": "HV",
+          "sv": null
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "fail",
+          "fi": "hylätty",
+          "sv": null
+        },
+        "passed": false,
+        "localId": "13",
+        "abbreviation": {
+          "en": "HYL",
+          "fi": "HYL",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "pass",
+          "fi": "hyväksytty",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "14",
+        "abbreviation": {
+          "en": "Pass",
+          "fi": "HYV",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "keskeyttänyt",
+          "fi": "keskeyttänyt",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "15",
+        "abbreviation": {
+          "en": "K",
+          "fi": "K",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Pass with Merit",
+          "fi": "kiittäen hyväksytty",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "16",
+        "abbreviation": {
+          "en": "KII",
+          "fi": "KII",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "very good",
+          "fi": "kiitettävät tiedot",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "17",
+        "abbreviation": {
+          "en": "KT",
+          "fi": "KT",
+          "sv": null
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "Approved with Honours",
+          "fi": "kunniamaininnalla hyväksytty",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "18",
+        "abbreviation": {
+          "en": "KUN",
+          "fi": "KUN",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "laudatur",
+          "fi": "laudatur",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "19",
+        "abbreviation": {
+          "en": "L",
+          "fi": "L",
+          "sv": null
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "magna cum laude approbatur",
+          "fi": "magna cum laude approbatur",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "20",
+        "abbreviation": {
+          "en": "M",
+          "fi": "M",
+          "sv": null
+        },
+        "numericCorrespondence": 3.667
+      },
+      {
+        "name": {
+          "en": "non sine laude approbatur",
+          "fi": "non sine laude approbatur",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "21",
+        "abbreviation": {
+          "en": "N",
+          "fi": "N",
+          "sv": null
+        },
+        "numericCorrespondence": 2.333
+      },
+      {
+        "name": {
+          "en": "perunut",
+          "fi": "perunut",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "22",
+        "abbreviation": {
+          "en": "P",
+          "fi": "P",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "saapumatta",
+          "fi": "saapumatta",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "23",
+        "abbreviation": {
+          "en": "S",
+          "fi": "S",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "satisfactory",
+          "fi": "tyydyttävät tiedot",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "24",
+        "abbreviation": {
+          "en": "TT",
+          "fi": "TT",
+          "sv": null
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "satisfactory",
+          "fi": "tyydyttävä",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "25",
+        "abbreviation": {
+          "en": "TY",
+          "fi": "TY",
+          "sv": null
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "sufficient",
+          "fi": "välttävät tiedot",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "26",
+        "abbreviation": {
+          "en": "VT",
+          "fi": "VT",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      }
+    ],
+    "shh-arvast-2": [
+      {
+        "name": {
+          "en": "Sufficient",
+          "fi": "1",
+          "sv": "Försvarlig"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "SU",
+          "fi": null,
+          "sv": "F"
+        },
+        "numericCorrespondence": 55
+      },
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "2",
+          "sv": "Nöjaktig"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "S",
+          "fi": null,
+          "sv": "N"
+        },
+        "numericCorrespondence": 65
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "3",
+          "sv": "God"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "G",
+          "fi": null,
+          "sv": "G"
+        },
+        "numericCorrespondence": 75
+      },
+      {
+        "name": {
+          "en": "Very Good",
+          "fi": "4",
+          "sv": "Mycket god"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "VG",
+          "fi": null,
+          "sv": "MG"
+        },
+        "numericCorrespondence": 85
+      },
+      {
+        "name": {
+          "en": "Excellent",
+          "fi": "5",
+          "sv": "Utmärkt"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "E",
+          "fi": null,
+          "sv": "U"
+        },
+        "numericCorrespondence": 95
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": "Improbatur",
+          "sv": "Improbatur"
+        },
+        "passed": false,
+        "localId": "5",
+        "abbreviation": {
+          "en": null,
+          "fi": null,
+          "sv": "I"
+        },
+        "numericCorrespondence": 25
+      }
+    ],
+    "sis-7-portainen": [
+      {
+        "name": {
+          "en": "Improbatur",
+          "fi": "Improbatur",
+          "sv": "Improbatur"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "I",
+          "fi": "I",
+          "sv": "I"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Approbatur",
+          "fi": "Approbatur",
+          "sv": "Approbatur"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "A",
+          "fi": "A",
+          "sv": "A"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Lubenter Approbatur",
+          "fi": "Lubenter approbatur",
+          "sv": "Lubenter approbatur"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "LA",
+          "fi": "LA",
+          "sv": "LA"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Non Sine Laude Approbatur",
+          "fi": "Non sine laude approbatur",
+          "sv": "Non sine laude approbatur"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "NSLA",
+          "fi": "NSLA",
+          "sv": "NSLA"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Cum Laude Approbatur",
+          "fi": "Cum laude approbatur",
+          "sv": "Cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "CL",
+          "fi": "CL",
+          "sv": "CL"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Magna Cum Laude Approbatur",
+          "fi": "Magna cum laude approbatur",
+          "sv": "Magna cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "MCLA",
+          "fi": "MCLA",
+          "sv": "MCLA"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Eximia Cum Laude Approbatur",
+          "fi": "Eximia cum laude approbatur",
+          "sv": "Eximia cum laude approbatur"
+        },
+        "passed": true,
+        "localId": "6",
+        "abbreviation": {
+          "en": "ECLA",
+          "fi": "ECLA",
+          "sv": "ECLA"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Laudatur",
+          "fi": "Laudatur",
+          "sv": "Laudatur"
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "L",
+          "fi": "L",
+          "sv": "L"
+        },
+        "numericCorrespondence": null
+      }
+    ],
+    "hy-arvast-7": [
+      {
+        "name": {
+          "en": "Failed",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "FAIL",
+          "fi": "HYL",
+          "sv": "UNDK"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Substituted",
+          "fi": "Korvattu",
+          "sv": "Ersatt"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "SUBS",
+          "fi": "KORV",
+          "sv": "ERS"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": "Godkänd"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "PASS",
+          "fi": "SUOR",
+          "sv": "GODK"
+        },
+        "numericCorrespondence": 0
+      }
+    ],
+    "sis-hyl-hyv": [
+      {
+        "name": {
+          "en": "Fail",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "Fail",
+          "fi": "Hyl.",
+          "sv": "UG"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": "Godkänd"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "Pass",
+          "fi": "Hyv.",
+          "sv": "G"
+        },
+        "numericCorrespondence": null
+      }
+    ],
+    "lut-historia-asteikko-tutkinnot": [
+      {
+        "name": {
+          "en": "accepted",
+          "fi": "hyväksytty ",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "approved",
+          "fi": "hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "satisfactory",
+          "fi": "tyydyttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "very satisfactory",
+          "fi": "erittäin tyydyttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "very good",
+          "fi": "erittäin hyvä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "kiitettävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "6",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "satisfied ",
+          "fi": "tyydyttävät tiedot",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "TT",
+          "fi": "TT",
+          "sv": "TT"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvät tiedot",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "8",
+        "abbreviation": {
+          "en": "HT",
+          "fi": "HT",
+          "sv": "HT"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "erinomaiset tiedot",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "9",
+        "abbreviation": {
+          "en": "ET",
+          "fi": "ET",
+          "sv": "ET"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "approved with distinction",
+          "fi": "kiittäen hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "10",
+        "abbreviation": {
+          "en": "KH",
+          "fi": "KH",
+          "sv": "KH"
+        },
+        "numericCorrespondence": 0
+      }
+    ],
+    "shh-arvast-4": [
+      {
+        "name": {
+          "en": "Passed",
+          "fi": "Hyv",
+          "sv": "GK"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "P",
+          "fi": "GK",
+          "sv": "GK"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "passed": false,
+        "localId": "1",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "passed": false,
+        "localId": "2",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "passed": false,
+        "localId": "3",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "4",
+          "fi": "4",
+          "sv": "4"
+        },
+        "passed": false,
+        "localId": "4",
+        "abbreviation": {
+          "en": "4",
+          "fi": "4",
+          "sv": "4"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "5",
+          "fi": "5",
+          "sv": "5"
+        },
+        "passed": false,
+        "localId": "5",
+        "abbreviation": {
+          "en": "5",
+          "fi": "5",
+          "sv": "5"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "6",
+          "fi": "6",
+          "sv": "6"
+        },
+        "passed": false,
+        "localId": "6",
+        "abbreviation": {
+          "en": "6",
+          "fi": "6",
+          "sv": "6"
+        },
+        "numericCorrespondence": 6
+      },
+      {
+        "name": {
+          "en": "7",
+          "fi": "7",
+          "sv": "7"
+        },
+        "passed": false,
+        "localId": "7",
+        "abbreviation": {
+          "en": "7",
+          "fi": "7",
+          "sv": "7"
+        },
+        "numericCorrespondence": 7
+      },
+      {
+        "name": {
+          "en": "8",
+          "fi": "8",
+          "sv": "8"
+        },
+        "passed": false,
+        "localId": "8",
+        "abbreviation": {
+          "en": "8",
+          "fi": "8",
+          "sv": "8"
+        },
+        "numericCorrespondence": 8
+      },
+      {
+        "name": {
+          "en": "9",
+          "fi": "9",
+          "sv": "9"
+        },
+        "passed": false,
+        "localId": "9",
+        "abbreviation": {
+          "en": "9",
+          "fi": "9",
+          "sv": "9"
+        },
+        "numericCorrespondence": 9
+      },
+      {
+        "name": {
+          "en": "11",
+          "fi": "11",
+          "sv": "11"
+        },
+        "passed": false,
+        "localId": "10",
+        "abbreviation": {
+          "en": "11",
+          "fi": "11",
+          "sv": "11"
+        },
+        "numericCorrespondence": 11
+      },
+      {
+        "name": {
+          "en": "12",
+          "fi": "12",
+          "sv": "12"
+        },
+        "passed": false,
+        "localId": "11",
+        "abbreviation": {
+          "en": "12",
+          "fi": "12",
+          "sv": "12"
+        },
+        "numericCorrespondence": 12
+      },
+      {
+        "name": {
+          "en": "13",
+          "fi": "13",
+          "sv": "13"
+        },
+        "passed": false,
+        "localId": "12",
+        "abbreviation": {
+          "en": "13",
+          "fi": "13",
+          "sv": "13"
+        },
+        "numericCorrespondence": 13
+      },
+      {
+        "name": {
+          "en": "14",
+          "fi": "14",
+          "sv": "14"
+        },
+        "passed": false,
+        "localId": "13",
+        "abbreviation": {
+          "en": "14",
+          "fi": "14",
+          "sv": "14"
+        },
+        "numericCorrespondence": 14
+      },
+      {
+        "name": {
+          "en": "16",
+          "fi": "16",
+          "sv": "16"
+        },
+        "passed": false,
+        "localId": "14",
+        "abbreviation": {
+          "en": "16",
+          "fi": "16",
+          "sv": "16"
+        },
+        "numericCorrespondence": 16
+      },
+      {
+        "name": {
+          "en": "15",
+          "fi": "15",
+          "sv": "15"
+        },
+        "passed": false,
+        "localId": "15",
+        "abbreviation": {
+          "en": "15",
+          "fi": "15",
+          "sv": "15"
+        },
+        "numericCorrespondence": 15
+      },
+      {
+        "name": {
+          "en": "17",
+          "fi": "17",
+          "sv": "17"
+        },
+        "passed": false,
+        "localId": "16",
+        "abbreviation": {
+          "en": "17",
+          "fi": "17",
+          "sv": "17"
+        },
+        "numericCorrespondence": 17
+      },
+      {
+        "name": {
+          "en": "19",
+          "fi": "19",
+          "sv": "19"
+        },
+        "passed": false,
+        "localId": "17",
+        "abbreviation": {
+          "en": "19",
+          "fi": "19",
+          "sv": "19"
+        },
+        "numericCorrespondence": 19
+      },
+      {
+        "name": {
+          "en": "20",
+          "fi": "20",
+          "sv": "20"
+        },
+        "passed": false,
+        "localId": "18",
+        "abbreviation": {
+          "en": "20",
+          "fi": "20",
+          "sv": "20"
+        },
+        "numericCorrespondence": 20
+      },
+      {
+        "name": {
+          "en": "21",
+          "fi": "21",
+          "sv": "21"
+        },
+        "passed": false,
+        "localId": "19",
+        "abbreviation": {
+          "en": "21",
+          "fi": "21",
+          "sv": "21"
+        },
+        "numericCorrespondence": 21
+      },
+      {
+        "name": {
+          "en": "22",
+          "fi": "22",
+          "sv": "22"
+        },
+        "passed": false,
+        "localId": "20",
+        "abbreviation": {
+          "en": "22",
+          "fi": "22",
+          "sv": "22"
+        },
+        "numericCorrespondence": 22
+      },
+      {
+        "name": {
+          "en": "23",
+          "fi": "23",
+          "sv": "23"
+        },
+        "passed": false,
+        "localId": "21",
+        "abbreviation": {
+          "en": "23",
+          "fi": "23",
+          "sv": "23"
+        },
+        "numericCorrespondence": 23
+      },
+      {
+        "name": {
+          "en": "24",
+          "fi": "24",
+          "sv": "24"
+        },
+        "passed": false,
+        "localId": "22",
+        "abbreviation": {
+          "en": "24",
+          "fi": "24",
+          "sv": "24"
+        },
+        "numericCorrespondence": 24
+      },
+      {
+        "name": {
+          "en": "25",
+          "fi": "25",
+          "sv": "25"
+        },
+        "passed": false,
+        "localId": "23",
+        "abbreviation": {
+          "en": "25",
+          "fi": "25",
+          "sv": "25"
+        },
+        "numericCorrespondence": 25
+      },
+      {
+        "name": {
+          "en": "26",
+          "fi": "26",
+          "sv": "26"
+        },
+        "passed": false,
+        "localId": "24",
+        "abbreviation": {
+          "en": "26",
+          "fi": "26",
+          "sv": "26"
+        },
+        "numericCorrespondence": 26
+      },
+      {
+        "name": {
+          "en": "27",
+          "fi": "27",
+          "sv": "27"
+        },
+        "passed": false,
+        "localId": "25",
+        "abbreviation": {
+          "en": "27",
+          "fi": "27",
+          "sv": "27"
+        },
+        "numericCorrespondence": 27
+      },
+      {
+        "name": {
+          "en": "28",
+          "fi": "28",
+          "sv": "28"
+        },
+        "passed": false,
+        "localId": "26",
+        "abbreviation": {
+          "en": "28",
+          "fi": "28",
+          "sv": "28"
+        },
+        "numericCorrespondence": 28
+      },
+      {
+        "name": {
+          "en": "29",
+          "fi": "29",
+          "sv": "29"
+        },
+        "passed": false,
+        "localId": "27",
+        "abbreviation": {
+          "en": "29",
+          "fi": "29",
+          "sv": "29"
+        },
+        "numericCorrespondence": 29
+      },
+      {
+        "name": {
+          "en": "30",
+          "fi": "30",
+          "sv": "30"
+        },
+        "passed": false,
+        "localId": "28",
+        "abbreviation": {
+          "en": "30",
+          "fi": "30",
+          "sv": "30"
+        },
+        "numericCorrespondence": 30
+      },
+      {
+        "name": {
+          "en": "31",
+          "fi": "31",
+          "sv": "31"
+        },
+        "passed": false,
+        "localId": "29",
+        "abbreviation": {
+          "en": "31",
+          "fi": "31",
+          "sv": "31"
+        },
+        "numericCorrespondence": 31
+      },
+      {
+        "name": {
+          "en": "32",
+          "fi": "32",
+          "sv": "32"
+        },
+        "passed": false,
+        "localId": "30",
+        "abbreviation": {
+          "en": "32",
+          "fi": "32",
+          "sv": "32"
+        },
+        "numericCorrespondence": 32
+      },
+      {
+        "name": {
+          "en": "33",
+          "fi": "33",
+          "sv": "33"
+        },
+        "passed": false,
+        "localId": "31",
+        "abbreviation": {
+          "en": "33",
+          "fi": "33",
+          "sv": "33"
+        },
+        "numericCorrespondence": 33
+      },
+      {
+        "name": {
+          "en": "34",
+          "fi": "34",
+          "sv": "34"
+        },
+        "passed": false,
+        "localId": "32",
+        "abbreviation": {
+          "en": "34",
+          "fi": "34",
+          "sv": "34"
+        },
+        "numericCorrespondence": 34
+      },
+      {
+        "name": {
+          "en": "35",
+          "fi": "35",
+          "sv": "35"
+        },
+        "passed": false,
+        "localId": "33",
+        "abbreviation": {
+          "en": "35",
+          "fi": "35",
+          "sv": "35"
+        },
+        "numericCorrespondence": 35
+      },
+      {
+        "name": {
+          "en": "36",
+          "fi": "36",
+          "sv": "36"
+        },
+        "passed": false,
+        "localId": "34",
+        "abbreviation": {
+          "en": "36",
+          "fi": "36",
+          "sv": "36"
+        },
+        "numericCorrespondence": 36
+      },
+      {
+        "name": {
+          "en": "37",
+          "fi": "37",
+          "sv": "37"
+        },
+        "passed": false,
+        "localId": "35",
+        "abbreviation": {
+          "en": "37",
+          "fi": "37",
+          "sv": "37"
+        },
+        "numericCorrespondence": 37
+      },
+      {
+        "name": {
+          "en": "38",
+          "fi": "38",
+          "sv": "38"
+        },
+        "passed": false,
+        "localId": "36",
+        "abbreviation": {
+          "en": "38",
+          "fi": "38",
+          "sv": "38"
+        },
+        "numericCorrespondence": 38
+      },
+      {
+        "name": {
+          "en": "39",
+          "fi": "39",
+          "sv": "39"
+        },
+        "passed": false,
+        "localId": "37",
+        "abbreviation": {
+          "en": "39",
+          "fi": "39",
+          "sv": "39"
+        },
+        "numericCorrespondence": 39
+      },
+      {
+        "name": {
+          "en": "40",
+          "fi": "40",
+          "sv": "40"
+        },
+        "passed": false,
+        "localId": "38",
+        "abbreviation": {
+          "en": "40",
+          "fi": "40",
+          "sv": "40"
+        },
+        "numericCorrespondence": 40
+      },
+      {
+        "name": {
+          "en": "41",
+          "fi": "41",
+          "sv": "41"
+        },
+        "passed": false,
+        "localId": "39",
+        "abbreviation": {
+          "en": "41",
+          "fi": "41",
+          "sv": "41"
+        },
+        "numericCorrespondence": 41
+      },
+      {
+        "name": {
+          "en": "42",
+          "fi": "42",
+          "sv": "42"
+        },
+        "passed": false,
+        "localId": "40",
+        "abbreviation": {
+          "en": "42",
+          "fi": "42",
+          "sv": "42"
+        },
+        "numericCorrespondence": 42
+      },
+      {
+        "name": {
+          "en": "43",
+          "fi": "43",
+          "sv": "43"
+        },
+        "passed": false,
+        "localId": "41",
+        "abbreviation": {
+          "en": "43",
+          "fi": "43",
+          "sv": "43"
+        },
+        "numericCorrespondence": 43
+      },
+      {
+        "name": {
+          "en": "44",
+          "fi": "44",
+          "sv": "44"
+        },
+        "passed": false,
+        "localId": "42",
+        "abbreviation": {
+          "en": "44",
+          "fi": "44",
+          "sv": "44"
+        },
+        "numericCorrespondence": 44
+      },
+      {
+        "name": {
+          "en": "45",
+          "fi": "45",
+          "sv": "45"
+        },
+        "passed": false,
+        "localId": "43",
+        "abbreviation": {
+          "en": "45",
+          "fi": "45",
+          "sv": "45"
+        },
+        "numericCorrespondence": 45
+      },
+      {
+        "name": {
+          "en": "46",
+          "fi": "46",
+          "sv": "46"
+        },
+        "passed": false,
+        "localId": "44",
+        "abbreviation": {
+          "en": "46",
+          "fi": "46",
+          "sv": "46"
+        },
+        "numericCorrespondence": 46
+      },
+      {
+        "name": {
+          "en": "47",
+          "fi": "47",
+          "sv": "47"
+        },
+        "passed": false,
+        "localId": "45",
+        "abbreviation": {
+          "en": "47",
+          "fi": "47",
+          "sv": "47"
+        },
+        "numericCorrespondence": 47
+      },
+      {
+        "name": {
+          "en": "48",
+          "fi": "48",
+          "sv": "48"
+        },
+        "passed": false,
+        "localId": "46",
+        "abbreviation": {
+          "en": "48",
+          "fi": "48",
+          "sv": "48"
+        },
+        "numericCorrespondence": 48
+      },
+      {
+        "name": {
+          "en": "49",
+          "fi": "49",
+          "sv": "49"
+        },
+        "passed": false,
+        "localId": "47",
+        "abbreviation": {
+          "en": "49",
+          "fi": "49",
+          "sv": "49"
+        },
+        "numericCorrespondence": 49
+      },
+      {
+        "name": {
+          "en": "50",
+          "fi": "50",
+          "sv": "50"
+        },
+        "passed": true,
+        "localId": "48",
+        "abbreviation": {
+          "en": "50",
+          "fi": "50",
+          "sv": "50"
+        },
+        "numericCorrespondence": 50
+      },
+      {
+        "name": {
+          "en": "51",
+          "fi": "51",
+          "sv": "51"
+        },
+        "passed": true,
+        "localId": "49",
+        "abbreviation": {
+          "en": "51",
+          "fi": "51",
+          "sv": "51"
+        },
+        "numericCorrespondence": 51
+      },
+      {
+        "name": {
+          "en": "52",
+          "fi": "52",
+          "sv": "52"
+        },
+        "passed": true,
+        "localId": "50",
+        "abbreviation": {
+          "en": "52",
+          "fi": "52",
+          "sv": "52"
+        },
+        "numericCorrespondence": 52
+      },
+      {
+        "name": {
+          "en": "53",
+          "fi": "53",
+          "sv": "53"
+        },
+        "passed": true,
+        "localId": "51",
+        "abbreviation": {
+          "en": "53",
+          "fi": "53",
+          "sv": "53"
+        },
+        "numericCorrespondence": 53
+      },
+      {
+        "name": {
+          "en": "54",
+          "fi": "54",
+          "sv": "54"
+        },
+        "passed": true,
+        "localId": "52",
+        "abbreviation": {
+          "en": "54",
+          "fi": "54",
+          "sv": "54"
+        },
+        "numericCorrespondence": 54
+      },
+      {
+        "name": {
+          "en": "55",
+          "fi": "55",
+          "sv": "55"
+        },
+        "passed": true,
+        "localId": "53",
+        "abbreviation": {
+          "en": "55",
+          "fi": "55",
+          "sv": "55"
+        },
+        "numericCorrespondence": 55
+      },
+      {
+        "name": {
+          "en": "56",
+          "fi": "56",
+          "sv": "56"
+        },
+        "passed": true,
+        "localId": "54",
+        "abbreviation": {
+          "en": "56",
+          "fi": "56",
+          "sv": "56"
+        },
+        "numericCorrespondence": 56
+      },
+      {
+        "name": {
+          "en": "57",
+          "fi": "57",
+          "sv": "57"
+        },
+        "passed": true,
+        "localId": "55",
+        "abbreviation": {
+          "en": "57",
+          "fi": "57",
+          "sv": "57"
+        },
+        "numericCorrespondence": 57
+      },
+      {
+        "name": {
+          "en": "58",
+          "fi": "58",
+          "sv": "58"
+        },
+        "passed": true,
+        "localId": "56",
+        "abbreviation": {
+          "en": "58",
+          "fi": "58",
+          "sv": "58"
+        },
+        "numericCorrespondence": 58
+      },
+      {
+        "name": {
+          "en": "59",
+          "fi": "59",
+          "sv": "59"
+        },
+        "passed": true,
+        "localId": "57",
+        "abbreviation": {
+          "en": "59",
+          "fi": "59",
+          "sv": "59"
+        },
+        "numericCorrespondence": 59
+      },
+      {
+        "name": {
+          "en": "60",
+          "fi": "60",
+          "sv": "60"
+        },
+        "passed": true,
+        "localId": "58",
+        "abbreviation": {
+          "en": "60",
+          "fi": "60",
+          "sv": "60"
+        },
+        "numericCorrespondence": 60
+      },
+      {
+        "name": {
+          "en": "61",
+          "fi": "61",
+          "sv": "61"
+        },
+        "passed": true,
+        "localId": "59",
+        "abbreviation": {
+          "en": "61",
+          "fi": "61",
+          "sv": "61"
+        },
+        "numericCorrespondence": 61
+      },
+      {
+        "name": {
+          "en": "62",
+          "fi": "62",
+          "sv": "62"
+        },
+        "passed": true,
+        "localId": "60",
+        "abbreviation": {
+          "en": "62",
+          "fi": "62",
+          "sv": "62"
+        },
+        "numericCorrespondence": 62
+      },
+      {
+        "name": {
+          "en": "63",
+          "fi": "63",
+          "sv": "63"
+        },
+        "passed": true,
+        "localId": "61",
+        "abbreviation": {
+          "en": "63",
+          "fi": "63",
+          "sv": "63"
+        },
+        "numericCorrespondence": 63
+      },
+      {
+        "name": {
+          "en": "64",
+          "fi": "64",
+          "sv": "64"
+        },
+        "passed": true,
+        "localId": "62",
+        "abbreviation": {
+          "en": "64",
+          "fi": "64",
+          "sv": "64"
+        },
+        "numericCorrespondence": 64
+      },
+      {
+        "name": {
+          "en": "65",
+          "fi": "65",
+          "sv": "65"
+        },
+        "passed": true,
+        "localId": "63",
+        "abbreviation": {
+          "en": "65",
+          "fi": "65",
+          "sv": "65"
+        },
+        "numericCorrespondence": 65
+      },
+      {
+        "name": {
+          "en": "66",
+          "fi": "66",
+          "sv": "66"
+        },
+        "passed": true,
+        "localId": "64",
+        "abbreviation": {
+          "en": "66",
+          "fi": "66",
+          "sv": "66"
+        },
+        "numericCorrespondence": 66
+      },
+      {
+        "name": {
+          "en": "67",
+          "fi": "67",
+          "sv": "67"
+        },
+        "passed": true,
+        "localId": "65",
+        "abbreviation": {
+          "en": "67",
+          "fi": "67",
+          "sv": "67"
+        },
+        "numericCorrespondence": 67
+      },
+      {
+        "name": {
+          "en": "68",
+          "fi": "68",
+          "sv": "68"
+        },
+        "passed": true,
+        "localId": "66",
+        "abbreviation": {
+          "en": "68",
+          "fi": "68",
+          "sv": "68"
+        },
+        "numericCorrespondence": 68
+      },
+      {
+        "name": {
+          "en": "69",
+          "fi": "69",
+          "sv": "69"
+        },
+        "passed": true,
+        "localId": "67",
+        "abbreviation": {
+          "en": "69",
+          "fi": "69",
+          "sv": "69"
+        },
+        "numericCorrespondence": 69
+      },
+      {
+        "name": {
+          "en": "70",
+          "fi": "70",
+          "sv": "70"
+        },
+        "passed": true,
+        "localId": "68",
+        "abbreviation": {
+          "en": "70",
+          "fi": "70",
+          "sv": "70"
+        },
+        "numericCorrespondence": 70
+      },
+      {
+        "name": {
+          "en": "71",
+          "fi": "71",
+          "sv": "71"
+        },
+        "passed": true,
+        "localId": "69",
+        "abbreviation": {
+          "en": "71",
+          "fi": "71",
+          "sv": "71"
+        },
+        "numericCorrespondence": 71
+      },
+      {
+        "name": {
+          "en": "72",
+          "fi": "72",
+          "sv": "72"
+        },
+        "passed": true,
+        "localId": "70",
+        "abbreviation": {
+          "en": "72",
+          "fi": "72",
+          "sv": "72"
+        },
+        "numericCorrespondence": 72
+      },
+      {
+        "name": {
+          "en": "73",
+          "fi": "73",
+          "sv": "73"
+        },
+        "passed": true,
+        "localId": "71",
+        "abbreviation": {
+          "en": "73",
+          "fi": "73",
+          "sv": "73"
+        },
+        "numericCorrespondence": 73
+      },
+      {
+        "name": {
+          "en": "74",
+          "fi": "74",
+          "sv": "74"
+        },
+        "passed": true,
+        "localId": "72",
+        "abbreviation": {
+          "en": "74",
+          "fi": "74",
+          "sv": "74"
+        },
+        "numericCorrespondence": 74
+      },
+      {
+        "name": {
+          "en": "75",
+          "fi": "75",
+          "sv": "75"
+        },
+        "passed": true,
+        "localId": "73",
+        "abbreviation": {
+          "en": "75",
+          "fi": "75",
+          "sv": "75"
+        },
+        "numericCorrespondence": 75
+      },
+      {
+        "name": {
+          "en": "76",
+          "fi": "76",
+          "sv": "76"
+        },
+        "passed": true,
+        "localId": "74",
+        "abbreviation": {
+          "en": "76",
+          "fi": "76",
+          "sv": "76"
+        },
+        "numericCorrespondence": 76
+      },
+      {
+        "name": {
+          "en": "77",
+          "fi": "77",
+          "sv": "77"
+        },
+        "passed": true,
+        "localId": "75",
+        "abbreviation": {
+          "en": "77",
+          "fi": "77",
+          "sv": "77"
+        },
+        "numericCorrespondence": 77
+      },
+      {
+        "name": {
+          "en": "78",
+          "fi": "78",
+          "sv": "78"
+        },
+        "passed": true,
+        "localId": "76",
+        "abbreviation": {
+          "en": "78",
+          "fi": "78",
+          "sv": "78"
+        },
+        "numericCorrespondence": 78
+      },
+      {
+        "name": {
+          "en": "79",
+          "fi": "79",
+          "sv": "79"
+        },
+        "passed": true,
+        "localId": "77",
+        "abbreviation": {
+          "en": "79",
+          "fi": "79",
+          "sv": "79"
+        },
+        "numericCorrespondence": 79
+      },
+      {
+        "name": {
+          "en": "80",
+          "fi": "80",
+          "sv": "80"
+        },
+        "passed": true,
+        "localId": "78",
+        "abbreviation": {
+          "en": "80",
+          "fi": "80",
+          "sv": "80"
+        },
+        "numericCorrespondence": 80
+      },
+      {
+        "name": {
+          "en": "81",
+          "fi": "81",
+          "sv": "81"
+        },
+        "passed": true,
+        "localId": "79",
+        "abbreviation": {
+          "en": "81",
+          "fi": "81",
+          "sv": "81"
+        },
+        "numericCorrespondence": 81
+      },
+      {
+        "name": {
+          "en": "82",
+          "fi": "82",
+          "sv": "82"
+        },
+        "passed": true,
+        "localId": "80",
+        "abbreviation": {
+          "en": "82",
+          "fi": "82",
+          "sv": "82"
+        },
+        "numericCorrespondence": 82
+      },
+      {
+        "name": {
+          "en": "83",
+          "fi": "83",
+          "sv": "83"
+        },
+        "passed": true,
+        "localId": "81",
+        "abbreviation": {
+          "en": "83",
+          "fi": "83",
+          "sv": "83"
+        },
+        "numericCorrespondence": 83
+      },
+      {
+        "name": {
+          "en": "84",
+          "fi": "84",
+          "sv": "84"
+        },
+        "passed": true,
+        "localId": "82",
+        "abbreviation": {
+          "en": "84",
+          "fi": "84",
+          "sv": "84"
+        },
+        "numericCorrespondence": 84
+      },
+      {
+        "name": {
+          "en": "85",
+          "fi": "85",
+          "sv": "85"
+        },
+        "passed": true,
+        "localId": "83",
+        "abbreviation": {
+          "en": "85",
+          "fi": "85",
+          "sv": "85"
+        },
+        "numericCorrespondence": 85
+      },
+      {
+        "name": {
+          "en": "86",
+          "fi": "86",
+          "sv": "86"
+        },
+        "passed": true,
+        "localId": "84",
+        "abbreviation": {
+          "en": "86",
+          "fi": "86",
+          "sv": "86"
+        },
+        "numericCorrespondence": 86
+      },
+      {
+        "name": {
+          "en": "87",
+          "fi": "87",
+          "sv": "87"
+        },
+        "passed": true,
+        "localId": "85",
+        "abbreviation": {
+          "en": "87",
+          "fi": "87",
+          "sv": "87"
+        },
+        "numericCorrespondence": 87
+      },
+      {
+        "name": {
+          "en": "88",
+          "fi": "88",
+          "sv": "88"
+        },
+        "passed": true,
+        "localId": "86",
+        "abbreviation": {
+          "en": "88",
+          "fi": "88",
+          "sv": "88"
+        },
+        "numericCorrespondence": 88
+      },
+      {
+        "name": {
+          "en": "89",
+          "fi": "89",
+          "sv": "89"
+        },
+        "passed": true,
+        "localId": "87",
+        "abbreviation": {
+          "en": "89",
+          "fi": "89",
+          "sv": "89"
+        },
+        "numericCorrespondence": 89
+      },
+      {
+        "name": {
+          "en": "90",
+          "fi": "90",
+          "sv": "90"
+        },
+        "passed": true,
+        "localId": "88",
+        "abbreviation": {
+          "en": "90",
+          "fi": "90",
+          "sv": "90"
+        },
+        "numericCorrespondence": 90
+      },
+      {
+        "name": {
+          "en": "91",
+          "fi": "91",
+          "sv": "91"
+        },
+        "passed": true,
+        "localId": "89",
+        "abbreviation": {
+          "en": "91",
+          "fi": "91",
+          "sv": "91"
+        },
+        "numericCorrespondence": 91
+      },
+      {
+        "name": {
+          "en": "92",
+          "fi": "92",
+          "sv": "92"
+        },
+        "passed": true,
+        "localId": "90",
+        "abbreviation": {
+          "en": "92",
+          "fi": "92",
+          "sv": "92"
+        },
+        "numericCorrespondence": 92
+      },
+      {
+        "name": {
+          "en": "93",
+          "fi": "93",
+          "sv": "93"
+        },
+        "passed": true,
+        "localId": "91",
+        "abbreviation": {
+          "en": "93",
+          "fi": "93",
+          "sv": "93"
+        },
+        "numericCorrespondence": 93
+      },
+      {
+        "name": {
+          "en": "94",
+          "fi": "94",
+          "sv": "94"
+        },
+        "passed": true,
+        "localId": "92",
+        "abbreviation": {
+          "en": "94",
+          "fi": "94",
+          "sv": "94"
+        },
+        "numericCorrespondence": 94
+      },
+      {
+        "name": {
+          "en": "95",
+          "fi": "95",
+          "sv": "95"
+        },
+        "passed": true,
+        "localId": "93",
+        "abbreviation": {
+          "en": "95",
+          "fi": "95",
+          "sv": "95"
+        },
+        "numericCorrespondence": 95
+      },
+      {
+        "name": {
+          "en": "96",
+          "fi": "96",
+          "sv": "96"
+        },
+        "passed": true,
+        "localId": "94",
+        "abbreviation": {
+          "en": "96",
+          "fi": "96",
+          "sv": "96"
+        },
+        "numericCorrespondence": 96
+      },
+      {
+        "name": {
+          "en": "97",
+          "fi": "97",
+          "sv": "97"
+        },
+        "passed": true,
+        "localId": "95",
+        "abbreviation": {
+          "en": "97",
+          "fi": "97",
+          "sv": "97"
+        },
+        "numericCorrespondence": 97
+      },
+      {
+        "name": {
+          "en": "98",
+          "fi": "98",
+          "sv": "98"
+        },
+        "passed": true,
+        "localId": "96",
+        "abbreviation": {
+          "en": "98",
+          "fi": "98",
+          "sv": "98"
+        },
+        "numericCorrespondence": 98
+      },
+      {
+        "name": {
+          "en": "99",
+          "fi": "99",
+          "sv": "99"
+        },
+        "passed": true,
+        "localId": "97",
+        "abbreviation": {
+          "en": "99",
+          "fi": "99",
+          "sv": "99"
+        },
+        "numericCorrespondence": 99
+      },
+      {
+        "name": {
+          "en": "100",
+          "fi": "100",
+          "sv": "100"
+        },
+        "passed": true,
+        "localId": "98",
+        "abbreviation": {
+          "en": "100",
+          "fi": "100",
+          "sv": "100"
+        },
+        "numericCorrespondence": 100
+      },
+      {
+        "name": {
+          "en": "10",
+          "fi": "10",
+          "sv": "10"
+        },
+        "passed": false,
+        "localId": "99",
+        "abbreviation": {
+          "en": "10",
+          "fi": "10",
+          "sv": "10"
+        },
+        "numericCorrespondence": 10
+      },
+      {
+        "name": {
+          "en": "18",
+          "fi": "18",
+          "sv": "18"
+        },
+        "passed": false,
+        "localId": "100",
+        "abbreviation": {
+          "en": "18",
+          "fi": "18",
+          "sv": "18"
+        },
+        "numericCorrespondence": 18
+      },
+      {
+        "name": {
+          "en": "0",
+          "fi": "0",
+          "sv": "0"
+        },
+        "passed": false,
+        "localId": "101",
+        "abbreviation": {
+          "en": "0",
+          "fi": "0",
+          "sv": "0"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Sufficient",
+          "fi": "1",
+          "sv": "Försvarlig"
+        },
+        "passed": true,
+        "localId": "102",
+        "abbreviation": {
+          "en": "SU",
+          "fi": null,
+          "sv": "F"
+        },
+        "numericCorrespondence": 55
+      },
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "2",
+          "sv": "Nöjaktig"
+        },
+        "passed": true,
+        "localId": "103",
+        "abbreviation": {
+          "en": "S",
+          "fi": null,
+          "sv": "N"
+        },
+        "numericCorrespondence": 65
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "3",
+          "sv": "God"
+        },
+        "passed": true,
+        "localId": "104",
+        "abbreviation": {
+          "en": "G",
+          "fi": null,
+          "sv": "G"
+        },
+        "numericCorrespondence": 65
+      },
+      {
+        "name": {
+          "en": "Very Good",
+          "fi": "4",
+          "sv": "Mycket god"
+        },
+        "passed": true,
+        "localId": "105",
+        "abbreviation": {
+          "en": "VG",
+          "fi": null,
+          "sv": "MG"
+        },
+        "numericCorrespondence": 85
+      },
+      {
+        "name": {
+          "en": "Excellent",
+          "fi": "5",
+          "sv": "Utmärkt"
+        },
+        "passed": true,
+        "localId": "106",
+        "abbreviation": {
+          "en": "E",
+          "fi": null,
+          "sv": "U"
+        },
+        "numericCorrespondence": 95
+      }
+    ],
+    "sis-0-5": [
+      {
+        "name": {
+          "en": "fail",
+          "fi": "hylätty",
+          "sv": "underkänd"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "0",
+          "fi": "0",
+          "sv": "0"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "passable",
+          "fi": "välttävä",
+          "sv": "försvarlig"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "satisfactory",
+          "fi": "tyydyttävä",
+          "sv": "nöjaktig"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvä",
+          "sv": "god"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "very good",
+          "fi": "kiitettävä",
+          "sv": "berömlig"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "4",
+          "fi": "4",
+          "sv": "4"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "erinomainen",
+          "sv": "utmärkt"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "5",
+          "fi": "5",
+          "sv": "5"
+        },
+        "numericCorrespondence": 5
+      }
+    ],
+    "sis-maisteri-maine": [
+      {
+        "name": {
+          "en": "Fail",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "Fail",
+          "fi": "Hyl.",
+          "sv": "UG"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": "Godkänd"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "Pass",
+          "fi": "Hyv.",
+          "sv": "G"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Pass with Honours",
+          "fi": "Oivallisesti",
+          "sv": "Med utmärkta insikter"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "PassHons",
+          "fi": "OIV",
+          "sv": "MUI"
+        },
+        "numericCorrespondence": null
+      }
+    ],
+    "lut-historia-asteikko-lopputyot": [
+      {
+        "name": {
+          "en": "Approbatur",
+          "fi": "Approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "A",
+          "fi": "A",
+          "sv": "A"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Approbatur",
+          "fi": "Approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "A",
+          "fi": "A",
+          "sv": "A"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Cum laude approbatur",
+          "fi": "Cum laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "C",
+          "fi": "C",
+          "sv": "C"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Cum laude approbatur",
+          "fi": "Cum laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "C",
+          "fi": "C",
+          "sv": "C"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "very good",
+          "fi": "erittäin hyvä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "4",
+          "fi": "4",
+          "sv": "4"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "very satisfactory",
+          "fi": "erittäin tyydyttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "Eximia cum laude approbatur",
+          "fi": "Eximia cum laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "6",
+        "abbreviation": {
+          "en": "E",
+          "fi": "E",
+          "sv": "E"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Eximia cum laude approbatur",
+          "fi": "Eximia cum laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "E",
+          "fi": "E",
+          "sv": "E"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "8",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "accepted",
+          "fi": "hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "9",
+        "abbreviation": {
+          "en": "H ",
+          "fi": "H ",
+          "sv": "H "
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "approved",
+          "fi": "hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "10",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "kiitettävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "11",
+        "abbreviation": {
+          "en": "5",
+          "fi": "5",
+          "sv": "5"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "approved with distinction",
+          "fi": "kiittäen hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "12",
+        "abbreviation": {
+          "en": "KH",
+          "fi": "KH",
+          "sv": "KH"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "Laudatur",
+          "fi": "Laudatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "13",
+        "abbreviation": {
+          "en": "L",
+          "fi": "L",
+          "sv": "L"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Laudatur",
+          "fi": "Laudatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "14",
+        "abbreviation": {
+          "en": "L",
+          "fi": "L",
+          "sv": "L"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Lubenter approbatur",
+          "fi": "Lubenter approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "15",
+        "abbreviation": {
+          "en": "B",
+          "fi": "B",
+          "sv": "B"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Lubenter approbatur",
+          "fi": "Lubenter approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "16",
+        "abbreviation": {
+          "en": "B",
+          "fi": "B",
+          "sv": "B"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Magna cum laude approbatur",
+          "fi": "Magna cum laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "17",
+        "abbreviation": {
+          "en": "M",
+          "fi": "M",
+          "sv": "M"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Magna cum laude approbatur",
+          "fi": "Magna cum laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "18",
+        "abbreviation": {
+          "en": "M",
+          "fi": "M",
+          "sv": "M"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Non sine laude approbatur",
+          "fi": "Non sine laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "19",
+        "abbreviation": {
+          "en": "N",
+          "fi": "N",
+          "sv": "N"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Non sine laude approbatur",
+          "fi": "Non sine laude approbatur",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "20",
+        "abbreviation": {
+          "en": "N",
+          "fi": "N",
+          "sv": "N"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "satisfactory",
+          "fi": "tyydyttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "21",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "numericCorrespondence": 1
+      }
+    ],
+    "lut-historia-asteikko-opintojaksot": [
+      {
+        "name": {
+          "en": "failed",
+          "fi": "nolla",
+          "sv": "-"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "0",
+          "fi": "0",
+          "sv": "0"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "satisfactory",
+          "fi": "yksi",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "very satisfactory",
+          "fi": "kaksi",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "kolme",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "very good",
+          "fi": "neljä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "4",
+          "fi": "4",
+          "sv": "4"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "viisi",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "5",
+          "fi": "5",
+          "sv": "5"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "abandoned",
+          "fi": "hylätty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "6",
+        "abbreviation": {
+          "en": "Hyl.",
+          "fi": "Hyl.",
+          "sv": "Hyl."
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "accepted",
+          "fi": "hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "H",
+          "fi": "Hyv.",
+          "sv": "H"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "no show",
+          "fi": "poissa",
+          "sv": "-"
+        },
+        "passed": false,
+        "localId": "8",
+        "abbreviation": {
+          "en": "NS",
+          "fi": "NS",
+          "sv": "NS"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "no show",
+          "fi": " poissa",
+          "sv": "-"
+        },
+        "passed": false,
+        "localId": "9",
+        "abbreviation": {
+          "en": "P",
+          "fi": "P",
+          "sv": "P"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": " hyvä ",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "10",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": "H"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "accepted with honous",
+          "fi": "kiittäen hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "11",
+        "abbreviation": {
+          "en": "KH",
+          "fi": "KH",
+          "sv": "KH"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "satisfied ",
+          "fi": "tyydyttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "12",
+        "abbreviation": {
+          "en": "T",
+          "fi": "T",
+          "sv": "T"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "accepted",
+          "fi": "suoritettu",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "13",
+        "abbreviation": {
+          "en": "S",
+          "fi": "S",
+          "sv": "S"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "kiitettävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "14",
+        "abbreviation": {
+          "en": "K",
+          "fi": "K",
+          "sv": "K"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": " välttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "15",
+        "abbreviation": {
+          "en": "V",
+          "fi": "V",
+          "sv": "V"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "satisfied ",
+          "fi": "tyydyttävät tiedot",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "16",
+        "abbreviation": {
+          "en": "TT",
+          "fi": "TT",
+          "sv": "TT"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvät tiedot",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "17",
+        "abbreviation": {
+          "en": "HT",
+          "fi": "HT",
+          "sv": "HT"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "erinomaiset tiedot",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "18",
+        "abbreviation": {
+          "en": "ET",
+          "fi": "ET",
+          "sv": "ET"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "approved with distinction",
+          "fi": "kiittäen hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "19",
+        "abbreviation": {
+          "en": "KH",
+          "fi": "KH",
+          "sv": "KH"
+        },
+        "numericCorrespondence": 5
+      }
+    ],
+    "lut-0-5-hyl-hyv-asteikko": [
+      {
+        "name": {
+          "en": "fail",
+          "fi": "hylätty",
+          "sv": "-"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "0",
+          "fi": "0",
+          "sv": "0"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "passable",
+          "fi": "välttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": "1"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "satisfactory",
+          "fi": "tyydyttävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": "2"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "good",
+          "fi": "hyvä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": "3"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "very good",
+          "fi": "kiitettävä",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "4",
+          "fi": "4",
+          "sv": "4"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "excellent",
+          "fi": "erinomainen",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "5",
+          "fi": "5",
+          "sv": "5"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "fail",
+          "fi": "hylätty",
+          "sv": "-"
+        },
+        "passed": false,
+        "localId": "6",
+        "abbreviation": {
+          "en": "fail",
+          "fi": "hyl.",
+          "sv": "fail"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "passed",
+          "fi": "hyväksytty",
+          "sv": "-"
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "pass",
+          "fi": "hyv.",
+          "sv": "pass"
+        },
+        "numericCorrespondence": 0
+      }
+    ],
+    "shh-arvast-1": [
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "1",
+          "sv": "Tillfredsställande"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "S",
+          "fi": null,
+          "sv": "T"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "2",
+          "sv": "God"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "G",
+          "fi": null,
+          "sv": "G"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "Excellent",
+          "fi": "3",
+          "sv": "Utmärkt"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "E",
+          "fi": null,
+          "sv": "U"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": "Improbatur-hylätty",
+          "sv": "Improbatur-underkänd"
+        },
+        "passed": false,
+        "localId": "3",
+        "abbreviation": {
+          "en": "0.0",
+          "fi": "0.0",
+          "sv": "0.0"
+        },
+        "numericCorrespondence": 0
+      }
+    ],
+    "shh-arvast-8": [
+      {
+        "name": {
+          "en": "2.0",
+          "fi": "2.0",
+          "sv": "2.0"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "2.0",
+          "fi": "2.0",
+          "sv": "2.0"
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "1.5",
+          "fi": "1.5",
+          "sv": "1.5"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "1.5",
+          "fi": "1.5",
+          "sv": "1.5"
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "3.5",
+          "fi": "3.5",
+          "sv": "3.5"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "3.5",
+          "fi": "3.5",
+          "sv": "3.5"
+        },
+        "numericCorrespondence": 3.5
+      },
+      {
+        "name": {
+          "en": "3.0",
+          "fi": "3.0",
+          "sv": "3.0"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "3.0",
+          "fi": "3.0",
+          "sv": "3.0"
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "2.5",
+          "fi": "2.5",
+          "sv": "2.5"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "2.5",
+          "fi": "2.5",
+          "sv": "2.5"
+        },
+        "numericCorrespondence": 2.5
+      },
+      {
+        "name": {
+          "en": "1.0",
+          "fi": "1.0",
+          "sv": "1.0"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "1.0",
+          "fi": "1.0",
+          "sv": "1.0"
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "0.0",
+          "fi": "0.0",
+          "sv": "0.0"
+        },
+        "passed": false,
+        "localId": "6",
+        "abbreviation": {
+          "en": "0.0",
+          "fi": "0.0",
+          "sv": "0.0"
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "4.0",
+          "fi": "4.0",
+          "sv": "4.0"
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "4.0",
+          "fi": "4.0",
+          "sv": "4.0"
+        },
+        "numericCorrespondence": 4
+      },
+      {
+        "name": {
+          "en": "5.0",
+          "fi": "5.0",
+          "sv": "5.0"
+        },
+        "passed": true,
+        "localId": "8",
+        "abbreviation": {
+          "en": "5.0",
+          "fi": "5.0",
+          "sv": "5.0"
+        },
+        "numericCorrespondence": 5
+      },
+      {
+        "name": {
+          "en": "4.5",
+          "fi": "4.5",
+          "sv": "4.5"
+        },
+        "passed": true,
+        "localId": "9",
+        "abbreviation": {
+          "en": "4.5",
+          "fi": "4.5",
+          "sv": "4.5"
+        },
+        "numericCorrespondence": 4.5
+      }
+    ],
+    "shh-arvast-9": [
+      {
+        "name": {
+          "en": null,
+          "fi": "Välttävät tiedot",
+          "sv": "Försvarliga insikter"
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": null,
+          "fi": "V",
+          "sv": "F"
+        },
+        "numericCorrespondence": 55
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": "Tyydyttävät tiedot",
+          "sv": "Nöjaktiga insikter"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": null,
+          "fi": "T",
+          "sv": "N"
+        },
+        "numericCorrespondence": 65
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": "Hyvät tiedot",
+          "sv": "Goda insikter"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": null,
+          "fi": "H",
+          "sv": "G"
+        },
+        "numericCorrespondence": 75
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": "Kiitettävät tiedot",
+          "sv": "Mycket goda insikter"
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": null,
+          "fi": "K",
+          "sv": "MG"
+        },
+        "numericCorrespondence": 85
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": "Erinomaiset tiedot",
+          "sv": "Utmärkta insikter"
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": null,
+          "fi": "E",
+          "sv": "U"
+        },
+        "numericCorrespondence": 95
+      },
+      {
+        "name": {
+          "en": null,
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": null,
+          "fi": "I",
+          "sv": "I"
+        },
+        "numericCorrespondence": 25
+      }
+    ],
+    "jy-arvast-10": [
+      {
+        "name": {
+          "en": "1-",
+          "fi": "1-",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "0",
+        "abbreviation": {
+          "en": "1-",
+          "fi": "1-",
+          "sv": null
+        },
+        "numericCorrespondence": 0.75
+      },
+      {
+        "name": {
+          "en": "1",
+          "fi": "1",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "1",
+          "fi": "1",
+          "sv": null
+        },
+        "numericCorrespondence": 1
+      },
+      {
+        "name": {
+          "en": "1+",
+          "fi": "1+",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "1+",
+          "fi": "1+",
+          "sv": null
+        },
+        "numericCorrespondence": 1.25
+      },
+      {
+        "name": {
+          "en": "1.5",
+          "fi": "1.5",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "3",
+        "abbreviation": {
+          "en": "1.5",
+          "fi": "1.5",
+          "sv": null
+        },
+        "numericCorrespondence": 1.5
+      },
+      {
+        "name": {
+          "en": "2-",
+          "fi": "2-",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "4",
+        "abbreviation": {
+          "en": "2-",
+          "fi": "2-",
+          "sv": null
+        },
+        "numericCorrespondence": 1.75
+      },
+      {
+        "name": {
+          "en": "2",
+          "fi": "2",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "5",
+        "abbreviation": {
+          "en": "2",
+          "fi": "2",
+          "sv": null
+        },
+        "numericCorrespondence": 2
+      },
+      {
+        "name": {
+          "en": "2+",
+          "fi": "2+",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "6",
+        "abbreviation": {
+          "en": "2+",
+          "fi": "2+",
+          "sv": null
+        },
+        "numericCorrespondence": 2.25
+      },
+      {
+        "name": {
+          "en": "2.5",
+          "fi": "2.5",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "7",
+        "abbreviation": {
+          "en": "2.5",
+          "fi": "2.5",
+          "sv": null
+        },
+        "numericCorrespondence": 2.5
+      },
+      {
+        "name": {
+          "en": "3-",
+          "fi": "3-",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "8",
+        "abbreviation": {
+          "en": "3-",
+          "fi": "3-",
+          "sv": null
+        },
+        "numericCorrespondence": 2.75
+      },
+      {
+        "name": {
+          "en": "3",
+          "fi": "3",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "9",
+        "abbreviation": {
+          "en": "3",
+          "fi": "3",
+          "sv": null
+        },
+        "numericCorrespondence": 3
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "10",
+        "abbreviation": {
+          "en": "HYV",
+          "fi": "HYV",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "Hyvä",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "11",
+        "abbreviation": {
+          "en": "H",
+          "fi": "H",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Excellent",
+          "fi": "Erinomainen",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "12",
+        "abbreviation": {
+          "en": "ER",
+          "fi": "ER",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "Satisfactory",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "13",
+        "abbreviation": {
+          "en": "PS",
+          "fi": "PS",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "Good",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "14",
+        "abbreviation": {
+          "en": "GD",
+          "fi": "GD",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Very good",
+          "fi": "Very good",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "15",
+        "abbreviation": {
+          "en": "GP",
+          "fi": "GP",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "Excellent",
+          "fi": "Excellent",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "16",
+        "abbreviation": {
+          "en": "VG",
+          "fi": "VG",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "TT",
+          "fi": "TT",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "17",
+        "abbreviation": {
+          "en": "TT",
+          "fi": "TT",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "TT+",
+          "fi": "TT+",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "18",
+        "abbreviation": {
+          "en": "TT+",
+          "fi": "TT+",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "HT-",
+          "fi": "HT-",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "19",
+        "abbreviation": {
+          "en": "HT-",
+          "fi": "HT-",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "HT",
+          "fi": "HT",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "20",
+        "abbreviation": {
+          "en": "HT",
+          "fi": "HT",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "HT+",
+          "fi": "HT+",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "21",
+        "abbreviation": {
+          "en": "HT+",
+          "fi": "HT+",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "ET-",
+          "fi": "ET-",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "22",
+        "abbreviation": {
+          "en": "ET-",
+          "fi": "ET-",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      },
+      {
+        "name": {
+          "en": "ET",
+          "fi": "ET",
+          "sv": null
+        },
+        "passed": true,
+        "localId": "23",
+        "abbreviation": {
+          "en": "ET",
+          "fi": "ET",
+          "sv": null
+        },
+        "numericCorrespondence": 0
+      }
+    ],
+    "sis-hyl-kh": [
+      {
+        "name": {
+          "en": "Fail",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "Fail",
+          "fi": "Hyl.",
+          "sv": "UG"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": "Godkänd"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "Pass",
+          "fi": "Hyv.",
+          "sv": "G"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Pass with Distinction",
+          "fi": "Kiittäen hyväksytty",
+          "sv": "Med beröm godkänd"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "PassD",
+          "fi": "KH",
+          "sv": "MBG"
+        },
+        "numericCorrespondence": null
+      }
+    ],
+    "sis-toinen-kotim": [
+      {
+        "name": {
+          "en": "Fail",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "Fail",
+          "fi": "Hyl.",
+          "sv": "UG"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Satisfactory",
+          "fi": "Tyydyttävät tiedot",
+          "sv": "Nöjaktiga insikter"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "SAT",
+          "fi": "TT",
+          "sv": "NI"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Good",
+          "fi": "Hyvät tiedot",
+          "sv": "Goda insikter"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "G",
+          "fi": "HT",
+          "sv": "GI"
+        },
+        "numericCorrespondence": null
+      }
+    ],
+    "sis-kandi-maine": [
+      {
+        "name": {
+          "en": "Fail",
+          "fi": "Hylätty",
+          "sv": "Underkänd"
+        },
+        "passed": false,
+        "localId": "0",
+        "abbreviation": {
+          "en": "Fail",
+          "fi": "Hyl.",
+          "sv": "UG"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Pass",
+          "fi": "Hyväksytty",
+          "sv": "Godkänd"
+        },
+        "passed": true,
+        "localId": "1",
+        "abbreviation": {
+          "en": "Pass",
+          "fi": "Hyv.",
+          "sv": "G"
+        },
+        "numericCorrespondence": null
+      },
+      {
+        "name": {
+          "en": "Pass with Honours",
+          "fi": "Erinomaisesti",
+          "sv": "Med berömliga insikter"
+        },
+        "passed": true,
+        "localId": "2",
+        "abbreviation": {
+          "en": "PassHons",
+          "fi": "ER",
+          "sv": "MBI"
+        },
+        "numericCorrespondence": null
+      }
+    ]
+  }
+}

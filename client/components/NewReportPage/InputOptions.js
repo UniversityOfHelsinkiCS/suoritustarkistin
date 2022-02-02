@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Checkbox, Select, Form } from 'semantic-ui-react'
+import { Checkbox, Select, Form, Button } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 
-import SendButton from 'Components/NewReportPage/SendButton.js'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import {
   getAllGradersAction,
@@ -16,11 +16,14 @@ import {
   getUsersCoursesAction
 } from 'Utilities/redux/coursesReducer'
 import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
+import { areValidNewRawEntries } from 'Root/utils/validators'
+import ImportStudents from './ImportStudents'
+import { isKandiExtraCourse } from 'Root/utils/common'
 
 const styles = {
   sendButton: {
     display: 'flex',
-    justifyContent: 'end',
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
   info: {
@@ -73,16 +76,49 @@ const defineCourseOptions = (courses, kandi, extra) => {
   return formatCoursesForSelection(courses.filter(({ useAsExtra }) => !useAsExtra))
 }
 
+const parseRawEntries = (rawEntries) => {
+  if (!rawEntries.data) return rawEntries
+
+  const defaultGrade = rawEntries.defaultGrade
+  return {
+    ...rawEntries,
+    data: rawEntries.data.map((row) => {
+      if (row.registration && !row.grade) {
+        return {
+          ...row,
+          grade: defaultGrade ? 'Hyv.' : null,
+          studentId: row.registration.onro,
+          registration: undefined
+        }
+      }
+      if (!row.grade && defaultGrade) {
+        return {
+          ...row,
+          grade: 'Hyv.'
+        }
+      }
+      return row
+    }),
+    sending: undefined,
+    rawData: undefined
+  }
+}
 
 export default ({ kandi, extra, parseCSV }) => {
   const dispatch = useDispatch()
   const [showingDate, setShowingDate] = useState()
+  const [importIsOpen, setImportIsOpen] = useState(false)
   const [defaultGrade, setDefaultGrade] = useState(false)
+  const [isValid, setIsValid] = useState(false)
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
   const courseOptions = defineCourseOptions(courses, kandi, extra)
+  const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
+
+
+  const sendRawEntries = async () => await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
 
   useEffect(() => {
     if (user.adminMode) {
@@ -93,6 +129,12 @@ export default ({ kandi, extra, parseCSV }) => {
       dispatch(getUsersGradersAction(user.id))
     }
   }, [user])
+
+  useEffect(() => {
+    if (areValidNewRawEntries(parseRawEntries(newRawEntries)))
+      setIsValid(true)
+    else setIsValid(false)
+  }, [newRawEntries])
 
   useEffect(() => {
     if (kandi && courses) {
@@ -140,8 +182,25 @@ export default ({ kandi, extra, parseCSV }) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, defaultGrade: newDefaultGrade }))
   }
 
+  const importRows = (rows) => {
+    const defaultCourses = kandi ? getKandiExtras() : newRawEntries.defaultCourse
+    const rowsAsCSV = Object.keys(rows).map((studentNumner) => `${studentNumner};${rows[studentNumner].grade}`)
+    const data = parseCSV(rowsAsCSV.join('\n'), defaultCourses)
+    dispatch(
+      setNewRawEntriesAction({
+        ...newRawEntries,
+        data,
+        rawData: rowsAsCSV.join('\n')
+      })
+    )
+  }
+
   return (
     <>
+      <ImportStudents
+        isOpen={importIsOpen}
+        setIsOpen={setImportIsOpen}
+        importRows={importRows} />
       <Form style={styles.form}>
         <Form.Group widths='equal'>
           <Form.Field
@@ -192,7 +251,25 @@ export default ({ kandi, extra, parseCSV }) => {
         </Form.Group>
       </Form>
       <div style={styles.sendButton}>
-        <SendButton />
+        {!extra
+          ? <Button
+            disabled={!newRawEntries.defaultCourse}
+            color="blue"
+            onClick={() => setImportIsOpen(true)}
+          >
+            Import students
+          </Button>
+          :
+          <span /> // Add empty element to align send button to right with justify-content space-between
+        }
+        <Button
+          disabled={newRawEntries.sending || !newRawEntries.data || !isValid}
+          data-cy="confirm-sending-button"
+          color="green"
+          onClick={sendRawEntries}
+        >
+          Create report
+        </Button>
       </div>
       <div style={styles.info}>
         Remember to report completions for the correct academic year (1.8. – 31.7.)

@@ -46,7 +46,7 @@ describe('Basic functions work', function () {
   it('Grader can create reports', () => {
     cy.login('grader').visit('')
 
-    cy.get('[data-cy=create-report-button]').should('be.disabled')
+    cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
     cy.get('[data-cy=paste-field]').type(
       '010000003;2;5;fi\n011000002;3;2,0\n011100009;4\n011110002;5;;fi'
     )
@@ -65,7 +65,7 @@ describe('Basic functions work', function () {
       .contains('E2E')
       .click()
 
-    cy.get('[data-cy=create-report-button]')
+    cy.get('[data-cy=confirm-sending-button]')
       .should('not.be.disabled')
       .click()
 

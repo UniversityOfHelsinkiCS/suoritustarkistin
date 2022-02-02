@@ -203,10 +203,13 @@ export default withRouter(({ mooc, match }) => {
   const batchedReports = Object.values(_.groupBy(rows, 'batchId'))
 
   const panels = batchedReports
+    .filter((report) => {
+      const notSentWithValidEntries = report.every((row) => row.entry && !row.entry.missingEnrolment && !row.entry.sent)
+      return !notSentWithValidEntries
+    })
     .sort((a, b) => new Date(b[0].updatedAt) - new Date(a[0].updatedAt))
     .map((report, index) => {
       const reportWithEntries = report
-        .filter((e) => e && e.entry)
         .sort((a, b) => {
           if (!a.entry.missingEnrolment && !b.entry.missingEnrolment)
             return a.entry.type.localeCompare(b.entry.type)

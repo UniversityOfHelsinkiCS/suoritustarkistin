@@ -52,6 +52,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
   const close = () => {
     setGrades({})
     setIsOpen(false)
+    setConfirm(false)
   }
 
   const openAccordion = (key) => setOpenAccordions(new Set(openAccordions.add(key)))

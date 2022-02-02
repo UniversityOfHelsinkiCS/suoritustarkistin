@@ -18,6 +18,7 @@ import { parseCSV, parseKandiCSV, parseExtraCSV } from 'Utilities/inputParser'
 export default () => {
   const dispatch = useDispatch()
   const [displayBscUserGuide, setDisplayBscUserGuide] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(0)
   const courses = useSelector((state) => state.courses.data)
   const hasKandi = courses.some((course) => isThesisCourse(course))
   const hasErillisKirjaus = courses.some((course) => isRegularExtraCourse(course))
@@ -101,7 +102,9 @@ export default () => {
     <Message />
     <Tab data-cy="input-form"
       panes={panes}
+      activeIndex={activeIndex}
       onTabChange={(_, { activeIndex }) => {
+        setActiveIndex(activeIndex)
         dispatch(resetNewRawEntriesAction())
         if (activeIndex === 2 && hasKandi) setDisplayBscUserGuide(true)
         else setDisplayBscUserGuide(false)

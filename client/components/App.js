@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { Header } from 'semantic-ui-react'
+import * as Sentry from "@sentry/react"
 
 import NavBar from 'Components/NavBar'
 import Router from 'Components/Router'
@@ -11,18 +12,22 @@ import { loginAction, pingAction } from 'Utilities/redux/userReducer'
 import { getStatus } from 'Utilities/redux/systemStatusReducer'
 
 
-export default withRouter(({history}) => {
+export default withRouter(({ history }) => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
   const systemStatus = useSelector((state) => state.systemStatus)
   const [redirected, setRedirected] = useState(false)
 
   useEffect(() => {
-    if(user && user.data && user.data.isAdmin && !redirected && process.env.NODE_ENV === 'production' && history.location.pathname === '/suoritustarkistin') {
+    if (user && user.data && user.data.isAdmin && !redirected && process.env.NODE_ENV === 'production' && history.location.pathname === '/suoritustarkistin') {
       setRedirected(true)
       history.push('/reports')
     }
   }, [redirected, user, history])
+
+  useEffect(() => {
+    Sentry.setUser({ ...user.data })
+  }, [user])
 
   useEffect(() => {
     dispatch(getStatus())

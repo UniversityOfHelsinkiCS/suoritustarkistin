@@ -25,6 +25,6 @@ RUN SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
     echo "${SENTRY_RELEASE}" > /SENTRY_RELEASE && \
     SENTRY_RELEASE="${SENTRY_RELEASE}" npm run build
 
-RUN ./sentry-release.sh
+# RUN ./sentry-release.sh
 
 CMD ["npm", "start"]

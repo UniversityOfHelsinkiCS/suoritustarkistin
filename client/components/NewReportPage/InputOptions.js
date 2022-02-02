@@ -18,6 +18,7 @@ import {
 import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
 import { areValidNewRawEntries } from 'Root/utils/validators'
 import ImportStudents from './ImportStudents'
+import { isKandiExtraCourse } from 'Root/utils/common'
 
 const styles = {
   sendButton: {
@@ -114,6 +115,8 @@ export default ({ kandi, extra, parseCSV }) => {
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
   const courseOptions = defineCourseOptions(courses, kandi, extra)
+  const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
+
 
   const sendRawEntries = async () => await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
 
@@ -180,8 +183,9 @@ export default ({ kandi, extra, parseCSV }) => {
   }
 
   const importRows = (rows) => {
+    const defaultCourses = kandi ? getKandiExtras() : newRawEntries.defaultCourse
     const rowsAsCSV = Object.keys(rows).map((studentNumner) => `${studentNumner};${rows[studentNumner].grade}`)
-    const data = parseCSV(rowsAsCSV.join('\n'), newRawEntries.defaultCourse)
+    const data = parseCSV(rowsAsCSV.join('\n'), defaultCourses)
     dispatch(
       setNewRawEntriesAction({
         ...newRawEntries,

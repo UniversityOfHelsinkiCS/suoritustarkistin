@@ -8,7 +8,7 @@ const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { EOAI_CODES } = require('@root/utils/validators')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 
-const processEoaiEntries = async ({ grader }) => {
+const processEoaiEntries = async ({ grader }, sendToSisu) => {
   try {
     const courses = await db.courses.findAll({ 
       where: {
@@ -122,7 +122,7 @@ const processEoaiEntries = async ({ grader }) => {
     if (!matches) matches = []
     logger.info(`${EOAI_CODES[0]}: Found ${matches.length} new completions.`)
 
-    const result = await automatedAddToDb(matches, courses[0], batchId)
+    const result = await automatedAddToDb(matches, courses[0], batchId, sendToSisu)
     return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)

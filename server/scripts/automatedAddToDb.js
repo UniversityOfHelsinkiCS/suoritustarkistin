@@ -2,8 +2,9 @@ const db = require('../models/index')
 const logger = require('@utils/logger')
 const { processEntries } = require('./processEntries')
 const { sendSentryMessage } = require('@utils/sentry')
+const attainmentsToSisu = require('../utils/sendToSisu')
 
-const automatedAddToDb = async (matches, course, batchId) => {
+const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) => {
   const transaction = await db.sequelize.transaction()
 
   if (!matches.length) {
@@ -41,9 +42,14 @@ const automatedAddToDb = async (matches, course, batchId) => {
       return { message: "no new entries" }
     }
 
-    await db.entries.bulkCreate(success, { transaction })
+    const entriesToSend = await db.entries.bulkCreate(success, { transaction, returning: true })
     logger.info({ message: `${success.length} new entries created`, amount: success.length })
     await transaction.commit()
+
+    if (sendToSisu) {
+      const [status, message] = await attainmentsToSisu('entries', { user: {}, body: { entryIds: entriesToSend.map(({ id }) => id) } })
+      if (status > 200) sendSentryMessage(`Sending automatedy entries to Sisu failed with message: ${message}`)
+    }
     return { message: "success" }
   } catch (error) {
     await transaction.rollback()

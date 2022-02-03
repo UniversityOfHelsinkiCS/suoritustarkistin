@@ -34,7 +34,7 @@ const processMoocEntries = async ({
   job,
   course,
   grader
-}) => {
+}, sendToSisu = false) => {
   try {
     const registrations = await getRegistrations(course.courseCode)
     const completions = await getCompletions(job.slug || course.courseCode)
@@ -64,7 +64,7 @@ const processMoocEntries = async ({
         const registration = registrations.find(
           (registration) =>
             registration.email.toLowerCase() ===
-              completion.email.toLowerCase() ||
+            completion.email.toLowerCase() ||
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
 
@@ -109,7 +109,7 @@ const processMoocEntries = async ({
 
     if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
-    const result = await automatedAddToDb(matches, course, batchId)
+    const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
     return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)
@@ -117,6 +117,6 @@ const processMoocEntries = async ({
   }
 }
 
-module.exports = { 
+module.exports = {
   processMoocEntries
 }

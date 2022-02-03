@@ -18,6 +18,8 @@ export default ({ idsToSend }) => {
 
   const getConfirmMessage = () => `Are you sure? Sending ${entries.length} ${extraEntries.length ? `+ ${extraEntries.length}` : ''} completion(s)`
 
+  if (!entries.length && !extraEntries.length) return null
+
   return (
     <Popup
       trigger={

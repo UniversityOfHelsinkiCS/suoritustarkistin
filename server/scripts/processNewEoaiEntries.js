@@ -9,7 +9,7 @@ const { automatedAddToDb } = require('./automatedAddToDb')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 
 
-const processNewEoaiEntries = async ({ course, grader }) => {
+const processNewEoaiEntries = async ({ course, grader }, sendToSisu) => {
   try {
     const credits = await db.credits.findAll({
       where: {
@@ -123,7 +123,7 @@ const processNewEoaiEntries = async ({ course, grader }) => {
     if (!matches) matches = []
     logger.info(`${NEW_EOAI_CODE}: Found ${matches.length} new completions.`)
 
-    const result = await automatedAddToDb(matches, course, batchId)
+    const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
     return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)

@@ -13,7 +13,7 @@ const processBaiAdvancedEntries = async ({
   job,
   course,
   grader
-}) => {
+}, sendToSisu) => {
   try {
     const intermediateCourse = await db.courses.findOne({
       where: {
@@ -148,7 +148,7 @@ const processBaiAdvancedEntries = async ({
     if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
 
-    const result = await automatedAddToDb(matches, course, batchId)
+    const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
     return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)

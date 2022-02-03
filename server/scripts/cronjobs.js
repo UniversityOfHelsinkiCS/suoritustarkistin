@@ -38,27 +38,26 @@ const initializeCronJobs = async () => {
     const createdJob = cron.schedule(job.schedule, async () => {
       const timestamp = new Date(Date.now())
       logger.info(
-        `${timestamp.toLocaleString()} Processing new ${course.name} (${
-          course.courseCode
+        `${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode
         }) completions.`
       )
 
       let result = ""
 
       if (NEW_EOAI_CODE === course.courseCode) {
-        result = await processNewEoaiEntries({ course, grader })  
+        result = await processNewEoaiEntries({ course, grader }, true)
       } else if (NEW_BAI_INTERMEDIATE_CODE === course.courseCode) {
-        result = await processNewBaiIntermediateEntries({ job, course, grader })
+        result = await processNewBaiIntermediateEntries({ job, course, grader }, true)
       } else if (NEW_BAI_ADVANCED_CODE === course.courseCode) {
-        result = await processNewBaiAdvancedEntries({ job, course, grader })
+        result = await processNewBaiAdvancedEntries({ job, course, grader }, true)
       } else if (EOAI_CODES.includes(course.courseCode)) {
-        result = await processEoaiEntries({ grader })
+        result = await processEoaiEntries({ grader }, true)
       } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
-        result = await processBaiIntermediateEntries({ job, course, grader })
+        result = await processBaiIntermediateEntries({ job, course, grader }, true)
       } else if (BAI_ADVANCED_CODE === course.courseCode) {
-        result = await processBaiAdvancedEntries({ job, course, grader })
+        result = await processBaiAdvancedEntries({ job, course, grader }, true)
       } else {
-        result = await processMoocEntries({ job, course, grader })
+        result = await processMoocEntries({ job, course, grader }, true)
       }
       if (result.message === "no new entries" || result.message === "success") {
         logger.info({ message: result.message })
@@ -70,7 +69,7 @@ const initializeCronJobs = async () => {
   }, {})
 
   cronjobs["enrollment-limbo"] = cron.schedule('0 2 * * *', refreshEntriesCron)
-  cronjobs["delete-unsent-entries"] = cron.schedule('50 * * * *', deleteUnsentEntries)
+  cronjobs["delete-unsent-entries"] = cron.schedule('0 0 * * *', deleteUnsentEntries)
 }
 
 const activateJob = async (id) => {
@@ -83,15 +82,14 @@ const activateJob = async (id) => {
   const createdJob = cron.schedule(job.schedule, async () => {
     const timestamp = new Date(Date.now())
     logger.info(
-      `${timestamp.toLocaleString()} Processing new ${course.name} (${
-        course.courseCode
+      `${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode
       }) completions.`
     )
 
     let result = ""
 
     if (NEW_EOAI_CODE === course.courseCode) {
-      result = await processNewEoaiEntries({ grader })  
+      result = await processNewEoaiEntries({ grader })
     } else if (NEW_BAI_INTERMEDIATE_CODE === course.courseCode) {
       result = await processNewBaiIntermediateEntries({ job, course, grader })
     } else if (NEW_BAI_ADVANCED_CODE === course.courseCode) {

@@ -112,17 +112,19 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {data.map((r) => {
-                      const title = getTitle(r)
-                      return <Accordion
-                        title={title}
-                        rows={r.enrollments}
-                        key={title}
-                        isOpen={openAccordions.has(title)}
-                        close={closeAccordion}
-                        open={openAccordion} />
-                    }
-                    )}
+                    {data
+                      .sort((a, b) => moment(b.activityPeriod.startDate).diff(moment(a.activityPeriod.startDate)))
+                      .map((r) => {
+                        const title = getTitle(r)
+                        return <Accordion
+                          title={title}
+                          rows={r.enrollments}
+                          key={title}
+                          isOpen={openAccordions.has(title)}
+                          close={closeAccordion}
+                          open={openAccordion} />
+                      }
+                      )}
                   </Table.Body>
                 </Table>
               </>

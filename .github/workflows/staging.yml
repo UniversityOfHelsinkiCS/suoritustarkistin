@@ -18,19 +18,19 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-  build-and-test:
-    runs-on: ubuntu-20.04
-    needs: lint
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # build-and-test:
+  #   runs-on: ubuntu-20.04
+  #   needs: lint
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Test
-        run: npm run test
+  #     - name: Test
+  #       run: npm run test
 
   publish:
     runs-on: ubuntu-20.04
-    needs: [lint, build-and-test]
+    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2

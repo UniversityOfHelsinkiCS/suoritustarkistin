@@ -50,6 +50,7 @@ jobs:
           build-args: |
             BASE_PATH=/staging/suoritustarkistin/
             NODE_ENV=staging
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_TOKEN }}
 
   report_success:
     name: 'Report deployment success to Suotar-channel'

@@ -8,6 +8,8 @@ ARG BASE_PATH
 ENV BASE_PATH=$BASE_PATH
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 
 RUN echo "${NODE_ENV}"
 
@@ -25,6 +27,6 @@ RUN SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
     echo "${SENTRY_RELEASE}" > /SENTRY_RELEASE && \
     SENTRY_RELEASE="${SENTRY_RELEASE}" npm run build
 
-# RUN ./sentry-release.sh
+RUN ./sentry-release.sh
 
 CMD ["npm", "start"]

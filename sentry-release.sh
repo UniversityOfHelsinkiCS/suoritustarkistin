@@ -6,7 +6,7 @@ export SENTRY_RELEASE=$(cat /SENTRY_RELEASE)
 export BUNDLE_PATH='~/suoritustarkistin/main.js'
 
 
-if [[ "$NODE_ENV" )) "staging" ]]; then
+if [[ "$NODE_ENV" == "staging" ]]; then
   BUNDLE_PATH='~/staging/suoritustarkistin/main.js'
 fi
 

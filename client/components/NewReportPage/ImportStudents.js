@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Icon, Modal, Table, Segment, Button, Message, Input } from 'semantic-ui-react'
+import { Icon, Modal, Table, Segment, Button, Message, Input, Popup } from 'semantic-ui-react'
 import moment from 'moment'
 import { importStudentsAction } from '../../utils/redux/newRawEntriesReducer'
 
@@ -9,7 +9,7 @@ const styles = {
     paddingLeft: '3rem'
   },
   input: {
-    width: '35px'
+    width: '3.5rem'
   },
   table: {
     maxHeight: '600px',
@@ -19,13 +19,44 @@ const styles = {
     width: '50%',
     marginLeft: 'auto',
     marginRight: 'auto'
+  },
+  dateHeader: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center'
   }
 }
 
+const Accordion = ({ rows, title, get, set, date }) => {
+  const [open, setOpen] = useState(false)
+  return <>
+    <Table.Row>
+      <Table.Cell />
+      <Table.Cell>
+        <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
+          <Icon name={`triangle ${open ? 'down' : 'right'}`} />
+          {title}
+        </span>
+      </Table.Cell>
+    </Table.Row>
+    {open
+      ? <>{rows.map(({ person, id }) => <Table.Row key={id}>
+        <Table.Cell>
+          <Input
+            size="mini"
+            style={styles.input}
+            key={`${person.studentNumber}${id}`}
+            value={get(person.studentNumber)}
+            onChange={(_, data) => set(data, person, date)} />
+        </Table.Cell>
+        <Table.Cell style={styles.tdPadded}>{`${person.firstNames} ${person.lastName} (${person.studentNumber})`}</Table.Cell>
+      </Table.Row>)}
+      </> : null}
+  </>
+}
 
 export default ({ isOpen, setIsOpen, importRows }) => {
   const dispatch = useDispatch()
-  const [openAccordions, setOpenAccordions] = useState(new Set())
   const [grades, setGrades] = useState({})
   const [confirm, setConfirm] = useState(false)
   const { defaultCourse } = useSelector((state) => state.newRawEntries)
@@ -38,9 +69,9 @@ export default ({ isOpen, setIsOpen, importRows }) => {
     }
   }, [defaultCourse])
 
-  const set = ({ value: grade }, person) => setGrades({
+  const set = ({ value: grade }, person, date) => setGrades({
     ...grades,
-    [person.studentNumber]: { name: `${person.firstNames} ${person.lastName}`, grade }
+    [person.studentNumber]: { name: `${person.firstNames} ${person.lastName}`, grade, date }
   })
 
 
@@ -54,36 +85,6 @@ export default ({ isOpen, setIsOpen, importRows }) => {
     setIsOpen(false)
     setConfirm(false)
   }
-
-  const openAccordion = (key) => setOpenAccordions(new Set(openAccordions.add(key)))
-  const closeAccordion = (key) => {
-    if (openAccordions.delete(key))
-      setOpenAccordions(new Set(openAccordions))
-  }
-
-  const Accordion = ({ rows, title, open, close, isOpen }) => <>
-    <Table.Row>
-      <Table.Cell />
-      <Table.Cell>
-        <span onClick={() => isOpen ? close(title) : open(title)} style={{ cursor: 'pointer' }}>
-          <Icon name={`triangle ${isOpen ? 'down' : 'right'}`} />
-          {title}
-        </span>
-      </Table.Cell>
-    </Table.Row>
-    {isOpen
-      ? <>{rows.map(({ person, id }) => <Table.Row key={id}>
-        <Table.Cell>
-          <Input
-            size="mini"
-            style={styles.input}
-            value={get(person.studentNumber)}
-            onChange={(_, data) => set(data, person)} />
-        </Table.Cell>
-        <Table.Cell style={styles.tdPadded}>{`${person.firstNames} ${person.lastName} (${person.studentNumber})`}</Table.Cell>
-      </Table.Row>)}
-      </> : null}
-  </>
 
   return <Modal
     open={isOpen}
@@ -119,12 +120,16 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                         return <Accordion
                           title={title}
                           rows={r.enrollments}
+                          date={
+                            moment(r.activityPeriod.startDate).isSame(moment(r.activityPeriod.endDate).subtract(1, 'day'), 'days')
+                              ? moment(r.activityPeriod.startDate).format('D.M.YYYY')
+                              : null
+                          }
                           key={title}
-                          isOpen={openAccordions.has(title)}
-                          close={closeAccordion}
-                          open={openAccordion} />
-                      }
-                      )}
+                          get={get}
+                          set={set} />
+                      })
+                    }
                   </Table.Body>
                 </Table>
               </>
@@ -165,14 +170,20 @@ const SummaryTable = ({ rows }) => <Table style={styles.confirmTable} compact ce
     <Table.Row>
       <Table.HeaderCell>Student</Table.HeaderCell>
       <Table.HeaderCell>Grade</Table.HeaderCell>
+      <Table.HeaderCell style={styles.dateHeader}>Date
+        <Popup
+          content={"Completion date is added automatically if importing students from an exam"}
+          trigger={<Icon name="help" size="small" circular />} />
+      </Table.HeaderCell>
     </Table.Row>
   </Table.Header>
   <Table.Body>
     {Object.keys(rows).map((key) => {
-      const { name, grade } = rows[key]
+      const { name, grade, date } = rows[key]
       return <Table.Row key={name}>
         <Table.Cell>{`${name} (${key})`}</Table.Cell>
         <Table.Cell>{grade}</Table.Cell>
+        <Table.Cell>{date}</Table.Cell>
       </Table.Row>
     }
     )}

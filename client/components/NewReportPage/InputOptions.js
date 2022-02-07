@@ -184,7 +184,11 @@ export default ({ kandi, extra, parseCSV }) => {
 
   const importRows = (rows) => {
     const defaultCourses = kandi ? getKandiExtras() : newRawEntries.defaultCourse
-    const rowsAsCSV = Object.keys(rows).map((studentNumner) => `${studentNumner};${rows[studentNumner].grade}`)
+    const rowsAsCSV = Object.keys(rows).map((studentNumner) => {
+      const { grade, date } = rows[studentNumner]
+      if (date) return `${studentNumner};${grade};;;${date}`
+      return `${studentNumner};${grade}`
+    })
     const data = parseCSV(rowsAsCSV.join('\n'), defaultCourses)
     dispatch(
       setNewRawEntriesAction({

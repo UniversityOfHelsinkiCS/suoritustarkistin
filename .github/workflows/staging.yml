@@ -30,7 +30,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-20.04
-    needs: [lint]
+    needs: [lint, build-and-test]
     steps:
       - name: Checkout
         uses: actions/checkout@v2

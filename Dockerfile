@@ -25,6 +25,9 @@ RUN SENTRY_RELEASE=$(sentry-cli releases propose-version) && \
     echo "${SENTRY_RELEASE}" > /SENTRY_RELEASE && \
     SENTRY_RELEASE="${SENTRY_RELEASE}" npm run build
 
-# RUN ./sentry-release.sh
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+  export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) && \
+  export NODE_ENV=$NODE_ENV && \
+  ./sentry-release.sh
 
 CMD ["npm", "start"]

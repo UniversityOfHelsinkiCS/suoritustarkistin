@@ -15,7 +15,8 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
   Sentry.init({
     dsn: "https://86bd3a31dbb84a518b581f10cce03b2e@sentry.cs.helsinki.fi/3",
     environment: process.env.NODE_ENV,
-    release: process.env.SENTRY_RELEASE
+    release: process.env.SENTRY_RELEASE,
+    normalizeDepth: 10
   })
 
 const refresh = () =>

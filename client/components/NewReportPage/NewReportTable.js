@@ -39,6 +39,11 @@ export default withRouter(({ rows, batchId, history }) => {
     }
   }, [pending, error, sent])
 
+  useEffect(() => {
+    window.onbeforeunload = () => '' // Display confirmation alert when tab is closed
+    return () => window.onbeforeunload = null
+  })
+
   const entriesToSisu = rows
     .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
     .reduce((acc, { entry }) => {

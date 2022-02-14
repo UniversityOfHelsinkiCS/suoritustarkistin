@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Icon, Modal, Table, Segment, Button, Message, Input, Popup } from 'semantic-ui-react'
+import { Icon, Modal, Table, Segment, Button, Message, Dropdown, Popup } from 'semantic-ui-react'
 import moment from 'moment'
 import { importStudentsAction } from '../../utils/redux/newRawEntriesReducer'
 
@@ -12,6 +12,7 @@ const styles = {
     width: '3.5rem'
   },
   table: {
+    minHeight: '420px',
     maxHeight: '600px',
     overflow: 'auto'
   },
@@ -24,14 +25,62 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center'
+  },
+  dropdown: {
+    marginRight: '1rem'
   }
 }
 
-const Accordion = ({ rows, title, get, set, date }) => {
+const GRADES = {
+  "sis-hyl-hyv": [
+    {
+      key: 'hyl.',
+      text: 'Failed',
+      value: 'hyl.'
+    }, {
+      key: 'hyv.',
+      text: 'Pass',
+      value: 'hyv.'
+    }
+  ],
+  "sis-0-5": [
+    {
+      key: 'hyl.',
+      text: 'Failed',
+      value: 'hyl.'
+    },
+    {
+      key: '1',
+      text: '1',
+      value: '1'
+    },
+    {
+      key: '2',
+      text: '2',
+      value: '2'
+    },
+    {
+      key: '3',
+      text: '3',
+      value: '3'
+    },
+    {
+      key: '4',
+      text: '4',
+      value: '4'
+    },
+    {
+      key: '5',
+      text: '5',
+      value: '5'
+    }
+  ]
+}
+
+const Accordion = ({ rows, title, get, set, date, gradeScale }) => {
   const [open, setOpen] = useState(false)
   return <>
     <Table.Row>
-      <Table.Cell />
       <Table.Cell>
         <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
           <Icon name={`triangle ${open ? 'down' : 'right'}`} />
@@ -41,15 +90,18 @@ const Accordion = ({ rows, title, get, set, date }) => {
     </Table.Row>
     {open
       ? <>{rows.map(({ person, id }) => <Table.Row key={id}>
-        <Table.Cell>
-          <Input
-            size="mini"
-            style={styles.input}
-            key={`${person.studentNumber}${id}`}
+        <Table.Cell style={styles.tdPadded}>
+          <Dropdown
+            placeholder='Grade'
+            options={GRADES[gradeScale]}
+            style={styles.dropdown}
             value={get(person.studentNumber)}
-            onChange={(_, data) => set(data, person, date)} />
+            onChange={(_, data) => set(data, person, date)}
+            selection
+            compact
+            clearable />
+          <span>{`${person.firstNames} ${person.lastName} (${person.studentNumber})`}</span>
         </Table.Cell>
-        <Table.Cell style={styles.tdPadded}>{`${person.firstNames} ${person.lastName} (${person.studentNumber})`}</Table.Cell>
       </Table.Row>)}
       </> : null}
   </>
@@ -69,10 +121,18 @@ export default ({ isOpen, setIsOpen, importRows }) => {
     }
   }, [defaultCourse])
 
-  const set = ({ value: grade }, person, date) => setGrades({
-    ...grades,
-    [person.studentNumber]: { name: `${person.firstNames} ${person.lastName}`, grade, date }
-  })
+  const set = ({ value: grade }, person, date) => {
+    if (!grade) {
+      const newGrades = Object.assign({}, grades)
+      delete newGrades[person.studentNumber]
+      setGrades(newGrades)
+    }
+    else
+      setGrades({
+        ...grades,
+        [person.studentNumber]: { name: `${person.firstNames} ${person.lastName}`, grade: grade, date }
+      })
+  }
 
 
   const get = (studentNumber) => {
@@ -108,7 +168,6 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                 <Table compact celled>
                   <Table.Header>
                     <Table.Row>
-                      <Table.HeaderCell>Grade</Table.HeaderCell>
                       <Table.HeaderCell>Student</Table.HeaderCell>
                     </Table.Row>
                   </Table.Header>
@@ -120,6 +179,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                         return <Accordion
                           title={title}
                           rows={r.enrollments}
+                          gradeScale={r.gradeScaleId}
                           date={
                             moment(r.activityPeriod.startDate).isSame(moment(r.activityPeriod.endDate).subtract(1, 'day'), 'days')
                               ? moment(r.activityPeriod.startDate).format('D.M.YYYY')

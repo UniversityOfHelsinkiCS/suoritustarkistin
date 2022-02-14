@@ -89,20 +89,23 @@ const Accordion = ({ rows, title, get, set, date, gradeScale }) => {
       </Table.Cell>
     </Table.Row>
     {open
-      ? <>{rows.map(({ person, id }) => <Table.Row key={id}>
-        <Table.Cell style={styles.tdPadded}>
-          <Dropdown
-            placeholder='Grade'
-            options={GRADES[gradeScale]}
-            style={styles.dropdown}
-            value={get(person.studentNumber)}
-            onChange={(_, data) => set(data, person, date)}
-            selection
-            compact
-            clearable />
-          <span>{`${person.firstNames} ${person.lastName} (${person.studentNumber})`}</span>
-        </Table.Cell>
-      </Table.Row>)}
+      ? <>{rows
+        .sort((a, b) => `${a.person.lastName}, ${a.person.firstNames} (${a.person.studentNumber})`.
+          localeCompare(`${b.person.lastName}, ${b.person.firstNames} (${b.person.studentNumber})`))
+        .map(({ person, id }) => <Table.Row key={id}>
+          <Table.Cell style={styles.tdPadded}>
+            <Dropdown
+              placeholder='Grade'
+              options={GRADES[gradeScale]}
+              style={styles.dropdown}
+              value={get(person.studentNumber)}
+              onChange={(_, data) => set(data, person, date)}
+              selection
+              compact
+              clearable />
+            <span>{`${person.lastName}, ${person.firstNames} (${person.studentNumber})`}</span>
+          </Table.Cell>
+        </Table.Row>)}
       </> : null}
   </>
 }
@@ -130,7 +133,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
     else
       setGrades({
         ...grades,
-        [person.studentNumber]: { name: `${person.firstNames} ${person.lastName}`, grade: grade, date }
+        [person.studentNumber]: { name: `${person.lastName}, ${person.firstNames}`, grade: grade, date }
       })
   }
 

@@ -35,7 +35,8 @@ const {
 const {
   addRawEntries,
   importStudents,
-  notifyMissingEnrollment
+  notifyMissingEnrollment,
+  importStudentsAttainments
 } = require('@controllers/rawEntryController')
 const {
   getAllSisReports,
@@ -115,6 +116,7 @@ router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
 router.delete('/sis_reports/batch/:batchId', checkAdmin, deleteSisBatch)
 router.post('/sis_raw_entries', addRawEntries)
 router.get('/import-students/:code', importStudents)
+router.post('/import-students/attainments', importStudentsAttainments)
 router.post('/entries_to_sis', sendToSis)
 router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
 router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)

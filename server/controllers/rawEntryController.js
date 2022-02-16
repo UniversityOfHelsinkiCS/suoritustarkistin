@@ -1,7 +1,7 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
-const { getCourseUnitEnrolments } = require('../services/importer')
+const { getCourseUnitEnrolments, getEarlierAttainments } = require('../services/importer')
 const { missingEnrolmentReport } = require('../utils/emailFactory')
 const sendEmail = require('../utils/sendEmail')
 
@@ -67,6 +67,12 @@ const importStudents = async (req, res) => {
   return res.send(data)
 }
 
+const importStudentsAttainments = async (req, res) => {
+  const data = req.body
+  const respData = await getEarlierAttainments(data)
+  return res.send(respData)
+}
+
 const notifyMissingEnrollment = async (req, res) => {
   const { batchId } = req.params
   const rawEntries = await db.raw_entries.getByBatch(batchId)
@@ -90,5 +96,6 @@ const notifyMissingEnrollment = async (req, res) => {
 module.exports = {
   addRawEntries,
   importStudents,
-  notifyMissingEnrollment
+  notifyMissingEnrollment,
+  importStudentsAttainments
 }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Icon, Modal, Table, Segment, Button, Message, Dropdown, Popup } from 'semantic-ui-react'
+import { Icon, Modal, Table, Segment, Button, Message, Dropdown, Popup, Placeholder, Label } from 'semantic-ui-react'
 import moment from 'moment'
-import { importStudentsAction } from '../../utils/redux/newRawEntriesReducer'
+import { importStudentsAction, importStudentsAttainments } from '../../utils/redux/newRawEntriesReducer'
 
 const styles = {
   tdPadded: {
@@ -28,6 +28,9 @@ const styles = {
   },
   dropdown: {
     marginRight: '1rem'
+  },
+  label: {
+    margin: '0.125rem'
   }
 }
 
@@ -77,16 +80,42 @@ const GRADES = {
   ]
 }
 
-const Accordion = ({ rows, title, get, set, date, gradeScale }) => {
+const renderAttainments = ({ attainments: attainmentsForStudent }) => {
+  const earlierAttainments = attainmentsForStudent.map(({ gradeScaleId, state, grade, attainmentDate, personId }) => {
+    const getGradeString = () => {
+      if (state === 'FAILED') return 'Failed'
+      if (gradeScaleId === 'sis-hyl-hyv') return grade.name.en
+      return grade.numericCorrespondence
+    }
+    const date = moment(attainmentDate).format('DD.MM.YYYY')
+    const gradeString = getGradeString()
+    return <Label key={`${personId}${gradeString}${date}`} color={state === 'FAILED' ? 'red' : 'green'} style={styles.label}>
+      {gradeString}, {date}
+    </Label>
+  })
+
+  // Remove duplicates caused by AssesmentItemAttainment --> CourseUnitAttainment
+  return [...new Map(earlierAttainments.map(({ key, ...item }) => [key, { ...item, key }])).values()]
+}
+
+const Accordion = ({ rows, title, get, set, date, gradeScale, fetchAttainments, allAttainments }) => {
+  const openAccordion = () => {
+    if (!open)
+      fetchAttainments(rows.map(({ person }) => person.studentNumber))
+    setOpen(!open)
+  }
+
   const [open, setOpen] = useState(false)
+
   return <>
     <Table.Row>
       <Table.Cell>
-        <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
+        <span onClick={openAccordion} style={{ cursor: 'pointer' }}>
           <Icon name={`triangle ${open ? 'down' : 'right'}`} />
           {title}
         </span>
       </Table.Cell>
+      <Table.Cell />
     </Table.Row>
     {open
       ? <>{rows
@@ -105,6 +134,19 @@ const Accordion = ({ rows, title, get, set, date, gradeScale }) => {
               clearable />
             <span>{`${person.lastName}, ${person.firstNames} (${person.studentNumber})`}</span>
           </Table.Cell>
+          <Table.Cell>
+            {
+              allAttainments.pending
+                ? <Placeholder>
+                  <Placeholder.Line length="very long" />
+                  <Placeholder.Line length="long" />
+                </Placeholder>
+                : renderAttainments(
+                  allAttainments.data
+                    ? allAttainments.data.find((a) => a.studentNumber === person.studentNumber) || { attainments: [] }
+                    : { attainments: [] })
+            }
+          </Table.Cell>
         </Table.Row>)}
       </> : null}
   </>
@@ -116,6 +158,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
   const [confirm, setConfirm] = useState(false)
   const { defaultCourse } = useSelector((state) => state.newRawEntries)
   const { data, pending, error } = useSelector((state) => state.newRawEntries.importStudents)
+  const { ...attainments } = useSelector((state) => state.newRawEntries.importStudentsAttainments)
 
   useEffect(() => {
     if (defaultCourse) {
@@ -123,6 +166,10 @@ export default ({ isOpen, setIsOpen, importRows }) => {
       setGrades({})
     }
   }, [defaultCourse])
+
+  const fetchAttainments = (students) => dispatch(importStudentsAttainments(
+    students.map((studentNumber) => ({ studentNumber, courseCode: defaultCourse }))
+  ))
 
   const set = ({ value: grade }, person, date) => {
     if (!grade) {
@@ -171,7 +218,8 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                 <Table compact celled>
                   <Table.Header>
                     <Table.Row>
-                      <Table.HeaderCell>Student</Table.HeaderCell>
+                      <Table.HeaderCell>Students</Table.HeaderCell>
+                      <Table.HeaderCell>Earlier completions</Table.HeaderCell>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
@@ -189,6 +237,8 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                               : null
                           }
                           key={title}
+                          allAttainments={attainments}
+                          fetchAttainments={fetchAttainments}
                           get={get}
                           set={set} />
                       })

@@ -13,6 +13,10 @@ const initialState = {
   entriesToConfirm: {},
   importStudents: {
     data: []
+  },
+  importStudentsAttainments: {
+    data: null,
+    pending: true
   }
 }
 
@@ -32,6 +36,12 @@ export const importStudentsAction = (courseCode) => {
   const route = `/import-students/${courseCode}`
   const prefix = 'IMPORT_STUDENTS'
   return callBuilder(route, prefix, 'get')
+}
+
+export const importStudentsAttainments = (data) => {
+  const route = '/import-students/attainments'
+  const prefix = 'IMPORT_STUDENTS_ATTAINMENTS'
+  return callBuilder(route, prefix, 'post', data)
 }
 
 export const sendNewRawEntriesAction = (rawEntries) => {
@@ -97,6 +107,34 @@ export default (state = initialState, action) => {
         ...state,
         importStudents: {
           ...state.importStudents,
+          data: action.response,
+          pending: false,
+          error: false
+        }
+      }
+    case 'IMPORT_STUDENTS_ATTAINMENTS_ATTEMPT':
+      return {
+        ...state,
+        importStudentsAttainments: {
+          data: null,
+          pending: true,
+          error: false
+        }
+      }
+    case 'IMPORT_STUDENTS_ATTAINMENTS_FAILURE':
+      return {
+        ...state,
+        importStudentsAttainments: {
+          ...state.importStudentsAttainments,
+          pending: false,
+          error: action.response || true
+        }
+      }
+    case 'IMPORT_STUDENTS_ATTAINMENTS_SUCCESS':
+      return {
+        ...state,
+        importStudentsAttainments: {
+          ...state.importStudentsAttainments,
           data: action.response,
           pending: false,
           error: false

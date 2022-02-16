@@ -204,7 +204,7 @@ export default withRouter(({ mooc, match }) => {
 
   const panels = batchedReports
     .filter((report) => {
-      if (mooc) return true
+      if (mooc || user.isAdmin) return true
       const notSentWithValidEntries = report.every((row) => row.entry && !row.entry.missingEnrolment && !row.entry.sent)
       return !notSentWithValidEntries
     })

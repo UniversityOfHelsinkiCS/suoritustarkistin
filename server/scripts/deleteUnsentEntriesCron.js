@@ -11,7 +11,7 @@ const db = require('../models/index')
  */
 const deleteUnsent = async () => {
   // Exclude freshly created entries
-  const timestamp = moment().subtract(2, 'hours').toDate()
+  const timestamp = moment().subtract(1, 'week').toDate()
   const entries = await db.entries.findAll({
     where: {
       courseUnitId: { [Op.not]: null },

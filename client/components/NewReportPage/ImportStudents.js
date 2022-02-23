@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Icon, Modal, Table, Segment, Button, Message, Dropdown, Popup, Placeholder, Label } from 'semantic-ui-react'
+import { Icon, Modal, Table, Segment, Button, Message, Dropdown, Popup, Placeholder, Label, Checkbox } from 'semantic-ui-react'
 import moment from 'moment'
 import { importStudentsAction, importStudentsAttainments } from '../../utils/redux/newRawEntriesReducer'
 
@@ -98,7 +98,7 @@ const renderAttainments = ({ attainments: attainmentsForStudent }) => {
   return [...new Map(earlierAttainments.map(({ key, ...item }) => [key, { ...item, key }])).values()]
 }
 
-const Accordion = ({ rows, title, get, set, date, gradeScale, fetchAttainments, allAttainments }) => {
+const Accordion = ({ rows, title, get, set, date, gradeScale, fetchAttainments, allAttainments, hideWithAttainment }) => {
   const openAccordion = () => {
     if (!open)
       fetchAttainments(rows.map(({ person }) => person.studentNumber))
@@ -119,6 +119,13 @@ const Accordion = ({ rows, title, get, set, date, gradeScale, fetchAttainments, 
     </Table.Row>
     {open
       ? <>{rows
+        .filter(({ person }) => {
+          if (!hideWithAttainment) return true
+          const completions = allAttainments.data.find((a) => a.studentNumber === person.studentNumber)
+          return completions ?
+            completions.attainments.every(({ state }) => state === 'FAILED')
+            : true
+        })
         .sort((a, b) => `${a.person.lastName}, ${a.person.firstNames} (${a.person.studentNumber})`.
           localeCompare(`${b.person.lastName}, ${b.person.firstNames} (${b.person.studentNumber})`))
         .map(({ person, id }) => <Table.Row key={id}>
@@ -134,9 +141,9 @@ const Accordion = ({ rows, title, get, set, date, gradeScale, fetchAttainments, 
               clearable />
             <span>{`${person.lastName}, ${person.firstNames} (${person.studentNumber})`}</span>
           </Table.Cell>
-          <Table.Cell>
+          <Table.Cell width={5}>
             {
-              allAttainments.pending
+              allAttainments.pending && !allAttainments.data.find((a) => a.studentNumber === person.studentNumber)
                 ? <Placeholder>
                   <Placeholder.Line length="very long" />
                   <Placeholder.Line length="long" />
@@ -156,6 +163,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
   const dispatch = useDispatch()
   const [grades, setGrades] = useState({})
   const [confirm, setConfirm] = useState(false)
+  const [hideWithAttainment, setHideWithAttainment] = useState(false)
   const { defaultCourse } = useSelector((state) => state.newRawEntries)
   const { data, pending, error } = useSelector((state) => state.newRawEntries.importStudents)
   const { ...attainments } = useSelector((state) => state.newRawEntries.importStudentsAttainments)
@@ -214,7 +222,12 @@ export default ({ isOpen, setIsOpen, importRows }) => {
           {
             data.length || pending
               ? <>
-                <Message info>Select students by typing a grade for each student to import.</Message>
+                <Message info>Select students by selecting a grade for each student to import.</Message>
+                <Checkbox
+                  label="Hide students with earlier completion"
+                  onChange={(_, { checked }) => setHideWithAttainment(checked)}
+                  checked={hideWithAttainment}
+                  toggle />
                 <Table compact celled>
                   <Table.Header>
                     <Table.Row>
@@ -238,6 +251,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                           }
                           key={title}
                           allAttainments={attainments}
+                          hideWithAttainment={hideWithAttainment}
                           fetchAttainments={fetchAttainments}
                           get={get}
                           set={set} />

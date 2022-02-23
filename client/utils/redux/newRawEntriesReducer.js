@@ -15,7 +15,7 @@ const initialState = {
     data: []
   },
   importStudentsAttainments: {
-    data: null,
+    data: [],
     pending: true
   }
 }
@@ -116,7 +116,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         importStudentsAttainments: {
-          data: null,
+          ...state.importStudentsAttainments,
           pending: true,
           error: false
         }
@@ -130,16 +130,19 @@ export default (state = initialState, action) => {
           error: action.response || true
         }
       }
-    case 'IMPORT_STUDENTS_ATTAINMENTS_SUCCESS':
+    case 'IMPORT_STUDENTS_ATTAINMENTS_SUCCESS': {
+      const oldStudents = state.importStudentsAttainments.data.map(({ studentNumber }) => studentNumber)
+      const newStudents = action.response.filter((s) => !oldStudents.includes(s.studentNumber))
       return {
         ...state,
         importStudentsAttainments: {
           ...state.importStudentsAttainments,
-          data: action.response,
+          data: state.importStudentsAttainments.data.concat(newStudents),
           pending: false,
           error: false
         }
       }
+    }
     case 'LOGIN_SUCCESS':
       return {
         ...state,

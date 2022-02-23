@@ -67,7 +67,8 @@ const {
   checkIdMatch,
   notInProduction,
   deleteSingleEntry,
-  checkGrader
+  checkGrader,
+  deleteBatch
 } = require('./permissions')
 const { paginateMiddleware, useFilters } = require('./middleware')
 
@@ -113,7 +114,7 @@ router.get('/sis_reports', checkGrader, getAllSisReports)
 router.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
 router.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
 router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
-router.delete('/sis_reports/batch/:batchId', checkAdmin, deleteSisBatch)
+router.delete('/sis_reports/batch/:batchId', deleteBatch, deleteSisBatch)
 router.post('/sis_raw_entries', addRawEntries)
 router.get('/import-students/:code', importStudents)
 router.post('/import-students/attainments', importStudentsAttainments)

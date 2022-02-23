@@ -42,6 +42,22 @@ const deleteSingleEntry = (req, res, next) => permissionClass(
   'Unauthorized access'
 )
 
+const deleteBatch = (req, res, next) => permissionClass(
+  req, res, next,
+  async (req) => {
+    if (req.user.isAdmin) return true
+    const rawEntry = await db.raw_entries.findOne({
+      where: { batchId: req.params.batchId },
+      attributes: ['graderId'],
+      include: [{ model: db.entries, as: 'entry' }, { model: db.extra_entries, as: 'extraEntry' }]
+    })
+    if (rawEntry.entry && rawEntry.entry.sent) return false
+    if (rawEntry.extraEntry && rawEntry.extraEntry.sent) return false
+    return rawEntry.graderId === req.user.id
+  },
+  'Unauthorized access'
+)
+
 /**
  * Reusable permission check
  * @param {*} predicate Method to evaluate permission, may be async. Request is passed to method when evaluating.
@@ -60,5 +76,6 @@ module.exports = {
   checkAdmin,
   checkIdMatch,
   notInProduction,
-  deleteSingleEntry
+  deleteSingleEntry,
+  deleteBatch
 }

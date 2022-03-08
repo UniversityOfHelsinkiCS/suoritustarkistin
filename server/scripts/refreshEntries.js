@@ -28,7 +28,7 @@ const refreshEntries = async (rawEntryIds) => {
   const transaction = await db.sequelize.transaction()
   try {
     await db.entries.bulkCreate(success, {
-      updateOnDuplicate: ['courseUnitRealisationId', 'courseUnitRealisationName', 'assessmentItemId', 'courseUnitId', 'gradeScaleId', 'gradeId'],
+      updateOnDuplicate: ['courseUnitRealisationId', 'courseUnitRealisationName', 'assessmentItemId', 'courseUnitId', 'gradeScaleId', 'gradeId', 'completionDate'],
       transaction
     })
     const batchId = `limbo-${moment().format('YYYYMMDDhmmss')}`

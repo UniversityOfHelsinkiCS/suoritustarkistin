@@ -21,7 +21,7 @@ export default ({ kandi, parseCSV }) => {
 
     if (rawData.includes("'")) {
       rawData.split("\n").forEach((row) => {
-        if (row[0]=== "'") {
+        if (row[0] === "'") {
           const newRow = row.substring(1)
           rawData = rawData.replace(row, newRow)
         }

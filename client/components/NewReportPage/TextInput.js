@@ -15,9 +15,18 @@ export default ({ kandi, parseCSV }) => {
   const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
 
   const handleDataChange = (event) => {
-    const rawData = event.target.value
+    let rawData = event.target.value
     if (rawData === '')
       return dispatch(resetNewRawEntriesAction())
+
+    if (rawData.includes("'")) {
+      rawData.split("\n").forEach((row) => {
+        if (row[0]=== "'") {
+          const newRow = row.substring(1)
+          rawData = rawData.replace(row, newRow)
+        }
+      })
+    }
 
     const defaultCourses = kandi ? getKandiExtras() : newRawEntries.defaultCourse
     const data = parseCSV(rawData.trim(), defaultCourses)

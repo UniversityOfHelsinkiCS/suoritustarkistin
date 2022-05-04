@@ -9,7 +9,7 @@ const stringify = (params) => {
   return query.toString()
 }
 
-export const getAllSisReportsAction = ({ offset = 0, limit, filters }) => {
+export const getAllSisReportsAction = ({ offset = 0, limit, filters = INITIAL_STATE.filters }) => {
   const route = `/sis_reports?${stringify({ offset, limit, ...filters })}`
   const prefix = 'GET_ALL_SIS_REPORTS'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
@@ -119,6 +119,7 @@ const INITIAL_STATE = {
     errors: false,
     noEnrollment: false,
     student: '',
+    adminmode: window.localStorage.getItem('adminmode'),
     status: null
   }
 }

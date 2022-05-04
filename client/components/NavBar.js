@@ -7,6 +7,7 @@ import {
   disableAdminModeAction,
   logoutAction
 } from 'Utilities/redux/userReducer'
+import { setFilterAction } from '../utils/redux/sisReportsReducer'
 import { images } from 'Utilities/common'
 import FakeShibboMenu from 'Components/fakeShibboMenu'
 
@@ -21,7 +22,10 @@ export default () => {
   const handleLogout = () => {
     dispatch(logoutAction())
   }
+
   const handleAdminModeToggle = () => {
+    dispatch(setFilterAction('adminmode', !user.adminMode))
+
     user.adminMode
       ? dispatch(disableAdminModeAction())
       : dispatch(activateAdminModeAction())

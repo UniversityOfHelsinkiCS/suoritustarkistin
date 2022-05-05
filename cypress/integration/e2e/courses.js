@@ -6,7 +6,7 @@ describe('Creating and assigning courses work', function () {
 
   it('Admin cannot create invalid course', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
     cy.get('[data-cy=nav-courses]').click()
     cy.get('[data-cy=add-course-button]').click()
     cy.get('[data-cy=add-course-name] input').type('Testi kurssi')

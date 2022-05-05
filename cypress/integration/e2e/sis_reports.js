@@ -5,7 +5,7 @@ describe('SIS Reports -page shows data correctly', () => {
   })
   it('Entry data is shown correctly on the reports page', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
 
     cy.get('[data-cy=nav-reports]').click()
 

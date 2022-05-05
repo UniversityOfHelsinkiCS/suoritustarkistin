@@ -8,6 +8,7 @@ import {
   logoutAction
 } from 'Utilities/redux/userReducer'
 import { setFilterAction } from '../utils/redux/sisReportsReducer'
+import { getAllSisReportsAction } from '../utils/redux/sisReportsReducer'
 import { images } from 'Utilities/common'
 import FakeShibboMenu from 'Components/fakeShibboMenu'
 
@@ -18,17 +19,21 @@ export default () => {
   const [activeItem, setActiveItem] = useState(getMenuItemFromUrl())
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
+  const { offset, limit } = useSelector((state) => state.sisReports.reports)
 
   const handleLogout = () => {
     dispatch(logoutAction())
   }
 
   const handleAdminModeToggle = () => {
-    dispatch(setFilterAction('adminmode', !user.adminMode))
-
     user.adminMode
       ? dispatch(disableAdminModeAction())
       : dispatch(activateAdminModeAction())
+
+    if (window.location.pathname !== '/reports')
+      dispatch(getAllSisReportsAction({ offset, limit }))
+
+    dispatch(setFilterAction('adminmode', !user.adminMode))
   }
 
   const handleItemClick = (e, { name }) => name === "logo" ? setActiveItem('') : setActiveItem(name)

@@ -30,10 +30,9 @@ export default () => {
       ? dispatch(disableAdminModeAction())
       : dispatch(activateAdminModeAction())
 
+    dispatch(setFilterAction('adminmode', !user.adminMode))
     if (window.location.pathname !== '/reports')
       dispatch(getAllSisReportsAction({ offset, limit }))
-
-    dispatch(setFilterAction('adminmode', !user.adminMode))
   }
 
   const handleItemClick = (e, { name }) => name === "logo" ? setActiveItem('') : setActiveItem(name)

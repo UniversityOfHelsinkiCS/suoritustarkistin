@@ -27,7 +27,7 @@ describe("Permissions", () => {
 
   it("Admin users should be able to see the form tab and admin-tabs", () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
     cy.get('[data-cy=copypaste]')
     cy.get('a').contains('Edit users')
     cy.get('a').contains('Automated')

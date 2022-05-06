@@ -8,7 +8,7 @@ describe("User management", () => {
   it("Admins can add new graders and their are shown as graders", () => {
     cy.login('admin')
     cy.visit("/")
-    cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
     cy.get('[data-cy=nav-users]').click()
 
     cy.get('[data-cy=add-user-button]').click()

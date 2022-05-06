@@ -5,7 +5,7 @@ describe('SIS Reports -page shows data correctly', () => {
   })
   it('Entry data is shown correctly on the reports page', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
 
     cy.get('[data-cy=nav-reports]').click()
 
@@ -27,6 +27,18 @@ describe('SIS Reports -page shows data correctly', () => {
       .should('contain', "entryCourseUnitId", "entryCourseUnitRealisation", "Assessment ID 1", "Grader's ID 1", "sis-0-5")
   })
 
+  it('When not in admin-mode only own reports are visible', () => {
+    cy.login('admin').visit('')
+
+    cy.get('[data-cy=nav-reports]').click()
+
+    cy.get('[data-cy=sis-reports-tab]').click()
+    cy.get('[data-cy=report-table]').its('length').should('eq', 4)
+    cy.get('[data-cy=report-TKT10002').should('contain', 'Ohjelmoinnin perusteet')
+
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.get('[data-cy=report-table]').its('length').should('eq', 7)
+  })
 })
 
 describe('BSc thesis reports are displayed correctly', () => {

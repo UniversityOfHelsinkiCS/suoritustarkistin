@@ -10,6 +10,8 @@ const stringify = (params) => {
 }
 
 export const getAllSisReportsAction = ({ offset = 0, limit, filters }) => {
+  if (!filters)
+    filters = { adminmode : window.localStorage.getItem('adminmode') }
   const route = `/sis_reports?${stringify({ offset, limit, ...filters })}`
   const prefix = 'GET_ALL_SIS_REPORTS'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
@@ -119,6 +121,7 @@ const INITIAL_STATE = {
     errors: false,
     noEnrollment: false,
     student: '',
+    adminmode: window.localStorage.getItem('adminmode') || false,
     status: null
   }
 }
@@ -323,6 +326,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     }
     case 'RESET_FILTERS': {
       const { filters } = INITIAL_STATE
+      filters.adminmode = window.localStorage.getItem('adminmode')
       return {
         ...state,
         filters

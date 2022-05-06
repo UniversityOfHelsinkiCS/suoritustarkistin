@@ -6,7 +6,7 @@ describe('Basic functions work', function () {
 
   it('Admin can grant rights', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
     cy.get('[data-cy=nav-users]').click()
     cy.get('[data-cy=regular-not-admin]').click()
     cy.get('[data-cy=grant-admin-confirm]').click()
@@ -21,7 +21,7 @@ describe('Basic functions work', function () {
 
   it('Admin can create and edit course', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click()
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
     cy.get('[data-cy=nav-courses]').click()
     cy.get('[data-cy=add-course-button]').click()
     cy.get('[data-cy=add-course-name] input').type('E2E Testaus')

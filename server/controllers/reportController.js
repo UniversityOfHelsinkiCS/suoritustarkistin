@@ -46,7 +46,6 @@ const transformRows = (row) => {
   }
 }
 
-
 const getFilters = ({ isMooc, status, student, errors, noEnrollment, graderId, reporterId }) => {
   const query = { }
 
@@ -196,12 +195,15 @@ const getOffset = async (req, res) => {
     raw: true
   })
 
-  const index = batches.findIndex((batch) => batch.batchId === batchId)
+  const batchIds = batches.map(({ batchId }) => batchId)
+  const uniqueBatchIds = [...new Set(batchIds)]
+
+  const index = uniqueBatchIds.findIndex((batch) => batch === batchId)
   if (index < 0) return res.status(404).send('Report not found!')
   // Get offset for given batch id. Offset needs to be floored to nearest page size
   // as we want offset to be divisible with page size
-  const offset = Math.floor(Math.max(index - 1, 0) / PAGE_SIZE) * PAGE_SIZE
-  res.send({ offset, mooc: !batches[offset].reporterId })
+  const offset = Math.floor(index / PAGE_SIZE) * PAGE_SIZE
+  res.send({ offset, mooc: isMooc })
 }
 
 const deleteSingleSisEntry = async (req, res) => {

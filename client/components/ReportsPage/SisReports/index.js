@@ -25,10 +25,14 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 /teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
 `
 
-const getBatchLink = (id) => process.env.NODE_ENV === 'production'
-  ? `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
-  : `https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/reports/sisu/${id}`
-
+const getBatchLink = (id) => {
+  if (process.env.NODE_ENV === 'production')
+    return `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
+  else if (process.env.NODE_ENV === 'staging')
+    return `https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/reports/sisu/${id}`
+  else
+    return `http://localhost:8000/reports/sisu/${id}`
+}
 
 const reportContents = (report, dispatch, user, openAccordions, batchLoading) => {
   if (!report) return null
@@ -169,7 +173,7 @@ export default withRouter(({ mooc, match }) => {
       ? state.sisReports.moocReports
       : state.sisReports.reports
   )
-  const { pending, allowFetch, mooc: offsetForMooc } = useSelector((state) => state.sisReports)
+  const { pending, allowFetch } = useSelector((state) => state.sisReports)
 
   useEffect(() => {
     const fetch = (mooc) => {
@@ -179,17 +183,13 @@ export default withRouter(({ mooc, match }) => {
         dispatch(getAllSisReportsAction({ offset }))
     }
 
+    const { activeBatch } = match.params
     // If we have batch id in url we need to wait
     // for correct offset before fetching batch
-    const { activeBatch } = match.params
-    if (activeBatch) {
-      if (!reportsFetched && !pending && allowFetch)
-        fetch(offsetForMooc)
-    } else {
-      if (!reportsFetched && !pending)
-        fetch(mooc)
-    }
-  }, [allowFetch, mooc, offsetForMooc, reportsFetched, pending])
+    if (!reportsFetched && !pending && (!activeBatch || (activeBatch && allowFetch)))
+      fetch(mooc)
+
+  }, [allowFetch, mooc, reportsFetched, pending])
 
   useEffect(() => {
     // Fire fetch offset for batch in url

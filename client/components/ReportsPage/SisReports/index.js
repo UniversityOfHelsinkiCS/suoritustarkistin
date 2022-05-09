@@ -25,10 +25,14 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 /teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
 `
 
-const getBatchLink = (id) => process.env.NODE_ENV === 'production'
-  ? `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
-  : `https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/reports/sisu/${id}`
-
+const getBatchLink = (id) => {
+  if (process.env.NODE_ENV === 'production')
+    return `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
+  else if (process.env.NODE_ENV === 'staging')
+    return `https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/reports/sisu/${id}`
+  else
+    return `http://localhost:8000/reports/sisu/${id}`
+}
 
 const reportContents = (report, dispatch, user, openAccordions, batchLoading) => {
   if (!report) return null

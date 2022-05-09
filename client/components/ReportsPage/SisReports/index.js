@@ -173,7 +173,7 @@ export default withRouter(({ mooc, match }) => {
       ? state.sisReports.moocReports
       : state.sisReports.reports
   )
-  const { pending, allowFetch, mooc: offsetForMooc } = useSelector((state) => state.sisReports)
+  const { pending, allowFetch } = useSelector((state) => state.sisReports)
 
   useEffect(() => {
     const fetch = (mooc) => {
@@ -183,17 +183,13 @@ export default withRouter(({ mooc, match }) => {
         dispatch(getAllSisReportsAction({ offset }))
     }
 
+    const { activeBatch } = match.params
     // If we have batch id in url we need to wait
     // for correct offset before fetching batch
-    const { activeBatch } = match.params
-    if (activeBatch) {
-      if (!reportsFetched && !pending && allowFetch)
-        fetch(offsetForMooc)
-    } else {
-      if (!reportsFetched && !pending)
-        fetch(mooc)
-    }
-  }, [allowFetch, mooc, offsetForMooc, reportsFetched, pending])
+    if (!reportsFetched && !pending && (!activeBatch || (activeBatch && allowFetch)))
+      fetch(mooc)
+
+  }, [allowFetch, mooc, reportsFetched, pending])
 
   useEffect(() => {
     // Fire fetch offset for batch in url

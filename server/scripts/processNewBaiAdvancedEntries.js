@@ -137,7 +137,9 @@ const processNewBaiAdvancedEntries = async ({
           const attainmentDate = getMoocAttainmentDate(
             completion.completion_registration_attempt_date,
             completion.completion_date,
-            date
+            date,
+            false,
+            course.courseCode
           )
 
           // Check that the student does not have Advanced course completion yet

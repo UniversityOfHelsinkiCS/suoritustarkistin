@@ -75,7 +75,8 @@ const processMoocEntries = async ({
             completion.completion_registration_attempt_date,
             completion.completion_date,
             date,
-            job.useManualCompletionDate
+            job.useManualCompletionDate,
+            course.courseCode
           )
 
           if (!grade) {

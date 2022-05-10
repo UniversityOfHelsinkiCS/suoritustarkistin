@@ -110,7 +110,9 @@ const processNewBaiIntermediateEntries = async ({
           const attainmentDate = getMoocAttainmentDate(
             completion.completion_registration_attempt_date,
             completion.completion_date,
-            date
+            date,
+            false,
+            course.courseCode
           )
 
           if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {

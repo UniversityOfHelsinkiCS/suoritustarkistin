@@ -1,31 +1,33 @@
 const db = require('@models/index')
 const logger = require('@utils/logger')
-const { getMultipleCourseRegistrations } = require('../services/eduweb')
+const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
-const { automatedAddToDb } = require('./automatedAddToDb')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
-const { getBatchId, moocLanguageMap, getMoocAttainmentDate, EOAI_CODES } = require('@root/utils/common')
+const { automatedAddToDb } = require('./automatedAddToDb')
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate, ALL_EOAI_CODES, NEW_EOAI_CODE } = require('@root/utils/common')
 
-const processEoaiEntries = async ({ grader }, sendToSisu) => {
+
+const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
   try {
-    const courses = await db.courses.findAll({ 
-      where: {
-        courseCode: EOAI_CODES
-      },
-      raw: true
-    })
-
     const credits = await db.credits.findAll({
       where: {
-        courseId: EOAI_CODES
+        courseId: ALL_EOAI_CODES
       },
       raw: true
     })
 
-    const rawRegistrations = await getMultipleCourseRegistrations(EOAI_CODES)
+    const rawEntries = await db.raw_entries.findAll({
+      where: {
+        '$course.courseCode$': ALL_EOAI_CODES
+      },
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
+    })
+
+    const rawRegistrations = await getRegistrations(NEW_EOAI_CODE)
     const rawCompletions = await getCompletions('elements-of-ai')
-    const rawEntries = await db.raw_entries.findAll({ where: { courseId: courses.map((c) => c.id) }})
 
     // There are so many completions and registrations for EOAI-courses
     // that some cleaning should be done first, based on existing data
@@ -43,7 +45,7 @@ const processEoaiEntries = async ({ grader }, sendToSisu) => {
 
     const courseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
-        return pairs.concat({ courseCode: EOAI_CODES[0], studentNumber: registration.onro })
+        return pairs.concat({ courseCode: NEW_EOAI_CODE, studentNumber: registration.onro })
       } else {
         return pairs
       }
@@ -65,7 +67,7 @@ const processEoaiEntries = async ({ grader }, sendToSisu) => {
       return (!earlierCredit && !earlierEntry)
     })
 
-    const batchId = getBatchId(EOAI_CODES[0])
+    const batchId = getBatchId(NEW_EOAI_CODE)
     const date = new Date()
 
     let matches = await completions.reduce(
@@ -76,7 +78,6 @@ const processEoaiEntries = async ({ grader }, sendToSisu) => {
         }
 
         const language = moocLanguageMap[completion.completion_language]
-        const courseVersion = courses.find((c) => c.language === language)
 
         const registration = registrations.find(
           (registration) =>
@@ -90,10 +91,10 @@ const processEoaiEntries = async ({ grader }, sendToSisu) => {
             registrationAttemptDate: completion.completion_registration_attempt_date,
             completionDate: completion.completion_date,
             today: date,
-            courseCode: EOAI_CODES[0]
+            courseCode: NEW_EOAI_CODE
           })
 
-          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.", attainmentDate, courseVersion.credits)) {
+          if (!isImprovedGrade(earlierAttainments, registration.onro, "Hyv.", attainmentDate, course.credits)) {
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
             return matches
@@ -102,12 +103,12 @@ const processEoaiEntries = async ({ grader }, sendToSisu) => {
               studentNumber: registration.onro,
               batchId: batchId,
               grade: "Hyv.",
-              credits: courseVersion.credits,
+              credits: course.credits,
               language: language,
               attainmentDate: attainmentDate,
               graderId: grader.id,
               reporterId: null,
-              courseId: courseVersion.id,
+              courseId: course.id,
               moocUserId: completion.user_upstream_id,
               moocCompletionId: completion.id
             })
@@ -120,9 +121,9 @@ const processEoaiEntries = async ({ grader }, sendToSisu) => {
     )
 
     if (!matches) matches = []
-    logger.info(`${EOAI_CODES[0]}: Found ${matches.length} new completions.`)
+    logger.info(`${NEW_EOAI_CODE}: Found ${matches.length} new completions.`)
 
-    const result = await automatedAddToDb(matches, courses[0], batchId, sendToSisu)
+    const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
     return result
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)

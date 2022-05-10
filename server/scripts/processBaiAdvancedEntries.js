@@ -3,17 +3,19 @@ const logger = require('@utils/logger')
 const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
-const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const {
-  getBatchId,
-  getMoocAttainmentDate,
+const { advancedFound } = require('../utils/earlierCompletions')
+const { 
   OLD_BAI_CODE,
-  OLD_BAI_INTERMEDIATE_CODE
+  OLD_BAI_INTERMEDIATE_CODE,
+  OLD_BAI_ADVANCED_CODE,
+  NEW_BAI_INTERMEDIATE_CODE,
+  getBatchId,
+  getMoocAttainmentDate
 } = require('@root/utils/common')
 
 
-const processNewBaiIntermediateEntries = async ({
+const processBaiAdvancedEntries = async ({
   job,
   course,
   grader
@@ -21,44 +23,91 @@ const processNewBaiIntermediateEntries = async ({
   try {
     const rawCredits = await db.credits.findAll({
       where: {
-        courseId: [course.courseCode, OLD_BAI_INTERMEDIATE_CODE, OLD_BAI_CODE]
+        courseId: OLD_BAI_CODE
       },
       raw: true
     })
 
-    const rawEntries = await db.raw_entries.findAll({ 
+    // Find all the already existing entries for the Advanced-courses, summer 2021 -one and the current one
+    const advancedRawEntries = await db.raw_entries.findAll({ 
       where: {
-        '$course.courseCode$': [course.courseCode, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE]
-      }, 
+        '$course.courseCode$': [course.courseCode, OLD_BAI_ADVANCED_CODE]
+      },
       include: [
         { model: db.courses, as: 'course' }
       ]
     })
 
-    const registrations = await getRegistrations(course.courseCode)
+    // Find all the already existing entries for the Intermediate-courses, summer 2021 -one and the current one
+    const intermediateRawEntries = await db.raw_entries.findAll({
+      where: {
+        '$course.courseCode$': [NEW_BAI_INTERMEDIATE_CODE, OLD_BAI_INTERMEDIATE_CODE]
+      },
+      include: [
+        { model: db.courses, as: 'course' }
+      ]
+    })
+
     const registeredIncluded = true
+
+    const registrations = await getRegistrations(course.courseCode)
     const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
-    // If a completion with same or more credits if found, the new 
-    // completion won't replace it
+    // Pre-filter the completions to avoid overloading importer with thousands of completions
     const completions = rawCompletions.filter((completion) => {
-      if (Number(completion.tier) <= 1) return false 
+      if (!completion.tier === Number(3)) return false
 
       const previousCredits = rawCredits.filter(
         (credit) =>
           credit.completionId === completion.id ||
           credit.moocId === completion.user_upstream_id
       )
-      const previousEntries = rawEntries.filter(
+
+      const previousIntermediateCredit = previousCredits.filter((credit) => credit.tier === 2)
+      const previousAdvancedCredit = previousCredits.filter((credit) => credit.tier === 3)
+
+      const previousAdvancedEntries = advancedRawEntries.filter(
         (entry) =>
           entry.moocCompletionId === completion.id ||
           entry.moocUserId === completion.user_upstream_id
       )
 
-      return (previousCredits.length === 0 && previousEntries.length === 0)
+      const previousIntermediateEntries = intermediateRawEntries.filter(
+        (entry) =>
+          entry.moocCompletionId === completion.id ||
+          entry.moocUserId === completion.user_upstream_id
+      )
+
+      // Check that the student has intermediate completion or old bai credit with 1 op already
+      // and does NOT have an earlier advanced course completion
+      return (
+        (previousIntermediateEntries.length !== 0 || previousIntermediateCredit.length !== 0)
+        && previousAdvancedEntries.length === 0
+        && previousAdvancedCredit.length === 0
+      )
     })
 
-    const intermediateStudentPairs = registrations.reduce((pairs, registration) => {
+    const oldBaiPairs = registrations.reduce((pairs, registration) => {
+      if (registration && registration.onro) {
+        return pairs.concat(
+          { courseCode: OLD_BAI_CODE, studentNumber: registration.onro },
+        )
+      } else {
+        return pairs
+      }
+    }, [])
+
+    const oldAdvancedPairs = registrations.reduce((pairs, registration) => {
+      if (registration && registration.onro) {
+        return pairs.concat(
+          { courseCode: OLD_BAI_ADVANCED_CODE, studentNumber: registration.onro },
+        )
+      } else {
+        return pairs
+      }
+    }, [])
+
+    const advancedPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
       } else {
@@ -66,33 +115,10 @@ const processNewBaiIntermediateEntries = async ({
       }
     }, [])
 
-    const oldBaiCourseStudentPairs = registrations.reduce((pairs, registration) => {
-      if (registration && registration.onro) {
-        return pairs.concat({ courseCode: OLD_BAI_CODE, studentNumber: registration.onro })
-      } else {
-        return pairs
-      }
-    }, [])
-
-    const oldIntermediateCourseStudentPairs = registrations.reduce((pairs, registration) => {
-      if (registration && registration.onro) {
-        return pairs.concat({ courseCode: OLD_BAI_INTERMEDIATE_CODE, studentNumber: registration.onro })
-      } else {
-        return pairs
-      }
-    }, [])
-
-    // Fetch the earlier attainments for the new course code that is used after 1.9.2021
-    const intermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(intermediateStudentPairs)
-
-    // Fetch the earlier attainments for the course code that was used before Sisu
-    const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiCourseStudentPairs)
-
-    // Fetch the earlier attainments for the course code that was used temporarily in summer 2021
-    const oldIntermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldIntermediateCourseStudentPairs)
-    
-    // Combine these to be all the earlier attainments for the same course
-    const earlierAttainments = intermediateAttainments.concat(oldBaiAttainments).concat(oldIntermediateAttainments)
+    const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiPairs)
+    const oldAdvancedAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldAdvancedPairs)
+    const newAdvancedAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(advancedPairs)
+    const advancedAttainments = oldAdvancedAttainments.concat(newAdvancedAttainments)
 
     const batchId = getBatchId(course.courseCode)
     const date = new Date()
@@ -107,6 +133,7 @@ const processNewBaiIntermediateEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
+
           const attainmentDate = getMoocAttainmentDate({
             registrationAttemptDate: completion.completion_registration_attempt_date,
             completionDate: completion.completion_date,
@@ -114,7 +141,8 @@ const processNewBaiIntermediateEntries = async ({
             courseCode: course.courseCode
           })
 
-          if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {
+          // Check that the student does not have Advanced course completion yet
+          if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, attainmentDate)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})
             return matches
           } else if (matches.some((c) => c.studentNumber === registration.onro)) {
@@ -153,5 +181,5 @@ const processNewBaiIntermediateEntries = async ({
 }
 
 module.exports = {
-  processNewBaiIntermediateEntries
+  processBaiAdvancedEntries
 }

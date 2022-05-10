@@ -20,6 +20,7 @@ export default () => {
   const [displayBscUserGuide, setDisplayBscUserGuide] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const courses = useSelector((state) => state.courses.data)
+  const graderId = useSelector((state) => state.newRawEntries.graderId)
   const hasKandi = courses.some((course) => isThesisCourse(course))
   const hasErillisKirjaus = courses.some((course) => isRegularExtraCourse(course))
 
@@ -85,8 +86,6 @@ export default () => {
     )
   })
 
-
-
   return <>
     <UIMessage
       icon="bullhorn"
@@ -105,7 +104,7 @@ export default () => {
       activeIndex={activeIndex}
       onTabChange={(_, { activeIndex }) => {
         setActiveIndex(activeIndex)
-        dispatch(resetNewRawEntriesAction())
+        dispatch(resetNewRawEntriesAction(graderId))
         if (activeIndex === 2 && hasKandi) setDisplayBscUserGuide(true)
         else setDisplayBscUserGuide(false)
       }} />

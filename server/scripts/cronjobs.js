@@ -3,8 +3,6 @@ const db = require('../models/index')
 const logger = require('@utils/logger')
 const {
   EOAI_CODES,
-  BAI_INTERMEDIATE_CODE,
-  BAI_ADVANCED_CODE,
   NEW_EOAI_CODE,
   NEW_BAI_INTERMEDIATE_CODE,
   NEW_BAI_ADVANCED_CODE
@@ -13,8 +11,6 @@ const { processNewEoaiEntries } = require('./processNewEoaiEntries')
 const { processNewBaiIntermediateEntries } = require('./processNewBaiIntermediateEntries')
 const { processNewBaiAdvancedEntries } = require('./processNewBaiAdvancedEntries')
 const { processEoaiEntries } = require('./processEoaiEntries')
-const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntries')
-const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
 const { processMoocEntries } = require('./processMoocEntries')
 
 const refreshEntriesCron = require('./refreshEntryCron')
@@ -52,10 +48,6 @@ const initializeCronJobs = async () => {
         result = await processNewBaiAdvancedEntries({ job, course, grader }, true)
       } else if (EOAI_CODES.includes(course.courseCode)) {
         result = await processEoaiEntries({ grader }, true)
-      } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
-        result = await processBaiIntermediateEntries({ job, course, grader }, true)
-      } else if (BAI_ADVANCED_CODE === course.courseCode) {
-        result = await processBaiAdvancedEntries({ job, course, grader }, true)
       } else {
         result = await processMoocEntries({ job, course, grader }, true)
       }
@@ -96,10 +88,6 @@ const activateJob = async (id) => {
       result = await processNewBaiAdvancedEntries({ job, course, grader })
     } else if (EOAI_CODES.includes(course.courseCode)) {
       result = await processEoaiEntries({ grader })
-    } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
-      result = await processBaiIntermediateEntries({ job, course, grader })
-    } else if (BAI_ADVANCED_CODE === course.courseCode) {
-      result = await processBaiAdvancedEntries({ job, course, grader })
     } else {
       result = await processMoocEntries({ job, course, grader })
     }

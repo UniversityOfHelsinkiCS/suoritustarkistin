@@ -1,21 +1,8 @@
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { activateJob, deactivateJob } = require('../scripts/cronjobs')
-const { isValidJob,
-  EOAI_CODES,
-  BAI_INTERMEDIATE_CODE,
-  BAI_ADVANCED_CODE,
-  NEW_EOAI_CODE,
-  NEW_BAI_INTERMEDIATE_CODE,
-  NEW_BAI_ADVANCED_CODE
-} = require('@root/utils/validators')
-const { processNewEoaiEntries } = require('../scripts/processNewEoaiEntries')
-const { processEoaiEntries } = require('../scripts/processEoaiEntries')
-const { processNewBaiIntermediateEntries } = require('../scripts/processNewBaiIntermediateEntries')
-const { processBaiIntermediateEntries } = require('../scripts/processBaiIntermediateEntries')
-const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')
-const { processNewBaiAdvancedEntries } = require('../scripts/processNewBaiAdvancedEntries')
-const { processMoocEntries } = require('../scripts/processMoocEntries')
+const { chooseScript } = require('../scripts/chooseAutomatedScript')
+const { isValidJob } = require('@root/utils/validators')
 
 const getJobs = async (req, res) => {
   try {
@@ -103,22 +90,8 @@ const runJob = async (req, res) => {
         course.courseCode
       }) completions`
     )
-    let result = ""
-    if (NEW_EOAI_CODE === course.courseCode) {
-      result = await processNewEoaiEntries({ course, grader })  
-    } else if (NEW_BAI_INTERMEDIATE_CODE === course.courseCode) {
-      result = await processNewBaiIntermediateEntries({ job, course, grader })
-    } else if (NEW_BAI_ADVANCED_CODE === course.courseCode) {
-      result = await processNewBaiAdvancedEntries({ job, course, grader })
-    } else if (EOAI_CODES.includes(course.courseCode)) {
-      result = await processEoaiEntries({ grader })
-    } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
-      result = await processBaiIntermediateEntries({ job, course, grader })
-    } else if (BAI_ADVANCED_CODE === course.courseCode) {
-      result = await processBaiAdvancedEntries({ job, course, grader })
-    } else {
-      result = await processMoocEntries({ job, course, grader })
-    }
+    const script = chooseScript(course.courseCode)
+    const result = await script({ job, course, grader })
 
     if (result.message === "no new entries" || result.message === "success") {
       return res.status(200).json({ message: result.message })

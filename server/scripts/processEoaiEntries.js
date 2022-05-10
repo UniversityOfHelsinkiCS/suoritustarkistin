@@ -5,8 +5,7 @@ const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
-const { EOAI_CODES } = require('@root/utils/validators')
-const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate, EOAI_CODES } = require('@root/utils/common')
 
 const processEoaiEntries = async ({ grader }, sendToSisu) => {
   try {

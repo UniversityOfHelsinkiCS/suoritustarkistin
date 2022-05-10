@@ -1,22 +1,7 @@
 const cron = require('node-cron')
 const db = require('../models/index')
 const logger = require('@utils/logger')
-const {
-  EOAI_CODES,
-  BAI_INTERMEDIATE_CODE,
-  BAI_ADVANCED_CODE,
-  NEW_EOAI_CODE,
-  NEW_BAI_INTERMEDIATE_CODE,
-  NEW_BAI_ADVANCED_CODE
-} = require('@root/utils/validators')
-const { processNewEoaiEntries } = require('./processNewEoaiEntries')
-const { processNewBaiIntermediateEntries } = require('./processNewBaiIntermediateEntries')
-const { processNewBaiAdvancedEntries } = require('./processNewBaiAdvancedEntries')
-const { processEoaiEntries } = require('./processEoaiEntries')
-const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntries')
-const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
-const { processMoocEntries } = require('./processMoocEntries')
-
+const { chooseScript } = require('../scripts/chooseAutomatedScript')
 const refreshEntriesCron = require('./refreshEntryCron')
 const deleteUnsentEntries = require('./deleteUnsentEntriesCron')
 
@@ -42,23 +27,9 @@ const initializeCronJobs = async () => {
         }) completions.`
       )
 
-      let result = ""
+      const script = chooseScript(course.courseCode)
+      const result = await script({ course, grader, job }, true)
 
-      if (NEW_EOAI_CODE === course.courseCode) {
-        result = await processNewEoaiEntries({ course, grader }, true)
-      } else if (NEW_BAI_INTERMEDIATE_CODE === course.courseCode) {
-        result = await processNewBaiIntermediateEntries({ job, course, grader }, true)
-      } else if (NEW_BAI_ADVANCED_CODE === course.courseCode) {
-        result = await processNewBaiAdvancedEntries({ job, course, grader }, true)
-      } else if (EOAI_CODES.includes(course.courseCode)) {
-        result = await processEoaiEntries({ grader }, true)
-      } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
-        result = await processBaiIntermediateEntries({ job, course, grader }, true)
-      } else if (BAI_ADVANCED_CODE === course.courseCode) {
-        result = await processBaiAdvancedEntries({ job, course, grader }, true)
-      } else {
-        result = await processMoocEntries({ job, course, grader }, true)
-      }
       if (result.message === "no new entries" || result.message === "success") {
         logger.info({ message: result.message })
       } else {
@@ -86,23 +57,9 @@ const activateJob = async (id) => {
       }) completions.`
     )
 
-    let result = ""
+    const script = chooseScript(course.courseCode)
+    const result = await script({ course, grader, job }, true)
 
-    if (NEW_EOAI_CODE === course.courseCode) {
-      result = await processNewEoaiEntries({ grader })
-    } else if (NEW_BAI_INTERMEDIATE_CODE === course.courseCode) {
-      result = await processNewBaiIntermediateEntries({ job, course, grader })
-    } else if (NEW_BAI_ADVANCED_CODE === course.courseCode) {
-      result = await processNewBaiAdvancedEntries({ job, course, grader })
-    } else if (EOAI_CODES.includes(course.courseCode)) {
-      result = await processEoaiEntries({ grader })
-    } else if (BAI_INTERMEDIATE_CODE === course.courseCode) {
-      result = await processBaiIntermediateEntries({ job, course, grader })
-    } else if (BAI_ADVANCED_CODE === course.courseCode) {
-      result = await processBaiAdvancedEntries({ job, course, grader })
-    } else {
-      result = await processMoocEntries({ job, course, grader })
-    }
     if (result.message === "no new entries" || result.message === "success") {
       logger.info({ message: result.message })
     } else {

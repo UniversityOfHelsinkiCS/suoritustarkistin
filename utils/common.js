@@ -26,6 +26,36 @@ const moocLanguageMap = {
   "sv_SE": "sv"
 }
 
+const NEW_EOAI_CODE = 'TKT21018'
+const EOAI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+const ALL_EOAI_CODES = ['TKT21018', 'AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+
+const EOAI_NAMEMAP = {
+  en: {
+    name: 'The Elements of AI',
+    code: 'AYTKT21018'
+  },
+  fi: {
+    name: 'Elements of AI: Tekoälyn perusteet',
+    code: 'AYTKT21018fi'
+  },
+  sv: {
+    name: 'Elements of AI: Grunderna i artificiell intelligens',
+    code: 'AYTKT21018sv'
+  }
+}
+
+
+const NEW_BAI_INTERMEDIATE_CODE = 'TKT210281'
+const NEW_BAI_ADVANCED_CODE = 'TKT210282'
+
+const BAI_INTERMEDIATE_CODE = 'AYTKT210281en'
+const BAI_ADVANCED_CODE = 'AYTKT210282en'
+
+const OLD_BAI_CODE = 'AYTKT21028en'
+const OLD_BAI_INTERMEDIATE_CODE = 'AYTKT210281en'
+const OLD_BAI_ADVANCED_CODE = 'AYTKT210282en'
+
 const getBatchId = (courseCode) => `${courseCode}-${moment().tz("Europe/Helsinki").format(
   'DD.MM.YY-HHmmss'
 )}`
@@ -239,6 +269,17 @@ const testRawEntriesHylHyv = [
 module.exports = {
   gradeScales,
   KANDI_EXTRA_COURSES,
+  NEW_EOAI_CODE,
+  EOAI_CODES,
+  ALL_EOAI_CODES,
+  EOAI_NAMEMAP,
+  BAI_INTERMEDIATE_CODE,
+  BAI_ADVANCED_CODE,
+  NEW_BAI_INTERMEDIATE_CODE,
+  NEW_BAI_ADVANCED_CODE,
+  OLD_BAI_CODE,
+  OLD_BAI_INTERMEDIATE_CODE,
+  OLD_BAI_ADVANCED_CODE,
   isThesisCourse,
   isKandiExtraCourse,
   isOneOfKandiCourses,

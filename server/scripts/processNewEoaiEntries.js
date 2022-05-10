@@ -4,9 +4,8 @@ const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
-const { ALL_EOAI_CODES, NEW_EOAI_CODE } = require('@root/utils/validators')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate, ALL_EOAI_CODES, NEW_EOAI_CODE } = require('@root/utils/common')
 
 
 const processNewEoaiEntries = async ({ course, grader }, sendToSisu) => {

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Accordion, Icon, Popup, Table } from 'semantic-ui-react'
 import moment from 'moment'
 
-import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/validators'
+import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/common'
 import sisuErrorMessages from 'Utilities/sisuErrorMessages.json'
 import DeleteEntryButton from './DeleteEntryButton'
 

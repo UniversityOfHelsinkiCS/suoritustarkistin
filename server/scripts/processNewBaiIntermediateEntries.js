@@ -107,13 +107,12 @@ const processNewBaiIntermediateEntries = async ({
             registration.mooc.toLowerCase() === completion.email.toLowerCase()
         )
         if (registration && registration.onro) {
-          const attainmentDate = getMoocAttainmentDate(
-            completion.completion_registration_attempt_date,
-            completion.completion_date,
-            date,
-            false,
-            course.courseCode
-          )
+          const attainmentDate = getMoocAttainmentDate({
+            registrationAttemptDate: completion.completion_registration_attempt_date,
+            completionDate: completion.completion_date,
+            today: date,
+            courseCode: course.courseCode
+          })
 
           if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {
             logger.info({ message: `Earlier attainment found for student ${registration.onro}`})

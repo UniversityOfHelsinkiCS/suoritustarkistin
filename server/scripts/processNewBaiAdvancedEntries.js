@@ -134,13 +134,12 @@ const processNewBaiAdvancedEntries = async ({
         )
         if (registration && registration.onro) {
 
-          const attainmentDate = getMoocAttainmentDate(
-            completion.completion_registration_attempt_date,
-            completion.completion_date,
-            date,
-            false,
-            course.courseCode
-          )
+          const attainmentDate = getMoocAttainmentDate({
+            registrationAttemptDate: completion.completion_registration_attempt_date,
+            completionDate: completion.completion_date,
+            today: date,
+            courseCode: course.courseCode
+          })
 
           // Check that the student does not have Advanced course completion yet
           if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, attainmentDate)) {

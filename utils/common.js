@@ -96,7 +96,7 @@ const isRegularExtraCourse = (course) => !Object.keys(KANDI_EXTRA_COURSES).inclu
  * For DEFA courses after registration period between July and August sets date to 30.6.
  * **/
 
-const getMoocAttainmentDate = (registrationAttemptDate, completionDate, today, useManualCompletionDate = false, courseCode) => {
+const getMoocAttainmentDate = ({ registrationAttemptDate, completionDate, today, useManualCompletionDate = false, courseCode }) => {  
   if (DEFA_COURSES.includes(courseCode) && registrationAttemptDate && moment(registrationAttemptDate).isBetween(moment('2022-06-01'), moment('2022-08-01')))
     return new Date('2022-06-30')
   if (useManualCompletionDate && completionDate) return completionDate

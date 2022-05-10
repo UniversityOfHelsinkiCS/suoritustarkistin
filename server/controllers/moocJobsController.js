@@ -6,7 +6,7 @@ const { isValidJob,
   NEW_EOAI_CODE,
   NEW_BAI_INTERMEDIATE_CODE,
   NEW_BAI_ADVANCED_CODE
-} = require('@root/utils/validators')
+} = require('@root/utils/common')
 const { processNewEoaiEntries } = require('../scripts/processNewEoaiEntries')
 const { processEoaiEntries } = require('../scripts/processEoaiEntries')
 const { processNewBaiIntermediateEntries } = require('../scripts/processNewBaiIntermediateEntries')

@@ -5,8 +5,12 @@ const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/i
 const { getCompletions } = require('../services/pointsmooc')
 const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE } = require('@root/utils/validators')
-const { getBatchId, getMoocAttainmentDate } = require('@root/utils/common')
+const {
+  getBatchId,
+  getMoocAttainmentDate,
+  OLD_BAI_CODE,
+  OLD_BAI_INTERMEDIATE_CODE
+} = require('@root/utils/common')
 
 
 const processNewBaiIntermediateEntries = async ({

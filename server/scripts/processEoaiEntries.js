@@ -8,7 +8,7 @@ const { automatedAddToDb } = require('./automatedAddToDb')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate, ALL_EOAI_CODES, NEW_EOAI_CODE } = require('@root/utils/common')
 
 
-const processNewEoaiEntries = async ({ course, grader }, sendToSisu) => {
+const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
   try {
     const credits = await db.credits.findAll({
       where: {
@@ -132,5 +132,5 @@ const processNewEoaiEntries = async ({ course, grader }, sendToSisu) => {
 }
 
 module.exports = {
-  processNewEoaiEntries
+  processEoaiEntries
 }

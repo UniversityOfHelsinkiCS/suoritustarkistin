@@ -71,12 +71,13 @@ const processMoocEntries = async ({
         if (registration && registration.onro) {
           const grade = defineGrade(completion, course)
 
-          const attainmentDate = getMoocAttainmentDate(
-            completion.completion_registration_attempt_date,
-            completion.completion_date,
-            date,
-            job.useManualCompletionDate
-          )
+          const attainmentDate = getMoocAttainmentDate({
+            registrationAtteptDate: completion.completion_registration_attempt_date,
+            completionDate: completion.completion_date,
+            today: date,
+            useManualCompletionDate: job.useManualCompletionDate,
+            courseCode: course.courseCode
+          })
 
           if (!grade) {
             return matches

@@ -69,6 +69,8 @@ const KANDI_EXTRA_COURSES = {
 
 const THESIS_COURSES = ['TKT20013']
 
+const DEFA_COURSES = ['TKT21018', 'AYTKT21018', 'TKT210281', 'TKT210282', 'TKT21031', 'TKT200091', 'TKT200092', 'TKT200093', 'CSM132041', 'CSM132042', 'CSM132043', 'TKT100051', 'AYTKT100051']
+
 const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
 const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
 const isOneOfKandiCourses = (course) => isThesisCourse(course) || isKandiExtraCourse(course)
@@ -90,9 +92,13 @@ const isRegularExtraCourse = (course) => !Object.keys(KANDI_EXTRA_COURSES).inclu
  * 
  * !! If the chosen date is NOT within the studyright it is attached to, it will be adjusted to be within 
  * the studyright automatically when entries are processed. !!
+ * 
+ * For DEFA courses after registration period between July and August sets date to 30.6.
  * **/
 
-const getMoocAttainmentDate = (registrationAttemptDate, completionDate, today, useManualCompletionDate = false) => {
+const getMoocAttainmentDate = ({ registrationAttemptDate, completionDate, today, useManualCompletionDate = false, courseCode }) => {  
+  if (DEFA_COURSES.includes(courseCode) && registrationAttemptDate && moment(registrationAttemptDate).isBetween(moment('2022-06-01'), moment('2022-08-01')))
+    return new Date('2022-06-30')
   if (useManualCompletionDate && completionDate) return completionDate
   if (!useManualCompletionDate && registrationAttemptDate) return registrationAttemptDate
   if (completionDate) return completionDate

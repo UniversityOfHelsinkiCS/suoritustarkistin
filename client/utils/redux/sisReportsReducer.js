@@ -123,6 +123,7 @@ const INITIAL_STATE = {
     errors: false,
     noEnrollment: false,
     student: '',
+    course: '',
     adminmode: window.localStorage.getItem('adminmode') || false,
     status: null
   }

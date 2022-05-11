@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Header, Input, Radio, Dropdown } from 'semantic-ui-react'
+import { Form, Header, Input, Radio, Dropdown, Select } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { debounce } from 'lodash'
 
 import { toggleFilterAction, setFilterAction } from 'Utilities/redux/sisReportsReducer'
+import { getAllCoursesAction, getUsersCoursesAction } from 'Utilities/redux/coursesReducer'
+import { formatCoursesForSelection } from '../../NewReportPage/InputOptions'
 
 const STATE_OPTIONS = [{
   text: 'All reports',
@@ -26,8 +28,13 @@ const STATE_OPTIONS = [{
 export default ({ reduxKey, action }) => {
   const [mounted, setMounted] = useState(false)
   const filters = useSelector((state) => state.sisReports.filters)
+  const user = useSelector((state) => state.user.data)
+  const courses = useSelector((state) => state.courses.data)
   const dispatch = useDispatch()
   const { offset, limit } = useSelector((state) => state.sisReports[reduxKey])
+
+  const courseOptions = formatCoursesForSelection(courses)
+  courseOptions.unshift({ key: '', text: 'All courses', value: '' })
 
   const toggle = (name) => dispatch(toggleFilterAction(name))
   const set = (name, value) => dispatch(setFilterAction(name, value))
@@ -39,6 +46,12 @@ export default ({ reduxKey, action }) => {
       dispatch(action({ offset, limit, filters }))
     setMounted(true)
   }, [filters])
+
+  useEffect(() => {
+    user.adminMode
+      ? dispatch(getAllCoursesAction())
+      : dispatch(getUsersCoursesAction(user.id))
+  }, [user])
 
   return <>
     <Header as='h3'>Include reports with:</Header>
@@ -69,6 +82,14 @@ export default ({ reduxKey, action }) => {
           label='Filter by student number'
           value={filters.search}
           onChange={(event) => debouncedSet('student', event.target.value)} />
+        <Form.Field
+          data-cy='course-filter'
+          control={Select}
+          search
+          label='Filter by course'
+          value={filters.course}
+          options={courseOptions}
+          onChange={((_, { value: courseId }) => set('course', courseId))} />
       </Form.Group>
       <Form.Group>
       </Form.Group>

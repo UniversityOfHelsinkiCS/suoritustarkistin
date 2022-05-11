@@ -46,7 +46,7 @@ const transformRows = (row) => {
   }
 }
 
-const getFilters = ({ isMooc, status, student, errors, noEnrollment, graderId, reporterId }) => {
+const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, graderId, reporterId }) => {
   const query = { }
 
   if (reporterId) {
@@ -64,6 +64,8 @@ const getFilters = ({ isMooc, status, student, errors, noEnrollment, graderId, r
     query.graderId = graderId
   if (student)
     query.studentNumber = { [Op.startsWith]: student }
+  if (courseId)
+    query.courseId = courseId
   if (status)
     query['$entry.registered$'] = status
   if (errors)

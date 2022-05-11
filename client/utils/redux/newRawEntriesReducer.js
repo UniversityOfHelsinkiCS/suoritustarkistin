@@ -24,8 +24,8 @@ export const setNewRawEntriesAction = (rawEntries) => {
   return { type: 'SET_NEW_RAW_ENTRIES', payload: rawEntries }
 }
 
-export const resetNewRawEntriesAction = () => ({
-  type: 'SET_NEW_RAW_ENTRIES', payload: { ...initialState }
+export const resetNewRawEntriesAction = (graderId = '') => ({
+  type: 'SET_NEW_RAW_ENTRIES', payload: { ...initialState, graderId }
 })
 
 export const resetNewRawEntriesConfirmAction = () => ({

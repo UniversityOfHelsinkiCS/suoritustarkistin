@@ -34,15 +34,13 @@ const styles = {
   }
 }
 
-
 const formatGradersForSelection = (data) => {
   const graders = data.map((g) => ({ key: g.employeeId, text: g.name, value: g.employeeId }))
   if (graders) return _.sortBy(graders, ['text'])
   return []
 }
 
-
-const formatCoursesForSelection = (data) => {
+export const formatCoursesForSelection = (data) => {
   const courses = data
     .map((c) => ({
       key: c.id,

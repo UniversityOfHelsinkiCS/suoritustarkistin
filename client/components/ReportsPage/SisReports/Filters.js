@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Header, Input, Radio, Dropdown } from 'semantic-ui-react'
+import { Form, Header, Input, Radio, Dropdown, Select } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { debounce } from 'lodash'
 
 import { toggleFilterAction, setFilterAction } from 'Utilities/redux/sisReportsReducer'
+import { formatCoursesForSelection } from '../../NewReportPage/InputOptions'
 
 const STATE_OPTIONS = [{
   text: 'All reports',
@@ -26,6 +27,8 @@ const STATE_OPTIONS = [{
 export default ({ reduxKey, action }) => {
   const [mounted, setMounted] = useState(false)
   const filters = useSelector((state) => state.sisReports.filters)
+  const courses = useSelector((state) => state.courses.data)
+  const courseOptions = formatCoursesForSelection(courses)
   const dispatch = useDispatch()
   const { offset, limit } = useSelector((state) => state.sisReports[reduxKey])
 
@@ -69,6 +72,13 @@ export default ({ reduxKey, action }) => {
           label='Filter by student number'
           value={filters.search}
           onChange={(event) => debouncedSet('student', event.target.value)} />
+        <Form.Field
+          control={Select}
+          search
+          label='Filter by course'
+          value={filters.course}
+          options={courseOptions}
+          onChange={((_, { value: courseId }) => set('course', courseId))} />
       </Form.Group>
       <Form.Group>
       </Form.Group>

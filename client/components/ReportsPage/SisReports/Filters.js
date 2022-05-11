@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { debounce } from 'lodash'
 
 import { toggleFilterAction, setFilterAction } from 'Utilities/redux/sisReportsReducer'
+import { getAllCoursesAction, getUsersCoursesAction } from 'Utilities/redux/coursesReducer'
 import { formatCoursesForSelection } from '../../NewReportPage/InputOptions'
 
 const STATE_OPTIONS = [{
@@ -27,6 +28,7 @@ const STATE_OPTIONS = [{
 export default ({ reduxKey, action }) => {
   const [mounted, setMounted] = useState(false)
   const filters = useSelector((state) => state.sisReports.filters)
+  const user = useSelector((state) => state.user.data)
   const courses = useSelector((state) => state.courses.data)
   const courseOptions = formatCoursesForSelection(courses)
   const dispatch = useDispatch()
@@ -42,6 +44,12 @@ export default ({ reduxKey, action }) => {
       dispatch(action({ offset, limit, filters }))
     setMounted(true)
   }, [filters])
+
+  useEffect(() => {
+    user.adminMode
+      ? dispatch(getAllCoursesAction())
+      : dispatch(getUsersCoursesAction(user.id))
+  }, [user])
 
   return <>
     <Header as='h3'>Include reports with:</Header>

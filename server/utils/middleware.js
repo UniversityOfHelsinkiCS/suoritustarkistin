@@ -99,11 +99,14 @@ const paginateMiddleware = (req, res, next) => {
 }
 
 const useFilters = (req, res, next) => {
-  const { student, errors, noEnrollment, status, adminmode, notSent } = req.query
+  logger.info(`Filters: ${JSON.stringify(req.query)}`)
+
+  const { student, course, errors, noEnrollment, status, adminmode, notSent } = req.query
   const graderId = !req.user.isAdmin ? req.user.id : null
   const reporterId = (req.user.isAdmin && adminmode === 'false') ? req.user.id : null
   const filters = {
     student: student || null,
+    courseId: course || null,
     errors: (errors === 'true'),
     notSent: (notSent === 'true'),
     noEnrollment: (noEnrollment === 'true'),

@@ -30,9 +30,11 @@ export default ({ reduxKey, action }) => {
   const filters = useSelector((state) => state.sisReports.filters)
   const user = useSelector((state) => state.user.data)
   const courses = useSelector((state) => state.courses.data)
-  const courseOptions = formatCoursesForSelection(courses)
   const dispatch = useDispatch()
   const { offset, limit } = useSelector((state) => state.sisReports[reduxKey])
+
+  const courseOptions = formatCoursesForSelection(courses)
+  courseOptions.unshift({ key: '', text: 'All courses', value: '' })
 
   const toggle = (name) => dispatch(toggleFilterAction(name))
   const set = (name, value) => dispatch(setFilterAction(name, value))

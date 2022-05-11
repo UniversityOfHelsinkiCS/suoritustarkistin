@@ -83,6 +83,7 @@ export default ({ reduxKey, action }) => {
           value={filters.search}
           onChange={(event) => debouncedSet('student', event.target.value)} />
         <Form.Field
+          data-cy='course-filter'
           control={Select}
           search
           label='Filter by course'

@@ -69,6 +69,8 @@ const TableColumns = ({ allowDelete }) => (
 )
 
 const TableBody = ({ user, rawEntries }) => {
+  const student = useSelector((state) => state.sisReports.filters.student)
+
   return (
     <Table.Body data-cy="report-table">
       {rawEntries.map((rawEntry) => {
@@ -76,6 +78,7 @@ const TableBody = ({ user, rawEntries }) => {
         return (
           <React.Fragment key={`row-${rawEntry.id}`}>
             <Table.Row
+              active={student && rawEntry.studentNumber.startsWith(student)}
               warning={rawEntry.entry.missingEnrolment}
               style={rawEntry.entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
             >

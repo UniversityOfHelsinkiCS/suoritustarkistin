@@ -1,12 +1,11 @@
 const logger = require('@utils/logger')
 const { SIS_LANGUAGES, isValidGrade } = require('@root/utils/validators')
+const { inProduction } = require('@utils/common')
+const { getBatchId } = require('@root/utils/common')
 const { getCompletions, postTransferredId } = require('../services/kurki')
 const { getEarlierAttainments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { inProduction } = require('@utils/common')
-const { getBatchId } = require('@root/utils/common')
-
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.language
@@ -20,17 +19,13 @@ const selectLanguage = (completion, course) => {
   return completionLanguage
 }
 
-const processKurkiEntries = async ({
-  kurkiId,
-  course,
-  grader
-}) => {
+const processKurkiEntries = async ({ kurkiId, course, grader }) => {
   try {
     const completions = await getCompletions(kurkiId)
 
     if (!completions) {
       logger.error({ message: `No frozen completions were found for the course ${kurkiId}` })
-      return { message: `No frozen completions were found for the course ${kurkiId}`}
+      return { message: `No frozen completions were found for the course ${kurkiId}` }
     }
 
     const courseStudentPairs = completions.reduce((pairs, completion) => {
@@ -46,67 +41,66 @@ const processKurkiEntries = async ({
     const batchId = getBatchId(course.courseCode)
     const date = new Date()
 
-    let matches = await completions.reduce(
-      async (matchesPromise, completion) => {
-        const matches = await matchesPromise
-        if (!isValidGrade(completion.grade)) {
-          logger.error({ message: `Invalid grade for student ${completion.studentNumber}: ${completion.grade}` })
+    let matches = await completions.reduce(async (matchesPromise, completion) => {
+      const matches = await matchesPromise
+      if (!isValidGrade(completion.grade)) {
+        logger.error({ message: `Invalid grade for student ${completion.studentNumber}: ${completion.grade}` })
+        return matches
+      }
+
+      const language = selectLanguage(completion, course)
+      let grade = completion.grade
+
+      if (completion && completion.studentNumber) {
+        if (grade === '-') {
+          logger.info({ message: `Student ${completion.studentNumber} did not finish the course and has grade -` })
           return matches
         }
-
-        const language = selectLanguage(completion, course)
-        let grade = completion.grade
-
-        if (completion && completion.studentNumber) {
-          if (grade === "-") {
-            logger.info({ message: `Student ${completion.studentNumber} did not finish the course and has grade -`})
-            return matches
-          }
-          if (grade === "+") {
-            logger.info({ message: `Student ${completions.studentNumber} has grade "+", changed it to "Hyv." `})
-            grade = "Hyv."
-          }
-          const credits = completion.credits || course.credits
-          if (!isImprovedGrade(earlierAttainments, completion.studentNumber, grade, completion.courseFinishDate, credits)) {
-            logger.info({ message: `Student ${completion.studentNumber} already has a higher grade for the course`})
-            return matches
-          } else if (matches.some((c) => c.studentNumber === completion.studentNumber)) {
-            return matches
-          } else {
-            return matches.concat({
-              studentNumber: completion.studentNumber,
-              batchId: batchId,
-              grade: grade,
-              language: language,
-              attainmentDate: completion.courseFinishDate || date,
-              graderId: grader.id,
-              reporterId: null,
-              courseId: course.id,
-              credits
-            })
-          }
+        if (grade === '+') {
+          logger.info({ message: `Student ${completions.studentNumber} has grade "+", changed it to "Hyv." ` })
+          grade = 'Hyv.'
+        }
+        const credits = completion.credits || course.credits
+        if (
+          !isImprovedGrade(earlierAttainments, completion.studentNumber, grade, completion.courseFinishDate, credits)
+        ) {
+          logger.info({ message: `Student ${completion.studentNumber} already has a higher grade for the course` })
+          return matches
+        } else if (matches.some((c) => c.studentNumber === completion.studentNumber)) {
+          return matches
         } else {
-          return matches
+          return matches.concat({
+            studentNumber: completion.studentNumber,
+            batchId: batchId,
+            grade: grade,
+            language: language,
+            attainmentDate: completion.courseFinishDate || date,
+            graderId: grader.id,
+            reporterId: null,
+            courseId: course.id,
+            credits
+          })
         }
-      },
-      []
-    )
+      } else {
+        return matches
+      }
+    }, [])
     if (!matches) matches = []
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
-  
+
     let result = await automatedAddToDb(matches, course, batchId, false)
 
-    if ((result.message === "success" || result.message === "no new entries") && inProduction) {
+    if ((result.message === 'success' || result.message === 'no new entries') && inProduction) {
       result = await postTransferredId(kurkiId)
     }
 
     return result
   } catch (error) {
     logger.error({ message: `Error processing new completions: ${error.message}` })
-    return { message: `Error processing new completions: ${error.message}`}
+    return { message: `Error processing new completions: ${error.message}` }
   }
 }
 
-module.exports = { 
+module.exports = {
   processKurkiEntries
 }

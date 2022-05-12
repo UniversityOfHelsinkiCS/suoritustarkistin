@@ -1,10 +1,10 @@
-const api = require('../config/importerApi')
 const qs = require('querystring')
 const _ = require('lodash')
+const api = require('../config/importerApi')
 const logger = require('../utils/logger')
 
 const handleImporterApiErrors = (e) => {
-  if (e.code === "EAI_AGAIN") throw new Error("Network error. Reload the page and try again")
+  if (e.code === 'EAI_AGAIN') throw new Error('Network error. Reload the page and try again')
   if (e.response.data.status === 404) throw new Error(e.response.data.message)
   throw new Error(e.toString())
 }
@@ -21,12 +21,14 @@ const chunkifyApi = async (data, url, size = 50) => {
 
 // TODO: Create endpoint to db.api for batch converting employee ids
 async function getEmployees(employeeIds) {
-  const responses = await Promise.all(employeeIds.map(async (employeeId) => {
-    const resp = await api.get(`employees/${employeeId}`)
-    if (!resp.data || !resp.data.length)
-      throw new Error(`No person found from Sisu with employee number ${employeeId}`)
-    return resp
-  }))
+  const responses = await Promise.all(
+    employeeIds.map(async (employeeId) => {
+      const resp = await api.get(`employees/${employeeId}`)
+      if (!resp.data || !resp.data.length)
+        throw new Error(`No person found from Sisu with employee number ${employeeId}`)
+      return resp
+    })
+  )
   return _.flatten(responses.map((resp) => resp.data))
 }
 
@@ -87,7 +89,7 @@ async function resolveUser(formData) {
 
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
- * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads. 
+ * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads.
  */
 const getEarlierAttainments = async (data) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
@@ -101,7 +103,7 @@ const getEarlierAttainments = async (data) => {
 
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
- * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads. 
+ * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads.
  */
 const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
@@ -175,7 +177,6 @@ const getCourseUnitEnrolments = async (code) => {
     handleImporterApiErrors(e)
   }
 }
-
 
 module.exports = {
   getEmployees,

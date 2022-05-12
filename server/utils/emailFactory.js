@@ -1,6 +1,7 @@
-const SUOTAR_URL = process.env.NODE_ENV === 'production'
-  ? 'https://opetushallinto.cs.helsinki.fi/suoritustarkistin'
-  : 'https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin'
+const SUOTAR_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://opetushallinto.cs.helsinki.fi/suoritustarkistin'
+    : 'https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin'
 
 const Template = (content, title) => `
 <!doctype html>
@@ -127,15 +128,18 @@ const Template = (content, title) => `
 </html>
 `
 
-const MissingEnrollmentTemplate = (title, missingStudents, batchId) => Template(
-  `
+const MissingEnrollmentTemplate = (title, missingStudents, batchId) =>
+  Template(
+    `
 <tr>
   <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
       <tr>
         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
           <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><b>Missing enrollments</b></p>
-          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">New report created with ${missingStudents.length > 1 ? `${missingStudents.length} missing enrollments` : 'missing enrollment'}.</p>
+          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">New report created with ${
+            missingStudents.length > 1 ? `${missingStudents.length} missing enrollments` : 'missing enrollment'
+          }.</p>
           <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
           Following students are missing enrollment:
           <ul>
@@ -162,10 +166,13 @@ const MissingEnrollmentTemplate = (title, missingStudents, batchId) => Template(
     </table>
   </td>
 </tr>
-`, title)
+`,
+    title
+  )
 
-const FailedInSisuTemplate = (title, batchId) => Template(
-  `
+const FailedInSisuTemplate = (title, batchId) =>
+  Template(
+    `
 <tr>
   <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
@@ -192,13 +199,18 @@ const FailedInSisuTemplate = (title, batchId) => Template(
     </table>
   </td>
 </tr>
-`, title)
+`,
+    title
+  )
 
-const missingEnrolmentReport = (missingStudents, batchId) => MissingEnrollmentTemplate(`New completions reported with missing enrollment `, missingStudents, batchId)
+const missingEnrolmentReport = (missingStudents, batchId) =>
+  MissingEnrollmentTemplate(`New completions reported with missing enrollment `, missingStudents, batchId)
 
 const failedInSisuReport = (batchId) => FailedInSisuTemplate(`Some completions failed in Sisu`, batchId)
 
-const forNewUser = (name) => Template(`
+const forNewUser = (name) =>
+  Template(
+    `
 <tr>
   <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
@@ -227,9 +239,13 @@ const forNewUser = (name) => Template(`
       </tr>
     </table>
   </td>
-</tr>`, 'A Suoritustarkistin user account has been created for you')
+</tr>`,
+    'A Suoritustarkistin user account has been created for you'
+  )
 
-const newUserForAdmin = (name, email) => Template(`
+const newUserForAdmin = (name, email) =>
+  Template(
+    `
 <tr>
   <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
@@ -256,6 +272,8 @@ const newUserForAdmin = (name, email) => Template(`
       </tr>
     </table>
   </td>
-</tr>`, 'New user in Suotar 👀')
+</tr>`,
+    'New user in Suotar 👀'
+  )
 
 module.exports = { newUserForAdmin, forNewUser, missingEnrolmentReport, failedInSisuReport }

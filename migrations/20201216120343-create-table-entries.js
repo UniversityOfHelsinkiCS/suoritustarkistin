@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -7,7 +7,7 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       personId: {
         type: Sequelize.STRING,
@@ -26,7 +26,7 @@ module.exports = {
         allowNull: false
       },
       completionLanguage: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       completionDate: {
         type: Sequelize.DATE,
@@ -34,14 +34,14 @@ module.exports = {
       },
       hasSent: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false,
+        defaultValue: false
       },
       senderId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: 'users',
-            key: 'id'
+          model: 'users',
+          key: 'id'
         }
       },
       rawEntryId: {
@@ -68,5 +68,5 @@ module.exports = {
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('entries')
-  },
-};
+  }
+}

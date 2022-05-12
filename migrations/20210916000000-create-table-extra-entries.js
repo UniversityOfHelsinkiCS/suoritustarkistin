@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -6,7 +6,7 @@ module.exports = {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       personId: {
         type: Sequelize.STRING,
@@ -82,5 +82,5 @@ module.exports = {
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('extra_entries')
-  },
-};
+  }
+}

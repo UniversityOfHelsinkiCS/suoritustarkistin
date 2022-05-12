@@ -78,12 +78,13 @@ export default (state = { data: [], fetchedUser: {} }, action) => {
         error: true
       }
     case 'FETCH_USER_SUCCESS': {
-      if (!action.response || !Object.keys(action.response).length) return {
-        ...state,
-        fetchedUser: { error: 'No user found!' },
-        pending: false,
-        error: true
-      }
+      if (!action.response || !Object.keys(action.response).length)
+        return {
+          ...state,
+          fetchedUser: { error: 'No user found!' },
+          pending: false,
+          error: true
+        }
       return {
         ...state,
         fetchedUser: action.response,

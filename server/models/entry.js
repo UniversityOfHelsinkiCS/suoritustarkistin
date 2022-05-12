@@ -1,6 +1,7 @@
 'use strict'
 
 const Sequelize = require('sequelize')
+
 const Op = Sequelize.Op
 
 /**
@@ -51,7 +52,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         unique: true
       }
-    }, {})
+    },
+    {}
+  )
   Entry.associate = (models) => {
     Entry.belongsTo(models.raw_entries, { foreignKey: 'rawEntryId', as: 'rawEntry' })
     Entry.belongsTo(models.users, { foreignKey: 'senderId', as: 'sender', onDelete: 'SET NULL' })
@@ -73,11 +76,7 @@ module.exports = (sequelize, DataTypes) => {
   Entry.getMissingEnrollments = function () {
     return this.findAll({
       where: {
-        [Op.or]: [
-          { courseUnitId: null },
-          { courseUnitRealisationId: null },
-          { assessmentItemId: null }
-        ]
+        [Op.or]: [{ courseUnitId: null }, { courseUnitRealisationId: null }, { assessmentItemId: null }]
       },
       raw: true
     })

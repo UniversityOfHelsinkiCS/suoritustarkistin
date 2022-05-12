@@ -28,9 +28,7 @@ transports.push(
       winston.format.json(),
       winston.format.colorize(),
       winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-      winston.format.printf(
-        (info) => `${info.timestamp} ${info.level}: ${info.message}`
-      )
+      winston.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)
     )
   })
 )

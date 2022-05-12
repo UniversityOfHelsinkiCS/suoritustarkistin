@@ -1,26 +1,14 @@
-const db = require('../models/index')
 const { flatten } = require('lodash')
-const {
-  isValidStudentId,
-  isValidGrade,
-  isValidCreditAmount,
-  isValidCourseCode
-} = require('../../utils/validators')
-const { processEntries } = require('./processEntries')
-const processExtraEntries = require('./processExtraEntries')
 const logger = require('@utils/logger')
 const { getBatchId } = require('@root/utils/common')
+const db = require('../models/index')
+const { isValidStudentId, isValidGrade, isValidCreditAmount, isValidCourseCode } = require('../../utils/validators')
+const { processEntries } = require('./processEntries')
+const processExtraEntries = require('./processExtraEntries')
 
+const LANGUAGES = ['fi', 'sv', 'en']
 
-const LANGUAGES = ["fi", "sv", "en"]
-
-const validateEntry = ({
-  studentId,
-  grade,
-  credits,
-  language,
-  course
-}) => {
+const validateEntry = ({ studentId, grade, credits, language, course }) => {
   if (!isValidStudentId(studentId)) {
     throw new Error(`'${studentId}' is not valid student id`)
   }
@@ -38,14 +26,7 @@ const validateEntry = ({
   }
 }
 
-const processManualEntry = async ({
-  graderId,
-  reporterId,
-  courseId,
-  date,
-  data,
-  isKandi
-}, transaction) => {
+const processManualEntry = async ({ graderId, reporterId, courseId, date, data, isKandi }, transaction) => {
   const toRawEntry = async (rawEntry) => {
     await validateEntry(rawEntry)
 
@@ -89,7 +70,10 @@ const processManualEntry = async ({
     })
   }
 
-  if (!course) throw new Error('Course information missing! Check that you have given a default course or each completion has its own course')
+  if (!course)
+    throw new Error(
+      'Course information missing! Check that you have given a default course or each completion has its own course'
+    )
 
   const grader = await db.users.findOne({
     where: {
@@ -101,13 +85,9 @@ const processManualEntry = async ({
 
   const batchId = getBatchId(course.courseCode)
 
-  const rawEntries = await Promise.all(data
-    .filter(({ isExtra }) => !isExtra)
-    .map(toRawEntry))
+  const rawEntries = await Promise.all(data.filter(({ isExtra }) => !isExtra).map(toRawEntry))
 
-  const extraRawEntries = await Promise.all(data
-    .filter(({ isExtra }) => isExtra)
-    .map(toRawEntry))
+  const extraRawEntries = await Promise.all(data.filter(({ isExtra }) => isExtra).map(toRawEntry))
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
   const newExtraRawEntries = await db.raw_entries.bulkCreate(flatten(extraRawEntries), { returning: true, transaction })
@@ -127,9 +107,22 @@ const processManualEntry = async ({
       message: 'Entries success',
       amount: success.length + successExtras.length
     })
-    return { message: "success", success: success.concat(successExtras), failed: failed.concat(failedExtras), batchId, isMissingEnrollment, courseCode: course.courseCode }
+    return {
+      message: 'success',
+      success: success.concat(successExtras),
+      failed: failed.concat(failedExtras),
+      batchId,
+      isMissingEnrollment,
+      courseCode: course.courseCode
+    }
   } else {
-    return { message: "error", success: success.concat(successExtras), failed: failed.concat(failedExtras), batchId, courseCode: course.courseCode }
+    return {
+      message: 'error',
+      success: success.concat(successExtras),
+      failed: failed.concat(failedExtras),
+      batchId,
+      courseCode: course.courseCode
+    }
   }
 }
 

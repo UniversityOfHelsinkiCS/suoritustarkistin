@@ -57,13 +57,13 @@ jobs:
     name: 'Report deployment success to Suotar-channel'
     runs-on: ubuntu-latest
     needs:
-    - lint
-    - build-and-test
-    - publish
+      - lint
+      - build-and-test
+      - publish
     if: success()
     steps:
-      - name: "Send notification to Slack"
-        uses:  UniversityOfHelsinkiCS/slackbot-action@v1.4.2
+      - name: 'Send notification to Slack'
+        uses: UniversityOfHelsinkiCS/slackbot-action@v1.4.2
         with:
           webhook-url: ${{ secrets.SLACKBOT_URL }}
           message-type: deployment
@@ -74,13 +74,13 @@ jobs:
     name: 'Report deployment failure to Suotar-channel'
     runs-on: ubuntu-latest
     needs:
-    - lint
-    - build-and-test
-    - publish
+      - lint
+      - build-and-test
+      - publish
     if: failure()
     steps:
-      - name: "Send notification to Slack"
-        uses:  UniversityOfHelsinkiCS/slackbot-action@v1.4.2
+      - name: 'Send notification to Slack'
+        uses: UniversityOfHelsinkiCS/slackbot-action@v1.4.2
         with:
           webhook-url: ${{ secrets.SLACKBOT_URL }}
           message-type: deployment-failure

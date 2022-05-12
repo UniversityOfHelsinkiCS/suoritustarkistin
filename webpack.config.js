@@ -4,6 +4,7 @@ const htmlTemplate = require('html-webpack-template')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
+
 const { SENTRY_RELEASE, NODE_ENV } = process.env
 const sentryRelease = !SENTRY_RELEASE ? 'unknown' : SENTRY_RELEASE
 
@@ -20,24 +21,23 @@ module.exports = (env, argv) => {
   const additionalOptimizations =
     NODE_ENV === 'production' || NODE_ENV === 'staging'
       ? {
-        minimizer: [
-          // Make CSS smaller
-          new OptimizeCssAssetsPlugin()
-        ]
-      }
+          minimizer: [
+            // Make CSS smaller
+            new OptimizeCssAssetsPlugin()
+          ]
+        }
       : {}
 
   const additionalEntries =
-    NODE_ENV === 'production' || NODE_ENV === 'staging'
-      ? []
-      : ['webpack-hot-middleware/client?http://localhost:8000']
+    NODE_ENV === 'production' || NODE_ENV === 'staging' ? [] : ['webpack-hot-middleware/client?http://localhost:8000']
 
   const BASE_PATH = process.env.BASE_PATH || '/'
 
   return {
-    mode: (NODE_ENV === 'production' || NODE_ENV === 'staging') // Webpack mode must be prod, dev or none
-      ? 'production'
-      : 'development',
+    mode:
+      NODE_ENV === 'production' || NODE_ENV === 'staging' // Webpack mode must be prod, dev or none
+        ? 'production'
+        : 'development',
     output: {
       publicPath: BASE_PATH
     },
@@ -88,8 +88,7 @@ module.exports = (env, argv) => {
         inject: false,
         template: htmlTemplate,
         appMountId: 'root',
-        headHtmlSnippet:
-          '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+        headHtmlSnippet: '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
       }),
       // Extract css
       new MiniCssExtractPlugin({

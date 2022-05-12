@@ -5,11 +5,8 @@ import { getHeaders, possibleUsers, setHeaders } from 'Utilities/fakeShibboleth'
 import { loginAction } from 'Utilities/redux/userReducer'
 import { inProduction } from 'Utilities/common'
 
-
 export default () => {
-  const [employeeNumber, setEmployeenumber] = useState(
-    getHeaders().employeeNumber
-  )
+  const [employeeNumber, setEmployeenumber] = useState(getHeaders().employeeNumber)
   const dispatch = useDispatch()
 
   const chooseUser = ({ target }) => {

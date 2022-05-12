@@ -1,11 +1,10 @@
-const moment = require('moment')
-
 import callBuilder from '../apiConnection'
 
+const moment = require('moment')
 
 const initialState = {
   rawData: '',
-  data: null, 
+  data: null,
   courseId: null,
   date: moment().format('D.M.YYYY')
 }

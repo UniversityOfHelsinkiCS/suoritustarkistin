@@ -6,36 +6,36 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       courseId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'courses',
-          key: 'id',
+          key: 'id'
         },
-        onDelete: 'SET NULL',
+        onDelete: 'SET NULL'
       },
       schedule: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       active: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.BOOLEAN
       },
       slug: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-      },
+        type: Sequelize.DATE
+      }
     })
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('jobs')
-  },
+  }
 }

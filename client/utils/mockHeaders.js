@@ -1,5 +1,6 @@
-const ITEM_NAME = 'fakeUser'
 import { testUsers } from '../../utils/common'
+
+const ITEM_NAME = 'fakeUser'
 
 export const possibleUsers = [
   {

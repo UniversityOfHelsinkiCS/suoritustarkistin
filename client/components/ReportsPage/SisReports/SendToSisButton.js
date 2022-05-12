@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { sendEntriesToSisAction } from 'Utilities/redux/sisReportsReducer'
 
-
 export default ({ idsToSend }) => {
   const { entries, extraEntries } = idsToSend
   const dispatch = useDispatch()
@@ -16,7 +15,8 @@ export default ({ idsToSend }) => {
     dispatch(sendEntriesToSisAction(entries, extraEntries))
   }
 
-  const getConfirmMessage = () => `Are you sure? Sending ${entries.length} ${extraEntries.length ? `+ ${extraEntries.length}` : ''} completion(s)`
+  const getConfirmMessage = () =>
+    `Are you sure? Sending ${entries.length} ${extraEntries.length ? `+ ${extraEntries.length}` : ''} completion(s)`
 
   if (!entries.length && !extraEntries.length) return null
 
@@ -27,9 +27,7 @@ export default ({ idsToSend }) => {
           positive
           content="Send completions to Sisu"
           loading={reports.pending}
-          disabled={
-            reports.pending || (!entries.length && !extraEntries.length)
-          }
+          disabled={reports.pending || (!entries.length && !extraEntries.length)}
         />
       }
       open={isOpen}
@@ -41,9 +39,7 @@ export default ({ idsToSend }) => {
           data-cy="sendButton"
           onClick={sendNewEntries}
           loading={reports.pending}
-          disabled={
-            reports.pending || (!entries.length && !extraEntries)
-          }
+          disabled={reports.pending || (!entries.length && !extraEntries)}
           content={getConfirmMessage()}
         />
       }

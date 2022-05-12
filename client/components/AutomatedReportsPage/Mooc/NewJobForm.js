@@ -6,7 +6,6 @@ import * as _ from 'lodash'
 import { addJobAction } from 'Utilities/redux/moocJobsReducer'
 import { isValidJob, isValidSchedule } from 'Root/utils/validators'
 
-
 export default ({ close }) => {
   const dispatch = useDispatch()
   const courses = useSelector((state) => state.courses.data)
@@ -27,7 +26,7 @@ export default ({ close }) => {
       <Form width={4}>
         <Form.Field
           data-cy="add-job-schedule"
-          required={true}
+          required
           control={Input}
           label="Cron schedule"
           placeholder="* * * * *"
@@ -40,7 +39,7 @@ export default ({ close }) => {
           data-cy="add-job-course"
           selection
           search
-          required={true}
+          required
           label="Course"
           options={courses.map((course) => ({
             key: course.id,
@@ -51,7 +50,7 @@ export default ({ close }) => {
           onChange={(e, d) => setData({ ...data, courseId: d.value })}
         />
         <Form.Dropdown
-          required={true}
+          required
           label="Grader"
           selection
           search
@@ -60,9 +59,8 @@ export default ({ close }) => {
             value: grader.id,
             text: grader.name
           }))}
-          onChange={(e, { value }) => setData({ ...data, graderId: value  })}
+          onChange={(e, { value }) => setData({ ...data, graderId: value })}
           data-cy="add-job-grader"
-          label="Grader"
           value={data.graderId || null}
         />
         <Form.Field
@@ -89,12 +87,7 @@ export default ({ close }) => {
           onChange={(e, d) => setData({ ...data, useManualCompletionDate: d.checked })}
         />
         <Form.Group>
-          <Form.Field
-            negative
-            control={Button}
-            content="Cancel"
-            onClick={() => close()}
-          />
+          <Form.Field negative control={Button} content="Cancel" onClick={() => close()} />
           <Form.Field
             data-cy="add-job-confirm"
             positive

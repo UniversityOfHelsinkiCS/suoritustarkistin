@@ -36,7 +36,9 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id'
         }
       }
-    }, {})
+    },
+    {}
+  )
   RawEntry.getBatchCount = function (filters) {
     return this.findAll({
       where: {
@@ -54,10 +56,7 @@ module.exports = (sequelize, DataTypes) => {
     const orphans = await this.findAll({
       where: {
         batchId,
-        [sequelize.Sequelize.Op.and]: [
-          { '$entry.id$': null },
-          { '$extraEntry.id$': null }
-        ]
+        [sequelize.Sequelize.Op.and]: [{ '$entry.id$': null }, { '$extraEntry.id$': null }]
       },
       include: [
         { association: 'entry', attributes: [] },
@@ -76,26 +75,28 @@ module.exports = (sequelize, DataTypes) => {
   RawEntry.getByBatch = async function (batchId) {
     const rows = await this.findAll({
       where: { batchId },
-      include: [
-        { association: 'entry' },
-        { association: 'extraEntry' }
-      ]
+      include: [{ association: 'entry' }, { association: 'extraEntry' }]
     })
 
     return rows.map((row) => {
       const item = row.get({ plain: true })
       const { extraEntry, entry, ...rest } = item
-      if (extraEntry && extraEntry.id)
-        return { ...rest, entry: { ...extraEntry, type: 'EXTRA_ENTRY' } }
+      if (extraEntry && extraEntry.id) return { ...rest, entry: { ...extraEntry, type: 'EXTRA_ENTRY' } }
       return {
-        ...rest, entry: { ...entry, type: 'ENTRY' }
+        ...rest,
+        entry: { ...entry, type: 'ENTRY' }
       }
     })
   }
 
   RawEntry.associate = (models) => {
     RawEntry.hasOne(models.entries, { foreignKey: 'rawEntryId', as: 'entry', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-    RawEntry.hasOne(models.extra_entries, { foreignKey: 'rawEntryId', as: 'extraEntry', onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    RawEntry.hasOne(models.extra_entries, {
+      foreignKey: 'rawEntryId',
+      as: 'extraEntry',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    })
     RawEntry.belongsTo(models.users, { foreignKey: 'reporterId', as: 'reporter', onDelete: 'SET NULL' })
     RawEntry.belongsTo(models.users, { foreignKey: 'graderId', as: 'grader', onDelete: 'SET NULL' })
     RawEntry.belongsTo(models.courses, { foreignKey: 'courseId', as: 'course' })

@@ -2,16 +2,16 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Card } from 'semantic-ui-react'
 
-
 export default () => {
   const { mooc } = useSelector((state) => state.apiChecks)
 
   const getCardRow = (instance, attribute) => (
     <div>
-      <b>{attribute}: </b>{instance[attribute] ? instance[attribute] : 'null'}
+      <b>{attribute}: </b>
+      {instance[attribute] ? instance[attribute] : 'null'}
     </div>
   )
-  
+
   const getEnrollments = () => {
     if (!mooc) return ''
     if (mooc && !mooc.length && !mooc.error) return 'The course has no completions'
@@ -37,10 +37,5 @@ export default () => {
     )
   }
 
-  return (
-    <div>
-      {getEnrollments()}
-    </div>
-  
-  )
+  return <div>{getEnrollments()}</div>
 }

@@ -5,7 +5,6 @@ import * as _ from 'lodash'
 
 import JobRow from 'Components/AutomatedReportsPage/Mooc/JobRow'
 
-
 export default () => {
   const jobs = useSelector((state) => state.moocJobs)
 
@@ -13,7 +12,7 @@ export default () => {
 
   return (
     <Segment>
-      <Loader size='big' active={jobs.pending} />
+      <Loader size="big" active={jobs.pending} />
       <Table celled>
         <Table.Header>
           <Table.Row>

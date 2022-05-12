@@ -3,7 +3,6 @@ import { Button, Modal } from 'semantic-ui-react'
 
 import EditCourseForm from 'Components/CoursesPage/EditCourseForm'
 
-
 export default ({ course }) => {
   const [showForm, setShowForm] = useState(false)
 
@@ -12,10 +11,7 @@ export default ({ course }) => {
   return (
     <Modal
       trigger={
-        <Button
-          data-cy={`${course.courseCode}-edit-button`}
-          onClick={() => setShowForm(true)}
-        >
+        <Button data-cy={`${course.courseCode}-edit-button`} onClick={() => setShowForm(true)}>
           Edit
         </Button>
       }

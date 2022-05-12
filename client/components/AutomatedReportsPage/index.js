@@ -26,7 +26,7 @@ export default () => {
       menuItem: (
         <Menu.Item key="kurki-jobs" data-cy="kurki-jobs-tab">
           <Icon name="folder open" />
-            Kurki
+          Kurki
         </Menu.Item>
       ),
       render: () => (

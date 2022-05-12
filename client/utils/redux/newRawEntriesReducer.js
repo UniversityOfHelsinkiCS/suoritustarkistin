@@ -1,6 +1,5 @@
 import callBuilder from '../apiConnection'
 
-
 const initialState = {
   rawData: '',
   data: null,
@@ -25,7 +24,8 @@ export const setNewRawEntriesAction = (rawEntries) => {
 }
 
 export const resetNewRawEntriesAction = (graderId = '') => ({
-  type: 'SET_NEW_RAW_ENTRIES', payload: { ...initialState, graderId }
+  type: 'SET_NEW_RAW_ENTRIES',
+  payload: { ...initialState, graderId }
 })
 
 export const resetNewRawEntriesConfirmAction = () => ({

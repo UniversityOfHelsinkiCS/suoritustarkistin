@@ -46,7 +46,7 @@ const addUser = async (req, res, next) => {
     const { courses, ...user } = req.body
     const newUser = await db.users.create(user)
     if (courses && courses.length)
-      await Promise.all(courses.map((course) => newUser.addCourse(course, { through: "users_courses" })))
+      await Promise.all(courses.map((course) => newUser.addCourse(course, { through: 'users_courses' })))
     res.status(200).json(newUser)
     sendEmail({
       to: newUser.email,
@@ -54,14 +54,16 @@ const addUser = async (req, res, next) => {
       cc: null,
       subject: 'A Suoritustarkistin user account has been created for you',
       html: forNewUser(newUser.name),
-      attachments: [{
-        filename: 'suotar.png',
-        path: `${process.cwd()}/client/assets/suotar.png`,
-        cid: 'toskasuotarlogoustcid'
-      }]
+      attachments: [
+        {
+          filename: 'suotar.png',
+          path: `${process.cwd()}/client/assets/suotar.png`,
+          cid: 'toskasuotarlogoustcid'
+        }
+      ]
     })
   } catch (e) {
-    if (e.message === "Validation error") {
+    if (e.message === 'Validation error') {
       logger.error(`User with the uid already exists`)
       return res.status(400).json({ error: `User with the uid already exists` })
     }
@@ -130,4 +132,3 @@ module.exports = {
   fetchUserDetails,
   deleteUser
 }
-

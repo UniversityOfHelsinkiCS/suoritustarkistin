@@ -5,7 +5,6 @@ import * as _ from 'lodash'
 
 import CourseRow from 'Components/CoursesPage/CourseRow'
 
-
 export default () => {
   const courses = useSelector((state) => state.courses.data)
   const graders = useSelector((state) => state.graders.data)
@@ -14,7 +13,7 @@ export default () => {
 
   return (
     <Segment>
-      <Grid celled="internally" style={{wordWrap: 'anywhere'}}>
+      <Grid celled="internally" style={{ wordWrap: 'anywhere' }}>
         <Grid.Row>
           <Grid.Column width={3}>
             <Header as="h4">Name</Header>

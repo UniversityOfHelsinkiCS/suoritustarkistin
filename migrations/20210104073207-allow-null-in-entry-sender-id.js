@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -10,10 +10,10 @@ module.exports = {
       type: Sequelize.INTEGER,
       allowNull: true,
       references: {
-          model: 'users',
-          key: 'id'
+        model: 'users',
+        key: 'id'
       }
     })
   },
   down: () => {}
-};
+}

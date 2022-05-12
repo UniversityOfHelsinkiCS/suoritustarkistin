@@ -1,5 +1,6 @@
-const _ = require('lodash')
 import callBuilder from '../apiConnection'
+
+const _ = require('lodash')
 /**
  * Actions and reducers are in the same file for readability
  */
@@ -10,16 +11,14 @@ const stringify = (params) => {
 }
 
 export const getAllSisReportsAction = ({ offset = 0, limit, filters }) => {
-  if (!filters)
-    filters = { adminmode : window.localStorage.getItem('adminmode') || false }
+  if (!filters) filters = { adminmode: window.localStorage.getItem('adminmode') || false }
   const route = `/sis_reports?${stringify({ offset, limit, ...filters })}`
   const prefix = 'GET_ALL_SIS_REPORTS'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
 
 export const getAllMoocSisReportsAction = ({ offset = 0, limit, filters }) => {
-  if (!filters)
-    filters = { adminmode : window.localStorage.getItem('adminmode') || false }
+  if (!filters) filters = { adminmode: window.localStorage.getItem('adminmode') || false }
   const route = `/sis_mooc_reports?${stringify({ offset, limit, ...filters })}`
   const prefix = 'GET_ALL_MOOC_SIS_REPORTS'
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })

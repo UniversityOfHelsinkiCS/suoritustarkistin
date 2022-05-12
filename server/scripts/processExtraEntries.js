@@ -1,7 +1,7 @@
-const db = require('../models/index')
 const Sequelize = require('sequelize')
-const Op = Sequelize.Op
 const moment = require('moment')
+const logger = require('@utils/logger')
+const db = require('../models/index')
 const {
   getEmployees,
   getStudents,
@@ -11,11 +11,12 @@ const {
 } = require('../services/importer')
 const { generateSisuId } = require('../utils/common')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
-const logger = require('@utils/logger')
+
+const Op = Sequelize.Op
 
 const COMMON = {
-  gradeId: "1",
-  gradeScaleId: "sis-hyl-hyv"
+  gradeId: '1',
+  gradeScaleId: 'sis-hyl-hyv'
 }
 
 const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) => {
@@ -51,7 +52,9 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       return { courseCode, studentNumber }
     })
   )
-  const courseUnitIds = await getCourseUnitIds(courses.filter(({ useAsExtra }) => useAsExtra).map(({ courseCode }) => courseCode))
+  const courseUnitIds = await getCourseUnitIds(
+    courses.filter(({ useAsExtra }) => useAsExtra).map(({ courseCode }) => courseCode)
+  )
   createdRawEntries.forEach((rawEntry) => {
     const course = courses.find((c) => c.id === rawEntry.courseId)
     let completionDate = moment(rawEntry.attainmentDate)
@@ -59,13 +62,16 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
     const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
     const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
 
-    if (earlierAttainments.find(({ studentNumber, courseCode, attainments }) =>
-      rawEntry.studentNumber === studentNumber &&
-      course.courseCode === courseCode &&
-      attainments.length) &&
+    if (
+      earlierAttainments.find(
+        ({ studentNumber, courseCode, attainments }) =>
+          rawEntry.studentNumber === studentNumber && course.courseCode === courseCode && attainments.length
+      ) &&
       requireMatluStudyRight // Skip earlier completions only for kandi
     ) {
-      logger.warn({ message: `Attainment already registered with code ${course.courseCode} for student ${rawEntry.studentNumber}` })
+      logger.warn({
+        message: `Attainment already registered with code ${course.courseCode} for student ${rawEntry.studentNumber}`
+      })
       return
     }
 
@@ -87,9 +93,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
     }
 
     const studyRightsForPerson = studyRights.filter(({ personId }) => student.id === personId)
-    let { id: studyRightId } = resolveStudyRight(
-      studyRightsForPerson, rawEntry.attainmentDate, requireMatluStudyRight
-    )
+    let { id: studyRightId } = resolveStudyRight(studyRightsForPerson, rawEntry.attainmentDate, requireMatluStudyRight)
     if (!studyRightId)
       [studyRightId, completionDate] = getClosestStudyRight(studyRightsForPerson, rawEntry.attainmentDate)
     const { courseCode } = course
@@ -115,8 +119,7 @@ const getActiveCourseUnitId = (courseUnits) => {
   const now = moment()
   return courseUnits.find(({ validityPeriod }) => {
     if (!validityPeriod.endDate) return moment(validityPeriod.startDate).isSameOrBefore(now)
-    return moment(validityPeriod.startDate).isSameOrBefore(now) &&
-      moment(validityPeriod.endDate).isAfter(now) // dates are half-open intervals, do not include end date
+    return moment(validityPeriod.startDate).isSameOrBefore(now) && moment(validityPeriod.endDate).isAfter(now) // dates are half-open intervals, do not include end date
   })
 }
 

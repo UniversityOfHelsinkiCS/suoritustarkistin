@@ -2,16 +2,16 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Accordion, Card } from 'semantic-ui-react'
 
-
 export default ({ instance, active, setActive }) => {
   const { eduweb } = useSelector((state) => state.apiChecks)
 
   const getCardRow = (instance, attribute) => (
     <div>
-      <b>{attribute}: </b>{instance[attribute]}
+      <b>{attribute}: </b>
+      {instance[attribute]}
     </div>
   )
-  
+
   const getEnrollments = (url) => {
     const enrollments = eduweb?.enrollments[url]
     if (!enrollments || !enrollments.length) return <b>Instance has no enrollments</b>
@@ -36,17 +36,15 @@ export default ({ instance, active, setActive }) => {
       {getCardRow(instance, 'url')}
       {getCardRow(instance, 'alkupvm')}
       {getCardRow(instance, 'loppupvm')}
-      <Accordion fluid styled style={{ marginTop: '20px'}}>
+      <Accordion fluid styled style={{ marginTop: '20px' }}>
         <Accordion.Title
-          style={{ backgroundColor: "#2185d0", color: 'white' }}
+          style={{ backgroundColor: '#2185d0', color: 'white' }}
           active={active === instance.url}
           onClick={() => setActive(active === instance.url ? -1 : instance.url)}
         >
           Enrollments
         </Accordion.Title>
-        <Accordion.Content active={active === instance.url}>
-          {getEnrollments(instance.url)}
-        </Accordion.Content>
+        <Accordion.Content active={active === instance.url}>{getEnrollments(instance.url)}</Accordion.Content>
       </Accordion>
     </Card>
   )

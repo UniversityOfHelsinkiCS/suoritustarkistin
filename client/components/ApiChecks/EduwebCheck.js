@@ -4,7 +4,6 @@ import { Input, Header, Form } from 'semantic-ui-react'
 import { checkEduWeb } from 'Utilities/redux/apiCheckReducer'
 import EduwebInstance from 'Components/ApiChecks/EduwebInstance'
 
-
 export default () => {
   const dispatch = useDispatch()
   const { eduweb } = useSelector((state) => state.apiChecks)
@@ -14,16 +13,18 @@ export default () => {
   const handleCheck = (event) => {
     event.preventDefault()
     dispatch(checkEduWeb(data.course))
-  } 
+  }
 
   const getInstanceCards = (eduweb) => {
     const instances = eduweb?.instances
     if (!eduweb) return ''
     if (!instances || !instances.length) return <b>No instances found from Eduweb-api with the course code</b>
-  
+
     return (
       <div>
-        {eduweb.instances.map((instance) => <EduwebInstance key={instance.oodi_id} instance={instance} active={active} setActive={setActive} />)}
+        {eduweb.instances.map((instance) => (
+          <EduwebInstance key={instance.oodi_id} instance={instance} active={active} setActive={setActive} />
+        ))}
       </div>
     )
   }
@@ -34,18 +35,18 @@ export default () => {
       <Form onSubmit={handleCheck} style={{ marginBottom: '100px' }}>
         <Form.Field
           control={Input}
-          label='Enter course code'
+          label="Enter course code"
           action={{
             icon: 'search',
             color: 'blue',
             labelPosition: 'right',
             content: 'Check'
-          }} 
+          }}
           value={data.course || ''}
           placeholder="TKT10002"
           onChange={(e) => setData({ course: e.target.value })}
         />
-      </Form >
+      </Form>
       {getInstanceCards(eduweb)}
     </div>
   )

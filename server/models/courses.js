@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       through: 'users_courses',
       foreignKey: 'courseId',
       as: 'graders'
-    })  
+    })
   }
 
   return Courses

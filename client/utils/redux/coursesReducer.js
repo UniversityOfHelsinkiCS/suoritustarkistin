@@ -116,9 +116,7 @@ export default (state = { data: [], unsent: 0, pending: false }, action) => {
     case 'EDIT_COURSE_SUCCESS':
       return {
         ...state,
-        data: state.data.map((c) =>
-          c.id == action.response[0].id ? action.response[0] : c
-        ),
+        data: state.data.map((c) => (c.id == action.response[0].id ? action.response[0] : c)),
         responsibles: null,
         pending: false,
         error: false

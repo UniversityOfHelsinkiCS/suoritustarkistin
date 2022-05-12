@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Message,
-  Segment
-} from 'semantic-ui-react'
+import { Button, Checkbox, Form, Input, Message, Segment } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
 
 import { createUser, editUserAction, fetchUser } from 'Utilities/redux/usersReducer'
 import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
 import { isValidEmailAddress } from 'Root/utils/validators'
-
 
 const INITIAL_FORM_DATA = {
   email: '',
@@ -43,14 +35,13 @@ export default ({ close, user }) => {
 
   useEffect(() => {
     if (data.error) setMessage(data.fetchedUser.error)
-    if (!data.error && !data.pending)
-      setFormData({ ...formData, ...parseUser(data.fetchedUser) })
+    if (!data.error && !data.pending) setFormData({ ...formData, ...parseUser(data.fetchedUser) })
   }, [data])
 
   useEffect(() => {
     if (!courses.data.length && !courses.pending) {
       dispatch(getAllCoursesAction())
-      return () => { }
+      return () => {}
     }
     const options = _.sortBy(courses.data, 'name').map((course) => ({
       key: course.id,
@@ -64,9 +55,7 @@ export default ({ close, user }) => {
       setFormData({
         ...formData,
         ...user,
-        courses: options
-          .filter((option) => userCourses.includes(option.coursecode))
-          .map((option) => option.key)
+        courses: options.filter((option) => userCourses.includes(option.coursecode)).map((option) => option.key)
       })
     }
   }, [courses, user])
@@ -76,10 +65,8 @@ export default ({ close, user }) => {
     setFormData({ ...formData, [name]: value })
   }
 
-  const validate = () => (
-    (formData.email && isValidEmailAddress(formData.email)) &&
-    formData.employeeId && formData.uid && formData.name
-  )
+  const validate = () =>
+    formData.email && isValidEmailAddress(formData.email) && formData.employeeId && formData.uid && formData.name
 
   const handleSubmit = () => {
     if (user) dispatch(editUserAction(formData))
@@ -91,26 +78,30 @@ export default ({ close, user }) => {
 
   const parseUser = (fetchedUser) => ({
     email: fetchedUser.primaryEmail || formData.email,
-    uid: fetchedUser.eduPersonPrincipalName ? fetchedUser.eduPersonPrincipalName.split("@")[0] : formData.uid,
+    uid: fetchedUser.eduPersonPrincipalName ? fetchedUser.eduPersonPrincipalName.split('@')[0] : formData.uid,
     employeeId: fetchedUser.employeeNumber || formData.employeeId,
-    name: (fetchedUser.firstNames || fetchedUser.lastName) ? `${fetchedUser.firstNames} ${fetchedUser.lastName}` : formData.name,
-    courses: (fetchedUser.courses && fetchedUser.courses.length)
-      ? courseOptions
-        .filter((option) => fetchedUser.courses.includes(option.coursecode))
-        .map((option) => option.key)
-      : formData.courses
+    name:
+      fetchedUser.firstNames || fetchedUser.lastName
+        ? `${fetchedUser.firstNames} ${fetchedUser.lastName}`
+        : formData.name,
+    courses:
+      fetchedUser.courses && fetchedUser.courses.length
+        ? courseOptions.filter((option) => fetchedUser.courses.includes(option.coursecode)).map((option) => option.key)
+        : formData.courses
   })
 
   // Check if the user is trying to edit themselves
   // If so, disable editing uid and employee number as that would crash the login
   const editingCurrentUser = user && (currentUser.employeeId === user.employeeId || currentUser.uid === user.uid)
-  
+
   return (
     <Segment style={{ width: '50em' }}>
-      {message ? <Message error>
-        <Message.Header>Failed to fetch user</Message.Header>
-        <p>{message}</p>
-      </Message> : null}
+      {message ? (
+        <Message error>
+          <Message.Header>Failed to fetch user</Message.Header>
+          <p>{message}</p>
+        </Message>
+      ) : null}
 
       <Form width={4} loading={data.pending || courses.pending}>
         <Form.Field
@@ -121,7 +112,6 @@ export default ({ close, user }) => {
           placeholder="Email"
           value={formData.email}
           onChange={handleFieldChange}
-          error={false}
           name="email"
           error={Boolean(formData.email && !isValidEmailAddress(formData.email))}
           required
@@ -153,7 +143,9 @@ export default ({ close, user }) => {
           required
         />
         {editingCurrentUser && (
-          <p style={{ color: 'gray', fontWeight: 'bold' }}>AD account and employee number of the currently logged in user cannot be changed</p>
+          <p style={{ color: 'gray', fontWeight: 'bold' }}>
+            AD account and employee number of the currently logged in user cannot be changed
+          </p>
         )}
         <Form.Field
           style={styles.field}
@@ -208,12 +200,7 @@ export default ({ close, user }) => {
           basic
         />
         <Form.Group>
-          <Form.Field
-            negative
-            control={Button}
-            content="Cancel"
-            onClick={close}
-          />
+          <Form.Field negative control={Button} content="Cancel" onClick={close} />
           <Form.Field
             data-cy="add-user-confirm"
             positive

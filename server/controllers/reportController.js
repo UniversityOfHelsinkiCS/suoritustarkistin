@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 
-const db = require('../models/index')
 const logger = require('@utils/logger')
+const db = require('../models/index')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const refreshEntries = require('../scripts/refreshEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
@@ -47,34 +47,23 @@ const transformRows = (row) => {
 }
 
 const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, graderId, reporterId }) => {
-  const query = { }
+  const query = {}
 
   if (reporterId) {
     query.reporterId = reporterId
   } else {
     query.reporterId = {
-      [isMooc
-        ? Op.eq
-        : Op.not
-      ]: null
+      [isMooc ? Op.eq : Op.not]: null
     }
   }
 
-  if (graderId)
-    query.graderId = graderId
-  if (student)
-    query.studentNumber = { [Op.startsWith]: student }
-  if (courseId)
-    query.courseId = courseId
-  if (status)
-    query['$entry.registered$'] = status
-  if (errors)
-    query['$entry.errors$'] = { [Op.not]: null }
+  if (graderId) query.graderId = graderId
+  if (student) query.studentNumber = { [Op.startsWith]: student }
+  if (courseId) query.courseId = courseId
+  if (status) query['$entry.registered$'] = status
+  if (errors) query['$entry.errors$'] = { [Op.not]: null }
   if (noEnrollment) {
-    query[Op.and] = [
-      { [Op.or]: MISSING_ENROLLMENT_QUERY },
-      { '$extraEntry.id$': { [Op.eq]: null } }
-    ]
+    query[Op.and] = [{ [Op.or]: MISSING_ENROLLMENT_QUERY }, { '$extraEntry.id$': { [Op.eq]: null } }]
   }
 
   return query
@@ -184,8 +173,7 @@ const getOffset = async (req, res) => {
   const isMooc = !rawEntry.reporterId
 
   const filters = { ...getFilters({ isMooc }) }
-  if (!req.user.isAdmin)
-    filters.graderId = req.user.id
+  if (!req.user.isAdmin) filters.graderId = req.user.id
 
   const batches = await db.raw_entries.findAll({
     where: {
@@ -235,8 +223,7 @@ const deleteSisBatch = async (req, res) => {
 }
 
 const refreshEnrollments = async (req, res) => {
-  if (!req.user.isGrader && !req.user.isAdmin)
-    throw new Error('User is not authorized to report credits.')
+  if (!req.user.isGrader && !req.user.isAdmin) throw new Error('User is not authorized to report credits.')
 
   try {
     const entriesWithMissingEnrollment = await db.entries.getMissingEnrollments()
@@ -260,8 +247,7 @@ const sendToSis = async (req, res) => {
 
   const { entryIds = [], extraEntryIds = [] } = req.body
 
-  if (!entryIds.length && !extraEntryIds.length)
-    return res.status(400).send({ message: 'No entries to send' })
+  if (!entryIds.length && !extraEntryIds.length) return res.status(400).send({ message: 'No entries to send' })
 
   const email = async (failedInSisu) => {
     const pick = entryIds[0] || extraEntryIds[0]
@@ -280,7 +266,9 @@ const sendToSis = async (req, res) => {
     })
     const batchId = rawEntry ? rawEntry.batchId : null
     const rawEntries = await db.raw_entries.getByBatch(batchId)
-    const missingStudents = rawEntries.filter(({ entry }) => entry.missingEnrolment).map(({studentNumber}) => studentNumber)
+    const missingStudents = rawEntries
+      .filter(({ entry }) => entry.missingEnrolment)
+      .map(({ studentNumber }) => studentNumber)
     sendEmails(req.user.email, { missingStudents, batchId, failedInSisu })
   }
 
@@ -293,8 +281,7 @@ const sendToSis = async (req, res) => {
       [status, message] = await attainmentsToSisu('extra_entries', req)
     }
     email(message && !message.genericError)
-    if (message)
-      return res.status(status).send(message)
+    if (message) return res.status(status).send(message)
   } catch (e) {
     logger.error({ message: e.toString(), error: e })
   }
@@ -327,8 +314,7 @@ const refreshSisStatus = async (req, res) => {
   })
   const success = await checkEntries(entries, 'entries')
   const successExtras = await checkEntries(extraEntries, 'extra_entries')
-  if (!success || !successExtras)
-    return res.status(400).send('Failed to refresh entries from Sisu')
+  if (!success || !successExtras) return res.status(400).send('Failed to refresh entries from Sisu')
   return res.status(200).send()
 }
 
@@ -337,22 +323,26 @@ const sendEmails = async (ccEmail, { missingStudents, batchId, failedInSisu }) =
   if (missingStudents.length)
     sendEmail({
       subject: `New completions reported with missing enrollment`,
-      attachments: [{
-        filename: 'suotar.png',
-        path: `${process.cwd()}/client/assets/suotar.png`,
-        cid: 'toskasuotarlogoustcid'
-      }],
+      attachments: [
+        {
+          filename: 'suotar.png',
+          path: `${process.cwd()}/client/assets/suotar.png`,
+          cid: 'toskasuotarlogoustcid'
+        }
+      ],
       html: missingEnrolmentReport(missingStudents, batchId),
       cc
     })
   if (failedInSisu)
     sendEmail({
       subject: `Some completions failed in Sisu`,
-      attachments: [{
-        filename: 'suotar.png',
-        path: `${process.cwd()}/client/assets/suotar.png`,
-        cid: 'toskasuotarlogoustcid'
-      }],
+      attachments: [
+        {
+          filename: 'suotar.png',
+          path: `${process.cwd()}/client/assets/suotar.png`,
+          cid: 'toskasuotarlogoustcid'
+        }
+      ],
       html: failedInSisuReport(batchId),
       cc
     })

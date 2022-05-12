@@ -1,13 +1,12 @@
-
+const { v4: uuidv4 } = require('uuid')
+const faker = require('faker')
 const { getBatchId } = require('../../utils/common')
 const db = require('../index')
-const { v4: uuidv4 } = require('uuid')
 
 function rand(min, max) {
   return Math.round(Math.random() * (max - min) + min)
 }
 
-const faker = require('faker')
 faker.locale = 'fi'
 
 faker.sisu = {}
@@ -17,7 +16,6 @@ faker.sisu.assessmentItem = () => `hy-${rand(100000, 999999)}-default-teaching-p
 faker.sisu.courseUnit = () => `hy-CU-${rand(100000, 999999)}-2021-08-01`
 faker.sisu.studyRight = () => `hy-opinoik-${rand(100000, 999999)}`
 faker.sisu.id = () => `hy-kur-${uuidv4()}`
-
 
 const rawEntryFactory = async (courseCode, graderName, options) => {
   const grader = await db.users.findOne({
@@ -31,18 +29,21 @@ const rawEntryFactory = async (courseCode, graderName, options) => {
     raw: true
   })
 
-  return await db.raw_entries.create({
-    studentNumber: `014${rand(100000, 999999)}`,
-    batchId: getBatchId(courseCode),
-    grade: rand(1, 6),
-    credits: course.credits,
-    language: course.language,
-    attainmentDate: new Date(),
-    courseId: course.id,
-    graderId: grader.id,
-    reporterId: grader.id,
-    ...options
-  }, { returning: true, raw: true })
+  return await db.raw_entries.create(
+    {
+      studentNumber: `014${rand(100000, 999999)}`,
+      batchId: getBatchId(courseCode),
+      grade: rand(1, 6),
+      credits: course.credits,
+      language: course.language,
+      attainmentDate: new Date(),
+      courseId: course.id,
+      graderId: grader.id,
+      reporterId: grader.id,
+      ...options
+    },
+    { returning: true, raw: true }
+  )
 }
 
 const entryFactory = async (courseCode, graderName, options) => {
@@ -106,14 +107,17 @@ const extraEntryFactory = async (courseCode, graderName, options) => {
   })
 }
 
-
 const bscThesisEntryFactory = async (graderName) => {
   const studentNumber = `014${rand(100000, 999999)}`
   const batchId = getBatchId('TKT20013')
 
   await entryFactory('TKT20013', graderName, { rawEntry: { studentNumber, batchId } })
   const extraCodes = ['TKT50001', 'TKT20014', 'TKT50002']
-  await Promise.all(extraCodes.map(async (courseCode) => await extraEntryFactory(courseCode, graderName, { rawEntry: { studentNumber, batchId } })))
+  await Promise.all(
+    extraCodes.map(
+      async (courseCode) => await extraEntryFactory(courseCode, graderName, { rawEntry: { studentNumber, batchId } })
+    )
+  )
 }
 
 module.exports = { entryFactory, extraEntryFactory, bscThesisEntryFactory }

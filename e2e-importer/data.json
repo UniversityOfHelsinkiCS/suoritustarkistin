@@ -12,9 +12,7 @@
       "oppijaId": null,
       "genderUrn": "urn:code:gender:female",
       "countryUrn": "urn:code:country:246",
-      "citizenships": [
-        "urn:code:country:246"
-      ],
+      "citizenships": ["urn:code:country:246"],
       "dead": false,
       "preferredLanguageUrn": "urn:code:preferred-language:fi",
       "secondaryEmail": "suotar-tester@helsinki.fi",
@@ -33,9 +31,7 @@
       "oppijaId": "1.2.246.562.24.13240286862",
       "genderUrn": "urn:code:gender:male",
       "countryUrn": "urn:code:country:246",
-      "citizenships": [
-        "urn:code:country:246"
-      ],
+      "citizenships": ["urn:code:country:246"],
       "dead": false,
       "preferredLanguageUrn": "urn:code:preferred-language:fi",
       "secondaryEmail": "hakija-33745639@oph.fi",
@@ -55,9 +51,7 @@
       "primaryEmail": "suotar-employee@helsinki.fi",
       "genderUrn": "urn:code:gender:male",
       "countryUrn": "urn:code:country:246",
-      "citizenships": [
-        "urn:code:country:246"
-      ],
+      "citizenships": ["urn:code:country:246"],
       "dead": false,
       "preferredLanguageUrn": "urn:code:preferred-language:fi",
       "createdAt": "2021-08-18T06:11:49.345Z",

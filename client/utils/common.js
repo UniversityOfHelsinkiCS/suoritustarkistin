@@ -23,5 +23,4 @@ export const sortedItems = (items, sorter, reverse) => {
   return sorted
 }
 
-
 export * from 'Root/utils/common'

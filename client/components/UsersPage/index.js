@@ -7,7 +7,6 @@ import UserTable from 'Components/UsersPage/UserTable'
 import UserForm from 'Components/UsersPage/UserForm'
 import { getAllUsersAction } from 'Utilities/redux/usersReducer'
 
-
 export default () => {
   const dispatch = useDispatch()
   const [showForm, setShowForm] = useState()
@@ -20,11 +19,7 @@ export default () => {
     <>
       <Modal
         trigger={
-          <Button
-            data-cy="add-user-button"
-            positive
-            onClick={() => setShowForm(true)}
-          >
+          <Button data-cy="add-user-button" positive onClick={() => setShowForm(true)}>
             Add new user
           </Button>
         }

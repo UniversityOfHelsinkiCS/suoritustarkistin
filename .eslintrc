@@ -1,5 +1,5 @@
 {
-  "extends": "eslint:recommended",
+  "extends": ["airbnb", "prettier", "plugin:cypress/recommended", "eslint:recommended"],
   "parser": "babel-eslint",
   "env": {
     "browser": true,
@@ -13,7 +13,7 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["react"],
+  "plugins": ["prettier", "cypress", "react"],
   "settings": {
     "react": {
       "createClass": "createReactClass",
@@ -32,16 +32,12 @@
     "comma-dangle": ["error", "never"],
     "arrow-parens": ["error", "always"],
     "import/no-unresolved": "off",
+    "react/no-array-index-key": "off",
     "react/jsx-filename-extension": "off",
-    "indent": [
-      "error",
-      2,
-      {
-        "ArrayExpression": 1,
-        "ObjectExpression": 1,
-        "SwitchCase": 1
-      }
-    ],
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/label-has-for": "off",
+    "jsx-a11y/label-has-associated-control": "off",
     "react/prop-types": [
       1,
       {

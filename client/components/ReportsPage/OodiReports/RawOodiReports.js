@@ -3,7 +3,6 @@ import { Segment } from 'semantic-ui-react'
 
 import TabLoader from 'Components/ReportsPage/TabLoader'
 
-
 const Downloaded = () => (
   <div data-cy="report-downloaded" style={{ color: 'green' }}>
     DOWNLOADED
@@ -16,9 +15,7 @@ const NotDownloaded = () => (
 )
 
 const reportLines = (report) => {
-  return report.data
-    .split('\n')
-    .map((line, index) => <div key={`${report.id}-${index}`}>{line}</div>)
+  return report.data.split('\n').map((line, index) => <div key={`${report.id}-${index}`}>{line}</div>)
 }
 
 export default ({ reports }) => {
@@ -31,15 +28,13 @@ export default ({ reports }) => {
   if (reports.pending || loading) return <TabLoader />
   if (reports.data.length === 0) return <div>NO REPORTS FOUND.</div>
 
-
   return (
     <div data-cy="raw-oodi-reports">
       {reports.data.map((report) => {
         return (
           <Segment key={report.id}>
             <div>
-              {report.fileName}{' '}
-              {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
+              {report.fileName} {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
             </div>
             {reportLines(report)}
           </Segment>

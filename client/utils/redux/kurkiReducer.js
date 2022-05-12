@@ -46,7 +46,7 @@ export default (state = initialState, action) => {
     case 'CREATE_KURKI_REPORT_SUCCESS':
       return {
         ...state,
-        courses: state.courses.map((c) => c.id === action.response.kurkiId ? { ...c, disabled: true } : c),
+        courses: state.courses.map((c) => (c.id === action.response.kurkiId ? { ...c, disabled: true } : c)),
         pending: false,
         error: false
       }

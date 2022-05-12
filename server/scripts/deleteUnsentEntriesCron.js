@@ -1,10 +1,9 @@
 const moment = require('moment')
-const { Op } = require("sequelize")
+const { Op } = require('sequelize')
 const logger = require('@utils/logger')
 const { sendSentryMessage } = require('@utils/sentry')
 
 const db = require('../models/index')
-
 
 /**
  * Delete unsent entries
@@ -20,14 +19,18 @@ const deleteUnsent = async () => {
       sent: null,
       createdAt: { [Op.lte]: timestamp }
     },
-    include: [{
-      model: db.raw_entries,
-      as: 'rawEntry',
-      include: [{
-        model: db.courses,
-        as: 'course'
-      }]
-    }],
+    include: [
+      {
+        model: db.raw_entries,
+        as: 'rawEntry',
+        include: [
+          {
+            model: db.courses,
+            as: 'course'
+          }
+        ]
+      }
+    ],
     nest: true,
     raw: true
   })
@@ -39,14 +42,18 @@ const deleteUnsent = async () => {
         [Op.lte]: timestamp
       }
     },
-    include: [{
-      model: db.raw_entries,
-      as: 'rawEntry',
-      include: [{
-        model: db.courses,
-        as: 'course'
-      }]
-    }],
+    include: [
+      {
+        model: db.raw_entries,
+        as: 'rawEntry',
+        include: [
+          {
+            model: db.courses,
+            as: 'course'
+          }
+        ]
+      }
+    ],
     nest: true,
     raw: true
   })
@@ -54,8 +61,15 @@ const deleteUnsent = async () => {
 
   const rawEntryIds = entries.map(({ rawEntry }) => rawEntry.id).concat(extraEntries.map(({ rawEntry }) => rawEntry.id))
 
-  logger.info({ message: `Deleting ${rawEntryIds.length} unset entries`, entries: { ...entries }, extraEntries: { ...extraEntries }, entriesBackup: JSON.stringify(entries.concat(extraEntries)) })
-  sendSentryMessage(`Deleting ${rawEntryIds.length} unset entries`, null, { entries: JSON.stringify(entries.concat(extraEntries)) })
+  logger.info({
+    message: `Deleting ${rawEntryIds.length} unset entries`,
+    entries: { ...entries },
+    extraEntries: { ...extraEntries },
+    entriesBackup: JSON.stringify(entries.concat(extraEntries))
+  })
+  sendSentryMessage(`Deleting ${rawEntryIds.length} unset entries`, null, {
+    entries: JSON.stringify(entries.concat(extraEntries))
+  })
 
   const deletedAmount = await db.raw_entries.destroy({
     where: { id: { [Op.in]: rawEntryIds } }

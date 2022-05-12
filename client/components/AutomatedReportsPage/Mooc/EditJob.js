@@ -3,7 +3,6 @@ import { Button, Modal } from 'semantic-ui-react'
 
 import EditJobForm from 'Components/AutomatedReportsPage/Mooc/EditJobForm'
 
-
 export default ({ job, jobs }) => {
   const [showForm, setShowForm] = useState(false)
 
@@ -12,10 +11,7 @@ export default ({ job, jobs }) => {
   return (
     <Modal
       trigger={
-        <Button
-          disabled={jobs.pending}
-          onClick={() => setShowForm(true)}
-        >
+        <Button disabled={jobs.pending} onClick={() => setShowForm(true)}>
           Edit
         </Button>
       }

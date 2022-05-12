@@ -2,7 +2,6 @@
   margin-top: 2em !important;
 }
 
-
 /* Overriding some of the the semantic-ui styles */
 
 .delete-popup {
@@ -17,7 +16,6 @@
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
 }
-
 
 .hoverable-item:hover {
   filter: brightness(0.7);

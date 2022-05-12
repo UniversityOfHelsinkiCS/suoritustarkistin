@@ -6,7 +6,6 @@ export const checkEduWeb = (courseCode) => {
   return callBuilder(route, prefix, 'get')
 }
 
-
 export const checkMooc = (courseCode) => {
   const route = `/apicheck/mooc/${courseCode}`
   const prefix = 'CHECK_MOOC_API'
@@ -55,7 +54,7 @@ export default (state = {}, action) => {
         pending: false,
         error: true
       }
-  
+
     default:
       return state
   }

@@ -21,5 +21,5 @@ import './commands'
 
 // Skip unwanted setHeaders-calls when running tests:
 beforeEach(() => {
-  localStorage.setItem("runningCypressTests","true")
+  localStorage.setItem('runningCypressTests', 'true')
 })

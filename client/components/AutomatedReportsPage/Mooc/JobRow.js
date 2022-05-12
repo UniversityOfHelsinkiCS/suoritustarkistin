@@ -5,7 +5,6 @@ import { Button, Icon, Table } from 'semantic-ui-react'
 import { deleteJobAction, runJobAction } from 'Utilities/redux/moocJobsReducer'
 import EditJob from 'Components/AutomatedReportsPage/Mooc/EditJob'
 
-
 export default ({ job, jobs }) => {
   const dispatch = useDispatch()
   const [really, setReally] = useState(false)
@@ -57,11 +56,7 @@ export default ({ job, jobs }) => {
         }}
         content="Cancel"
       />
-      <Button
-        onClick={() => dispatch(deleteJobAction(job.id))}
-        content="Really delete"
-        positive
-      />
+      <Button onClick={() => dispatch(deleteJobAction(job.id))} content="Really delete" positive />
     </Button.Group>
   )
   return (
@@ -72,11 +67,7 @@ export default ({ job, jobs }) => {
       <Table.Cell width={2}>{getGraderName()}</Table.Cell>
       <Table.Cell width={2}>{job.slug}</Table.Cell>
       <Table.Cell textAlign="center" width={1}>
-        {job.active ? (
-          <Icon name="check" color="green" size="large" />
-        ) : (
-          <Icon name="close" color="red" size="large" />
-        )}
+        {job.active ? <Icon name="check" color="green" size="large" /> : <Icon name="close" color="red" size="large" />}
       </Table.Cell>
       <Table.Cell>
         {job.useManualCompletionDate ? (

@@ -6,5 +6,5 @@ module.exports = {
       type: Sequelize.STRING(2024)
     })
   },
-  down: () => {},
+  down: () => {}
 }

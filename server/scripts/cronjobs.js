@@ -1,6 +1,6 @@
 const cron = require('node-cron')
-const db = require('../models/index')
 const logger = require('@utils/logger')
+const db = require('../models/index')
 const { chooseScript } = require('../scripts/chooseAutomatedScript')
 const refreshEntriesCron = require('./refreshEntryCron')
 const deleteUnsentEntries = require('./deleteUnsentEntriesCron')
@@ -8,7 +8,7 @@ const deleteUnsentEntries = require('./deleteUnsentEntriesCron')
 let cronjobs = {}
 
 const initializeCronJobs = async () => {
-  logger.info({ message: "Initialized cronjobs" })
+  logger.info({ message: 'Initialized cronjobs' })
 
   const jobs = await db.jobs.findAll({
     where: { active: true }
@@ -22,15 +22,12 @@ const initializeCronJobs = async () => {
 
     const createdJob = cron.schedule(job.schedule, async () => {
       const timestamp = new Date(Date.now())
-      logger.info(
-        `${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode
-        }) completions.`
-      )
+      logger.info(`${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode}) completions.`)
 
       const script = chooseScript(course.courseCode)
       const result = await script({ course, grader, job }, true)
 
-      if (result.message === "no new entries" || result.message === "success") {
+      if (result.message === 'no new entries' || result.message === 'success') {
         logger.info({ message: result.message })
       } else {
         logger.error({ error: result.message })
@@ -39,8 +36,8 @@ const initializeCronJobs = async () => {
     return { ...acc, [job.id]: createdJob }
   }, {})
 
-  cronjobs["enrollment-limbo"] = cron.schedule('0 2 * * *', refreshEntriesCron)
-  cronjobs["delete-unsent-entries"] = cron.schedule('0 0 * * *', deleteUnsentEntries)
+  cronjobs['enrollment-limbo'] = cron.schedule('0 2 * * *', refreshEntriesCron)
+  cronjobs['delete-unsent-entries'] = cron.schedule('0 0 * * *', deleteUnsentEntries)
 }
 
 const activateJob = async (id) => {
@@ -52,15 +49,12 @@ const activateJob = async (id) => {
 
   const createdJob = cron.schedule(job.schedule, async () => {
     const timestamp = new Date(Date.now())
-    logger.info(
-      `${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode
-      }) completions.`
-    )
+    logger.info(`${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode}) completions.`)
 
     const script = chooseScript(course.courseCode)
     const result = await script({ course, grader, job }, true)
 
-    if (result.message === "no new entries" || result.message === "success") {
+    if (result.message === 'no new entries' || result.message === 'success') {
       logger.info({ message: result.message })
     } else {
       logger.error({ error: result.message })

@@ -1,8 +1,5 @@
 const Router = require('express')
-const {
-  checkEduweb,
-  checkMooc
-} = require('@controllers/apiCheckController')
+const { checkEduweb, checkMooc } = require('@controllers/apiCheckController')
 const {
   seedDatabaseForTests,
   seedTestCompletions,
@@ -28,10 +25,7 @@ const {
   fetchUserDetails,
   deleteUser
 } = require('@controllers/userController')
-const {
-  getOodiReports,
-  getUsersOodiReports
-} = require('@controllers/oodiReportController')
+const { getOodiReports, getUsersOodiReports } = require('@controllers/oodiReportController')
 const {
   addRawEntries,
   importStudents,
@@ -49,17 +43,8 @@ const {
   refreshEnrollments,
   getOffset
 } = require('@controllers/reportController')
-const {
-  addJob,
-  getJobs,
-  editJob,
-  runJob,
-  deleteJob
-} = require('@controllers/moocJobsController')
-const {
-  getKurkiCourses,
-  addKurkiRawEntries
-} = require('@controllers/kurkiController')
+const { addJob, getJobs, editJob, runJob, deleteJob } = require('@controllers/moocJobsController')
+const { getKurkiCourses, addKurkiRawEntries } = require('@controllers/kurkiController')
 const { login, logout } = require('@controllers/loginController')
 
 const {

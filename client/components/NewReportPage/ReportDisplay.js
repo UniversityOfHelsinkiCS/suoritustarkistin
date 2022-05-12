@@ -7,7 +7,6 @@ import { parseCSV } from 'Utilities/inputParser'
 
 import './reportDisplay.css'
 
-
 const { commify } = require('Root/utils/commify')
 const {
   isValidStudentId,
@@ -34,18 +33,10 @@ const invalidStyle = {
 
 const getCourseCell = (course) => {
   if (course.courseCode) {
-    return (
-      <Table.Cell style={validStyle}>
-        {`${course.name} (${course.courseCode})`}
-      </Table.Cell>
-    )
+    return <Table.Cell style={validStyle}>{`${course.name} (${course.courseCode})`}</Table.Cell>
   }
   if (course) {
-    return (
-      <Table.Cell style={invalidStyle}>
-        {course}
-      </Table.Cell>
-    )
+    return <Table.Cell style={invalidStyle}>{course}</Table.Cell>
   }
   return <Table.Cell />
 }
@@ -82,11 +73,7 @@ const getGradeCell = (grade, defaultGrade) => {
       </Table.Cell>
     )
   } else if (!grade && defaultGrade) {
-    return (
-      <Table.Cell style={validStyle}>
-        Hyv.
-      </Table.Cell>
-    )
+    return <Table.Cell style={validStyle}>Hyv.</Table.Cell>
   }
 
   return (
@@ -149,15 +136,26 @@ const getDateCell = (date) => {
           }
           mouseEnterDelay={300}
           mouseLeaveDelay={500}
-          content={future
-            ? <p>Completion date <strong>set to future</strong>, check that it is correct. Adding completions to this date is still possible.</p>
-            : <p>Completion date <strong>set far back in the past</strong>, check that it is correct. Adding completions to this date is still possible.</p>
+          content={
+            future ? (
+              <p>
+                Completion date <strong>set to future</strong>, check that it is correct. Adding completions to this
+                date is still possible.
+              </p>
+            ) : (
+              <p>
+                Completion date <strong>set far back in the past</strong>, check that it is correct. Adding completions
+                to this date is still possible.
+              </p>
+            )
           }
         />
       )
     }
     if (isValidDate(date)) {
-      return <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
+      return (
+        <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
+      )
     }
     if (isDateObject(date)) {
       return (
@@ -198,15 +196,10 @@ const getErrorCell = (newRawEntries, studentId) => {
   return null
 }
 
-
 const getDeletionCell = (index, handleRowDeletion) => {
   return (
     <Table.Cell style={validStyle}>
-      <Button
-        style={{ width: "100%" }}
-        icon="trash"
-        onClick={() => handleRowDeletion(index)}
-      />
+      <Button style={{ width: '100%' }} icon="trash" onClick={() => handleRowDeletion(index)} />
     </Table.Cell>
   )
 }
@@ -228,9 +221,7 @@ export default ({ allowDelete = true, kandi }) => {
 
   if (!newRawEntries.data) return null
 
-  const grader = graders.find(
-    (g) => g.employeeId === newRawEntries.graderId
-  )
+  const grader = graders.find((g) => g.employeeId === newRawEntries.graderId)
   const defaultGrade = newRawEntries.defaultGrade
   const defaultCourse = courses.find((c) => c.id === newRawEntries.courseId)
   const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
@@ -238,25 +229,23 @@ export default ({ allowDelete = true, kandi }) => {
   const handleRowDeletion = (index) => {
     const rows = newRawEntries.rawData.trim().split('\n')
     const rowsWithoutTheStudent = rows.filter((r, i) => i !== index)
-    const rawData = rowsWithoutTheStudent.join("\n")
-    dispatch(setNewRawEntriesAction({ ...newRawEntries, rawData, data: parseCSV(rawData, newRawEntries.defaultCourse) }))
+    const rawData = rowsWithoutTheStudent.join('\n')
+    dispatch(
+      setNewRawEntriesAction({ ...newRawEntries, rawData, data: parseCSV(rawData, newRawEntries.defaultCourse) })
+    )
   }
 
   const reportRows = newRawEntries.data.map((row, index) => {
     const course = getCourse(row, courses, defaultCourse)
 
     return (
-      <Table.Row key={row.studentId + index} className={(kandi && row.isExtra) ? 'extra-entry' : ''}>
+      <Table.Row key={row.studentId + index} className={kandi && row.isExtra ? 'extra-entry' : ''}>
         {getCourseCell(course)}
         {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
         {getGradeCell(row.grade, defaultGrade)}
         {getCreditCell(row.credits, course)}
         {getLanguageCell(row.language, course)}
-        {grader ? (
-          <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
-        ) : (
-          <Table.Cell />
-        )}
+        {grader ? <Table.Cell style={validStyle}>{grader.name}</Table.Cell> : <Table.Cell />}
         {getDateCell(row.attainmentDate || date)}
         {getErrorCell(newRawEntries, row.studentId)}
         {allowDelete ? getDeletionCell(index, handleRowDeletion) : null}

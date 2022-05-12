@@ -78,6 +78,7 @@ const TableBody = ({ user, rawEntries }) => {
         return (
           <React.Fragment key={`row-${rawEntry.id}`}>
             <Table.Row
+              data-cy={`report-table-row-${rawEntry.studentNumber}`}
               active={student && rawEntry.studentNumber.startsWith(student)}
               warning={rawEntry.entry.missingEnrolment}
               style={rawEntry.entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}

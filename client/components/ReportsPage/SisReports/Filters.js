@@ -7,23 +7,28 @@ import { toggleFilterAction, setFilterAction } from 'Utilities/redux/sisReportsR
 import { getAllCoursesAction, getUsersCoursesAction } from 'Utilities/redux/coursesReducer'
 import { formatCoursesForSelection } from '../../NewReportPage/InputOptions'
 
-const STATE_OPTIONS = [{
-  text: 'All reports',
-  value: 'ALL',
-  key: 0
-}, {
-  text: 'Missing from Sisu',
-  value: 'NOT_REGISTERED',
-  key: 1
-}, {
-  text: 'Partly registered to Sisu',
-  value: 'PARTLY_REGISTERED',
-  key: 2
-}, {
-  text: 'Fully registered to Sisu',
-  value: 'REGISTERED',
-  key: 3
-}]
+const STATE_OPTIONS = [
+  {
+    text: 'All reports',
+    value: 'ALL',
+    key: 0
+  },
+  {
+    text: 'Missing from Sisu',
+    value: 'NOT_REGISTERED',
+    key: 1
+  },
+  {
+    text: 'Partly registered to Sisu',
+    value: 'PARTLY_REGISTERED',
+    key: 2
+  },
+  {
+    text: 'Fully registered to Sisu',
+    value: 'REGISTERED',
+    key: 3
+  }
+]
 
 export default ({ reduxKey, action }) => {
   const [mounted, setMounted] = useState(false)
@@ -42,57 +47,60 @@ export default ({ reduxKey, action }) => {
 
   useEffect(() => {
     // Prevent fetch when filters are initially rendered
-    if (mounted)
-      dispatch(action({ offset, limit, filters }))
+    if (mounted) dispatch(action({ offset, limit, filters }))
     setMounted(true)
   }, [filters])
 
   useEffect(() => {
-    user.adminMode
-      ? dispatch(getAllCoursesAction())
-      : dispatch(getUsersCoursesAction(user.id))
+    user.adminMode ? dispatch(getAllCoursesAction()) : dispatch(getUsersCoursesAction(user.id))
   }, [user])
 
-  return <>
-    <Header as='h3'>Include reports with:</Header>
-    <Form>
-      <Form.Group style={{ alignItems: 'center' }}>
-        <Form.Field
-          control={Radio}
-          label='Contains errors'
-          checked={filters.errors}
-          onChange={() => toggle('errors')}
-          toggle />
-        <Form.Field
-          control={Radio}
-          label='Missing enrollments'
-          checked={filters.noEnrollment}
-          onChange={() => toggle('noEnrollment')}
-          toggle />
-        <Form.Field
-          control={Dropdown}
-          label='Attainment status'
-          value={filters.status || 'ALL'}
-          options={STATE_OPTIONS}
-          onChange={(_, data) => set('status', data.value)} />
-      </Form.Group>
-      <Form.Group>
-        <Form.Field
-          control={Input}
-          label='Filter by student number'
-          value={filters.search}
-          onChange={(event) => debouncedSet('student', event.target.value)} />
-        <Form.Field
-          data-cy='course-filter'
-          control={Select}
-          search
-          label='Filter by course'
-          value={filters.course}
-          options={courseOptions}
-          onChange={((_, { value: courseId }) => set('course', courseId))} />
-      </Form.Group>
-      <Form.Group>
-      </Form.Group>
-    </Form>
-  </>
+  return (
+    <>
+      <Header as="h3">Include reports with:</Header>
+      <Form>
+        <Form.Group style={{ alignItems: 'center' }}>
+          <Form.Field
+            control={Radio}
+            label="Contains errors"
+            checked={filters.errors}
+            onChange={() => toggle('errors')}
+            toggle
+          />
+          <Form.Field
+            control={Radio}
+            label="Missing enrollments"
+            checked={filters.noEnrollment}
+            onChange={() => toggle('noEnrollment')}
+            toggle
+          />
+          <Form.Field
+            control={Dropdown}
+            label="Attainment status"
+            value={filters.status || 'ALL'}
+            options={STATE_OPTIONS}
+            onChange={(_, data) => set('status', data.value)}
+          />
+        </Form.Group>
+        <Form.Group>
+          <Form.Field
+            control={Input}
+            label="Filter by student number"
+            value={filters.search}
+            onChange={(event) => debouncedSet('student', event.target.value)}
+          />
+          <Form.Field
+            data-cy="course-filter"
+            control={Select}
+            search
+            label="Filter by course"
+            value={filters.course}
+            options={courseOptions}
+            onChange={(_, { value: courseId }) => set('course', courseId)}
+          />
+        </Form.Group>
+        <Form.Group></Form.Group>
+      </Form>
+    </>
+  )
 }

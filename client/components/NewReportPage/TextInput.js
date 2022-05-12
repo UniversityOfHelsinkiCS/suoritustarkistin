@@ -16,11 +16,10 @@ export default ({ kandi, parseCSV }) => {
 
   const handleDataChange = (event) => {
     let rawData = event.target.value
-    if (rawData === '')
-      return dispatch(resetNewRawEntriesAction())
+    if (rawData === '') return dispatch(resetNewRawEntriesAction())
 
     if (rawData.includes("'")) {
-      rawData.split("\n").forEach((row) => {
+      rawData.split('\n').forEach((row) => {
         if (row[0] === "'") {
           const newRow = row.substring(1)
           rawData = rawData.replace(row, newRow)

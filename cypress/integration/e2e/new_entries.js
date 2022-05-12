@@ -1,4 +1,3 @@
-
 describe('New entries can be added correctly', function () {
   beforeEach(function () {
     cy.request('/api/seed/no-entries')
@@ -11,12 +10,9 @@ describe('New entries can be added correctly', function () {
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=copypaste]').should('be.visible').click()
     cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
-    cy.get('[data-cy=paste-field]').type(
-      '014979622;0;',
-      {
-        delay: 1,
-      }
-    )
+    cy.get('[data-cy=paste-field]').type('014979622;0;', {
+      delay: 1
+    })
     cy.get('#date-picker').clear().type('30.12.2020')
     cy.get('[data-cy=grader-selection]')
       .click()
@@ -26,15 +22,9 @@ describe('New entries can be added correctly', function () {
       .contains('grader')
       .click()
 
-    cy.get('[data-cy=course-selection]')
-      .click()
-      .children()
-      .contains('Ohjelmoinnin perusteet (TKT10002)')
-      .click()
+    cy.get('[data-cy=course-selection]').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
 
-    cy.get('[data-cy=confirm-sending-button]')
-      .should('not.be.disabled')
-      .click()
+    cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
     cy.get('[data-cy=confirm-entries-table]').children().should('have.length', 1)
     cy.get('[data-cy=confirm-entries-table]').children().contains('014979622')
@@ -57,12 +47,9 @@ describe('New entries can be added correctly', function () {
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=copypaste]').should('be.visible').click()
     cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
-    cy.get('[data-cy=paste-field]').type(
-      '014979622;0;',
-      {
-        delay: 1,
-      }
-    )
+    cy.get('[data-cy=paste-field]').type('014979622;0;', {
+      delay: 1
+    })
     cy.get('#date-picker').clear().type('30.12.2020')
     cy.get('[data-cy=grader-selection]')
       .click()
@@ -72,15 +59,9 @@ describe('New entries can be added correctly', function () {
       .contains('grader')
       .click()
 
-    cy.get('[data-cy=course-selection]')
-      .click()
-      .children()
-      .contains('Ohjelmoinnin perusteet (TKT10002)')
-      .click()
+    cy.get('[data-cy=course-selection]').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
 
-    cy.get('[data-cy=confirm-sending-button]')
-      .should('not.be.disabled')
-      .click()
+    cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
     cy.get('[data-cy=confirm-entries-send]').should('not.be.disabled')
     cy.get('[data-cy=confirm-entries-cancel]').should('not.be.disabled').click()
@@ -95,12 +76,9 @@ describe('New entries can be added correctly', function () {
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=copypaste]').should('be.visible').click()
     cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
-    cy.get('[data-cy=paste-field]').type(
-      '015448314;3',
-      {
-        delay: 1,
-      }
-    )
+    cy.get('[data-cy=paste-field]').type('015448314;3', {
+      delay: 1
+    })
     cy.get('#date-picker').clear().type('30.12.2020')
     cy.get('[data-cy=grader-selection]')
       .click()
@@ -110,15 +88,9 @@ describe('New entries can be added correctly', function () {
       .contains('grader')
       .click()
 
-    cy.get('[data-cy=course-selection]')
-      .click()
-      .children()
-      .contains('Ohjelmoinnin jatkokurssi (TKT10003)')
-      .click()
+    cy.get('[data-cy=course-selection]').click().children().contains('Ohjelmoinnin jatkokurssi (TKT10003)').click()
 
-    cy.get('[data-cy=confirm-sending-button]')
-      .should('not.be.disabled')
-      .click()
+    cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
     cy.get('[data-cy=confirm-entries-table]').contains('Missing enrollment')
     cy.get('[data-cy=confirm-entries-table]').children().should('have.length', 1)
@@ -146,12 +118,9 @@ describe('New extra entries can be added correctly', function () {
     cy.get('[data-cy=copypaste-erilliskirjaus]').should('be.visible').click()
 
     cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
-    cy.get('[data-cy=paste-field]').type(
-      '015448314;hyv',
-      {
-        delay: 1,
-      }
-    )
+    cy.get('[data-cy=paste-field]').type('015448314;hyv', {
+      delay: 1
+    })
     cy.get('#date-picker').clear().type('30.12.2020')
     cy.get('[data-cy=grader-selection]')
       .click()
@@ -161,15 +130,9 @@ describe('New extra entries can be added correctly', function () {
       .contains('grader')
       .click()
 
-    cy.get('[data-cy=course-selection]')
-      .click()
-      .children()
-      .contains('Versionhallinta (TKT21015)')
-      .click()
+    cy.get('[data-cy=course-selection]').click().children().contains('Versionhallinta (TKT21015)').click()
 
-    cy.get('[data-cy=confirm-sending-button]')
-      .should('not.be.disabled')
-      .click()
+    cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
     cy.get('[data-cy=confirm-entries-table]').children().should('have.length', 1)
     cy.get('[data-cy=confirm-entries-table]').children().contains('015448314')

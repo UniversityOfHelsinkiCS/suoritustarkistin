@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -8,10 +8,7 @@ module.exports = {
       type: Sequelize.STRING,
       defaultValue: 'NOT_REGISTERED'
     })
-
   },
 
-  down: (queryInterface, Sequelize) => {
-
-  }
-};
+  down: (queryInterface, Sequelize) => {}
+}

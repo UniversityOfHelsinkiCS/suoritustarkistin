@@ -17,14 +17,14 @@ const CourseTable = () => {
       name: course.name,
       credits: course.credits,
       language: course.language,
-      graderUid: course.ownerId 
+      graderUid: course.ownerId
     }
     dispatch(addKurkiRawEntriesAction(newCourse))
   }
 
   return (
     <Segment>
-      <Loader size='big' active={kurki.pending} />
+      <Loader size="big" active={kurki.pending} />
       <Table celled>
         <Table.Header>
           <Table.Row>
@@ -48,24 +48,19 @@ const CourseTable = () => {
         </Table.Header>
         {kurki.courses.map((course) => (
           <Table.Row key={course.id}>
-            <Table.Cell width={2}>{course.id.split(".")[0]}</Table.Cell>
+            <Table.Cell width={2}>{course.id.split('.')[0]}</Table.Cell>
             <Table.Cell width={5}>{course.name}</Table.Cell>
             <Table.Cell width={2}>{course.ownerId}</Table.Cell>
-            <Table.Cell width={2}>{moment(course.startDate).format("DD.MM.YYYY")}</Table.Cell>
-            <Table.Cell width={2}>{moment(course.finishDate).format("DD.MM.YYYY")}</Table.Cell>
+            <Table.Cell width={2}>{moment(course.startDate).format('DD.MM.YYYY')}</Table.Cell>
+            <Table.Cell width={2}>{moment(course.finishDate).format('DD.MM.YYYY')}</Table.Cell>
             <Table.Cell width={3}>
-              <Button
-                color="blue"
-                disabled={course.disabled}
-                onClick={() => createReport(course)}
-              >
+              <Button color="blue" disabled={course.disabled} onClick={() => createReport(course)}>
                 Create a report
               </Button>
             </Table.Cell>
           </Table.Row>
         ))}
-        <Table.Row>
-        </Table.Row>
+        <Table.Row></Table.Row>
       </Table>
     </Segment>
   )

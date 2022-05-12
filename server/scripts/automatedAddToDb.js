@@ -39,7 +39,7 @@ const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) =>
     if (!success || !success.length) {
       await transaction.rollback()
       logger.info('Job run ended successfully, no new entries created')
-      return { message: "no new entries" }
+      return { message: 'no new entries' }
     }
 
     const entriesToSend = await db.entries.bulkCreate(success, { transaction, returning: true })
@@ -47,10 +47,13 @@ const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) =>
     await transaction.commit()
 
     if (sendToSisu) {
-      const [status, message] = await attainmentsToSisu('entries', { user: {}, body: { entryIds: entriesToSend.map(({ id }) => id) } })
+      const [status, message] = await attainmentsToSisu('entries', {
+        user: {},
+        body: { entryIds: entriesToSend.map(({ id }) => id) }
+      })
       if (status > 200) sendSentryMessage(`Sending automatedy entries to Sisu failed with message: ${message}`)
     }
-    return { message: "success" }
+    return { message: 'success' }
   } catch (error) {
     await transaction.rollback()
     await db.raw_entries.destroy({

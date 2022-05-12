@@ -6,7 +6,6 @@ const { processEntries } = require('./processEntries')
 const { sendSentryMessage } = require('@utils/sentry')
 const moment = require('moment')
 
-
 /**
  * Refresh entries which are missing enrollment and update fields
  * to entry from enrollment. Update batch id for entries where an
@@ -19,16 +18,24 @@ const refreshEntries = async (rawEntryIds) => {
     where: {
       id: { [Op.in]: rawEntryIds }
     },
-    include: [
-      { model: db.entries, as: 'entry' }
-    ]
+    include: [{ model: db.entries, as: 'entry' }]
   })
   const [, success] = await processEntries(rawEntries, true)
-  const newEntriesWithEnrollment = success.filter((e) => e.courseUnitId && e.courseUnitRealisationId && e.assessmentItemId)
+  const newEntriesWithEnrollment = success.filter(
+    (e) => e.courseUnitId && e.courseUnitRealisationId && e.assessmentItemId
+  )
   const transaction = await db.sequelize.transaction()
   try {
     await db.entries.bulkCreate(success, {
-      updateOnDuplicate: ['courseUnitRealisationId', 'courseUnitRealisationName', 'assessmentItemId', 'courseUnitId', 'gradeScaleId', 'gradeId', 'completionDate'],
+      updateOnDuplicate: [
+        'courseUnitRealisationId',
+        'courseUnitRealisationName',
+        'assessmentItemId',
+        'courseUnitId',
+        'gradeScaleId',
+        'gradeId',
+        'completionDate'
+      ],
       transaction
     })
     const batchId = `limbo-${moment().format('YYYYMMDDhmmss')}`
@@ -39,7 +46,8 @@ const refreshEntries = async (rawEntryIds) => {
           id: { [Op.in]: newEntriesWithEnrollment.map((e) => e.rawEntryId) }
         },
         transaction
-      })
+      }
+    )
     await transaction.commit()
     return [newEntriesWithEnrollment.length, batchId]
   } catch (e) {

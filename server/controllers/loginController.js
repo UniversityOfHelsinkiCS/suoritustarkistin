@@ -1,14 +1,8 @@
 const login = async (req, res) => {
   if (req.user) {
-    res
-      .status(200)
-      .json(req.user)
-      .end()
+    res.status(200).json(req.user).end()
   } else {
-    res
-      .status(401)
-      .json({ error: 'This service is for employees only.', errorCode: 1})
-      .end()
+    res.status(401).json({ error: 'This service is for employees only.', errorCode: 1 }).end()
   }
 }
 
@@ -22,10 +16,7 @@ const logout = async (req, res) => {
         .send({ logoutUrl: `${logoutUrl}?return=${returnUrl}` })
         .end()
     }
-    res
-      .status(200)
-      .send({ logoutUrl: returnUrl })
-      .end()
+    res.status(200).send({ logoutUrl: returnUrl }).end()
   } catch (err) {
     res.status(500).json({ message: 'Error with logout', err })
   }

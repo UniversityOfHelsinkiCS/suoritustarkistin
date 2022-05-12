@@ -1,5 +1,4 @@
-const moment = require("moment")
-
+const moment = require('moment')
 
 /**
  * Return true if given grade is valid for student. That is any of:
@@ -12,18 +11,15 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completion
   if (!allEarlierAttainments) return true
   if (!grade) return false
   const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
-  const earlierAttainments = student
-    ? student.attainments.filter((a) => !a.misregistration)
-    : undefined
+  const earlierAttainments = student ? student.attainments.filter((a) => !a.misregistration) : undefined
   if (!earlierAttainments || !earlierAttainments.length) return true
 
-  const sanitizedCredits = Number(credits.replace(",", "."))
-  const sanitizedGrade = Number(grade.replace(",", "."))
+  const sanitizedCredits = Number(credits.replace(',', '.'))
+  const sanitizedGrade = Number(grade.replace(',', '.'))
   if (sanitizedGrade >= 1 && sanitizedGrade <= 5)
     return checkNumericImprovement(earlierAttainments, sanitizedGrade, completionDate, sanitizedCredits)
 
-  if (grade === 'Hyv.')
-    return checkPassed(earlierAttainments, completionDate, sanitizedCredits)
+  if (grade === 'Hyv.') return checkPassed(earlierAttainments, completionDate, sanitizedCredits)
 
   return checkFailed(earlierAttainments, completionDate, sanitizedCredits)
 }
@@ -31,16 +27,15 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completion
 const checkNumericImprovement = (earlierAttainments, grade, completionDate, credits) => {
   const completionDateMoment = moment(completionDate)
 
-  if (earlierAttainments.some((a) => a.grade.numericCorrespondence < grade))
-    return true
+  if (earlierAttainments.some((a) => a.grade.numericCorrespondence < grade)) return true
 
   if (earlierAttainments.some((a) => a.grade.numericCorrespondence === grade && Number(a.credits) < credits))
     return true
 
   // Same grade and credits but greater completion date
   if (
-    earlierAttainments.filter((a) => a.grade.numericCorrespondence === grade &&
-      Number(a.credits) === credits)
+    earlierAttainments
+      .filter((a) => a.grade.numericCorrespondence === grade && Number(a.credits) === credits)
       .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
   )
     return true
@@ -51,18 +46,17 @@ const checkNumericImprovement = (earlierAttainments, grade, completionDate, cred
 const checkPassed = (earlierAttainments, completionDate, credits) => {
   const completionDateMoment = moment(completionDate)
 
-  if (earlierAttainments.every((a) => !a.grade.passed))
-    return true
+  if (earlierAttainments.every((a) => !a.grade.passed)) return true
 
   // Passed and new mark has greater credits
-  if (earlierAttainments.filter((a) => a.grade.passed).every((a) => Number(a.credits) < credits))
-    return true
+  if (earlierAttainments.filter((a) => a.grade.passed).every((a) => Number(a.credits) < credits)) return true
 
   // Passed with same credits but greater completion date
-  if (earlierAttainments
-    .filter((a) => a.grade.passed && Number(a.credits) === credits)
-    .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
-  ) 
+  if (
+    earlierAttainments
+      .filter((a) => a.grade.passed && Number(a.credits) === credits)
+      .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
+  )
     return true
 
   return false
@@ -70,17 +64,16 @@ const checkPassed = (earlierAttainments, completionDate, credits) => {
 
 const checkFailed = (earlierAttainments, completionDate, credits) => {
   const completionDateMoment = moment(completionDate)
-  if (earlierAttainments.some((a) => a.grade.passed))
-    return false
+  if (earlierAttainments.some((a) => a.grade.passed)) return false
 
   // Failed and new mark has greater credits
-  if (earlierAttainments.filter((a) => !a.grade.passed).every((a) => Number(a.credits) < credits))
-    return true
+  if (earlierAttainments.filter((a) => !a.grade.passed).every((a) => Number(a.credits) < credits)) return true
 
   // Failed with same credits but greater completion date
-  if (earlierAttainments
-    .filter((a) => !a.grade.passed && Number(a.credits) === credits)
-    .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
+  if (
+    earlierAttainments
+      .filter((a) => !a.grade.passed && Number(a.credits) === credits)
+      .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
   )
     return true
 
@@ -92,9 +85,10 @@ const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, complet
   const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
 
   // Map student's earlier attainments for old and new intermediate BAI
-  const earlierAttainments = studentsAttainments && studentsAttainments.length
-    ? studentsAttainments.reduce((attainments, pair) => attainments.concat(pair.attainments), [])
-    : undefined
+  const earlierAttainments =
+    studentsAttainments && studentsAttainments.length
+      ? studentsAttainments.reduce((attainments, pair) => attainments.concat(pair.attainments), [])
+      : undefined
 
   // No earlier completions for old or new BAI, Intermediate can be given
   if (!earlierAttainments) return false
@@ -102,14 +96,16 @@ const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, complet
   const formattedDate = moment(completionDate).format('YYYY-MM-DD')
 
   // Intermediate level already completed, no Intermediate credit can be given
-  if (earlierAttainments.some(
-    (a) =>
-      Number(a.credits) >= 1
-      && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
-      && a.grade.passed
-      && !a.misregistration
+  if (
+    earlierAttainments.some(
+      (a) =>
+        Number(a.credits) >= 1 &&
+        moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate &&
+        a.grade.passed &&
+        !a.misregistration
+    )
   )
-  ) return true
+    return true
 
   return false
 }
@@ -121,27 +117,33 @@ const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, co
   const formattedDate = moment(completionDate).format('YYYY-MM-DD')
 
   // Earlier completion for Advanced course, no credit can be given
-  if (earlierAdvancedAttainments && earlierAdvancedAttainments.some(
-    (a) =>
-      a.grade.passed
-      && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
-      && a.credits >= 1
-      && !a.misregistration
+  if (
+    earlierAdvancedAttainments &&
+    earlierAdvancedAttainments.some(
+      (a) =>
+        a.grade.passed &&
+        moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate &&
+        a.credits >= 1 &&
+        !a.misregistration
+    )
   )
-  ) return true
+    return true
 
   const baiStudent = oldBaiAttainments.find((a) => a.studentNumber === studentNumber)
   const earlierBaiAttainments = baiStudent ? baiStudent.attainments : undefined
 
   // Earlier 2 credit completion for old Building AI -course, no new credits can be given
-  if (earlierBaiAttainments && earlierBaiAttainments.some(
-    (a) =>
-      a.grade.passed
-      && (moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate)
-      && a.credits >= 2
-      && !a.misregistration
+  if (
+    earlierBaiAttainments &&
+    earlierBaiAttainments.some(
+      (a) =>
+        a.grade.passed &&
+        moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate &&
+        a.credits >= 2 &&
+        !a.misregistration
+    )
   )
-  ) return true
+    return true
 
   return false
 }

@@ -6,7 +6,6 @@ import { confirmDeletionAction } from 'Utilities/redux/coursesReducer'
 import EditCourse from 'Components/CoursesPage/EditCourse'
 import DeletionModal from 'Components/CoursesPage/DeletionModal'
 
-
 export default ({ course, graders }) => {
   const [showForm, setShowForm] = useState(false)
   const dispatch = useDispatch()
@@ -15,7 +14,7 @@ export default ({ course, graders }) => {
     const courseGraders = course.graders.map((grader) => grader.name)
     return courseGraders ? courseGraders.join(', ') : null
   }
- 
+
   const confirmDeletion = async (id) => {
     await dispatch(confirmDeletionAction(id))
     setShowForm(true)
@@ -30,9 +29,7 @@ export default ({ course, graders }) => {
       <Grid.Column width={3}>{getGradersNames()}</Grid.Column>
       <Grid.Column width={2}>{course.gradeScale}</Grid.Column>
       <Grid.Column textAlign="center" width={1}>
-        {course.useAsExtra ? (
-          <Icon name="check" color="green" size="large" />
-        ) : null}
+        {course.useAsExtra ? <Icon name="check" color="green" size="large" /> : null}
       </Grid.Column>
       <Grid.Column width={2}>
         <EditCourse course={course} />

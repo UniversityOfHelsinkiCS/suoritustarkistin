@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.addColumn('raw_entries', 'moocUserId', {
       allowNull: true,
-      type: Sequelize.STRING,
+      type: Sequelize.STRING
     })
   },
   down: async (queryInterface, Sequelize) => {

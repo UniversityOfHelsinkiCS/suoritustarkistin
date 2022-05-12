@@ -6,7 +6,6 @@ import NewCourse from 'Components/CoursesPage/NewCourse'
 import Message from 'Components/Message'
 import CourseTable from 'Components/CoursesPage/CourseTable'
 
-
 export default () => {
   const dispatch = useDispatch()
 

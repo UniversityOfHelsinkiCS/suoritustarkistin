@@ -5,13 +5,7 @@ const cron = require('node-cron')
 const routes = require('@utils/routes')
 const logger = require('@utils/logger')
 const Sentry = require('@sentry/node')
-const {
-  PORT,
-  inProduction,
-  inDevelopment,
-  inTest,
-  SHIBBOLETH_HEADERS
-} = require('@utils/common')
+const { PORT, inProduction, inDevelopment, inTest, SHIBBOLETH_HEADERS } = require('@utils/common')
 const { requestLogger, parseUser, currentUser, errorMiddleware } = require('./utils/middleware')
 const shibbolethCharsetMiddleware = require('unfuck-utf8-headers-middleware')
 
@@ -32,7 +26,6 @@ initializeDatabaseConnection()
     app.use(express.json({ limit: '5mb' }))
     app.use(errorMiddleware)
 
-
     /**
      * Use hot loading when in development, else serve the static content
      */
@@ -42,9 +35,7 @@ initializeDatabaseConnection()
       const hotMiddleWare = require('webpack-hot-middleware')
       const webpackConf = require('@root/webpack.config')
       /* eslint-enable */
-      const compiler = webpack(
-        webpackConf('development', { mode: 'development' })
-      )
+      const compiler = webpack(webpackConf('development', { mode: 'development' }))
       const devMiddleware = middleware(compiler)
 
       app.use(devMiddleware)
@@ -82,8 +73,7 @@ initializeDatabaseConnection()
       res.status(500).send(err.toString())
     })
 
-    if (!IN_MAINTENANCE && inProduction)
-      initializeCronJobs()
+    if (!IN_MAINTENANCE && inProduction) initializeCronJobs()
 
     const STAGING = process.env.NODE_ENV === 'staging'
 
@@ -99,8 +89,7 @@ initializeDatabaseConnection()
 
     app.listen(PORT, () => {
       logger.info(`Started on port ${PORT} with environment ${process.env.NODE_ENV}`)
-      if (IN_MAINTENANCE)
-        logger.info(`Maintenance mode enabled for environment ${process.env.NODE_ENV}`)
+      if (IN_MAINTENANCE) logger.info(`Maintenance mode enabled for environment ${process.env.NODE_ENV}`)
     })
   })
   .catch((e) => {

@@ -1,24 +1,17 @@
 import * as CSV from 'csv-string'
 import * as _ from 'lodash'
-import {
-  isDateObject,
-  isValidDate,
-  isValidOodiDate,
-  isValidStudentId
-} from 'Root/utils/validators'
+import { isDateObject, isValidDate, isValidOodiDate, isValidStudentId } from 'Root/utils/validators'
 import { KANDI_EXTRA_COURSES } from 'Root/utils/common'
-
 
 const markDuplicates = (data, defaultCourse) => {
   if (!data) return []
-  const indexes = data
-    .map((row, index) => {
-      return {
-        index,
-        studentnumber: row.studentId,
-        course: row.course.length ? row.course : defaultCourse
-      }
-    })
+  const indexes = data.map((row, index) => {
+    return {
+      index,
+      studentnumber: row.studentId,
+      course: row.course.length ? row.course : defaultCourse
+    }
+  })
 
   let duplicates = []
   const grouped = _.groupBy(indexes, 'studentnumber')
@@ -31,9 +24,7 @@ const markDuplicates = (data, defaultCourse) => {
   }
 
   return data.map((row) =>
-    duplicates.includes(row.studentId)
-      ? { ...row, duplicate: true }
-      : { ...row, duplicate: false }
+    duplicates.includes(row.studentId) ? { ...row, duplicate: true } : { ...row, duplicate: false }
   )
 }
 
@@ -103,51 +94,49 @@ export const parseKandiCSV = (string, extraCourses = []) => {
   if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
-    const [studentId, grade, credits, language, attainmentDate, motherTongueLang, kypLang, researchLang] = row.split(CSV.detect(row))
+    const [studentId, grade, credits, language, attainmentDate, motherTongueLang, kypLang, researchLang] = row.split(
+      CSV.detect(row)
+    )
     const extras = !['0', 'hyl.', 'hyl'].includes((grade || '').toLowerCase())
-      ? extraCourses.filter(({ courseCode }) => {
-        // Filter out extras explicitly
-        if (motherTongueLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ')
-          return false
-        if (kypLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'KYPSYYSNÄYTE')
-          return false
-        if (researchLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'TUTKIMUSTIEDONHAKU')
-          return false
+      ? extraCourses
+          .filter(({ courseCode }) => {
+            // Filter out extras explicitly
+            if (motherTongueLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ') return false
+            if (kypLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'KYPSYYSNÄYTE') return false
+            if (researchLang === 'x' && KANDI_EXTRA_COURSES[courseCode] === 'TUTKIMUSTIEDONHAKU') return false
 
-        // Filter out extras when kandi language is english
-        // and extras lang not explicitly defined
-        if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ' && !motherTongueLang)
-          return false
-        if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'KYPSYYSNÄYTE' && !kypLang)
-          return false
-        if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'TUTKIMUSTIEDONHAKU' && !researchLang)
-          return false
+            // Filter out extras when kandi language is english
+            // and extras lang not explicitly defined
+            if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'ÄIDINKIELINEN_VIESTINTÄ' && !motherTongueLang)
+              return false
+            if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'KYPSYYSNÄYTE' && !kypLang) return false
+            if (language === 'en' && KANDI_EXTRA_COURSES[courseCode] === 'TUTKIMUSTIEDONHAKU' && !researchLang)
+              return false
 
-        return true
-      })
-        .map(({ courseCode }) => courseCode)
+            return true
+          })
+          .map(({ courseCode }) => courseCode)
       : []
-    return [toRawEntry(studentId, grade, credits, language, attainmentDate)]
-      .concat(extras
-        .map((courseCode) => {
-          let extraEntryLang = ''
-          switch (KANDI_EXTRA_COURSES[courseCode]) {
-            case 'ÄIDINKIELINEN_VIESTINTÄ':
-              extraEntryLang = motherTongueLang || language
-              break
-            case 'KYPSYYSNÄYTE':
-              extraEntryLang = kypLang || language
-              break
-            case 'TUTKIMUSTIEDONHAKU':
-              extraEntryLang = researchLang || language
-              break
-            default:
-              extraEntryLang = language
-          }
+    return [toRawEntry(studentId, grade, credits, language, attainmentDate)].concat(
+      extras.map((courseCode) => {
+        let extraEntryLang = ''
+        switch (KANDI_EXTRA_COURSES[courseCode]) {
+          case 'ÄIDINKIELINEN_VIESTINTÄ':
+            extraEntryLang = motherTongueLang || language
+            break
+          case 'KYPSYYSNÄYTE':
+            extraEntryLang = kypLang || language
+            break
+          case 'TUTKIMUSTIEDONHAKU':
+            extraEntryLang = researchLang || language
+            break
+          default:
+            extraEntryLang = language
+        }
 
-          return { ...toRawEntry(studentId, 'hyv', null, extraEntryLang, attainmentDate, courseCode), isExtra: true }
-        })
-      )
+        return { ...toRawEntry(studentId, 'hyv', null, extraEntryLang, attainmentDate, courseCode), isExtra: true }
+      })
+    )
   })
   return markDuplicates(_.flatten(data))
 }

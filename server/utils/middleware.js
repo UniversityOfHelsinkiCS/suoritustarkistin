@@ -15,12 +15,8 @@ const parseUser = async (req, res, next) => {
           uid: req.headers.uid,
           email: req.headers.mail,
           name: `${req.headers.givenname} ${req.headers.sn}`,
-          isGrader:
-            false ||
-            !!(req.headers.employeenumber === 'grader' && !inProduction),
-          isAdmin:
-            false ||
-            !!(req.headers.employeenumber === 'admin' && !inProduction),
+          isGrader: false || !!(req.headers.employeenumber === 'grader' && !inProduction),
+          isAdmin: false || !!(req.headers.employeenumber === 'admin' && !inProduction),
           lastLogin: new Date()
         }
       })
@@ -52,7 +48,8 @@ const currentUser = async (req, res, next) => {
 }
 
 const errorMiddleware = (req, res, next) => {
-  const oldWrite = res.write, oldEnd = res.end
+  const oldWrite = res.write,
+    oldEnd = res.end
 
   const chunks = []
 
@@ -62,8 +59,7 @@ const errorMiddleware = (req, res, next) => {
   }
 
   res.end = function (chunk) {
-    if (chunk)
-      chunks.push(chunk)
+    if (chunk) chunks.push(chunk)
 
     const { statusCode } = res
     if (statusCode >= 400 && req.headers.uid !== 'ohj_tosk') {
@@ -80,7 +76,10 @@ const errorMiddleware = (req, res, next) => {
       Sentry.withScope((scope) => {
         scope.setUser(req.user ? req.user.get({ plain: true }) : null)
         scope.setExtras({
-          originalUrl, body: JSON.stringify(body), method, query
+          originalUrl,
+          body: JSON.stringify(body),
+          method,
+          query
         })
         Sentry.captureMessage(message)
       })
@@ -101,13 +100,13 @@ const paginateMiddleware = (req, res, next) => {
 const useFilters = (req, res, next) => {
   const { student, course, errors, noEnrollment, status, adminmode, notSent } = req.query
   const graderId = !req.user.isAdmin ? req.user.id : null
-  const reporterId = (req.user.isAdmin && adminmode === 'false') ? req.user.id : null
+  const reporterId = req.user.isAdmin && adminmode === 'false' ? req.user.id : null
   const filters = {
     student: student || null,
     courseId: course || null,
-    errors: (errors === 'true'),
-    notSent: (notSent === 'true'),
-    noEnrollment: (noEnrollment === 'true'),
+    errors: errors === 'true',
+    notSent: notSent === 'true',
+    noEnrollment: noEnrollment === 'true',
     status: null,
     graderId,
     reporterId

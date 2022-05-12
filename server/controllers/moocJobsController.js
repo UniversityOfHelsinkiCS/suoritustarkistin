@@ -18,8 +18,7 @@ const addJob = async (req, res) => {
   try {
     const job = req.body
 
-    if (!isValidJob(job))
-      return res.status(400).json({ error: 'Malformed cronjob data.' })
+    if (!isValidJob(job)) return res.status(400).json({ error: 'Malformed cronjob data.' })
 
     const newJob = await db.jobs.create(job)
     if (newJob.active) await activateJob(newJob.id)
@@ -34,8 +33,7 @@ const editJob = async (req, res) => {
   try {
     const job = req.body
 
-    if (!isValidJob(job))
-      return res.status(400).json({ error: 'Malformed cronjob data.' })
+    if (!isValidJob(job)) return res.status(400).json({ error: 'Malformed cronjob data.' })
 
     const [rows, [updatedJob]] = await db.jobs.update(job, {
       returning: true,
@@ -43,9 +41,7 @@ const editJob = async (req, res) => {
     })
 
     if (rows) {
-      updatedJob.active
-        ? activateJob(updatedJob.id)
-        : deactivateJob(updatedJob.id)
+      updatedJob.active ? activateJob(updatedJob.id) : deactivateJob(updatedJob.id)
       return res.status(200).json(updatedJob)
     }
     return res.status(400).json({ error: 'id not found.' })
@@ -74,14 +70,14 @@ const runJob = async (req, res) => {
         id: job.courseId
       }
     })
-    if (!course) return res.status(400).json({ error: `No course with id: ${job.courseId} found`})
+    if (!course) return res.status(400).json({ error: `No course with id: ${job.courseId} found` })
 
     const grader = await db.users.findOne({
       where: {
         id: job.graderId
       }
     })
-    if (!grader) return res.status(400).json({ error: `No grader found for the job: ${course.name}`})
+    if (!grader) return res.status(400).json({ error: `No grader found for the job: ${course.name}` })
 
     const timeStamp = new Date(Date.now())
 
@@ -93,7 +89,7 @@ const runJob = async (req, res) => {
     const script = chooseScript(course.courseCode)
     const result = await script({ job, course, grader })
 
-    if (result.message === "no new entries" || result.message === "success") {
+    if (result.message === 'no new entries' || result.message === 'success') {
       return res.status(200).json({ message: result.message })
     }
 
@@ -103,7 +99,6 @@ const runJob = async (req, res) => {
     res.status(500).json({ error: e.message })
   }
 }
-
 
 const deleteJob = async (req, res) => {
   await db.jobs.destroy({ where: { id: req.params.id } })

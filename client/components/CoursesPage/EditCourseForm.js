@@ -1,26 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
-import {
-  Button,
-  Form,
-  Input,
-  Segment,
-  Checkbox,
-  Popup,
-  Icon
-} from 'semantic-ui-react'
+import { Button, Form, Input, Segment, Checkbox, Popup, Icon } from 'semantic-ui-react'
 import { editCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
-import {
-  isValidCourse,
-  isValidCourseCode,
-  isValidCreditAmount,
-  isValidLanguage
-} from 'Root/utils/validators'
+import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from 'Root/utils/validators'
 import { gradeScales } from 'Root/utils/common'
 
-const Help = ({ text }) => <span style={{ marginLeft: '7px' }}><Popup content={text} trigger={<Icon name='help' circular />} /></span>
-
+const Help = ({ text }) => (
+  <span style={{ marginLeft: '7px' }}>
+    <Popup content={text} trigger={<Icon name="help" circular />} />
+  </span>
+)
 
 export default ({ course, close: closeModal }) => {
   const dispatch = useDispatch()
@@ -32,7 +22,7 @@ export default ({ course, close: closeModal }) => {
     if (courseData.responsibles && !courseData.pending) {
       const responsibleUids = Object.keys(courseData.responsibles)
         .filter((r) => courseData.responsibles[r].person.eduPersonPrincipalName)
-        .map((r) => courseData.responsibles[r].person.eduPersonPrincipalName.split("@")[0])
+        .map((r) => courseData.responsibles[r].person.eduPersonPrincipalName.split('@')[0])
       const newGraders = allGraders.filter((g) => responsibleUids.includes(g.uid)).map(({ id }) => id)
       const graders = _.uniq(data.graders.concat(newGraders))
       setData({ ...data, graders })
@@ -136,12 +126,7 @@ export default ({ course, close: closeModal }) => {
           onChange={(e, d) => setData({ ...data, useAsExtra: d.checked })}
         />
         <Form.Group>
-          <Form.Field
-            negative
-            control={Button}
-            content="Cancel"
-            onClick={() => close()}
-          />
+          <Form.Field negative control={Button} content="Cancel" onClick={() => close()} />
           <Form.Field
             data-cy="edit-course-confirm"
             positive

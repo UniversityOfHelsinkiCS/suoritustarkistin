@@ -21,8 +21,7 @@ export default (state = null, action) => {
     case 'ADD_COURSE_FAILURE':
       return {
         header: 'Creating the course failed!',
-        content:
-          `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
+        content: `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
         type: 'negative'
       }
     case 'EDIT_COURSE_SUCCESS':
@@ -34,8 +33,7 @@ export default (state = null, action) => {
     case 'EDIT_COURSE_FAILURE':
       return {
         header: 'Modifying the course failed.',
-        content:
-          `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
+        content: `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
         type: 'negative'
       }
     case 'DELETE_COURSE_SUCCESS':
@@ -53,7 +51,11 @@ export default (state = null, action) => {
     case 'POST_RAW_ENTRIES_FAILURE':
       return {
         header: `Sending the report failed!`,
-        content: `${(action.error && action.error.failed) ? "Check out the errors below" : `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi'.`}`,
+        content: `${
+          action.error && action.error.failed
+            ? 'Check out the errors below'
+            : `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi'.`
+        }`,
         type: 'negative'
       }
     case 'POST_ENTRIES_TO_SIS_FAILURE':
@@ -68,7 +70,8 @@ export default (state = null, action) => {
       return {
         header: 'Some entries failed validation in Sisu',
         type: 'negative',
-        content: 'See batch for Sisu error messages. Failed entries are reported for the study coordinator, please wait for further actions.'
+        content:
+          'See batch for Sisu error messages. Failed entries are reported for the study coordinator, please wait for further actions.'
       }
     case 'REFRESH_BATCH_STATUS_FAILURE': {
       const content = action.error.message.message || action.error.message
@@ -92,7 +95,7 @@ export default (state = null, action) => {
       }
     }
     case 'RUN_JOB_SUCCESS': {
-      if (action.response.message == "success") {
+      if (action.response.message == 'success') {
         return {
           header: 'New report created!',
           type: 'positive',
@@ -120,7 +123,7 @@ export default (state = null, action) => {
       }
     }
     case 'CREATE_KURKI_REPORT_SUCCESS':
-      if (action.response.message == "success") {
+      if (action.response.message == 'success') {
         return {
           header: 'New report created!',
           type: 'positive',
@@ -135,14 +138,15 @@ export default (state = null, action) => {
     case 'CREATE_KURKI_REPORT_FAILURE':
       return {
         header: 'Creating a new report failed!',
-        content:
-          `${action.error}`,
+        content: `${action.error}`,
         type: 'negative'
       }
     case 'REFRESH_ENROLLMENTS_SUCCESS':
       return {
         header: 'Entries refreshed successfully!',
-        content: `${action.response.amount} new enrollments found${action.response.amount ? `, a new batch ${action.response.batchId} created` : ''}.`,
+        content: `${action.response.amount} new enrollments found${
+          action.response.amount ? `, a new batch ${action.response.batchId} created` : ''
+        }.`,
         type: 'positive'
       }
     case 'REFRESH_ENROLLMENTS_FAILURE':

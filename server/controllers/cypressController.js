@@ -10,7 +10,6 @@ const {
   getBatchId
 } = require('../utils/common')
 
-
 // These are to be used ONLY for test database and not in production
 
 const deleteAllSisReports = async () => {
@@ -69,7 +68,7 @@ const createTestCourses = async (courses) => {
         courseCode,
         language,
         gradeScale,
-        credits: credits || "5,0",
+        credits: credits || '5,0',
         ...additional
       })
     }
@@ -114,54 +113,59 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
         }
       })
 
-      const attainmentDate = "2021-08-09T03:00:00.000Z"
+      const attainmentDate = '2021-08-09T03:00:00.000Z'
       const batchId = getBatchId(course.courseCode)
-      const testRawEntries = course.gradeScale === "sis-hyl-hyv" ? entriesHylHyv : entries0to5
+      const testRawEntries = course.gradeScale === 'sis-hyl-hyv' ? entriesHylHyv : entries0to5
 
       const getRegisteredStatus = () => {
-        if (course.courseCode === "TKT10002") return 'PARTLY_REGISTERED'
-        if (course.courseCode === "TKT10003") return 'REGISTERED'
+        if (course.courseCode === 'TKT10002') return 'PARTLY_REGISTERED'
+        if (course.courseCode === 'TKT10003') return 'REGISTERED'
         return 'NOT_REGISTERED'
       }
 
       // With individual completions
       for (const { studentNumber, grade } of testRawEntries) {
-
-        const rawEntry = await db.raw_entries.create({
-          studentNumber,
-          batchId,
-          grade,
-          credits: course.credits,
-          language: course.language,
-          attainmentDate: attainmentDate,
-          graderId: grader.id,
-          reporterId: course.name.includes('Avoin yo') ? null : grader.id,
-          courseId: course.id,
-          moocCompletionId: null,
-          moocUserId: null,
-          registeredToMooc: course.name.includes('Avoin yo') ? attainmentDate : null
-        }, { transaction })
-
-        await db.entries.create({
-          id: `entry-id-${rawEntry.id}`,
-          personId: "entryPersonId",
-          verifierPersonId: "entryVerifierpersonId",
-          courseUnitRealisationId: "entryCourseUnitRealisationId",
-          assessmentItemId: "entryVerifierpersonId",
-          completionLanguage: rawEntry.language,
-          completionDate: attainmentDate,
-          rawEntryId: rawEntry.id,
-          courseUnitId: "entryCourseUnitId",
-          gradeScaleId: course.gradeScale,
-          gradeId: rawEntry.grade,
-          courseUnitRealisationName: {
-            "fi": `courseUnitRealisationName-fi-${rawEntry.grade}`,
-            "en": `courseUnitRealisationName-en-${rawEntry.grade}`,
-            "sv": `courseUnitRealisationName-sv-${rawEntry.grade}`
+        const rawEntry = await db.raw_entries.create(
+          {
+            studentNumber,
+            batchId,
+            grade,
+            credits: course.credits,
+            language: course.language,
+            attainmentDate: attainmentDate,
+            graderId: grader.id,
+            reporterId: course.name.includes('Avoin yo') ? null : grader.id,
+            courseId: course.id,
+            moocCompletionId: null,
+            moocUserId: null,
+            registeredToMooc: course.name.includes('Avoin yo') ? attainmentDate : null
           },
-          sent: new Date(),
-          registered: getRegisteredStatus(course.courseCode)
-        }, { transaction })
+          { transaction }
+        )
+
+        await db.entries.create(
+          {
+            id: `entry-id-${rawEntry.id}`,
+            personId: 'entryPersonId',
+            verifierPersonId: 'entryVerifierpersonId',
+            courseUnitRealisationId: 'entryCourseUnitRealisationId',
+            assessmentItemId: 'entryVerifierpersonId',
+            completionLanguage: rawEntry.language,
+            completionDate: attainmentDate,
+            rawEntryId: rawEntry.id,
+            courseUnitId: 'entryCourseUnitId',
+            gradeScaleId: course.gradeScale,
+            gradeId: rawEntry.grade,
+            courseUnitRealisationName: {
+              fi: `courseUnitRealisationName-fi-${rawEntry.grade}`,
+              en: `courseUnitRealisationName-en-${rawEntry.grade}`,
+              sv: `courseUnitRealisationName-sv-${rawEntry.grade}`
+            },
+            sent: new Date(),
+            registered: getRegisteredStatus(course.courseCode)
+          },
+          { transaction }
+        )
       }
     }
     await transaction.commit()
@@ -188,17 +192,18 @@ const createTestOodiReports = async () => {
         }
       })
 
-      const lastDownloaded = "2021-10-09T03:00:00.000Z"
-      const reportDate = "15.09.21-162832"
-      const completionDate = "8.9.2021"
+      const lastDownloaded = '2021-10-09T03:00:00.000Z'
+      const reportDate = '15.09.21-162832'
+      const completionDate = '8.9.2021'
       const fileName = course.name.includes('Avoin yo')
         ? `${course.courseCode}%${reportDate}_AUTOMATIC.dat`
         : `${course.courseCode}%${reportDate}_MANUAL.dat`
 
-      const testReportData = course.gradeScale === "sis-hyl-hyv" ? testRawEntriesHylHyv : testRawEntries0to5
+      const testReportData = course.gradeScale === 'sis-hyl-hyv' ? testRawEntriesHylHyv : testRawEntries0to5
 
-      const data = testReportData.map(({ studentNumber, grade }) => {
-        return `
+      const data = testReportData
+        .map(({ studentNumber, grade }) => {
+          return `
           ${studentNumber}##1#
           ${course.courseCode}#
           ${course.name}#
@@ -207,7 +212,8 @@ const createTestOodiReports = async () => {
           ${grader.employeeId}#2#H930#####
           ${course.credits}
         `
-      }).join('\n')
+        })
+        .join('\n')
 
       await db.reports.create({
         fileName,
@@ -224,11 +230,7 @@ const createTestOodiReports = async () => {
 
 const seedTestCompletions = async (req, res) => {
   try {
-    const {
-      testCompletions,
-      testRawEntries0to5,
-      testRawEntriesHylHyv
-    } = req.body
+    const { testCompletions, testRawEntries0to5, testRawEntriesHylHyv } = req.body
 
     await createTestSisCompletions(testCompletions, testRawEntriesHylHyv, testRawEntries0to5)
     return res.status(200).send('OK')
@@ -252,7 +254,6 @@ const seedDatabaseForTests = async (req, res) => {
     await createTestSisCompletions(testCompletions, testRawEntriesHylHyv, testRawEntries0to5)
     await createTestOodiReports()
     return res.status(200).send('OK')
-
   } catch (error) {
     logger.error(`Error seeding the database: ${error.message}`)
     res.status(500).json({ error: error.message })
@@ -276,7 +277,6 @@ const seedNoEntries = async (req, res) => {
   }
 }
 
-
 const seedBachelorData = async (req, res) => {
   try {
     await deleteAllSisReports()
@@ -288,39 +288,41 @@ const seedBachelorData = async (req, res) => {
     const grader = await db.users.findOne({ where: { name: 'grader' } })
     const courses = [
       {
-        name: "Kandidaatin tutkielma",
-        courseCode: "TKT20013",
-        language: "fi",
-        gradeScale: "sis-0-5",
-        credits: "6"
+        name: 'Kandidaatin tutkielma',
+        courseCode: 'TKT20013',
+        language: 'fi',
+        gradeScale: 'sis-0-5',
+        credits: '6'
       },
       {
-        name: "Kypsyysnäyte",
-        courseCode: "TKT20014",
-        language: "fi",
-        gradeScale: "sis-hyl-hyv",
-        credits: "0",
+        name: 'Kypsyysnäyte',
+        courseCode: 'TKT20014',
+        language: 'fi',
+        gradeScale: 'sis-hyl-hyv',
+        credits: '0',
         useAsExtra: true
       },
       {
-        name: "Tutkimustiedonhaku",
-        courseCode: "TKT50002",
-        language: "fi",
-        gradeScale: "sis-hyl-hyv",
-        credits: "1",
+        name: 'Tutkimustiedonhaku',
+        courseCode: 'TKT50002',
+        language: 'fi',
+        gradeScale: 'sis-hyl-hyv',
+        credits: '1',
         useAsExtra: true
       },
       {
-        name: "Äidinkielinen viestintä",
-        courseCode: "TKT50001",
-        language: "fi",
-        gradeScale: "sis-hyl-hyv",
-        credits: "3",
+        name: 'Äidinkielinen viestintä',
+        courseCode: 'TKT50001',
+        language: 'fi',
+        gradeScale: 'sis-hyl-hyv',
+        credits: '3',
         useAsExtra: true
       }
     ]
     await createTestCourses(courses)
-    const courseInstances = await db.courses.findAll({ where: { courseCode: ['TKT20013', 'TKT20014', 'TKT50002', 'TKT50001'] } })
+    const courseInstances = await db.courses.findAll({
+      where: { courseCode: ['TKT20013', 'TKT20014', 'TKT50002', 'TKT50001'] }
+    })
     await grader.setCourses(courseInstances.map(({ id }) => id))
     await bscThesisEntryFactory('grader')
     return res.status(200).send('OK')
@@ -329,7 +331,6 @@ const seedBachelorData = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
-
 
 const seedErilliskirjaus = async (req, res) => {
   try {
@@ -341,11 +342,11 @@ const seedErilliskirjaus = async (req, res) => {
     await createTestUsers(testUsers)
     const courses = [
       {
-        name: "Versionhallinta",
-        courseCode: "TKT21015",
-        language: "fi",
-        gradeScale: "sis-hyl-hyv",
-        credits: "1",
+        name: 'Versionhallinta',
+        courseCode: 'TKT21015',
+        language: 'fi',
+        gradeScale: 'sis-hyl-hyv',
+        credits: '1',
         useAsExtra: true
       }
     ]

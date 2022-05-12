@@ -37,7 +37,9 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       errors: DataTypes.JSONB
-    }, {})
+    },
+    {}
+  )
   ExtraEntry.associate = (models) => {
     ExtraEntry.belongsTo(models.raw_entries, { foreignKey: 'rawEntryId', as: 'rawEntry' })
     ExtraEntry.belongsTo(models.users, { foreignKey: 'senderId', as: 'sender', onDelete: 'SET NULL' })

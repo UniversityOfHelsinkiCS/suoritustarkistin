@@ -6,7 +6,6 @@ import { useDropzone } from 'react-dropzone'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { parseCSV } from 'Utilities/inputParser'
 
-
 const baseStyle = {
   flex: 1,
   display: 'flex',
@@ -70,13 +69,7 @@ export default () => {
     [isDragActive, isDragReject]
   )
 
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    isDragReject,
-    isDragAccept
-  } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, isDragReject, isDragAccept } = useDropzone({
     onDrop,
     multiple: false,
     maxSize: 5000000,
@@ -87,13 +80,9 @@ export default () => {
     <div className="container" style={{ cursor: 'pointer' }}>
       <div data-cy="dropzone" {...getRootProps({ style })}>
         <input {...getInputProps()} />
-        <p>
-          Drag a file here, or find it by clicking this box.
-        </p>
-        <p>
-          One .csv, .txt, or .dat -ended file, under 5MB is accepted
-        </p>
-        <Loader size='big' inline active={newRawEntries.sending} />
+        <p>Drag a file here, or find it by clicking this box.</p>
+        <p>One .csv, .txt, or .dat -ended file, under 5MB is accepted</p>
+        <Loader size="big" inline active={newRawEntries.sending} />
       </div>
     </div>
   )

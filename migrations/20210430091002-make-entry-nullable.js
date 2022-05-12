@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     try {
@@ -32,10 +32,10 @@ module.exports = {
         allowNull: true,
         defaultValue: null
       })
-    } catch(e) {
+    } catch (e) {
       console.log(e)
       throw e
     }
   },
   down: (queryInterface, Sequelize) => {}
-};
+}

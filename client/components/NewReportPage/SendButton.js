@@ -6,7 +6,6 @@ import * as _ from 'lodash'
 import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { areValidNewRawEntries } from 'Root/utils/validators'
 
-
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
 
@@ -50,14 +49,14 @@ const parseCourseName = (newRawEntries, defaultCourse, courses) => {
   if (rowCourses.length) {
     return (
       <>
-        {_.uniq(rowCourses).map((c) => <p key={c.name}>{`${amounts[c.courseCode]} x ${c.name} (${c.courseCode})`}</p>)}
+        {_.uniq(rowCourses).map((c) => (
+          <p key={c.name}>{`${amounts[c.courseCode]} x ${c.name} (${c.courseCode})`}</p>
+        ))}
       </>
     )
   }
 
-  return (
-    <span>No courses chosen yet</span>
-  )
+  return <span>No courses chosen yet</span>
 }
 
 export default () => {
@@ -79,29 +78,22 @@ export default () => {
 
   return (
     <>
-      <Modal
-        basic
-        open={showForm}
-        onClose={closeModal}
-        size="small"
-      >
-        <Modal.Content >
-          <Segment style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "50em",
-            textAlign: "center",
-            verticalAlign: "center",
-            padding: "2em"
-          }}>
-            <Header size="large">
-              Following completion(s) will be reported:
-            </Header>
+      <Modal basic open={showForm} onClose={closeModal} size="small">
+        <Modal.Content>
+          <Segment
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '50em',
+              textAlign: 'center',
+              verticalAlign: 'center',
+              padding: '2em'
+            }}
+          >
+            <Header size="large">Following completion(s) will be reported:</Header>
             {newRawEntries.sending && <Message header="Sending the report" />}
-            <Header>
-              {parseCourseName(newRawEntries, defaultCourse, courses)}
-            </Header>
-            <div style={{ marginTop: "2em" }}>
+            <Header>{parseCourseName(newRawEntries, defaultCourse, courses)}</Header>
+            <div style={{ marginTop: '2em' }}>
               <Button
                 disabled={newRawEntries.sending}
                 data-cy="confirm-sending-button"
@@ -110,11 +102,7 @@ export default () => {
               >
                 Create report
               </Button>
-              <Button
-                disabled={newRawEntries.sending}
-                onClick={closeModal}
-                data-cy="cancel-sending-button"
-              >
+              <Button disabled={newRawEntries.sending} onClick={closeModal} data-cy="cancel-sending-button">
                 Cancel
               </Button>
             </div>
@@ -127,14 +115,21 @@ export default () => {
             positive
             data-cy="create-report-button"
             onClick={() => setShowForm(true)}
-            disabled={
-              newRawEntries.sending || !areValidNewRawEntries(parseRawEntries(newRawEntries))
-            }
+            disabled={newRawEntries.sending || !areValidNewRawEntries(parseRawEntries(newRawEntries))}
             content="Create report"
           />
         }
-        content={newRawEntries.data && newRawEntries.data.length > 100 ? 'Currently single report can contain max 100 completions' : "Report contains validation errors, see table below."}
-        disabled={!newRawEntries.data || areValidNewRawEntries(parseRawEntries(newRawEntries) || newRawEntries.data && newRawEntries.data.length <= 100)}
+        content={
+          newRawEntries.data && newRawEntries.data.length > 100
+            ? 'Currently single report can contain max 100 completions'
+            : 'Report contains validation errors, see table below.'
+        }
+        disabled={
+          !newRawEntries.data ||
+          areValidNewRawEntries(
+            parseRawEntries(newRawEntries) || (newRawEntries.data && newRawEntries.data.length <= 100)
+          )
+        }
         style={{ color: 'red' }}
       />
     </>

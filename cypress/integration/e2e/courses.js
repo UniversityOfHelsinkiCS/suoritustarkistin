@@ -1,5 +1,4 @@
 describe('Creating and assigning courses work', function () {
-
   before(function () {
     cy.request('/api/seed/all')
   })
@@ -43,25 +42,17 @@ describe('Creating and assigning courses work', function () {
     cy.get('[data-cy=add-course-confirm]').should('be.disabled')
 
     // Missing credits
-    cy.get('[data-cy=add-course-language] input').type("fi")
+    cy.get('[data-cy=add-course-language] input').type('fi')
     cy.get('[data-cy=add-course-confirm]').should('not.be.disabled')
     cy.get('[data-cy=add-course-credits] input').clear()
     cy.get('[data-cy=add-course-confirm]').should('be.disabled')
 
     // Graders and grade scales can be added but are not required
-    cy.get('[data-cy=add-course-grader]')
-      .click()
-      .children()
-      .contains('grader')
-      .click()
+    cy.get('[data-cy=add-course-grader]').click().children().contains('grader').click()
 
-    cy.get('[data-cy=add-course-grade-scale]')
-      .click()
+    cy.get('[data-cy=add-course-grade-scale]').click()
     cy.get('span').contains('sis-0-5').click()
-
-
 
     cy.logout()
   })
-
 })

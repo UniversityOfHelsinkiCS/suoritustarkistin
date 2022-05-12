@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { handleEntryDeletionAction } from 'Utilities/redux/sisReportsReducer'
 
-
 export default ({ rawEntryId, batchId }) => {
   const [open, setOpen] = useState(false)
   const dispatch = useDispatch()
@@ -31,12 +30,10 @@ export default ({ rawEntryId, batchId }) => {
       content={
         <div className="delete-popup">
           <p>
-            <strong>
-                Are you sure?
-            </strong>
+            <strong>Are you sure?</strong>
           </p>
           <p style={{ padding: '5px 2px' }}>
-              Please note that deleting the completion here, will not affect completions already sent to SIS.
+            Please note that deleting the completion here, will not affect completions already sent to SIS.
           </p>
           <Button
             style={{ margin: '5px 2px' }}

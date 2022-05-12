@@ -1,5 +1,4 @@
 describe('Basic functions work', function () {
-
   before(function () {
     cy.request('/api/seed/all')
   })
@@ -28,17 +27,11 @@ describe('Basic functions work', function () {
     cy.get('[data-cy=add-course-code] input').type('TKT20042')
     cy.get('[data-cy=add-course-language] input').type('fi')
     cy.get('[data-cy=add-course-credits] input').type('1,0')
-    cy.get('[data-cy=add-course-grader]')
-      .click()
-      .children()
-      .contains('grader')
-      .click()
+    cy.get('[data-cy=add-course-grader]').click().children().contains('grader').click()
     cy.get('[data-cy=add-course-confirm]').click()
 
     cy.get('[data-cy=TKT20042-edit-button]').click()
-    cy.get('[data-cy=edit-course-credits] input')
-      .clear()
-      .type('1,5')
+    cy.get('[data-cy=edit-course-credits] input').clear().type('1,5')
     cy.get('[data-cy=edit-course-confirm]').click()
     cy.logout()
   })
@@ -47,33 +40,18 @@ describe('Basic functions work', function () {
     cy.login('grader').visit('')
 
     cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
-    cy.get('[data-cy=paste-field]').type(
-      '010000003;2;5;fi\n011000002;3;2,0\n011100009;4\n011110002;5;;fi'
-    )
+    cy.get('[data-cy=paste-field]').type('010000003;2;5;fi\n011000002;3;2,0\n011100009;4\n011110002;5;;fi')
     cy.get('#date-picker').clear().type('30.12.2020')
 
-    cy.get('[data-cy=grader-selection]')
-      .click()
-      .children()
-      .should('not.contain', 'admin')
-      .contains('grader')
-      .click()
+    cy.get('[data-cy=grader-selection]').click().children().should('not.contain', 'admin').contains('grader').click()
 
-    cy.get('[data-cy=course-selection]')
-      .click()
-      .children()
-      .contains('E2E')
-      .click()
+    cy.get('[data-cy=course-selection]').click().children().contains('E2E').click()
 
-    cy.get('[data-cy=confirm-sending-button]')
-      .should('not.be.disabled')
-      .click()
+    cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
-    cy.get('[data-cy=confirm-sending-button]')
-      .should('be.visible')
+    cy.get('[data-cy=confirm-sending-button]').should('be.visible')
     cy.logout()
   })
-
 
   it('Grader can view all reports where they are as graders', () => {
     cy.login('grader').visit('')

@@ -11,9 +11,11 @@ import UnauthorizedPage from 'Components/UnauthorizedPage'
 import SandboxPage from 'Components/SandboxPage'
 
 // HACK to make component full page width or narrow
-const Wrap = ({ childComponent: ChildComponent, narrow }) => <div className={narrow ? `sitecontent-narrow` : 'sitecontent'}>
-  <ChildComponent />
-</div>
+const Wrap = ({ childComponent: ChildComponent, narrow }) => (
+  <div className={narrow ? `sitecontent-narrow` : 'sitecontent'}>
+    <ChildComponent />
+  </div>
+)
 
 export default () => (
   <>

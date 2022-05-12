@@ -35,19 +35,18 @@ const getCompletions = async (kurkiId) => {
 
 const postTransferredId = async (kurkiId) => {
   if (process.env.NODE_ENV === 'production') {
-    logger.info({ message: `Posting transferred course back to Kurki`})
+    logger.info({ message: `Posting transferred course back to Kurki` })
     const result = await kurkiApi.post(`/${kurkiId}/students-transferred`)
 
     if (result.status === 200) {
       logger.info({ message: `Posting successful with status code ${result.status}` })
-      return { message: "success" }
+      return { message: 'success' }
     }
 
-    return { message: "Failed posting transferral to Kurki" }    
+    return { message: 'Failed posting transferral to Kurki' }
   }
 
   logger.info({ message: 'Not sent to Kurki, the environment is not production' })
-
 }
 
 module.exports = { getCourses, getCompletions, postTransferredId }

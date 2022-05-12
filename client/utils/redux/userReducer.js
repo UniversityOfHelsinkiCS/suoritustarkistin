@@ -41,18 +41,16 @@ export default (state = { data: null }, action) => {
         ...state,
         data: {
           ...action.response,
-          adminMode:
-            action.response.isAdmin &&
-            window.localStorage.getItem('adminmode') === 'true'
+          adminMode: action.response.isAdmin && window.localStorage.getItem('adminmode') === 'true'
         },
         pending: false,
         error: false
       }
-    case "LOGIN_FAILURE": 
+    case 'LOGIN_FAILURE':
       return {
         ...state,
-        pending:false,
-        error:true,
+        pending: false,
+        error: true,
         errorCode: action.errorCode
       }
     case 'LOGOUT_SUCCESS':

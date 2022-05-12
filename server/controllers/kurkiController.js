@@ -20,13 +20,7 @@ const addKurkiRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'User is not authorized to create SIS-reports.' })
     }
 
-    const {
-      kurkiId,
-      name,
-      credits,
-      language,
-      graderUid
-    } = req.body.kurkiCourse
+    const { kurkiId, name, credits, language, graderUid } = req.body.kurkiCourse
 
     if (!req.body.kurkiCourse || !kurkiId) {
       return res.status(400).json({ error: 'Course details missing' })
@@ -47,7 +41,9 @@ const addKurkiRawEntries = async (req, res) => {
     })
 
     if (!grader) {
-      return res.status(400).json({ error: `No grader-employee found with the ID: ${graderUid}. Check that the user has already visited Suotar` })
+      return res.status(400).json({
+        error: `No grader-employee found with the ID: ${graderUid}. Check that the user has already visited Suotar`
+      })
     }
 
     if (!course) {
@@ -62,7 +58,7 @@ const addKurkiRawEntries = async (req, res) => {
 
     const result = await processKurkiEntries({ kurkiId, course, grader })
 
-    if (result.message === "success" || result.message === "no new entries") {
+    if (result.message === 'success' || result.message === 'no new entries') {
       return res.status(200).json({ message: result.message, kurkiId })
     }
     logger.error({ message: result.message })

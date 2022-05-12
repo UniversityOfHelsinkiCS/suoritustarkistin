@@ -5,7 +5,6 @@ const _ = require('lodash')
 const { isValidCourse } = require('@root/utils/validators')
 const { getResponsibles } = require('../services/importer')
 
-
 const cleanCourses = (courses) => {
   return courses.map((course) => ({
     id: course.id,
@@ -69,28 +68,25 @@ const getUsersCourses = async (req, res) => {
 }
 
 const addCourse = async (req, res) => {
-
   const transaction = await db.sequelize.transaction()
 
   try {
     let course = req.body
     const graders = course.graders
 
-    if (!isValidCourse(course))
-      return res.status(400).json({ error: 'Malformed course data.' })
+    if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
 
     delete course.graders
     const newCourse = await db.courses.create(course, transaction)
     for (const graderId of graders) {
-      const user = (
-        await db.users.findOne({
-          where: {
-            id: graderId
-          }, transaction
-        })
-      )
+      const user = await db.users.findOne({
+        where: {
+          id: graderId
+        },
+        transaction
+      })
 
-      await user.addCourse(newCourse, { through: "users_courses" }, transaction)
+      await user.addCourse(newCourse, { through: 'users_courses' }, transaction)
     }
 
     const newCourseWithGraders = await db.courses.findOne({
@@ -113,7 +109,7 @@ const addCourse = async (req, res) => {
     return res.status(200).json(cleanCourses([newCourseWithGraders]))
   } catch (e) {
     await transaction.rollback()
-    if (e.message === "Validation error") {
+    if (e.message === 'Validation error') {
       logger.error(`Course with the course code already exists`)
       return res.status(400).json({ error: `Course with the course code already exists` })
     }
@@ -123,15 +119,13 @@ const addCourse = async (req, res) => {
 }
 
 const editCourse = async (req, res) => {
-
   const transaction = await db.sequelize.transaction()
 
   try {
     let course = req.body
     const graders = course.graders
 
-    if (!isValidCourse(course))
-      return res.status(400).json({ error: 'Malformed course data.' })
+    if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
 
     delete course.graders
     const [rows, [updatedCourse]] = await db.courses.update(course, {
@@ -146,32 +140,32 @@ const editCourse = async (req, res) => {
         }
       })
 
-      const gradersForRemoval = _.difference(usersCourses.map((uc) => uc.userId), graders)
+      const gradersForRemoval = _.difference(
+        usersCourses.map((uc) => uc.userId),
+        graders
+      )
 
       if (gradersForRemoval.length) {
         for (const graderId of gradersForRemoval) {
           await db.users_courses.destroy({
             where: {
-              [Op.and]: [
-                { user_id: graderId },
-                { course_id: updatedCourse.id }
-              ]
-            }, transaction
+              [Op.and]: [{ user_id: graderId }, { course_id: updatedCourse.id }]
+            },
+            transaction
           })
         }
       }
 
       for (const graderId of graders) {
-        const user = (
-          await db.users.findOne({
-            where: {
-              id: graderId
-            }, transaction
-          })
-        )
+        const user = await db.users.findOne({
+          where: {
+            id: graderId
+          },
+          transaction
+        })
 
         if (!usersCourses.find((uc) => uc.userId === graderId)) {
-          await user.addCourse(updatedCourse, { through: "users_courses" }, transaction)
+          await user.addCourse(updatedCourse, { through: 'users_courses' }, transaction)
         }
       }
 
@@ -197,7 +191,7 @@ const editCourse = async (req, res) => {
 
     return res.status(400).json({ error: 'id not found.' })
   } catch (e) {
-    if (e.message === "Validation error") {
+    if (e.message === 'Validation error') {
       logger.error(`Course with the course code already exists`)
       return res.status(400).json({ error: `Course with the course code already exists` })
     }
@@ -211,9 +205,7 @@ const unsentEntries = async (id) => {
     where: {
       courseId: id
     },
-    include: [
-      { model: db.entries, as: 'entry' }
-    ]
+    include: [{ model: db.entries, as: 'entry' }]
   })
   const notSentYet = rawEntries.filter(({ entry }) => !entry.sent)
   return notSentYet ? notSentYet.map((rawEntry) => rawEntry.id) : []
@@ -224,9 +216,8 @@ const confirmDeletion = async (req, res) => {
     const unsent = await unsentEntries(req.params.id)
     res.status(200).json({ unsent: unsent.length })
   } catch (e) {
-    res.status(500).json({ error: "Server went BOOM!" })
+    res.status(500).json({ error: 'Server went BOOM!' })
   }
-
 }
 
 const deleteCourse = async (req, res) => {
@@ -239,7 +230,7 @@ const deleteCourse = async (req, res) => {
     res.status(200).json({ id: req.params.id })
   } catch (error) {
     transaction.rollback()
-    res.status(500).json({ error: "Server went BOOM!" })
+    res.status(500).json({ error: 'Server went BOOM!' })
   }
 }
 

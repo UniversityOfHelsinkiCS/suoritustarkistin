@@ -4,7 +4,6 @@ import { Accordion, Table } from 'semantic-ui-react'
 
 import TabLoader from 'Components/ReportsPage/TabLoader'
 
-
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
 const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
 
@@ -57,10 +56,10 @@ const title = (report) => {
   const timestamp = fileName[1].split('-')
   return (
     <Accordion.Title>
-      {`${fileName[0]} - ${timestamp[0]} - ${timestamp[1].substring(
-        0,
-        2
-      )}:${timestamp[1].substring(2, 4)}:${timestamp[1].substring(4, 6)}`}
+      {`${fileName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)}:${timestamp[1].substring(
+        2,
+        4
+      )}:${timestamp[1].substring(4, 6)}`}
       {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
     </Accordion.Title>
   )

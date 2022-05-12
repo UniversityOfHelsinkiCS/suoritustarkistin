@@ -79,9 +79,7 @@ export default (state = { data: [] }, action) => {
     case 'EDIT_JOB_SUCCESS':
       return {
         ...state,
-        data: state.data.map((j) =>
-          j.id == action.response.id ? action.response : j
-        ),
+        data: state.data.map((j) => (j.id == action.response.id ? action.response : j)),
         pending: false,
         error: false
       }

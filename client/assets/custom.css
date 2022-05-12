@@ -44,14 +44,14 @@
   height: 38px;
   background: #fff;
   display: inline-block;
-  padding: .78571429em 2.1em .78571429em 1em;
-  color: rgba(0,0,0,.87);
+  padding: 0.78571429em 2.1em 0.78571429em 1em;
+  color: rgba(0, 0, 0, 0.87);
   -webkit-box-shadow: none;
   box-shadow: none;
-  border: 1px solid rgba(34,36,38,.15);
-  border-radius: .28571429rem;
-  -webkit-transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: box-shadow .1s ease,width .1s ease;
-  transition: box-shadow .1s ease,width .1s ease,-webkit-box-shadow .1s ease;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-radius: 0.28571429rem;
+  -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: box-shadow 0.1s ease, width 0.1s ease;
+  transition: box-shadow 0.1s ease, width 0.1s ease, -webkit-box-shadow 0.1s ease;
 }

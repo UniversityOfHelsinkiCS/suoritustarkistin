@@ -6,7 +6,6 @@ import { Button, Checkbox, Form, Input, Segment } from 'semantic-ui-react'
 import { editJobAction } from 'Utilities/redux/moocJobsReducer'
 import { isValidJob, isValidSchedule } from 'Root/utils/validators'
 
-
 export default ({ job, close }) => {
   const dispatch = useDispatch()
   const courses = useSelector((state) => state.courses.data)
@@ -60,7 +59,7 @@ export default ({ job, close }) => {
             value: grader.id,
             text: grader.name
           }))}
-          onChange={(e, { value }) => setData({ ...data, graderId: value  })}
+          onChange={(e, { value }) => setData({ ...data, graderId: value })}
           data-cy="edit-job-grader"
           label="Grader"
         />
@@ -88,12 +87,7 @@ export default ({ job, close }) => {
           onChange={(e, d) => setData({ ...data, useManualCompletionDate: d.checked })}
         />
         <Form.Group>
-          <Form.Field
-            negative
-            control={Button}
-            content="Cancel"
-            onClick={() => close()}
-          />
+          <Form.Field negative control={Button} content="Cancel" onClick={() => close()} />
           <Form.Field
             data-cy="edit-job-confirm"
             positive

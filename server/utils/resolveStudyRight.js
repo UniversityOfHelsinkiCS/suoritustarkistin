@@ -23,14 +23,11 @@ const resolveTerm = (attainmentDate) => {
  * If none found return empty object.
  */
 const resolveStudyRight = (studyRights, attainmentDate, onlyMatlu) => {
-  
   const attDate = moment(attainmentDate)
   const { attainmentStartYear, attainmentTermIndex } = resolveTerm(attDate)
 
-  const filterByAttainmentDate = ({ valid }) => (
-    moment(valid.startDate).isSameOrBefore(attDate) &&
-    moment(valid.endDate).isAfter(attDate)
-  )
+  const filterByAttainmentDate = ({ valid }) =>
+    moment(valid.startDate).isSameOrBefore(attDate) && moment(valid.endDate).isAfter(attDate)
 
   const filterByTermRegistration = ({ term_registrations, id }) => {
     if (id.includes('avoin')) return true
@@ -45,7 +42,8 @@ const resolveStudyRight = (studyRights, attainmentDate, onlyMatlu) => {
         termRegistrationType === 'ATTENDING' &&
         studyYearStartYear === attainmentStartYear &&
         termIndex === attainmentTermIndex
-      ) return true
+      )
+        return true
     })
   }
 
@@ -73,10 +71,13 @@ const resolveStudyRight = (studyRights, attainmentDate, onlyMatlu) => {
 const getClosestStudyRight = (studyRights, attainmentDate) => {
   const attDate = moment(attainmentDate)
 
-  const dates = flatten(
-    studyRights.map(({ valid, id }) => [{ date: moment(valid.startDate), id }, { date: moment(valid.endDate), id }])
-  )
-    .sort((a, b) => Math.abs(attDate.diff(a.date)) - Math.abs(attDate.diff(b.date)))[0] || {}
+  const dates =
+    flatten(
+      studyRights.map(({ valid, id }) => [
+        { date: moment(valid.startDate), id },
+        { date: moment(valid.endDate), id }
+      ])
+    ).sort((a, b) => Math.abs(attDate.diff(a.date)) - Math.abs(attDate.diff(b.date)))[0] || {}
   const { id } = dates
 
   if (!id) return []
@@ -85,14 +86,11 @@ const getClosestStudyRight = (studyRights, attainmentDate) => {
 
   const studyRightStart = moment(valid.startDate)
   const studyRightEnd = moment(valid.endDate)
-  if (attDate.isBetween(studyRightStart, studyRightEnd))
-    return [id, attDate]
+  if (attDate.isBetween(studyRightStart, studyRightEnd)) return [id, attDate]
 
   let newAttainmentDate
-  if (attDate.isBefore(studyRightStart))
-    newAttainmentDate = studyRightStart
-  else if (attDate.isSameOrAfter(studyRightEnd))
-    newAttainmentDate = studyRightEnd.subtract(1, 'day')
+  if (attDate.isBefore(studyRightStart)) newAttainmentDate = studyRightStart
+  else if (attDate.isSameOrAfter(studyRightEnd)) newAttainmentDate = studyRightEnd.subtract(1, 'day')
   return [id, newAttainmentDate]
 }
 

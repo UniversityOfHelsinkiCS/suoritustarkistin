@@ -3,7 +3,6 @@ import { Button, Modal } from 'semantic-ui-react'
 
 import NewCourseForm from 'Components/CoursesPage/NewCourseForm'
 
-
 export default () => {
   const [showForm, setShowForm] = useState(false)
 
@@ -12,11 +11,7 @@ export default () => {
   return (
     <Modal
       trigger={
-        <Button
-          data-cy="add-course-button"
-          positive
-          onClick={() => setShowForm(true)}
-        >
+        <Button data-cy="add-course-button" positive onClick={() => setShowForm(true)}>
           Add new course
         </Button>
       }

@@ -21,25 +21,26 @@ const Pagination = ({ reduxKey, action, disableFilters = false }) => {
 
   const getPayload = (offset) => {
     const payload = { offset, limit }
-    if (!disableFilters)
-      payload.filters = filters
+    if (!disableFilters) payload.filters = filters
     return payload
   }
 
   const fetch = (offset) => dispatch(action(getPayload(offset)))
 
-  return <div style={styles}>
-    <Button.Group>
-      <Button disabled={offset === 0} labelPosition="left" onClick={() => fetch(offset - limit)} icon>
-        Newer
-        <Icon name='left arrow' />
-      </Button>
-      <Button disabled={offset + limit >= count} onClick={() => fetch(offset + limit)} labelPosition="right" icon>
-        Older
-        <Icon name='right arrow' />
-      </Button>
-    </Button.Group>
-  </div>
+  return (
+    <div style={styles}>
+      <Button.Group>
+        <Button disabled={offset === 0} labelPosition="left" onClick={() => fetch(offset - limit)} icon>
+          Newer
+          <Icon name="left arrow" />
+        </Button>
+        <Button disabled={offset + limit >= count} onClick={() => fetch(offset + limit)} labelPosition="right" icon>
+          Older
+          <Icon name="right arrow" />
+        </Button>
+      </Button.Group>
+    </div>
+  )
 }
 
 export default Pagination

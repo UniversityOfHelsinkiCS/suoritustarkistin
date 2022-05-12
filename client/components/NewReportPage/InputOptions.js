@@ -7,14 +7,8 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import {
-  getAllGradersAction,
-  getUsersGradersAction
-} from 'Utilities/redux/gradersReducer'
-import {
-  getAllCoursesAction,
-  getUsersCoursesAction
-} from 'Utilities/redux/coursesReducer'
+import { getAllGradersAction, getUsersGradersAction } from 'Utilities/redux/gradersReducer'
+import { getAllCoursesAction, getUsersCoursesAction } from 'Utilities/redux/coursesReducer'
 import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
 import { areValidNewRawEntries } from 'Root/utils/validators'
 import ImportStudents from './ImportStudents'
@@ -41,32 +35,32 @@ const formatGradersForSelection = (data) => {
 }
 
 export const formatCoursesForSelection = (data) => {
-  const courses = data
-    .map((c) => ({
-      key: c.id,
-      text: `${c.name} (${c.courseCode})`,
-      value: c.id
-    }))
+  const courses = data.map((c) => ({
+    key: c.id,
+    text: `${c.name} (${c.courseCode})`,
+    value: c.id
+  }))
   if (courses) return _.sortBy(courses, ['text'])
   return []
 }
 
-const formatCoursesForKandi = (courses) => courses
-  .map((c) => {
-    if (!c.useAsExtra) return {
-      key: c.id,
-      text: `${c.name} (${c.courseCode})`,
-      value: c.id
-    }
-    return {
-      key: c.id,
-      text: `${c.name} (${c.courseCode})`,
-      value: c.id,
-      disabled: true
-    }
-  })
-  .sort((a, b) => (a.disabled || false) - (b.disabled || false))
-
+const formatCoursesForKandi = (courses) =>
+  courses
+    .map((c) => {
+      if (!c.useAsExtra)
+        return {
+          key: c.id,
+          text: `${c.name} (${c.courseCode})`,
+          value: c.id
+        }
+      return {
+        key: c.id,
+        text: `${c.name} (${c.courseCode})`,
+        value: c.id,
+        disabled: true
+      }
+    })
+    .sort((a, b) => (a.disabled || false) - (b.disabled || false))
 
 const defineCourseOptions = (courses, kandi, extra) => {
   if (kandi) return formatCoursesForKandi(courses.filter((course) => isOneOfKandiCourses(course)))
@@ -115,7 +109,6 @@ export default ({ kandi, extra, parseCSV }) => {
   const courseOptions = defineCourseOptions(courses, kandi, extra)
   const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
 
-
   const sendRawEntries = async () => await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
 
   useEffect(() => {
@@ -129,8 +122,7 @@ export default ({ kandi, extra, parseCSV }) => {
   }, [user])
 
   useEffect(() => {
-    if (areValidNewRawEntries(parseRawEntries(newRawEntries)))
-      setIsValid(true)
+    if (areValidNewRawEntries(parseRawEntries(newRawEntries))) setIsValid(true)
     else setIsValid(false)
   }, [newRawEntries])
 
@@ -143,8 +135,7 @@ export default ({ kandi, extra, parseCSV }) => {
         data: null,
         courseId
       }
-      if (graders && graders.length === 1)
-        data.graderId = graders[0].employeeId
+      if (graders && graders.length === 1) data.graderId = graders[0].employeeId
       dispatch(setNewRawEntriesAction(data))
     }
   }, [courses, kandi, graders])
@@ -166,12 +157,14 @@ export default ({ kandi, extra, parseCSV }) => {
   const handleCourseSelection = (e, { value: courseId }) => {
     const course = courses.find((course) => course.id === courseId)
     if (!course) return
-    dispatch(setNewRawEntriesAction({
-      ...newRawEntries,
-      defaultCourse: course.courseCode,
-      data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
-      courseId
-    }))
+    dispatch(
+      setNewRawEntriesAction({
+        ...newRawEntries,
+        defaultCourse: course.courseCode,
+        data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
+        courseId
+      })
+    )
   }
 
   const handleDefaultGradeSelection = () => {
@@ -199,12 +192,9 @@ export default ({ kandi, extra, parseCSV }) => {
 
   return (
     <>
-      <ImportStudents
-        isOpen={importIsOpen}
-        setIsOpen={setImportIsOpen}
-        importRows={importRows} />
+      <ImportStudents isOpen={importIsOpen} setIsOpen={setImportIsOpen} importRows={importRows} />
       <Form style={styles.form}>
-        <Form.Group widths='equal'>
+        <Form.Group widths="equal">
           <Form.Field
             control={Select}
             search
@@ -232,14 +222,14 @@ export default ({ kandi, extra, parseCSV }) => {
             <DatePicker
               id="date-picker"
               className="date-picker"
-              style={{ height: "20px", width: '100%' }}
+              style={{ height: '20px', width: '100%' }}
               dateFormat="dd.MM.yyyy"
               selected={showingDate}
               onChange={(date) => handleDateSelection(date)}
             />
           </Form.Field>
-          {!kandi
-            ? <>
+          {!kandi ? (
+            <>
               <Form.Field
                 className="default-grade"
                 control={Checkbox}
@@ -249,20 +239,18 @@ export default ({ kandi, extra, parseCSV }) => {
                 label="Give all students grade 'Hyv.'"
               />
             </>
-            : null}
+          ) : null}
         </Form.Group>
       </Form>
       <div style={styles.sendButton}>
-        {!extra
-          ? <Button
-            disabled={!newRawEntries.defaultCourse}
-            color="blue"
-            onClick={() => setImportIsOpen(true)}
-          >
-            Import students
-          </Button>
-          :
-          <span /> // Add empty element to align send button to right with justify-content space-between
+        {
+          !extra ? (
+            <Button disabled={!newRawEntries.defaultCourse} color="blue" onClick={() => setImportIsOpen(true)}>
+              Import students
+            </Button>
+          ) : (
+            <span />
+          ) // Add empty element to align send button to right with justify-content space-between
         }
         <Button
           disabled={newRawEntries.sending || !newRawEntries.data || !isValid}
@@ -273,9 +261,7 @@ export default ({ kandi, extra, parseCSV }) => {
           Create report
         </Button>
       </div>
-      <div style={styles.info}>
-        Remember to report completions for the correct academic year (1.8. – 31.7.)
-      </div>
+      <div style={styles.info}>Remember to report completions for the correct academic year (1.8. – 31.7.)</div>
     </>
   )
 }

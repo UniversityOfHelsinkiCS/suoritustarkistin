@@ -14,7 +14,7 @@ const checkEntries = async (entries, model) => {
     logger.info({
       message: `Checked total ${entries.length} ${model}, found ${amountUpdated} new registrations.`,
       newRegistrations: data.length,
-      missingRegistrations: (entries.length - data.length)
+      missingRegistrations: entries.length - data.length
     })
     return true
   } catch (e) {
@@ -29,21 +29,27 @@ const markAsRegistered = async (entries, model) => {
   let partlyAffected = 0
   let registeredAffected = 0
   if (partlyIds.length) {
-    const result = await db[model].update({ registered: 'PARTLY_REGISTERED' }, {
-      where: {
-        id: { [Sequelize.Op.in]: partlyIds },
-        registered: { [Sequelize.Op.not]: 'PARTLY_REGISTERED' }
+    const result = await db[model].update(
+      { registered: 'PARTLY_REGISTERED' },
+      {
+        where: {
+          id: { [Sequelize.Op.in]: partlyIds },
+          registered: { [Sequelize.Op.not]: 'PARTLY_REGISTERED' }
+        }
       }
-    })
+    )
     partlyAffected = result[0]
   }
   if (registeredIds.length) {
-    const result = await db[model].update({ registered: 'REGISTERED' }, {
-      where: {
-        id: { [Sequelize.Op.in]: registeredIds },
-        registered: { [Sequelize.Op.not]: 'REGISTERED' }
+    const result = await db[model].update(
+      { registered: 'REGISTERED' },
+      {
+        where: {
+          id: { [Sequelize.Op.in]: registeredIds },
+          registered: { [Sequelize.Op.not]: 'REGISTERED' }
+        }
       }
-    })
+    )
     registeredAffected = result[0]
   }
   return partlyAffected + registeredAffected
@@ -71,11 +77,14 @@ const checkAllEntriesFromSisu = async () => {
 const markAsRegisteredToMooc = async (completionStudentPairs) => {
   const date = new Date()
   const moocCompletionsIds = completionStudentPairs.map(({ completion_id }) => completion_id)
-  return await db.raw_entries.update({ registeredToMooc: date }, {
-    where: {
-      moocCompletionId: { [Sequelize.Op.in]: moocCompletionsIds }
+  return await db.raw_entries.update(
+    { registeredToMooc: date },
+    {
+      where: {
+        moocCompletionId: { [Sequelize.Op.in]: moocCompletionsIds }
+      }
     }
-  })
+  )
 }
 
 const checkRegisteredForMooc = async () => {
@@ -85,27 +94,24 @@ const checkRegisteredForMooc = async () => {
         registeredToMooc: { [Sequelize.Op.eq]: null },
         moocCompletionId: { [Sequelize.Op.not]: null }
       },
-      include: [
-        { model: db.entries, as: 'entry' }
-      ]
+      include: [{ model: db.entries, as: 'entry' }]
     })
 
     logger.info(`Found ${unregistered.length} unchecked completions`)
 
-    const completionStudentPairs = unregistered.reduce(
-      (completionStudentPairs, rawEntry) => {
-        const alreadyInSis = rawEntry.entry && (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED')
-        if (alreadyInSis) {
-          return completionStudentPairs.concat({
-            completion_id: rawEntry.moocCompletionId,
-            student_number: String(rawEntry.studentNumber),
-            registration_date: rawEntry.attainmentDate
-          })
-        }
-        return completionStudentPairs
-      },
-      []
-    )
+    const completionStudentPairs = unregistered.reduce((completionStudentPairs, rawEntry) => {
+      const alreadyInSis =
+        rawEntry.entry &&
+        (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED')
+      if (alreadyInSis) {
+        return completionStudentPairs.concat({
+          completion_id: rawEntry.moocCompletionId,
+          student_number: String(rawEntry.studentNumber),
+          registration_date: rawEntry.attainmentDate
+        })
+      }
+      return completionStudentPairs
+    }, [])
 
     logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
 
@@ -115,13 +121,13 @@ const checkRegisteredForMooc = async () => {
         await markAsRegisteredToMooc(completionStudentPairs)
       }
     }
-
   } catch (error) {
     logger.error(`Error in running Mooc registration check: ${error.message}`)
   }
-
 }
 
 module.exports = {
-  checkAllEntriesFromSisu, checkEntries, checkRegisteredForMooc
+  checkAllEntriesFromSisu,
+  checkEntries,
+  checkRegisteredForMooc
 }

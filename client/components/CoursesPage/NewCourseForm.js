@@ -3,15 +3,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
 import { Button, Form, Input, Segment, Popup, Icon, Checkbox } from 'semantic-ui-react'
 import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
-import {
-  isValidCourse,
-  isValidCourseCode,
-  isValidCreditAmount,
-  isValidLanguage
-} from 'Root/utils/validators'
+import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from 'Root/utils/validators'
 import { gradeScales } from 'Root/utils/common'
 
-const Help = ({ text }) => <span style={{ marginLeft: '7px' }}><Popup content={text} trigger={<Icon name='help' circular />} /></span>
+const Help = ({ text }) => (
+  <span style={{ marginLeft: '7px' }}>
+    <Popup content={text} trigger={<Icon name="help" circular />} />
+  </span>
+)
 
 export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
@@ -23,7 +22,7 @@ export default ({ close: closeModal }) => {
     if (courseData.responsibles && !courseData.pending) {
       const responsibleUids = Object.keys(courseData.responsibles)
         .filter((r) => courseData.responsibles[r].person.eduPersonPrincipalName)
-        .map((r) => courseData.responsibles[r].person.eduPersonPrincipalName.split("@")[0])
+        .map((r) => courseData.responsibles[r].person.eduPersonPrincipalName.split('@')[0])
       const newGraders = graders.filter((g) => responsibleUids.includes(g.uid)).map(({ id }) => id)
       const updatedGraders = _.uniq(data.graders.concat(newGraders))
       setData({ ...data, graders: updatedGraders })
@@ -131,12 +130,7 @@ export default ({ close: closeModal }) => {
           onChange={(e, d) => setData({ ...data, useAsExtra: d.checked })}
         />
         <Form.Group>
-          <Form.Field
-            negative
-            control={Button}
-            content="Cancel"
-            onClick={() => close()}
-          />
+          <Form.Field negative control={Button} content="Cancel" onClick={() => close()} />
           <Form.Field
             data-cy="add-course-confirm"
             positive

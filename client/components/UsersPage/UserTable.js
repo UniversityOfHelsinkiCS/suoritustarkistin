@@ -5,7 +5,6 @@ import { Grid, Header, Icon, Segment } from 'semantic-ui-react'
 import User from 'Components/UsersPage/User'
 import { sortedItems } from 'Utilities/common'
 
-
 export default () => {
   const [sorter, setSorter] = useState('name')
   const [reverse, setReverse] = useState(false)
@@ -16,39 +15,29 @@ export default () => {
   const getCustomHeader = ({ name, field, sortable = true }) => {
     const sortHandler = sortable
       ? () => {
-        if (sorter === field) {
-          setReverse(!reverse)
-        } else {
-          setReverse(false)
-          setSorter(field)
+          if (sorter === field) {
+            setReverse(!reverse)
+          } else {
+            setReverse(false)
+            setSorter(field)
+          }
         }
-      }
       : undefined
 
     return (
-      <Header
-        as="h4"
-        onClick={sortHandler}
-        style={sortable ? { cursor: 'pointer' } : {} }
-      >
-        {name} {sortable && <Icon style={{ fontSize: "1.2em" }} name="sort" />}
+      <Header as="h4" onClick={sortHandler} style={sortable ? { cursor: 'pointer' } : {}}>
+        {name} {sortable && <Icon style={{ fontSize: '1.2em' }} name="sort" />}
       </Header>
     )
   }
 
   return (
     <Segment>
-      <Grid celled="internally" style={{wordWrap: 'anywhere'}}>
+      <Grid celled="internally" style={{ wordWrap: 'anywhere' }}>
         <Grid.Row>
-          <Grid.Column width={4}>
-            {getCustomHeader({ name: 'Name (uid)', field: 'name' })}
-          </Grid.Column>
-          <Grid.Column textAlign="center">
-            {getCustomHeader({ name: 'Grader', field: 'isGrader' })}
-          </Grid.Column>
-          <Grid.Column textAlign="center">
-            {getCustomHeader({ name: 'Admin', field: 'isAdmin' })}
-          </Grid.Column>
+          <Grid.Column width={4}>{getCustomHeader({ name: 'Name (uid)', field: 'name' })}</Grid.Column>
+          <Grid.Column textAlign="center">{getCustomHeader({ name: 'Grader', field: 'isGrader' })}</Grid.Column>
+          <Grid.Column textAlign="center">{getCustomHeader({ name: 'Admin', field: 'isAdmin' })}</Grid.Column>
           <Grid.Column textAlign="center" width={2}>
             {getCustomHeader({ name: 'Last login', field: 'lastLogin', sortable: false })}
           </Grid.Column>

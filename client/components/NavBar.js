@@ -2,16 +2,11 @@ import React, { useState } from 'react'
 import { Label, Menu, Radio } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import {
-  activateAdminModeAction,
-  disableAdminModeAction,
-  logoutAction
-} from 'Utilities/redux/userReducer'
+import { activateAdminModeAction, disableAdminModeAction, logoutAction } from 'Utilities/redux/userReducer'
 import { setFilterAction } from '../utils/redux/sisReportsReducer'
 import { getAllSisReportsAction } from '../utils/redux/sisReportsReducer'
 import { images } from 'Utilities/common'
 import FakeShibboMenu from 'Components/fakeShibboMenu'
-
 
 const STAGING = process.env.NODE_ENV === 'staging'
 
@@ -26,27 +21,19 @@ export default () => {
   }
 
   const handleAdminModeToggle = () => {
-    user.adminMode
-      ? dispatch(disableAdminModeAction())
-      : dispatch(activateAdminModeAction())
+    user.adminMode ? dispatch(disableAdminModeAction()) : dispatch(activateAdminModeAction())
 
     dispatch(setFilterAction('adminmode', !user.adminMode))
-    if (window.location.pathname !== '/reports')
-      dispatch(getAllSisReportsAction({ offset, limit }))
+    if (window.location.pathname !== '/reports') dispatch(getAllSisReportsAction({ offset, limit }))
   }
 
-  const handleItemClick = (e, { name }) => name === "logo" ? setActiveItem('') : setActiveItem(name)
+  const handleItemClick = (e, { name }) => (name === 'logo' ? setActiveItem('') : setActiveItem(name))
 
   const getAdminButton = () => {
     return (
       <Menu.Item>
-        <span style={{ fontSize: "0.85em", marginRight: "5px"}}>Admin-mode:</span>
-        <Radio
-          data-cy="adminmode-enable"
-          toggle
-          checked={user.adminMode}
-          onClick={handleAdminModeToggle}
-        />
+        <span style={{ fontSize: '0.85em', marginRight: '5px' }}>Admin-mode:</span>
+        <Radio data-cy="adminmode-enable" toggle checked={user.adminMode} onClick={handleAdminModeToggle} />
       </Menu.Item>
     )
   }
@@ -143,20 +130,16 @@ export default () => {
 
   if (!user) return null
   return (
-    <Menu size="huge" style={STAGING ? {backgroundColor: '#ffeaed'} : {}} stackable fluid>
-      <Menu.Item 
+    <Menu size="huge" style={STAGING ? { backgroundColor: '#ffeaed' } : {}} stackable fluid>
+      <Menu.Item
         style={{ fontSize: 'xx-large', padding: '0.5em' }}
         as={Link}
         to={'/'}
         name="logo"
         onClick={handleItemClick}
       >
-        <img
-          src={images.toska_color}
-          style={{ marginRight: '1em' }}
-          alt="tosca"
-        />{' '}
-        SUOTAR{STAGING ? <span style={{fontSize: '2rem'}}>-staging</span> : null}
+        <img src={images.toska_color} style={{ marginRight: '1em' }} alt="tosca" /> SUOTAR
+        {STAGING ? <span style={{ fontSize: '2rem' }}>-staging</span> : null}
       </Menu.Item>
 
       <Menu.Item
@@ -190,11 +173,7 @@ export default () => {
       {user.isAdmin ? getSandboxButton() : null}
       {user.isAdmin ? getAdminButton() : null}
 
-      {window.localStorage.getItem('adminLoggedInAs') ? (
-        unHijackButton()
-      ) : (
-        <FakeShibboMenu />
-      )}
+      {window.localStorage.getItem('adminLoggedInAs') ? unHijackButton() : <FakeShibboMenu />}
       <Menu.Item data-cy="nav-logout" name="log-out" onClick={handleLogout}>
         Log out
       </Menu.Item>

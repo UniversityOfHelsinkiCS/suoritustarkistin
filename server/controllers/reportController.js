@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 
-const db = require('../models/index')
 const logger = require('@utils/logger')
+const db = require('../models/index')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const refreshEntries = require('../scripts/refreshEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
@@ -275,10 +275,10 @@ const sendToSis = async (req, res) => {
   let [status, message] = []
   try {
     if (entryIds.length) {
-      ;[status, message] = await attainmentsToSisu('entries', req)
+      [status, message] = await attainmentsToSisu('entries', req)
     }
     if (extraEntryIds.length) {
-      ;[status, message] = await attainmentsToSisu('extra_entries', req)
+      [status, message] = await attainmentsToSisu('extra_entries', req)
     }
     email(message && !message.genericError)
     if (message) return res.status(status).send(message)

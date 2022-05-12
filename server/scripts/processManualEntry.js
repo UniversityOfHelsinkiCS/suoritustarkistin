@@ -1,10 +1,10 @@
-const db = require('../models/index')
 const { flatten } = require('lodash')
+const logger = require('@utils/logger')
+const { getBatchId } = require('@root/utils/common')
+const db = require('../models/index')
 const { isValidStudentId, isValidGrade, isValidCreditAmount, isValidCourseCode } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
 const processExtraEntries = require('./processExtraEntries')
-const logger = require('@utils/logger')
-const { getBatchId } = require('@root/utils/common')
 
 const LANGUAGES = ['fi', 'sv', 'en']
 

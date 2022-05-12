@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from 'react'
 import { Header, Icon, List, Popup, Segment } from 'semantic-ui-react'
 
@@ -89,9 +90,9 @@ export default () => (
         <Popup
           on={['hover', 'click']}
           pinned
-          trigger={<Icon style={{ marginLeft: '0.3em' }} name="question circle" size="large"></Icon>}
+          trigger={<Icon style={{ marginLeft: '0.3em' }} name="question circle" size="large" />}
           content={DetailedInstructions}
-        ></Popup>
+        />
       </span>
     </Header>
     <code style={code}>student number; grade; credits; bsc language; date; lang; lang; lang</code>

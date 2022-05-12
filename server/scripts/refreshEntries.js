@@ -1,10 +1,11 @@
 const Sequelize = require('sequelize')
+
 const Op = Sequelize.Op
-const db = require('../models/index')
 const logger = require('@utils/logger')
-const { processEntries } = require('./processEntries')
 const { sendSentryMessage } = require('@utils/sentry')
 const moment = require('moment')
+const { processEntries } = require('./processEntries')
+const db = require('../models/index')
 
 /**
  * Refresh entries which are missing enrollment and update fields

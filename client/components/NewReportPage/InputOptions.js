@@ -4,15 +4,14 @@ import { Checkbox, Select, Form, Button } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 
-import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { setNewRawEntriesAction, sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { getAllGradersAction, getUsersGradersAction } from 'Utilities/redux/gradersReducer'
 import { getAllCoursesAction, getUsersCoursesAction } from 'Utilities/redux/coursesReducer'
 import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
 import { areValidNewRawEntries } from 'Root/utils/validators'
-import ImportStudents from './ImportStudents'
 import { isKandiExtraCourse } from 'Root/utils/common'
+import ImportStudents from './ImportStudents'
 
 const styles = {
   sendButton: {

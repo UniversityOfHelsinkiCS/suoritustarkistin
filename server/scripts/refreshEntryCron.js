@@ -1,8 +1,8 @@
-const refreshEntries = require('../scripts/refreshEntries')
-const db = require('../models/index')
 const { Op, col } = require('sequelize')
 const logger = require('@utils/logger')
 const { sendSentryMessage } = require('@utils/sentry')
+const db = require('../models/index')
+const refreshEntries = require('../scripts/refreshEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
 
 const refreshEntriesCron = async () => {

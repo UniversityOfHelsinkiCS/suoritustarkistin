@@ -1,7 +1,7 @@
-const db = require('../models/index')
 const Sequelize = require('sequelize')
-const Op = Sequelize.Op
 const moment = require('moment')
+const logger = require('@utils/logger')
+const db = require('../models/index')
 const {
   getEmployees,
   getStudents,
@@ -11,7 +11,8 @@ const {
 } = require('../services/importer')
 const { generateSisuId } = require('../utils/common')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
-const logger = require('@utils/logger')
+
+const Op = Sequelize.Op
 
 const COMMON = {
   gradeId: '1',

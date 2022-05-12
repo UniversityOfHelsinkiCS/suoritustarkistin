@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Icon, Menu, Tab, Message as UIMessage } from 'semantic-ui-react'
-import { useSelector } from 'react-redux'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import UserGuide from 'Components/NewReportPage/UserGuide'
 import BachelorThesisUserGuide from 'Components/NewReportPage/BachelorThesisUserGuide'

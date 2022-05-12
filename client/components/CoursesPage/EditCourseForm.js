@@ -46,7 +46,7 @@ export default ({ course, close: closeModal }) => {
     <Segment>
       <Form loading={courseData.pending}>
         <Form.Field
-          required={true}
+          required
           control={Input}
           label="Course name"
           placeholder="Basics of creating a course"
@@ -56,7 +56,7 @@ export default ({ course, close: closeModal }) => {
           icon={data.name ? 'check' : 'times'}
         />
         <Form.Field
-          required={true}
+          required
           control={Input}
           label="Course code"
           placeholder="TKT00000"
@@ -65,7 +65,7 @@ export default ({ course, close: closeModal }) => {
           icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
         />
         <Form.Field
-          required={true}
+          required
           control={Input}
           label="Language"
           placeholder="fi"
@@ -75,7 +75,7 @@ export default ({ course, close: closeModal }) => {
         />
         <Form.Field
           data-cy="edit-course-credits"
-          required={true}
+          required
           control={Input}
           label="Credit amount"
           placeholder="5,0"

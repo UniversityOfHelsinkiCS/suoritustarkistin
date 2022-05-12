@@ -1,5 +1,5 @@
-const kurkiApi = require('../config/kurkiApi')
 const logger = require('@utils/logger')
+const kurkiApi = require('../config/kurkiApi')
 
 const getCourses = async () => {
   if (process.env.NODE_ENV === 'staging') {

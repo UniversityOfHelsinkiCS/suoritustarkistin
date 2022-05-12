@@ -45,7 +45,7 @@ export default ({ close: closeModal }) => {
       <Form width={4} loading={courseData.pending}>
         <Form.Field
           data-cy="add-course-name"
-          required={true}
+          required
           control={Input}
           label="Course name"
           placeholder="Basics of creating a course"
@@ -56,7 +56,7 @@ export default ({ close: closeModal }) => {
         />
         <Form.Field
           data-cy="add-course-code"
-          required={true}
+          required
           control={Input}
           label="Course code"
           placeholder="TKT00000"
@@ -66,7 +66,7 @@ export default ({ close: closeModal }) => {
         />
         <Form.Field
           data-cy="add-course-language"
-          required={true}
+          required
           control={Input}
           label="Language"
           placeholder="fi"
@@ -76,7 +76,7 @@ export default ({ close: closeModal }) => {
         />
         <Form.Field
           data-cy="add-course-credits"
-          required={true}
+          required
           control={Input}
           label="Credit amount"
           placeholder="5,0"

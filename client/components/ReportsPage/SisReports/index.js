@@ -6,12 +6,6 @@ import moment from 'moment'
 import { Accordion, Button, Icon, Message, Segment, Popup } from 'semantic-ui-react'
 
 import Notification from 'Components/Message'
-import DeleteBatchButton from './DeleteBatchButton'
-import SendToSisButton from './SendToSisButton'
-import ReportStatus from './ReportStatus'
-import ReportTable from './ReportTable'
-import Pagination from '../Pagination'
-import Filters from './Filters'
 import {
   openReport,
   refreshBatchStatus,
@@ -19,6 +13,12 @@ import {
   getAllSisReportsAction,
   getOffsetForBatchAction
 } from 'Utilities/redux/sisReportsReducer'
+import DeleteBatchButton from './DeleteBatchButton'
+import SendToSisButton from './SendToSisButton'
+import ReportStatus from './ReportStatus'
+import ReportTable from './ReportTable'
+import Pagination from '../Pagination'
+import Filters from './Filters'
 import './reportStyles.css'
 
 const SisSuccessMessage = () => (

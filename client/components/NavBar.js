@@ -3,10 +3,9 @@ import { Label, Menu, Radio } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { activateAdminModeAction, disableAdminModeAction, logoutAction } from 'Utilities/redux/userReducer'
-import { setFilterAction } from '../utils/redux/sisReportsReducer'
-import { getAllSisReportsAction } from '../utils/redux/sisReportsReducer'
 import { images } from 'Utilities/common'
 import FakeShibboMenu from 'Components/fakeShibboMenu'
+import { setFilterAction, getAllSisReportsAction } from '../utils/redux/sisReportsReducer'
 
 const STAGING = process.env.NODE_ENV === 'staging'
 
@@ -43,7 +42,7 @@ export default () => {
       <Menu.Item
         data-cy="nav-sandbox"
         as={Link}
-        to={'/sandbox'}
+        to="/sandbox"
         name="sandbox"
         active={activeItem === 'sandbox'}
         onClick={handleItemClick}
@@ -58,7 +57,7 @@ export default () => {
       <Menu.Item
         data-cy="nav-courses"
         as={Link}
-        to={'/courses'}
+        to="/courses"
         name="courses"
         active={activeItem === 'courses'}
         onClick={handleItemClick}
@@ -73,7 +72,7 @@ export default () => {
       <Menu.Item
         data-cy="nav-users"
         as={Link}
-        to={'/users'}
+        to="/users"
         name="users"
         active={activeItem === 'users'}
         onClick={handleItemClick}
@@ -88,7 +87,7 @@ export default () => {
       <Menu.Item
         data-cy="nav-automated-reports"
         as={Link}
-        to={'/automated-reports'}
+        to="/automated-reports"
         name="automated-reports"
         active={activeItem === 'automated-reports'}
         onClick={handleItemClick}
@@ -103,7 +102,7 @@ export default () => {
       <Menu.Item
         data-cy="nav-apichecks"
         as={Link}
-        to={'/apichecks'}
+        to="/apichecks"
         name="apichecks"
         active={activeItem === 'apichecks'}
         onClick={handleItemClick}
@@ -134,7 +133,7 @@ export default () => {
       <Menu.Item
         style={{ fontSize: 'xx-large', padding: '0.5em' }}
         as={Link}
-        to={'/'}
+        to="/"
         name="logo"
         onClick={handleItemClick}
       >
@@ -147,7 +146,7 @@ export default () => {
         data-cy="nav-new-report"
         position="right"
         as={Link}
-        to={'/'}
+        to="/"
         name="newReport"
         active={activeItem === 'newReport'}
         onClick={handleItemClick}
@@ -159,7 +158,7 @@ export default () => {
         disabled={!user.isAdmin && !user.isGrader}
         data-cy="nav-reports"
         as={Link}
-        to={'/reports'}
+        to="/reports"
         name="reports"
         active={activeItem === 'reports'}
         onClick={handleItemClick}

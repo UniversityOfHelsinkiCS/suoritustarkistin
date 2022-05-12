@@ -1,3 +1,4 @@
+/* eslint-disable import/no-dynamic-require */
 'use strict'
 
 const fs = require('fs')

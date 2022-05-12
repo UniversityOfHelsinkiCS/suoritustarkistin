@@ -335,7 +335,7 @@ const SummaryTable = ({ rows }) => (
         <Table.HeaderCell style={styles.dateHeader}>
           Date
           <Popup
-            content={'Completion date is added automatically if importing students from an exam'}
+            content="Completion date is added automatically if importing students from an exam"
             trigger={<Icon name="help" size="small" circular />}
           />
         </Table.HeaderCell>

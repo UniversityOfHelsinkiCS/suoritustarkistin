@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Grid } from 'semantic-ui-react'
-import { Loader } from 'semantic-ui-react'
+import { Grid, Loader } from 'semantic-ui-react'
 
 import EduwebCheck from 'Components/ApiChecks/EduwebCheck'
 import MoocCheck from 'Components/ApiChecks/MoocCheck'

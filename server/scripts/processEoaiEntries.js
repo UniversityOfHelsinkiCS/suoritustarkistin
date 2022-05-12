@@ -1,10 +1,5 @@
 const db = require('@models/index')
 const logger = require('@utils/logger')
-const { getRegistrations } = require('../services/eduweb')
-const { getEarlierAttainments } = require('../services/importer')
-const { getCompletions } = require('../services/pointsmooc')
-const { isImprovedGrade } = require('../utils/earlierCompletions')
-const { automatedAddToDb } = require('./automatedAddToDb')
 const {
   getBatchId,
   moocLanguageMap,
@@ -12,6 +7,11 @@ const {
   ALL_EOAI_CODES,
   NEW_EOAI_CODE
 } = require('@root/utils/common')
+const { getRegistrations } = require('../services/eduweb')
+const { getEarlierAttainments } = require('../services/importer')
+const { getCompletions } = require('../services/pointsmooc')
+const { isImprovedGrade } = require('../utils/earlierCompletions')
+const { automatedAddToDb } = require('./automatedAddToDb')
 
 const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
   try {

@@ -112,7 +112,6 @@ export default ({ close, user }) => {
           placeholder="Email"
           value={formData.email}
           onChange={handleFieldChange}
-          error={false}
           name="email"
           error={Boolean(formData.email && !isValidEmailAddress(formData.email))}
           required

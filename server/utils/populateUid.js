@@ -1,7 +1,7 @@
-const db = require('../models/index')
-const logger = require('./logger')
 const { Op } = require('sequelize')
 const axios = require('axios')
+const db = require('../models/index')
+const logger = require('./logger')
 
 const api = axios.create({
   headers: {

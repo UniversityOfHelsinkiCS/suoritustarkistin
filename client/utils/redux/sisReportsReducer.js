@@ -1,5 +1,6 @@
-const _ = require('lodash')
 import callBuilder from '../apiConnection'
+
+const _ = require('lodash')
 /**
  * Actions and reducers are in the same file for readability
  */

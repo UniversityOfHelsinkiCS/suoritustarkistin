@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Redirect } from 'react-router-dom'
@@ -29,7 +30,7 @@ export default () => {
         <br />
         To get your account approved, you must send an email{' '}
         <span style={{ fontWeight: 'bold' }}>(including the details of the course you want to grade)</span> to{' '}
-        <a target="_blank" href="mailto:grp-toska@helsinki.fi">
+        <a target="_blank" rel="noopener noreferrer" href="mailto:grp-toska@helsinki.fi">
           grp-toska@helsinki.fi
         </a>
       </Message>

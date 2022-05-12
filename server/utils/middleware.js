@@ -1,8 +1,8 @@
-const { inProduction } = require('./common')
 const logger = require('@utils/logger')
+const Sentry = require('@sentry/node')
+const { inProduction } = require('./common')
 const db = require('../models/index')
 const sendNewUserEmail = require('./sendNewUserEmail')
-const Sentry = require('@sentry/node')
 
 const parseUser = async (req, res, next) => {
   if (req.headers.employeenumber) {

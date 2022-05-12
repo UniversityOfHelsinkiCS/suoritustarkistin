@@ -1,6 +1,6 @@
-const api = require('../config/importerApi')
 const qs = require('querystring')
 const _ = require('lodash')
+const api = require('../config/importerApi')
 const logger = require('../utils/logger')
 
 const handleImporterApiErrors = (e) => {

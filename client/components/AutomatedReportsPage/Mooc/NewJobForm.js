@@ -26,7 +26,7 @@ export default ({ close }) => {
       <Form width={4}>
         <Form.Field
           data-cy="add-job-schedule"
-          required={true}
+          required
           control={Input}
           label="Cron schedule"
           placeholder="* * * * *"
@@ -39,7 +39,7 @@ export default ({ close }) => {
           data-cy="add-job-course"
           selection
           search
-          required={true}
+          required
           label="Course"
           options={courses.map((course) => ({
             key: course.id,
@@ -50,7 +50,7 @@ export default ({ close }) => {
           onChange={(e, d) => setData({ ...data, courseId: d.value })}
         />
         <Form.Dropdown
-          required={true}
+          required
           label="Grader"
           selection
           search
@@ -61,7 +61,6 @@ export default ({ close }) => {
           }))}
           onChange={(e, { value }) => setData({ ...data, graderId: value })}
           data-cy="add-job-grader"
-          label="Grader"
           value={data.graderId || null}
         />
         <Form.Field

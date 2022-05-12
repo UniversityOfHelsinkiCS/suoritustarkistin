@@ -4,6 +4,7 @@ const htmlTemplate = require('html-webpack-template')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
+
 const { SENTRY_RELEASE, NODE_ENV } = process.env
 const sentryRelease = !SENTRY_RELEASE ? 'unknown' : SENTRY_RELEASE
 

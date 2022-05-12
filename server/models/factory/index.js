@@ -1,12 +1,12 @@
+const { v4: uuidv4 } = require('uuid')
+const faker = require('faker')
 const { getBatchId } = require('../../utils/common')
 const db = require('../index')
-const { v4: uuidv4 } = require('uuid')
 
 function rand(min, max) {
   return Math.round(Math.random() * (max - min) + min)
 }
 
-const faker = require('faker')
 faker.locale = 'fi'
 
 faker.sisu = {}

@@ -1,11 +1,11 @@
 const logger = require('@utils/logger')
+const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const { getEarlierAttainments } = require('../services/importer')
-const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language

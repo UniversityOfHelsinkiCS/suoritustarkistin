@@ -1,8 +1,8 @@
 const logger = require('@utils/logger')
-const db = require('../models/index')
 const { Op } = require('sequelize')
 const _ = require('lodash')
 const { isValidCourse } = require('@root/utils/validators')
+const db = require('../models/index')
 const { getResponsibles } = require('../services/importer')
 
 const cleanCourses = (courses) => {

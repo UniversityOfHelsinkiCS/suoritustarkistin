@@ -1,5 +1,5 @@
-const moocApi = require('../config/moocApi')
 const logger = require('@utils/logger')
+const moocApi = require('../config/moocApi')
 
 const getCompletions = async (course, registeredIncluded = false) => {
   logger.info({ message: `Fetching completions for course ${course}` })

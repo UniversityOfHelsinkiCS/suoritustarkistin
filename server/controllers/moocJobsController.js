@@ -1,8 +1,8 @@
 const logger = require('@utils/logger')
+const { isValidJob } = require('@root/utils/validators')
 const db = require('../models/index')
 const { activateJob, deactivateJob } = require('../scripts/cronjobs')
 const { chooseScript } = require('../scripts/chooseAutomatedScript')
-const { isValidJob } = require('@root/utils/validators')
 
 const getJobs = async (req, res) => {
   try {

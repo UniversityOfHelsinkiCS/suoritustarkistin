@@ -1,11 +1,11 @@
 const db = require('@models/index')
 const logger = require('@utils/logger')
+const { getBatchId, getMoocAttainmentDate, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE } = require('@root/utils/common')
 const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { getBatchId, getMoocAttainmentDate, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE } = require('@root/utils/common')
 
 const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu) => {
   try {

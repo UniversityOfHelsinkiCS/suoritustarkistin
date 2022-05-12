@@ -1,7 +1,7 @@
-const db = require('../models/index')
 const logger = require('@utils/logger')
-const { processEntries } = require('./processEntries')
 const { sendSentryMessage } = require('@utils/sentry')
+const db = require('../models/index')
+const { processEntries } = require('./processEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
 
 const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) => {

@@ -84,6 +84,7 @@ export default ({ reduxKey, action }) => {
         </Form.Group>
         <Form.Group>
           <Form.Field
+            data-cy="student-filter"
             control={Input}
             label="Filter by student number"
             value={filters.search}

@@ -60,6 +60,24 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=report-TKT10002').should('contain', 'Ohjelmoinnin perusteet').click()
     cy.get('[data-cy=entry-accordion]').should('contain', 'Ohjelmoinnin perusteet (TKT10002)')
   })
+
+  it.only('Reports can be filtered by student number', () => {
+    cy.login('admin').visit('')
+    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+
+    cy.get('[data-cy=nav-reports]').click()
+
+    cy.get('[data-cy=sis-reports-tab]').click()
+
+    cy.get('[data-cy=student-filter]').type('011111112').wait(500)
+    cy.contains('No reports found')
+
+    cy.get('[data-cy=student-filter]').clear().type('011111111').wait(500)
+    cy.get('[data-cy=report-table]').its('length').should('eq', 7)
+
+    cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()
+    cy.get('[data-cy=report-table-row-011111111]').should('have.class', 'active')
+  })
 })
 
 describe('BSc thesis reports are displayed correctly', () => {

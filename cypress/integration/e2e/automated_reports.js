@@ -3,7 +3,7 @@ describe('Automated reports', () => {
     cy.request('/api/seed/all')
   })
 
-  it('Admin can add a new job', () => {
+  it('Admin can create, edit and delete a job', () => {
     cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click().wait(500)
 
@@ -19,9 +19,25 @@ describe('Automated reports', () => {
 
     cy.get('[data-cy=add-job-confirm]').click().wait(500)
 
-    cy.get('[data-cy=mooc-job-table]')
+    cy.get('[data-cy=job-TKT10002]')
       .should('contain', '0 0 * * *')
       .should('contain', 'Ohjelmoinnin perusteet')
       .should('contain', 'grader')
+
+    cy.get('[data-cy=edit-job]').click()
+    cy.get('[data-cy=edit-job-schedule]').clear().type('0 0 1 1 1')
+    cy.get('[data-cy=edit-job-active]').click()
+
+    cy.get('[data-cy=edit-job-confirm]').click()
+
+    cy.get('[data-cy=job-TKT10002]')
+      .should('contain', '0 0 1 1 1')
+      .should('contain', 'Ohjelmoinnin perusteet')
+      .should('contain', 'grader')
+
+    cy.get('[data-cy=delete-job-TKT10002]').click()
+    cy.get('[data-cy=delete-job-confirm]').click()
+
+    cy.get('[data-cy=job-TKT10002]').should('not.exist')
   })
 })

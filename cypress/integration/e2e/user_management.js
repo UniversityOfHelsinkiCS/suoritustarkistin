@@ -62,10 +62,10 @@ describe('User management', () => {
     cy.get('[data-cy=nav-users]').click()
 
     cy.get('[data-cy=add-user-button]').click()
-    cy.get('[data-cy=add-email]').type("test-user@test.com")
-    cy.get('[data-cy=add-user-id]').type("testUser")
-    cy.get('[data-cy=add-employee-number]').type("1111")
-    cy.get('[data-cy=add-user-name]').type("testUser")
+    cy.get('[data-cy=add-email]').type('test-user@test.com')
+    cy.get('[data-cy=add-user-id]').type('testUser')
+    cy.get('[data-cy=add-employee-number]').type('1111')
+    cy.get('[data-cy=add-user-name]').type('testUser')
     cy.get('[data-cy=add-user-confirm]').click()
 
     cy.get('[data-cy=user-grid]').should('contain', 'testUser')

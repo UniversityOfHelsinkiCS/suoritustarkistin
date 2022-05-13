@@ -30,6 +30,7 @@ export default ({ job, jobs }) => {
 
   const DeleteButton = () => (
     <Button
+      data-cy={`delete-job-${course.courseCode}`}
       disabled={jobs.pending}
       onClick={() => {
         setReally(true)
@@ -41,6 +42,7 @@ export default ({ job, jobs }) => {
 
   const CreateReportButton = () => (
     <Button
+      data-cy={`create-report-${course.courseCode}`}
       disabled={jobs.pending}
       onClick={() => dispatch(runJobAction(job.id))}
       content="Create report"
@@ -51,16 +53,22 @@ export default ({ job, jobs }) => {
   const Confirm = () => (
     <Button.Group>
       <Button
+        data-cy="delete-job-cancel"
         onClick={() => {
           setReally(false)
         }}
         content="Cancel"
       />
-      <Button onClick={() => dispatch(deleteJobAction(job.id))} content="Really delete" positive />
+      <Button
+        data-cy="delete-job-confirm"
+        onClick={() => dispatch(deleteJobAction(job.id))}
+        content="Really delete"
+        positive
+      />
     </Button.Group>
   )
   return (
-    <Table.Row>
+    <Table.Row data-cy={`job-${course.courseCode}`}>
       <Table.Cell width={1}>{job.schedule}</Table.Cell>
       <Table.Cell width={2}>{getCourseCode()}</Table.Cell>
       <Table.Cell width={3}>{getCourseName()}</Table.Cell>

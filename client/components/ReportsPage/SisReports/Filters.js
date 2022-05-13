@@ -100,7 +100,7 @@ export default ({ reduxKey, action }) => {
             onChange={(_, { value: courseId }) => set('course', courseId)}
           />
         </Form.Group>
-        <Form.Group></Form.Group>
+        <Form.Group />
       </Form>
     </>
   )

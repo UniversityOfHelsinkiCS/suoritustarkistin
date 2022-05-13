@@ -60,7 +60,7 @@ const CourseTable = () => {
             </Table.Cell>
           </Table.Row>
         ))}
-        <Table.Row></Table.Row>
+        <Table.Row />
       </Table>
     </Segment>
   )

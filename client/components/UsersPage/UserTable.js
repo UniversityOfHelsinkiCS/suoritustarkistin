@@ -33,7 +33,7 @@ export default () => {
 
   return (
     <Segment>
-      <Grid celled="internally" style={{ wordWrap: 'anywhere' }}>
+      <Grid data-cy="user-grid" celled="internally" style={{ wordWrap: 'anywhere' }}>
         <Grid.Row>
           <Grid.Column width={4}>{getCustomHeader({ name: 'Name (uid)', field: 'name' })}</Grid.Column>
           <Grid.Column textAlign="center">{getCustomHeader({ name: 'Grader', field: 'isGrader' })}</Grid.Column>

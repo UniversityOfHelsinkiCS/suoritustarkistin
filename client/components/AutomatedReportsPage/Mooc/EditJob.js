@@ -11,7 +11,7 @@ export default ({ job, jobs }) => {
   return (
     <Modal
       trigger={
-        <Button disabled={jobs.pending} onClick={() => setShowForm(true)}>
+        <Button data-cy="edit-job" disabled={jobs.pending} onClick={() => setShowForm(true)}>
           Edit
         </Button>
       }

@@ -121,7 +121,7 @@ export default ({ user }) => {
     <Modal
       trigger={
         <Button
-          data-cy={`${user.name}-delete`}
+          data-cy={`${user.name}-edit`}
           icon="edit"
           color="yellow"
           size="large"

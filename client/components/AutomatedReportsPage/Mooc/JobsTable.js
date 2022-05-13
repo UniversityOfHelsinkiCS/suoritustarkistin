@@ -13,7 +13,7 @@ export default () => {
   return (
     <Segment>
       <Loader size="big" active={jobs.pending} />
-      <Table celled>
+      <Table celled data-cy="mooc-job-table">
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell width={1}>

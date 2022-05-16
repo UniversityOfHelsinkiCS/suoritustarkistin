@@ -58,7 +58,7 @@ const isValidEmailAddress = (address) =>
   )
 
 const isValidCourseCode = (courseCode) =>
-  /^(TKT|BSCS|CSM|MAT|DATA|AY|MFK|JODG|JODG-)[A-Za-z0-9-]{3,12}$/.test(courseCode)
+  /^(TKT|BSCS|CSM|MAT|DATA|AY|MFK|JODG|JODG-|ENG|ENG-)[A-Za-z0-9-]{3,12}$/.test(courseCode)
 
 const areValidGraders = (graders) => {
   if (!Array.isArray(graders)) return false

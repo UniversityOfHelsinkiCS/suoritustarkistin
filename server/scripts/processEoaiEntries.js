@@ -105,6 +105,8 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
           })
         }
       } else {
+        if (registration && !registration.onro)
+          logger.info({ message: `${course.courseCode}: Registration student number missing for ${registration.email}` })
         return matches
       }
     }, [])

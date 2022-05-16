@@ -98,6 +98,8 @@ const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) =
           moocCompletionId: completion.id
         })
       } else {
+        if (registration && !registration.onro)
+          logger.info({ message: `${course.courseCode}: Registration student number missing for ${registration.email}` })
         return matches
       }
     }, [])

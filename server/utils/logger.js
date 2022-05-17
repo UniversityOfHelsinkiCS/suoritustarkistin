@@ -1,25 +1,6 @@
 const winston = require('winston')
-const Log2gelf = require('winston-log2gelf')
-
-const { LOG_PORT, LOG_HOST, LOG_HOSTNAME, LOG_PATH, LOG_PROTOCOL, NODE_ENV } = process.env
 
 const transports = []
-
-if (LOG_PORT && LOG_HOST) {
-  transports.push(
-    new Log2gelf({
-      hostname: LOG_HOSTNAME || 'suotar',
-      host: LOG_HOST,
-      port: LOG_PORT,
-      protocol: LOG_PROTOCOL || 'https',
-      environment: NODE_ENV,
-      service: 'SUOTAR',
-      protocolOptions: {
-        path: LOG_PATH || '/gelf'
-      }
-    })
-  )
-}
 
 transports.push(
   new winston.transports.Console({

@@ -83,8 +83,7 @@
     "uuid": "^8.3.2",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12",
-    "winston": "^3.7.2",
-    "winston-log2gelf": "^2.4.0"
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "babel-preset-stage-2": "^6.24.1",

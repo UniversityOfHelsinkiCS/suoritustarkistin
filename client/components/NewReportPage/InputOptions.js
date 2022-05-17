@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Checkbox, Select, Form, Button } from 'semantic-ui-react'
+import { Checkbox, Select, Form, Button, Message } from 'semantic-ui-react'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -261,6 +261,9 @@ export default ({ kandi, extra, parseCSV }) => {
         </Button>
       </div>
       <div style={styles.info}>Remember to report completions for the correct academic year (1.8. – 31.7.)</div>
+      {newRawEntries.data && newRawEntries.data.some((entry) => entry.duplicate) && (
+        <Message negative>There are duplicate entries.</Message>
+      )}
     </>
   )
 }

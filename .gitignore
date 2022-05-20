@@ -13,3 +13,4 @@ testdata.js
 .vscode/
 *.sql
 *.gz
+*.log

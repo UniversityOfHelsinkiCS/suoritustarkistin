@@ -16,7 +16,7 @@ export default ({ kandi, parseCSV }) => {
 
   const handleDataChange = (event) => {
     let rawData = event.target.value
-    if (rawData === '') return dispatch(resetNewRawEntriesAction())
+    if (rawData === '') return dispatch(resetNewRawEntriesAction(newRawEntries.graderId))
 
     if (rawData.includes("'")) {
       rawData.split('\n').forEach((row) => {

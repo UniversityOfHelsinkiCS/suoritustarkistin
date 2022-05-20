@@ -33,13 +33,14 @@ const styles = {
 export default withRouter(({ rows, batchId, history }) => {
   const dispatch = useDispatch()
   const { pending, error } = useSelector((state) => state.sisReports)
+  const graderId = useSelector((state) => state.newRawEntries.graderId)
   const [sent, setSent] = useState(false)
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
 
   useEffect(() => {
     if (sent && !pending && !(error || {}).genericError) {
       dispatch(openReport(batchId))
-      dispatch(resetNewRawEntriesAction())
+      dispatch(resetNewRawEntriesAction(graderId))
       history.push('/reports')
     }
   }, [pending, error, sent])

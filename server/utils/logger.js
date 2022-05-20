@@ -1,4 +1,5 @@
 const winston = require('winston')
+
 const { NODE_ENV } = process.env
 const { combine, timestamp, printf, splat } = winston.format
 
@@ -17,7 +18,7 @@ if (NODE_ENV !== 'production') {
   transports.push(
     new winston.transports.Console({
       level: 'debug',
-      format: combine(splat(), timestamp(), devFormat),
+      format: combine(splat(), timestamp(), devFormat)
     }),
   )
 }
@@ -30,13 +31,13 @@ if (NODE_ENV === 'production') {
     http: 3,
     verbose: 4,
     debug: 5,
-    silly: 6,
+    silly: 6
   }
 
   const prodFormat = winston.format.printf(({ level, ...rest }) =>
     JSON.stringify({
       level: levels[level],
-      ...rest,
+      ...rest
     }),
   )
 

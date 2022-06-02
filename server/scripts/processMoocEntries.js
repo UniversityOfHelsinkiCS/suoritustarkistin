@@ -66,7 +66,7 @@ const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) =
         const grade = defineGrade(completion, course)
 
         const attainmentDate = getMoocAttainmentDate({
-          registrationAtteptDate: completion.completion_registration_attempt_date,
+          registrationAttemptDate: completion.completion_registration_attempt_date,
           completionDate: completion.completion_date,
           today: date,
           useManualCompletionDate: job.useManualCompletionDate,

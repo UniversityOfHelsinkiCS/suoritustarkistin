@@ -114,7 +114,7 @@ const getMoocAttainmentDate = ({
   if (
     DEFA_COURSES.includes(courseCode) &&
     registrationAttemptDate &&
-    moment(registrationAttemptDate).isBetween(moment('2022-06-01'), moment('2022-08-01'))
+    moment(registrationAttemptDate).isBetween(moment('2022-07-01'), moment('2022-08-01'))
   )
     return new Date('2022-06-30')
   if (useManualCompletionDate && completionDate) return completionDate

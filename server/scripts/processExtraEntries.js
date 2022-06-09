@@ -52,6 +52,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       return { courseCode, studentNumber }
     })
   )
+
   const courseUnitIds = await getCourseUnitIds(
     courses.filter(({ useAsExtra }) => useAsExtra).map(({ courseCode }) => courseCode)
   )
@@ -88,6 +89,14 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,
         message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`
+      })
+      return
+    }
+    if (!course.useAsExtra) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        message: `${course.courseCode} not usable for erilliskirjaus`
       })
       return
     }

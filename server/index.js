@@ -85,6 +85,7 @@ initializeDatabaseConnection()
       cron.schedule('15 3 * * 5', () => {
         checkRegisteredForMooc()
       })
+      // TODO: cronjob for sending completions to new mooc
     }
 
     app.listen(PORT, () => {

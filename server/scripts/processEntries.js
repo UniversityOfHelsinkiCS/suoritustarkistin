@@ -236,6 +236,7 @@ const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attai
 }
 
 const mapGrades = (gradeScales, id, rawEntry) => {
+  // TODO: likely skipped for entries from new mooc
   let grade = rawEntry.grade
   if (id === 'sis-0-5') {
     if (grade === 'Hyl.' || grade === '-') {

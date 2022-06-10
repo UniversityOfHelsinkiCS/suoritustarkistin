@@ -78,6 +78,11 @@ const DEFA_COURSES = [
   'AYTKT100051'
 ]
 
+const NEW_MOOC_COURSES = [
+  // 'DATA20041',
+  // 'DATA20042'
+]
+
 const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
 const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
 const isOneOfKandiCourses = (course) => isThesisCourse(course) || isKandiExtraCourse(course)
@@ -293,6 +298,7 @@ const testRawEntriesHylHyv = [
 module.exports = {
   gradeScales,
   KANDI_EXTRA_COURSES,
+  NEW_MOOC_COURSES,
   NEW_EOAI_CODE,
   EOAI_CODES,
   ALL_EOAI_CODES,

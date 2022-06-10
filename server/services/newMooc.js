@@ -6,7 +6,6 @@ const getCompletions = async (course, registeredIncluded = false) => {
   logger.info({ message: `Fetching completions for course ${course}` })
 
   // If registeredIncluded=true, also the ones that are already marked as registered to SIS will be fetched from mooc api
-  // Will this change for the new api?
   const { data } = registeredIncluded
     ? await newMoocApi.get(`/completions/${course}?registered=true`)
     : await newMoocApi.get(`/completions/${course}`)

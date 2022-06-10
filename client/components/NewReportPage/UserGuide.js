@@ -55,14 +55,13 @@ const DetailedInstructions = () => (
       <List.Item>
         <p style={instruction}>Date of completion</p>
         You can add date separately for each student. Any date chosen from date-picker will apply to completions that do
-        not have a separately set date for them. Please note that the course instance will be picked based automatically
+        not have a separately set date for them. Please note that the course instance will be picked automatically
         based on the completion date.
       </List.Item>
       <List.Item>
         <p style={instruction}>Course code</p>
-        You can select course for the full report by providing course code in last column of csv. A single report can
-        contain completions for one course only. The course is selected from first row of csv or by the dropdown select
-        bellow.
+        You can select course for the entry by providing the course code in csv or by using the course dropdown below.
+        The course dropdown selection is used for all entries that do not have the course code included in csv.
       </List.Item>
     </List>
   </div>
@@ -73,9 +72,8 @@ export default () => (
     <Header as="h2">Reporting course completions through Suotar</Header>
     <p>
       Teachers add course completions to Suotar either by copy-pasting or by inserting a csv. When hitting "create
-      report"-button, Suotar creates a report of these completions, that can be later on added to Sisu by an education
-      coordinator. Teachers can see their own reports from the "View Reports"-page, but only education coordinators can
-      send them to Sisu.
+      report"-button, Suotar creates a report of these completions, that will be automatically added to Sisu.
+      Teachers can see their own reports from the "View Reports"-page.
     </p>
     <Header as="h3">
       Each completion should be its own line in the following format:{' '}

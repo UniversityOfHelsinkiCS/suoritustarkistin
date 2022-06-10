@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Icon, Menu, Tab, Message as UIMessage } from 'semantic-ui-react'
+import { Icon, Menu, Tab } from 'semantic-ui-react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import UserGuide from 'Components/NewReportPage/UserGuide'
@@ -89,25 +89,6 @@ export default () => {
 
   return (
     <>
-      <UIMessage
-        icon="bullhorn"
-        header="New in Suotar"
-        content={
-          <>
-            <p>
-              New version of Suotar is released! Now new <b>completions will be reported immediately to Sisu</b> after
-              the grades are saved into Suotar. No extra confirmation from study coordinator is required.
-            </p>
-            <p>
-              When reporting completions user might also import enrolled students from different course instances after
-              selecting a course.
-            </p>
-          </>
-        }
-        style={{ maxWidth: 800, marginLeft: 'auto', marginRight: 'auto' }}
-        info
-      />
-
       {!displayBscUserGuide ? <UserGuide /> : <BachelorThesisUserGuide />}
       <Message />
       <Tab

@@ -173,6 +173,7 @@ export default withRouter(({ rows, batchId, history }) => {
               <Table.HeaderCell>Completion date</Table.HeaderCell>
               <Table.HeaderCell>Language</Table.HeaderCell>
               <Table.HeaderCell>Credits</Table.HeaderCell>
+              <Table.HeaderCell>Course name</Table.HeaderCell>
               <Table.HeaderCell>Course realisation name</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
@@ -196,6 +197,7 @@ export default withRouter(({ rows, batchId, history }) => {
                   </Table.Cell>
                   <Table.Cell>{rawEntry.language}</Table.Cell>
                   <Table.Cell>{rawEntry.credits}</Table.Cell>
+                  <Table.Cell>{rawEntry.course.name}</Table.Cell>
                   <Table.Cell>{getCourseUnitRealisationName(entry)}</Table.Cell>
                 </Table.Row>
               )

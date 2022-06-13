@@ -47,6 +47,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
   const reportContainsErrors = report.some(({ entry }) => entry.errors)
   const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors && entry.sent)
   const entriesNotSentOrErroneous = report.filter(({ entry }) => entry.errors || !entry.sent)
+  const entriesMissingEnrollment = report.filter(({ entry }) => entry.missingEnrolment)
 
   const ViewAttainmentsInSisu = ({ rawEntry }) =>
     !rawEntry.batchId.startsWith('limbo') ? (
@@ -71,6 +72,22 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
       <Icon name="copy" /> Copy link to report
     </Button>
   )
+
+  const CopyMissingCsvButton = ({ entries }) => {
+    const copyCsv = (entries) => () => {
+      let csv = ''
+      entries.forEach((entry) => {
+        csv += `${entry.studentNumber};${entry.email || ''}\n`
+      })
+      navigator.clipboard.writeText(csv)
+    }
+
+    return (
+      <Button onClick={copyCsv(entries)}>
+        <Icon name="copy" /> Copy missing to csv
+      </Button>
+    )
+  }
 
   const RefreshBatch = ({ report }) => (
     <Button
@@ -136,6 +153,9 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
           </>
         )}
         <CopyBatchLinkButton batchId={report[0].batchId} />
+        {entriesMissingEnrollment.length > 0 && (
+          <CopyMissingCsvButton entries={entriesMissingEnrollment} />
+        )}
 
         {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 

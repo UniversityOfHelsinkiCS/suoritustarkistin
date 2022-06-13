@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       studentNumber: DataTypes.STRING,
       studentName: DataTypes.STRING,
+      email: DataTypes.STRING,
       batchId: DataTypes.STRING, // To identify which entries sent with same submission
       grade: DataTypes.STRING,
       credits: DataTypes.STRING, // Credits as String??

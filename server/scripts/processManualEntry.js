@@ -43,6 +43,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
     return {
       studentNumber: rawEntry.studentId,
       studentName: rawEntry.studentName,
+      email: rawEntry.email,
       batchId: batchId,
       grade: rawEntry.grade,
       credits: rawEntry.credits ? rawEntry.credits : course.credits,
@@ -91,6 +92,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
   const students = await getStudents(studentNumbers)
   data = data.map((rawEntry, index) => ({
     ...rawEntry,
+    email: students[index].primaryEmail || students[index].secondaryEmail,
     studentName: `${students[index].firstNames.split(' ')[0]} ${students[index].lastName}`
   }))
 

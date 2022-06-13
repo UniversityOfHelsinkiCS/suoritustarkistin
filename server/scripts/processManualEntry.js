@@ -5,6 +5,7 @@ const db = require('../models/index')
 const { isValidStudentId, isValidGrade, isValidCreditAmount, isValidCourseCode } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
 const processExtraEntries = require('./processExtraEntries')
+const { getStudents } = require('../services/importer')
 
 const LANGUAGES = ['fi', 'sv', 'en']
 
@@ -41,6 +42,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
 
     return {
       studentNumber: rawEntry.studentId,
+      studentName: rawEntry.studentName,
       batchId: batchId,
       grade: rawEntry.grade,
       credits: rawEntry.credits ? rawEntry.credits : course.credits,
@@ -84,6 +86,13 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
   if (!grader) throw new Error('Grader employee id does not exist.')
 
   const batchId = getBatchId(course.courseCode)
+
+  const studentNumbers = data.map((rawEntry) => rawEntry.studentId)
+  const students = await getStudents(studentNumbers)
+  data = data.map((rawEntry, index) => ({
+    ...rawEntry,
+    studentName: `${students[index].firstNames.split(' ')[0]} ${students[index].lastName}`
+  }))
 
   const rawEntries = await Promise.all(data.filter(({ isExtra }) => !isExtra).map(toRawEntry))
 

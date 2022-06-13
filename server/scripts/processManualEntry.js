@@ -1,4 +1,4 @@
-const { flatten } = require('lodash')
+const _ = require('lodash')
 const logger = require('@utils/logger')
 const { getBatchId } = require('@root/utils/common')
 const db = require('../models/index')
@@ -89,9 +89,11 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
 
   const studentNumbers = data.map((rawEntry) => rawEntry.studentId)
   const students = await getStudents(studentNumbers)
-  data = data.map((rawEntry, index) => ({
+  const studentsById = _.groupBy(students, 'studentNumber')
+
+  data = data.map((rawEntry) => ({
     ...rawEntry,
-    studentName: `${students[index].firstNames.split(' ')[0]} ${students[index].lastName}`
+    studentName: `${studentsById[rawEntry.studentId][0].firstNames.split(' ')[0]} ${studentsById[rawEntry.studentId][0].lastName}`
   }))
 
   const rawEntries = await Promise.all(data.filter(({ isExtra }) => !isExtra).map(toRawEntry))
@@ -99,7 +101,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
   const extraRawEntries = await Promise.all(data.filter(({ isExtra }) => isExtra).map(toRawEntry))
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
-  const newExtraRawEntries = await db.raw_entries.bulkCreate(flatten(extraRawEntries), { returning: true, transaction })
+  const newExtraRawEntries = await db.raw_entries.bulkCreate(_.flatten(extraRawEntries), { returning: true, transaction })
 
   logger.info({
     message: 'Raw entries created successfully',

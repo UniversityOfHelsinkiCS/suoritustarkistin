@@ -45,6 +45,7 @@ const TableColumns = ({ allowDelete }) => (
   <Table.Header>
     <Table.Row>
       <Table.HeaderCell>Student number</Table.HeaderCell>
+      <Table.HeaderCell>Student name</Table.HeaderCell>
       <Table.HeaderCell>Credits</Table.HeaderCell>
       <Table.HeaderCell>Grade</Table.HeaderCell>
       <Table.HeaderCell>Completion date</Table.HeaderCell>
@@ -84,6 +85,7 @@ const TableBody = ({ user, rawEntries }) => {
               style={rawEntry.entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
             >
               <Table.Cell data-cy="report-student-number">{rawEntry.studentNumber}</Table.Cell>
+              <Table.Cell data-cy="report-student-name">{rawEntry.studentName}</Table.Cell>
               <Table.Cell data-cy="report-credits">{rawEntry.credits}</Table.Cell>
               <EntryCells
                 entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }}

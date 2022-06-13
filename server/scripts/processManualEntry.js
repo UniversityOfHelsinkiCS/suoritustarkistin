@@ -55,6 +55,23 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
     }
   }
 
+  const addStudentNameAndEmail = async (data) => {
+    const studentNumbers = data.map((rawEntry) => rawEntry.studentId)
+    const students = await getStudents(studentNumbers)
+    const studentsById = _.groupBy(students, 'studentNumber')
+
+    data = data.map((rawEntry) => {
+      const student = studentsById[rawEntry.studentId][0]
+      return {
+        ...rawEntry,
+        email: student.primaryEmail || student.secondaryEmail,
+        studentName: `${student.firstNames.split(' ')[0]} ${student.lastName}`
+      }
+    })
+
+    return data
+  }
+
   const courseCodes = data.map((rawEntry) => rawEntry.course)
 
   let course = {}
@@ -88,15 +105,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
 
   const batchId = getBatchId(course.courseCode)
 
-  const studentNumbers = data.map((rawEntry) => rawEntry.studentId)
-  const students = await getStudents(studentNumbers)
-  const studentsById = _.groupBy(students, 'studentNumber')
-
-  data = data.map((rawEntry) => ({
-    ...rawEntry,
-    email: studentsById[rawEntry.studentId][0].primaryEmail || studentsById[rawEntry.studentId][0].secondaryEmail,
-    studentName: `${studentsById[rawEntry.studentId][0].firstNames.split(' ')[0]} ${studentsById[rawEntry.studentId][0].lastName}`
-  }))
+  data = await addStudentNameAndEmail(data)
 
   const rawEntries = await Promise.all(data.filter(({ isExtra }) => !isExtra).map(toRawEntry))
 

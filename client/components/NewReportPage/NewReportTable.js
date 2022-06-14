@@ -186,7 +186,7 @@ export default withRouter(({ rows, batchId, history }) => {
                   style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
                 >
                   <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
-                  <Table.Cell>{rawEntry.studentName}</Table.Cell>
+                  <Table.Cell>{entry.studentName}</Table.Cell>
                   <Table.Cell>
                     {!entry.missingEnrolment || entry.type === 'EXTRA_ENTRY'
                       ? getGrade(entry.gradeScaleId, entry.gradeId, entry.completionLanguage)

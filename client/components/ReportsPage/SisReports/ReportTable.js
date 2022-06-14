@@ -85,7 +85,7 @@ const TableBody = ({ user, rawEntries }) => {
               style={rawEntry.entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
             >
               <Table.Cell data-cy="report-student-number">{rawEntry.studentNumber}</Table.Cell>
-              <Table.Cell data-cy="report-student-name">{rawEntry.studentName}</Table.Cell>
+              <Table.Cell data-cy="report-student-name">{rawEntry.entry.studentName}</Table.Cell>
               <Table.Cell data-cy="report-credits">{rawEntry.credits}</Table.Cell>
               <EntryCells
                 entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }}

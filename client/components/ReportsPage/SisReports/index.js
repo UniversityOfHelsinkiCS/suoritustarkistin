@@ -77,7 +77,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
     const copyCsv = (entries) => () => {
       let csv = ''
       entries.forEach((entry) => {
-        csv += `${entry.studentNumber};${entry.email || ''}\n`
+        csv += `${entry.studentNumber};${entry.entry.email || ''}\n`
       })
       navigator.clipboard.writeText(csv)
     }

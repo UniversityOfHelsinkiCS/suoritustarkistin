@@ -96,6 +96,8 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
           success.push({
             id: generateEntryId(),
             personId: student.id,
+            studentName: `${student.firstNames.split(' ')[0]} ${student.lastName}`,
+            email: student.primaryEmail || student.secondaryEmail,
             verifierPersonId: verifier.id,
             rawEntryId: rawEntry.id,
             completionDate: completionDate.format('YYYY-MM-DD'),

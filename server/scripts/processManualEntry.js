@@ -1,11 +1,10 @@
-const _ = require('lodash')
+const { flatten } = require('lodash')
 const logger = require('@utils/logger')
 const { getBatchId } = require('@root/utils/common')
 const db = require('../models/index')
 const { isValidStudentId, isValidGrade, isValidCreditAmount, isValidCourseCode } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
 const processExtraEntries = require('./processExtraEntries')
-const { getStudents } = require('../services/importer')
 
 const LANGUAGES = ['fi', 'sv', 'en']
 
@@ -55,23 +54,6 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
     }
   }
 
-  const addStudentNameAndEmail = async (data) => {
-    const studentNumbers = data.map((rawEntry) => rawEntry.studentId)
-    const students = await getStudents(studentNumbers)
-    const studentsById = _.groupBy(students, 'studentNumber')
-
-    data = data.map((rawEntry) => {
-      const student = studentsById[rawEntry.studentId][0]
-      return {
-        ...rawEntry,
-        email: student.primaryEmail || student.secondaryEmail,
-        studentName: `${student.firstNames.split(' ')[0]} ${student.lastName}`
-      }
-    })
-
-    return data
-  }
-
   const courseCodes = data.map((rawEntry) => rawEntry.course)
 
   let course = {}
@@ -105,14 +87,12 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
 
   const batchId = getBatchId(course.courseCode)
 
-  data = await addStudentNameAndEmail(data)
-
   const rawEntries = await Promise.all(data.filter(({ isExtra }) => !isExtra).map(toRawEntry))
 
   const extraRawEntries = await Promise.all(data.filter(({ isExtra }) => isExtra).map(toRawEntry))
 
   const newRawEntries = await db.raw_entries.bulkCreate(rawEntries, { returning: true, transaction })
-  const newExtraRawEntries = await db.raw_entries.bulkCreate(_.flatten(extraRawEntries), { returning: true, transaction })
+  const newExtraRawEntries = await db.raw_entries.bulkCreate(flatten(extraRawEntries), { returning: true, transaction })
 
   logger.info({
     message: 'Raw entries created successfully',

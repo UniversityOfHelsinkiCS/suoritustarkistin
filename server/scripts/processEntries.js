@@ -139,6 +139,8 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
       success.push({
         ...filteredEnrolment,
         id: generateEntryId(),
+        studentName: `${student.firstNames.split(' ')[0]} ${student.lastName}`,
+        email: student.primaryEmail || student.secondaryEmail,
         verifierPersonId: verifier.id,
         rawEntryId: rawEntry.id,
         gradeId: grade.localId,

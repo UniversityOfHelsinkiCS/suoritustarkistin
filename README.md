@@ -62,7 +62,7 @@ For some courses, same course instance has students signed in from both AY and T
 
 ### Automated reports (for admins only)
 
-There are a bunch courses with automatic reporting. These are courses that come from Kurki or MOOC and can be found from the page 'Automated Reports'.
+There are a bunch courses with automatic reporting. These are courses that come from MOOC and can be found from the page 'Automated Reports'.
 
 ## Developer Information
 

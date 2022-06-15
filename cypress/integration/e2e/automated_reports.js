@@ -8,8 +8,6 @@ describe('Automated reports', () => {
     cy.get('[data-cy=adminmode-enable]').click().wait(500)
 
     cy.get('[data-cy=nav-automated-reports]').click()
-    cy.get('[data-cy=mooc-jobs-tab]').click()
-
     cy.get('[data-cy=add-job-button]').click()
 
     cy.get('[data-cy=add-job-schedule').type('0 0 * * *')

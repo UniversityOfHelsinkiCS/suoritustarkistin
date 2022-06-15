@@ -44,7 +44,6 @@ const {
   getOffset
 } = require('@controllers/reportController')
 const { addJob, getJobs, editJob, runJob, deleteJob } = require('@controllers/moocJobsController')
-const { getKurkiCourses, addKurkiRawEntries } = require('@controllers/kurkiController')
 const { login, logout } = require('@controllers/loginController')
 
 const {
@@ -114,9 +113,6 @@ router.post('/jobs', checkAdmin, addJob)
 router.put('/jobs/:id', checkAdmin, editJob)
 router.post('/jobs/:id', checkAdmin, runJob)
 router.delete('/jobs/:id', checkAdmin, deleteJob)
-
-router.get('/kurki/courses', checkAdmin, getKurkiCourses)
-router.post('/kurki/raw_entries', checkAdmin, addKurkiRawEntries)
 
 router.get('/apicheck/eduweb/:id', checkAdmin, checkEduweb)
 router.get('/apicheck/mooc/:id', checkAdmin, checkMooc)

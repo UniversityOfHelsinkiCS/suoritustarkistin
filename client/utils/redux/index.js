@@ -7,7 +7,6 @@ import courses from './coursesReducer'
 import graders from './gradersReducer'
 import newRawEntries from './newRawEntriesReducer'
 import newEntries from './newEntriesReducer'
-import kurki from './kurkiReducer'
 import message from './messageReducer'
 import users from './usersReducer'
 import moocJobs from './moocJobsReducer'
@@ -22,7 +21,6 @@ export default combineReducers({
   graders,
   newRawEntries,
   newEntries,
-  kurki,
   message,
   users,
   moocJobs,

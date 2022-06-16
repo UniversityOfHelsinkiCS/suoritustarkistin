@@ -16,7 +16,17 @@ const PLACEHOLDER_COURSE = {
 }
 
 const styles = {
-  extraEntry: { backgroundColor: '#F8FCFF' }
+  extraEntry: { backgroundColor: '#F8FCFF' },
+  missingEnrolment: { backgroundColor: '#fcf6d9' },
+  basic: {}
+}
+
+const getTableRowStyle = (entry) => {
+  if (!entry) return styles.basic
+  if (entry.missingEnrolment) return styles.missingEnrolment
+  if (entry.type === 'EXTRA_ENTRY') return styles.extraEntry
+  return styles.basic
+
 }
 
 const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
@@ -81,8 +91,7 @@ const TableBody = ({ user, rawEntries }) => {
             <Table.Row
               data-cy={`report-table-row-${rawEntry.studentNumber}`}
               active={student && rawEntry.studentNumber.startsWith(student)}
-              warning={rawEntry.entry.missingEnrolment}
-              style={rawEntry.entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
+              style={getTableRowStyle(rawEntry.entry)}
             >
               <Table.Cell data-cy="report-student-number">{rawEntry.studentNumber}</Table.Cell>
               <Table.Cell data-cy="report-student-name">{rawEntry.entry.studentName}</Table.Cell>

@@ -114,6 +114,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       studyRightId,
       id: generateSisuId(),
       personId: student.id,
+      studentName: `${student.firstNames.split(' ')[0]} ${student.lastName}`,
       verifierPersonId: verifier.id,
       rawEntryId: rawEntry.id,
       completionDate: completionDate.format('YYYY-MM-DD'),

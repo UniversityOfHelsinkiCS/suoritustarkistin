@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       },
       personId: DataTypes.STRING,
+      studentName: DataTypes.STRING,
       studyRightId: DataTypes.STRING,
       verifierPersonId: DataTypes.STRING,
       completionDate: DataTypes.DATE,

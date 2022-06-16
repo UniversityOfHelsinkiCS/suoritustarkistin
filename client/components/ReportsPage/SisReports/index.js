@@ -127,8 +127,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
         {!report[0].batchId.startsWith('limbo') && report.some(({ entry }) => entry.missingEnrolment) ? (
           <Message info>
             <p>
-              Completions with yellow background is missing enrollment and will not be sent to Sisu. When an enrollment
-              is found for the entry, it will be sent to Sisu.
+              Completions with yellow background are missing enrollments and will not be sent to Sisu. When an enrollment for the completion is found, the completion will be sent to Sisu.
             </p>
           </Message>
         ) : null}

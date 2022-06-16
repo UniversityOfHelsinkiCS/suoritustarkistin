@@ -115,11 +115,11 @@ const TableBody = ({ user, rawEntries }) => {
   )
 }
 
-const getSisuStatusCell = (sent, registered) => (
+const getSisuStatusCell = (sent, errors, registered) => (
   <>
-    {sent && registered === 'NOT_REGISTERED' && (
+    {sent && errors && (
       <Popup
-        content="Attainment has been sent to Sisu, but is not (yet) visible there"
+        content="Sending attainment to Sisu failed"
         trigger={<Icon className="hoverable-item" name="close" color="red" />}
       />
     )}
@@ -160,7 +160,8 @@ const EntryCells = ({ entry, course, grader }) => {
     registered,
     studyRightId,
     type,
-    missingEnrolment
+    missingEnrolment,
+    errors
   } = entry
 
   const entryAccordionContent = () => (
@@ -215,7 +216,7 @@ const EntryCells = ({ entry, course, grader }) => {
           {type === 'ENTRY' ? entryAccordionContent() : extraEntryAccordionContent()}
         </Accordion>
       </Table.Cell>
-      <Table.Cell data-cy="report-registered">{getSisuStatusCell(sent, registered)}</Table.Cell>
+      <Table.Cell data-cy="report-registered">{getSisuStatusCell(sent, errors, registered)}</Table.Cell>
     </>
   )
 }

@@ -66,13 +66,14 @@ const TableColumns = ({ allowDelete }) => (
       <Popup
         content={
           <div>
-            Is the sent attainment successfully registered in Sisu.
-            <strong> One checkmark</strong> means that the attainment is successfully registered as a partial attainment
-            (osasuoritus).
-            <strong> Two checkmarks</strong> means attainment can be found as an actual course completion in Sisu.
+            <p><strong>Suotar checks this status from Sisu once every hour</strong></p>
+            <p><strong> One checkmark</strong> means that the attainment is successfully registered in Sisu as a partial attainment
+            (osasuoritus).</p>
+            <p><strong> Two checkmarks</strong> means attainment can be found as an actual course completion in Sisu (kurssisuoritus).
+            Updating from a partial attainment to a completion happens in Sisu during the night</p>
           </div>
         }
-        trigger={<Table.HeaderCell>In Sisu</Table.HeaderCell>}
+        trigger={<Table.HeaderCell>In Sisu <Icon name='question circle outline' /></Table.HeaderCell>}
       />
       {allowDelete ? <Table.HeaderCell>Delete</Table.HeaderCell> : null}
     </Table.Row>

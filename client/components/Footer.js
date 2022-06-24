@@ -4,7 +4,7 @@ import { images } from 'Utilities/common'
 export default () => (
   <div className="footer">
     <div style={{ margin: '25px', float: 'left' }}>
-      Contact support: grp-toska@cs.helsinki.fi
+      Contact support: grp-toska@helsinki.fi
       {process.env.NODE_ENV !== 'development' && process.env.BUILT_AT ? (
         <>
           <br />

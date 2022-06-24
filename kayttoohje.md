@@ -9,7 +9,7 @@ Saat oman kurssisi listalle ottamalla yhteyttä ylläpitotiimiin grp-toska@helsi
 1. Avaa [suoritustarkistin](https://toska.cs.helsinki.fi/suoritustarkistin/).
 2. Valitse arvostelija ja kurssi riippuvalikoista, muokkaa halutessasi päivämäärä sopivaksi, ja lisää arvostelijatunnuksesi.
 
-- Jos sinulla ei ole arvostelijatunnusta, ota yhteyttä ylläpitotiimiin grp-toska@cs.helsinki.fi.
+- Jos sinulla ei ole arvostelijatunnusta, ota yhteyttä ylläpitotiimiin grp-toska@helsinki.fi.
 
 3. Lisää tekstitiedosto (.txt, .csv, tai .dat -muotoisena) joko raahaamalla, tai klikkaamalla.
 

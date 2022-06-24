@@ -21,7 +21,7 @@ export default (state = null, action) => {
     case 'ADD_COURSE_FAILURE':
       return {
         header: 'Creating the course failed!',
-        content: `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
+        content: `${action.error}. If the error persists, please contact grp-toska@helsinki.fi.`,
         type: 'negative'
       }
     case 'EDIT_COURSE_SUCCESS':
@@ -33,7 +33,7 @@ export default (state = null, action) => {
     case 'EDIT_COURSE_FAILURE':
       return {
         header: 'Modifying the course failed.',
-        content: `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi.`,
+        content: `${action.error}. If the error persists, please contact grp-toska@helsinki.fi.`,
         type: 'negative'
       }
     case 'DELETE_COURSE_SUCCESS':
@@ -54,7 +54,7 @@ export default (state = null, action) => {
         content: `${
           action.error && action.error.failed
             ? 'Check out the errors below'
-            : `${action.error}. If the error persists, please contact grp-toska@cs.helsinki.fi'.`
+            : `${action.error}. If the error persists, please contact grp-toska@helsinki.fi'.`
         }`,
         type: 'negative'
       }

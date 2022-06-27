@@ -127,7 +127,8 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
         {!report[0].batchId.startsWith('limbo') && report.some(({ entry }) => entry.missingEnrolment) ? (
           <Message info>
             <p>
-              Completions with yellow background are missing enrollments and will not be sent to Sisu. When an enrollment for the completion is found, the completion will be sent to Sisu.
+              Completions with yellow background are missing enrollments and will not be sent to Sisu. When an
+              enrollment for the completion is found, the completion will be sent to Sisu.
             </p>
           </Message>
         ) : null}
@@ -152,9 +153,7 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
           </>
         )}
         <CopyBatchLinkButton batchId={report[0].batchId} />
-        {entriesMissingEnrollment.length > 0 && (
-          <CopyMissingCsvButton entries={entriesMissingEnrollment} />
-        )}
+        {entriesMissingEnrollment.length > 0 && <CopyMissingCsvButton entries={entriesMissingEnrollment} />}
 
         {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 

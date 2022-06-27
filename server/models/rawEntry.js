@@ -75,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
   RawEntry.getByBatch = async function (batchId) {
     const rows = await this.findAll({
       where: { batchId },
-      include: [{ association: 'entry' }, { association: 'extraEntry' } , { association: 'course' } ]
+      include: [{ association: 'entry' }, { association: 'extraEntry' }, { association: 'course' }]
     })
 
     return rows.map((row) => {

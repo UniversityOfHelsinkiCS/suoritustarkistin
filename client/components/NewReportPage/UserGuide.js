@@ -55,8 +55,8 @@ const DetailedInstructions = () => (
       <List.Item>
         <p style={instruction}>Date of completion</p>
         You can add date separately for each student. Any date chosen from date-picker will apply to completions that do
-        not have a separately set date for them. Please note that the course instance will be picked automatically
-        based on the completion date.
+        not have a separately set date for them. Please note that the course instance will be picked automatically based
+        on the completion date.
       </List.Item>
       <List.Item>
         <p style={instruction}>Course code</p>
@@ -72,8 +72,8 @@ export default () => (
     <Header as="h2">Reporting course completions through Suotar</Header>
     <p>
       Teachers add course completions to Suotar either by copy-pasting or by inserting a csv. When hitting "create
-      report"-button, Suotar creates a report of these completions, that will be automatically added to Sisu.
-      Teachers can see their own reports from the "View Reports"-page.
+      report"-button, Suotar creates a report of these completions, that will be automatically added to Sisu. Teachers
+      can see their own reports from the "View Reports"-page.
     </p>
     <Header as="h3">
       Each completion should be its own line in the following format:{' '}
@@ -106,6 +106,9 @@ export default () => (
         and add it automatically to the student, once they have registered to the course.
       </b>
     </p>
-    <p>If you cannot find the right grader or course, please contact <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a> to get it added.</p>
+    <p>
+      If you cannot find the right grader or course, please contact{' '}
+      <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a> to get it added.
+    </p>
   </Segment>
 )

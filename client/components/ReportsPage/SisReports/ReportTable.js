@@ -26,7 +26,6 @@ const getTableRowStyle = (entry) => {
   if (entry.missingEnrolment) return styles.missingEnrolment
   if (entry.type === 'EXTRA_ENTRY') return styles.extraEntry
   return styles.basic
-
 }
 
 const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
@@ -66,14 +65,24 @@ const TableColumns = ({ allowDelete }) => (
       <Popup
         content={
           <div>
-            <p><strong>Suotar checks this status from Sisu once every hour</strong></p>
-            <p><strong> One checkmark</strong> means that the attainment is successfully registered in Sisu as a partial attainment
-            (osasuoritus).</p>
-            <p><strong> Two checkmarks</strong> means attainment can be found as an actual course completion in Sisu (kurssisuoritus).
-            Updating from a partial attainment to a completion happens in Sisu during the night</p>
+            <p>
+              <strong>Suotar checks this status from Sisu once every hour</strong>
+            </p>
+            <p>
+              <strong> One checkmark</strong> means that the attainment is successfully registered in Sisu as a partial
+              attainment (osasuoritus).
+            </p>
+            <p>
+              <strong> Two checkmarks</strong> means attainment can be found as an actual course completion in Sisu
+              (kurssisuoritus). Updating from a partial attainment to a completion happens in Sisu during the night
+            </p>
           </div>
         }
-        trigger={<Table.HeaderCell>In Sisu <Icon name='question circle outline' /></Table.HeaderCell>}
+        trigger={
+          <Table.HeaderCell>
+            In Sisu <Icon name="question circle outline" />
+          </Table.HeaderCell>
+        }
       />
       {allowDelete ? <Table.HeaderCell>Delete</Table.HeaderCell> : null}
     </Table.Row>

@@ -1,4 +1,9 @@
-const { NEW_EOAI_CODE, NEW_BAI_INTERMEDIATE_CODE, NEW_BAI_ADVANCED_CODE, NEW_MOOC_COURSES } = require('@root/utils/common')
+const {
+  NEW_EOAI_CODE,
+  NEW_BAI_INTERMEDIATE_CODE,
+  NEW_BAI_ADVANCED_CODE,
+  NEW_MOOC_COURSES
+} = require('@root/utils/common')
 const { processEoaiEntries } = require('../scripts/processEoaiEntries')
 const { processBaiIntermediateEntries } = require('../scripts/processBaiIntermediateEntries')
 const { processBaiAdvancedEntries } = require('../scripts/processBaiAdvancedEntries')

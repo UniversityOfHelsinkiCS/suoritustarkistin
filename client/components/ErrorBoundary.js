@@ -8,7 +8,7 @@ const ErrorView = ({ error }) => (
       <Message.Content>
         <Icon name="frown outline" size="massive" style={{ margin: '2rem', color: '#91332b' }} />
         <p>
-          <b>If the error persists, please contact grp-toska@helsinki.fi.</b>
+          <b>If the error persists, please contact <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a>.</b>
         </p>
         {process.env.NODE_ENV === 'development' ? <p>{error.stack}</p> : null}
       </Message.Content>

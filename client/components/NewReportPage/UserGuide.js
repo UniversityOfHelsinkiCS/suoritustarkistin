@@ -106,6 +106,6 @@ export default () => (
         and add it automatically to the student, once they have registered to the course.
       </b>
     </p>
-    <p>If you cannot find the right grader or course, please contact grp-toska@helsinki.fi to get it added.</p>
+    <p>If you cannot find the right grader or course, please contact <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a> to get it added.</p>
   </Segment>
 )

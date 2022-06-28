@@ -80,6 +80,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       failed.push({
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,
+        courseCode: course.courseCode,
         message: 'Person with student number not found from Sisu'
       })
       return
@@ -88,6 +89,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       failed.push({
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,
+        courseCode: course.courseCode,
         message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`
       })
       return
@@ -96,6 +98,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       failed.push({
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,
+        courseCode: course.courseCode,
         message: `${course.courseCode} not usable for erilliskirjaus`
       })
       return

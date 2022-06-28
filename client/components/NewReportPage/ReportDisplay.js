@@ -175,11 +175,11 @@ const getDateCell = (date) => {
   return <Table.Cell />
 }
 
-const getErrorCell = (newRawEntries, studentId) => {
+const getErrorCell = (newRawEntries, studentId, courseCode) => {
   const failed = newRawEntries.failed
 
   if (failed) {
-    const failedRow = failed.find((f) => f.studentNumber === studentId)
+    const failedRow = failed.find((f) => f.studentNumber === studentId && f.courseCode === courseCode)
 
     if (failedRow) {
       return (
@@ -247,7 +247,7 @@ export default ({ allowDelete = true, kandi }) => {
         {getLanguageCell(row.language, course)}
         {grader ? <Table.Cell style={validStyle}>{grader.name}</Table.Cell> : <Table.Cell />}
         {getDateCell(row.attainmentDate || date)}
-        {getErrorCell(newRawEntries, row.studentId)}
+        {getErrorCell(newRawEntries, row.studentId, course.courseCode)}
         {allowDelete ? getDeletionCell(index, handleRowDeletion) : null}
       </Table.Row>
     )

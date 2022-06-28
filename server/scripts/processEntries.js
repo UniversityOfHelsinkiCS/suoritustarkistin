@@ -82,6 +82,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: 'Person with student number not found from Sisu'
         })
         return Promise.resolve()
@@ -91,6 +92,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`
         })
         return Promise.resolve()
@@ -107,6 +109,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           failed.push({
             id: rawEntry.id,
             studentNumber: rawEntry.studentNumber,
+            courseCode: course.courseCode,
             message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`
           })
         else {
@@ -129,6 +132,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolment.credits.min} to ${filteredEnrolment.credits.max}`
         })
         return Promise.resolve()
@@ -149,6 +153,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: `Identical completion found in Sisu for course ${course.courseCode}`
         })
         return Promise.resolve()
@@ -160,6 +165,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: `
                 Invalid grade "${rawEntry.grade}" for course "${course.courseCode}".
                 Available grades are: ${gradeScales[filteredEnrolment.gradeScaleId].map(

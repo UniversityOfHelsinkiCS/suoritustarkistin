@@ -102,7 +102,7 @@ const isSameGrade = (a, grade) => {
   const sanitizedGrade = Number(grade.replace(',', '.'))
 
   if (sanitizedGrade >= 1 && sanitizedGrade <= 5) return a.grade.numericCorrespondence === sanitizedGrade
-  if (grade === 'Pass' || grade === 'Hyv.' || grade === 'G') return a.grade.passed
+  if ((grade === 'Pass' || grade === 'Hyv.' || grade === 'G')) return a.grade.name.en === 'Pass'
   return !a.grade.passed
 }
 

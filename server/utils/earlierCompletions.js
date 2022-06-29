@@ -80,6 +80,32 @@ const checkFailed = (earlierAttainments, completionDate, credits) => {
   return false
 }
 
+const identicalCompletionFound = (allEarlierAttainments, studentNumber, courseCode, grade, attainmentDate, credits) => {
+  if (!allEarlierAttainments) return false
+  if (!grade) return false
+  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber && a.courseCode === courseCode)
+  const earlierAttainments = student ? student.attainments.filter((a) => !a.misregistration) : undefined
+  if (!earlierAttainments || !earlierAttainments.length) return false
+
+  const sanitizedCredits = Number(credits.replace(',', '.'))
+  const sanitizedDate = new Date(attainmentDate).setHours(0, 0, 0)
+
+  return earlierAttainments.some(
+    (a) =>
+      isSameGrade(a, grade) &&
+      new Date(a.attainmentDate).getTime() === new Date(sanitizedDate).getTime() &&
+      a.credits === sanitizedCredits
+  )
+}
+
+const isSameGrade = (a, grade) => {
+  const sanitizedGrade = Number(grade.replace(',', '.'))
+
+  if (sanitizedGrade >= 1 && sanitizedGrade <= 5) return a.grade.numericCorrespondence === sanitizedGrade
+  if (grade === 'Pass' || grade === 'Hyv.' || grade === 'G') return a.grade.name.en === 'Pass'
+  return !a.grade.passed
+}
+
 const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, completionDate) => {
   if (!allEarlierAttainments) return false
   const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
@@ -148,4 +174,4 @@ const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, co
   return false
 }
 
-module.exports = { isImprovedGrade, earlierBaiCompletionFound, advancedFound }
+module.exports = { isImprovedGrade, identicalCompletionFound, earlierBaiCompletionFound, advancedFound }

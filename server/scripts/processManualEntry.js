@@ -100,7 +100,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
     course: course.courseCode,
     batchId
   })
-  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries, isKandi)
+  const [failed, success, isMissingEnrollment] = await processEntries(newRawEntries, isKandi, true)
   const [failedExtras, successExtras] = await processExtraEntries(newExtraRawEntries, isKandi)
   if (!failed.length && !failedExtras.length) {
     await db.entries.bulkCreate(success, { transaction })

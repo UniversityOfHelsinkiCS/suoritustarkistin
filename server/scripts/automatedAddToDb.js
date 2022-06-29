@@ -20,9 +20,8 @@ const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) =>
       batchId
     })
 
-    const checkStudyRights = true
     const requireEnrollment = true
-    const [failed, success] = await processEntries(newRawEntries, requireEnrollment, checkStudyRights)
+    const [failed, success] = await processEntries(newRawEntries, requireEnrollment)
 
     if (failed.length) {
       logger.info({ message: `${failed.length} entries failed` })

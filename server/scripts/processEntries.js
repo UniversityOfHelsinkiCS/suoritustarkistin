@@ -5,7 +5,15 @@ const moment = require('moment')
 const { flatMap } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
 const db = require('../models/index')
-const { getEmployees, getStudents, getGrades, getEnrolments, getMultipleStudyRights } = require('../services/importer')
+const { identicalCompletionFound } = require('../utils/earlierCompletions')
+const {
+  getEmployees,
+  getStudents,
+  getGrades,
+  getEnrolments,
+  getMultipleStudyRights,
+  getEarlierAttainmentsWithoutSubstituteCourses
+} = require('../services/importer')
 
 /**
  * Mankel raw entries to sis entries.
@@ -25,7 +33,7 @@ const { getEmployees, getStudents, getGrades, getEnrolments, getMultipleStudyRig
  *  [failedEntries, validEntries, isMissingEnrollment]
  */
 
-const processEntries = async (createdEntries, requireEnrollment = false) => {
+const processEntries = async (createdEntries, requireEnrollment = false, checkDuplicates = false) => {
   const success = []
   const failed = []
   let isMissingEnrollment = false
@@ -53,6 +61,15 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
   const enrolments = await getEnrolments(studentCourseCodePairs)
   const studyRights = await getStudyRights(enrolments)
 
+  let earlierAttainments
+  if (checkDuplicates) {
+    const courseStudentPairs = createdEntries.map((rawEntry) => ({
+      studentNumber: rawEntry.studentNumber,
+      courseCode: courses.find((course) => course.id === rawEntry.courseId).courseCode
+    }))
+    earlierAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(courseStudentPairs)
+  }
+
   await Promise.all(
     createdEntries.map(async (rawEntry) => {
       const grader = graders.find((g) => g.id === rawEntry.graderId)
@@ -65,6 +82,7 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: 'Person with student number not found from Sisu'
         })
         return Promise.resolve()
@@ -74,6 +92,7 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`
         })
         return Promise.resolve()
@@ -90,6 +109,7 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
           failed.push({
             id: rawEntry.id,
             studentNumber: rawEntry.studentNumber,
+            courseCode: course.courseCode,
             message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`
           })
         else {
@@ -112,7 +132,29 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolment.credits.min} to ${filteredEnrolment.credits.max}`
+        })
+        return Promise.resolve()
+      }
+
+      const isDuplicate =
+        checkDuplicates &&
+        identicalCompletionFound(
+          earlierAttainments,
+          rawEntry.studentNumber,
+          course.courseCode,
+          rawEntry.grade,
+          rawEntry.attainmentDate,
+          rawEntry.credits
+        )
+
+      if (isDuplicate) {
+        failed.push({
+          id: rawEntry.id,
+          studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
+          message: `Identical completion found in Sisu for course ${course.courseCode}`
         })
         return Promise.resolve()
       }
@@ -123,6 +165,7 @@ const processEntries = async (createdEntries, requireEnrollment = false) => {
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
           message: `
                 Invalid grade "${rawEntry.grade}" for course "${course.courseCode}".
                 Available grades are: ${gradeScales[filteredEnrolment.gradeScaleId].map(

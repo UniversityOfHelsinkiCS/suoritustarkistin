@@ -43,6 +43,9 @@ export const formatCoursesForSelection = (data) => {
   return []
 }
 
+const filterAYCodes = (courses) =>
+  courses.filter((course) => !course.courseCode.startsWith('AY'))
+
 const formatCoursesForKandi = (courses) =>
   courses
     .map((c) => {
@@ -105,7 +108,7 @@ export default ({ kandi, extra, parseCSV }) => {
   const user = useSelector((state) => state.user.data)
   const graders = useSelector((state) => state.graders.data)
   const courses = useSelector((state) => state.courses.data)
-  const courseOptions = defineCourseOptions(courses, kandi, extra)
+  const courseOptions = defineCourseOptions(filterAYCodes(courses), kandi, extra)
   const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
 
   const sendRawEntries = async () => await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))

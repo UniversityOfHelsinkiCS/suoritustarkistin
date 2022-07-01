@@ -23,7 +23,7 @@ import './reportStyles.css'
 
 const SisSuccessMessage = () => (
   <Message success>
-    <Message.Header>All entries sent successfully to Sisu</Message.Header>
+    <Message.Header>Entries sent successfully to Sisu</Message.Header>
   </Message>
 )
 

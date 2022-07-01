@@ -75,6 +75,13 @@ export default ({ reduxKey, action }) => {
             toggle
           />
           <Form.Field
+            control={Radio}
+            label="Not sent to Sisu"
+            checked={filters.notSent}
+            onChange={() => toggle('notSent')}
+            toggle
+          />
+          <Form.Field
             control={Dropdown}
             label="Attainment status"
             value={filters.status || 'ALL'}

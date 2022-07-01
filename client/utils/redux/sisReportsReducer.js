@@ -124,7 +124,8 @@ const INITIAL_STATE = {
     student: '',
     course: '',
     adminmode: window.localStorage.getItem('adminmode') || false,
-    status: null
+    status: null,
+    notSent: false
   }
 }
 

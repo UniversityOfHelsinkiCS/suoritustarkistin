@@ -30,6 +30,8 @@ const MISSING_ENROLLMENT_QUERY = [
   { '$entry.assessmentItemId$': null }
 ]
 
+const NOT_SENT_QUERY = [{ '$entry.sent$': null }, { '$extraEntry.sent$': null }]
+
 const transformRows = (row) => {
   const { extraEntry, entry, ...rest } = row
   if (extraEntry.id) {
@@ -46,7 +48,7 @@ const transformRows = (row) => {
   }
 }
 
-const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, graderId, reporterId }) => {
+const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, graderId, reporterId, notSent }) => {
   const query = {}
 
   if (reporterId) {
@@ -60,6 +62,7 @@ const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, g
   if (graderId) query.graderId = graderId
   if (student) query.studentNumber = { [Op.startsWith]: student }
   if (courseId) query.courseId = courseId
+  if (notSent) query[Op.and] = NOT_SENT_QUERY
   if (status) query['$entry.registered$'] = status
   if (errors) query['$entry.errors$'] = { [Op.not]: null }
   if (noEnrollment) {

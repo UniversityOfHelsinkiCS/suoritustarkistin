@@ -119,6 +119,63 @@ const getBaches = async ({ offset, moocReports = false, filters }) => {
   return { rows: rows.map(transformRows), count: Number(count[0].count) }
 }
 
+const getUnsentEntries = async () => {
+  const entries = await db.entries.findAll({
+    where: {
+      courseUnitId: { [Op.not]: null },
+      courseUnitRealisationId: { [Op.not]: null },
+      assessmentItemId: { [Op.not]: null },
+      sent: null
+    },
+    include: [
+      {
+        model: db.raw_entries,
+        as: 'rawEntry',
+        include: [
+          {
+            model: db.courses,
+            as: 'course'
+          }
+        ]
+      }
+    ],
+    nest: true,
+    raw: true
+  })
+
+  const extraEntries = await db.extra_entries.findAll({
+    where: {
+      sent: null
+    },
+    include: [
+      {
+        model: db.raw_entries,
+        as: 'rawEntry',
+        include: [
+          {
+            model: db.courses,
+            as: 'course'
+          }
+        ]
+      }
+    ],
+    nest: true,
+    raw: true
+  })
+
+  return entries.concat(extraEntries)
+}
+
+const getUnsentBatchCount = async (req, res) => {
+  const entries = await getUnsentEntries()
+
+  const rawEntryIds = entries.map(({ rawEntry }) => rawEntry.id)
+
+  const [{ count }] = await db.raw_entries.getBatchCount({ id: { [Op.in]: rawEntryIds } })
+
+  return res.send({ count })
+}
+
 const getAllSisReports = async (req, res) => {
   try {
     const { offset, filters } = req
@@ -360,5 +417,7 @@ module.exports = {
   refreshEnrollments,
   getAllSisMoocReports,
   getAllEnrollmentLimboEntries,
+  getUnsentEntries,
+  getUnsentBatchCount,
   getOffset
 }

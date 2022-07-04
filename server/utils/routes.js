@@ -36,6 +36,7 @@ const {
   getAllSisReports,
   getAllSisMoocReports,
   getAllEnrollmentLimboEntries,
+  getUnsentBatchCount,
   deleteSingleSisEntry,
   deleteSisBatch,
   sendToSis,
@@ -97,6 +98,7 @@ router.use(['/sis_reports', '/sis_mooc_reports'], useFilters)
 router.get('/sis_reports', checkGrader, getAllSisReports)
 router.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
 router.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
+router.get('/unsent_batch_count', checkAdmin, getUnsentBatchCount)
 router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
 router.delete('/sis_reports/batch/:batchId', deleteBatch, deleteSisBatch)
 router.post('/sis_raw_entries', addRawEntries)

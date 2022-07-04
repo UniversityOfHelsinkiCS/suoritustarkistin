@@ -276,4 +276,33 @@ const newUserForAdmin = (name, email) =>
     'New user in Suotar 👀'
   )
 
-module.exports = { newUserForAdmin, forNewUser, missingEnrolmentReport, failedInSisuReport }
+const unsentEntriesTemplate = (batchIds) =>
+  Template(
+    `
+    <tr>
+    <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
+      <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+        <tr>
+          <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><b>Unsent entries</b></p>
+            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${
+              batchIds.length > 1 ? `${batchIds.length} batches` : 'batch'
+            } with unsent entries.</p>
+            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+            Following batches have unsent entries:
+            <ul>
+              ${batchIds
+                .map((batchId) => `<li><a href="${SUOTAR_URL}/reports/sisu/${batchId}">${batchId}</li></a>`)
+                .join('')}
+            </ul>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+    `,
+    'Unsent entries in Suotar'
+  )
+
+module.exports = { newUserForAdmin, forNewUser, missingEnrolmentReport, failedInSisuReport, unsentEntriesTemplate }

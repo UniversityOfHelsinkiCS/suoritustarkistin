@@ -3,7 +3,7 @@ const logger = require('@utils/logger')
 const db = require('../models/index')
 const { chooseScript } = require('../scripts/chooseAutomatedScript')
 const refreshEntriesCron = require('./refreshEntryCron')
-const deleteUnsentEntries = require('./deleteUnsentEntriesCron')
+const sendEmailAboutUnsentEntries = require('./unsentEntriesEmailCron')
 
 let cronjobs = {}
 
@@ -37,7 +37,7 @@ const initializeCronJobs = async () => {
   }, {})
 
   cronjobs['enrollment-limbo'] = cron.schedule('0 2 * * *', refreshEntriesCron)
-  cronjobs['delete-unsent-entries'] = cron.schedule('0 0 * * *', deleteUnsentEntries)
+  cronjobs['send-email-about-unsent-entries'] = cron.schedule('0 9 * * 2', sendEmailAboutUnsentEntries)
 }
 
 const activateJob = async (id) => {

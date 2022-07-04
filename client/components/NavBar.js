@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Label, Menu, Radio } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { activateAdminModeAction, disableAdminModeAction, logoutAction } from 'Utilities/redux/userReducer'
 import { images } from 'Utilities/common'
 import FakeShibboMenu from 'Components/fakeShibboMenu'
-import { setFilterAction, getAllSisReportsAction } from '../utils/redux/sisReportsReducer'
+import { setFilterAction, getAllSisReportsAction, getUnsentBatchCountAction } from '../utils/redux/sisReportsReducer'
 
 const STAGING = process.env.NODE_ENV === 'staging'
 
@@ -14,10 +14,15 @@ export default () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
   const { offset, limit } = useSelector((state) => state.sisReports.reports)
+  const unsentBatchCount = useSelector((state) => state.sisReports.unsentBatchCount)
 
   const handleLogout = () => {
     dispatch(logoutAction())
   }
+
+  useEffect(() => {
+    if (user.adminMode) dispatch(getUnsentBatchCountAction())
+  }, [user.adminMode])
 
   const handleAdminModeToggle = () => {
     user.adminMode ? dispatch(disableAdminModeAction()) : dispatch(activateAdminModeAction())
@@ -163,7 +168,12 @@ export default () => {
         active={activeItem === 'reports'}
         onClick={handleItemClick}
       >
-        View reports
+        View reports{' '}
+        {Boolean(user.adminMode && unsentBatchCount) && (
+          <Label circular color="red">
+            {unsentBatchCount}
+          </Label>
+        )}
       </Menu.Item>
       {user.adminMode ? <AutomatedReportsButton /> : null}
       {user.adminMode ? <ApiChecks /> : null}

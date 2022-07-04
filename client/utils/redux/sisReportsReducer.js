@@ -36,6 +36,12 @@ export const getOffsetForBatchAction = (batchId) => {
   return callBuilder(route, prefix, 'get')
 }
 
+export const getUnsentBatchCountAction = () => {
+  const route = '/unsent_batch_count'
+  const prefix = 'GET_UNSENT_BATCH_COUNT'
+  return callBuilder(route, prefix, 'get')
+}
+
 export const getUsersSisReportsAction = (id) => {
   const route = `/users/${id}/sis_reports`
   const prefix = 'GET_USERS_SIS_REPORTS'
@@ -115,6 +121,7 @@ const INITIAL_STATE = {
   reports: INITIAL_DATA,
   moocReports: INITIAL_DATA,
   enrolmentLimbo: INITIAL_DATA,
+  unsentBatchCount: 0,
   openAccordions: [],
   pending: false,
   error: false,
@@ -154,6 +161,13 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         pending: false,
         error: false
       }
+    case 'GET_UNSENT_BATCH_COUNT_SUCCESS':
+      return {
+        ...state,
+        unsentBatchCount: Number(action.response.count),
+        pending: false,
+        error: false
+      }
     case 'GET_ALL_SIS_REPORTS_ATTEMPT':
     case 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT':
     case 'GET_ALL_ENROLLMENT_LIMBO_ATTEMPT':
@@ -162,9 +176,16 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         pending: true,
         error: false
       }
+    case 'GET_UNSENT_BATCH_COUNT_ATTEMPT':
     case 'GET_ALL_SIS_REPORTS_FAILURE':
     case 'GET_ALL_MOOC_SIS_REPORTS_FAILURE':
     case 'GET_ALL_ENROLLMENT_LIMBO_FAILURE':
+      return {
+        ...state,
+        pending: false,
+        error: true
+      }
+    case 'GET_UNSENT_BATCH_COUNT_FAILURE':
       return {
         ...state,
         pending: false,

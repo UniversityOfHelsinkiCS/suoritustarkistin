@@ -13,12 +13,9 @@ export default ({ user }) => {
   const logInAs = () => {
     localStorage.setItem('adminLoggedInAs', user.employeeId)
 
-    if (process.env.NODE_ENV === 'production')
-      window.location.href = '/suoritustarkistin'
-    else if (process.env.NODE_ENV === 'staging')
-      window.location.href = '/staging/suoritustarkistin'
-    else
-      window.location.href = '/'
+    if (process.env.NODE_ENV === 'production') window.location.href = '/suoritustarkistin'
+    else if (process.env.NODE_ENV === 'staging') window.location.href = '/staging/suoritustarkistin'
+    else window.location.href = '/'
   }
 
   const grantAdmin = () => {

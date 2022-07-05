@@ -43,8 +43,7 @@ export const formatCoursesForSelection = (data) => {
   return []
 }
 
-const filterAYCodes = (courses) =>
-  courses.filter((course) => !course.courseCode.startsWith('AY'))
+const filterAYCodes = (courses) => courses.filter((course) => !course.courseCode.startsWith('AY'))
 
 const formatCoursesForKandi = (courses) =>
   courses

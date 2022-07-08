@@ -9,6 +9,7 @@
     "start": "node index.js",
     "lint": "eslint .",
     "lintfix": "eslint . --fix",
+    "prepare": "husky install",
     "cypress:open": "npm run test:clean && npm run start:cypress-open",
     "start:cypress": "docker-compose -f docker-compose.e2e.yml run --service-ports e2e npm run start:dev",
     "start:ci": "npm-run-all -r -p start cypress:run",
@@ -100,11 +101,6 @@
     "webpack-dev-middleware": "^3.7.3",
     "webpack-dev-server": "^3.11.3",
     "webpack-hot-middleware": "^2.25.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run lint"
-    }
   },
   "nodemonConfig": {
     "ignore": [

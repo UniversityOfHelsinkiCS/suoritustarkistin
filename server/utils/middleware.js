@@ -1,3 +1,4 @@
+/* eslint-disable prefer-rest-params */
 const logger = require('@utils/logger')
 const Sentry = require('@sentry/node')
 const { inProduction } = require('./common')

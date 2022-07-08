@@ -25,6 +25,7 @@ const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) =>
 
     if (failed.length) {
       logger.info({ message: `${failed.length} entries failed` })
+      // eslint-disable-next-line no-restricted-syntax
       for (const failedEntry of failed) {
         logger.info({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}` })
         await db.raw_entries.destroy({

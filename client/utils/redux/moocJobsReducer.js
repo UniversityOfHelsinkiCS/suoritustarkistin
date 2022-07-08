@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import callBuilder from '../apiConnection'
 /**
  * Actions and reducers are in the same file for readability

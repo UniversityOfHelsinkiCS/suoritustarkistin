@@ -4,25 +4,6 @@ const db = require('../models/index')
 const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
 
-const checkEntries = async (entries, model) => {
-  const postData = entries.map(({ personId, id }) => ({ id, personId }))
-
-  try {
-    const { data } = await api.post('/suotar/verify', postData)
-    if (!data.length) return true
-    const amountUpdated = await markAsRegistered(data, model)
-    logger.info({
-      message: `Checked total ${entries.length} ${model}, found ${amountUpdated} new registrations.`,
-      newRegistrations: data.length,
-      missingRegistrations: entries.length - data.length
-    })
-    return true
-  } catch (e) {
-    logger.error({ message: 'Failed to check Sisu entries 2', error: e.toString() })
-    return false
-  }
-}
-
 const markAsRegistered = async (entries, model) => {
   const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
   const registeredIds = entries.filter(({ registered }) => registered === 'CourseUnitAttainment').map(({ id }) => id)
@@ -55,6 +36,25 @@ const markAsRegistered = async (entries, model) => {
   return partlyAffected + registeredAffected
 }
 
+const checkEntries = async (entries, model) => {
+  const postData = entries.map(({ personId, id }) => ({ id, personId }))
+
+  try {
+    const { data } = await api.post('/suotar/verify', postData)
+    if (!data.length) return true
+    const amountUpdated = await markAsRegistered(data, model)
+    logger.info({
+      message: `Checked total ${entries.length} ${model}, found ${amountUpdated} new registrations.`,
+      newRegistrations: data.length,
+      missingRegistrations: entries.length - data.length
+    })
+    return true
+  } catch (e) {
+    logger.error({ message: 'Failed to check Sisu entries 2', error: e.toString() })
+    return false
+  }
+}
+
 const checkAllEntriesFromSisu = async () => {
   const entries = await db.entries.findAll({
     where: {
@@ -76,6 +76,7 @@ const checkAllEntriesFromSisu = async () => {
 
 const markAsRegisteredToMooc = async (completionStudentPairs) => {
   const date = new Date()
+  // eslint-disable-next-line camelcase
   const moocCompletionsIds = completionStudentPairs.map(({ completion_id }) => completion_id)
   return await db.raw_entries.update(
     { registeredToMooc: date },

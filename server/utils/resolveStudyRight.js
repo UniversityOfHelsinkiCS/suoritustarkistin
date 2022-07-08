@@ -1,13 +1,14 @@
+/* eslint-disable camelcase */
 const moment = require('moment')
 const { flatten } = require('lodash')
 
 const MATLU_CODE = 'H50'
-const term_startdate = '08-01'
+const TERM_STARTDATE = '08-01'
 
 const resolveTerm = (attainmentDate) => {
   const date = new Date(attainmentDate)
   const year = date.getFullYear()
-  const attainmentTermIndex = moment(date).isBefore(moment(`${year}-${term_startdate}`)) ? 1 : 0
+  const attainmentTermIndex = moment(date).isBefore(moment(`${year}-${TERM_STARTDATE}`)) ? 1 : 0
 
   return {
     attainmentStartYear: attainmentTermIndex === 1 ? year - 1 : year,

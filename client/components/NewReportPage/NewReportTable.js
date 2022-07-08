@@ -30,6 +30,21 @@ const styles = {
   }
 }
 
+const getGrade = (gradeScaleId, gradeId, language) => {
+  if (!gradeId || !gradeScaleId || !language) return null
+  if (gradeScaleId === 'sis-0-5') return gradeId
+  if (gradeScaleId === 'sis-hyl-hyv') {
+    const gradeMap = [
+      { en: 'Fail', fi: 'Hyl.', sv: 'F' },
+      { en: 'Pass', fi: 'Hyv.', sv: 'G' }
+    ]
+    const grade = gradeMap[gradeId]
+    if (!grade) return null
+    return grade[language]
+  }
+  return null
+}
+
 export default withRouter(({ rows, batchId, history }) => {
   const dispatch = useDispatch()
   const { pending, error } = useSelector((state) => state.sisReports)
@@ -47,6 +62,7 @@ export default withRouter(({ rows, batchId, history }) => {
 
   useEffect(() => {
     window.onbeforeunload = () => '' // Display confirmation alert when tab is closed
+    // eslint-disable-next-line no-return-assign
     return () => (window.onbeforeunload = null)
   })
 
@@ -67,6 +83,22 @@ export default withRouter(({ rows, batchId, history }) => {
     return entry.courseUnitRealisationName
       ? JSON.parse(entry.courseUnitRealisationName).fi || JSON.parse(entry.courseUnitRealisationName).en
       : null
+  }
+
+  const send = async () => {
+    const { entries, extraEntries } = rows
+      .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
+      .reduce(
+        (acc, { entry }) => {
+          if (entry.type === 'ENTRY') acc.entries.push(entry.id)
+          else acc.extraEntries.push(entry.id)
+          return acc
+        },
+        { entries: [], extraEntries: [] }
+      )
+    if (entries.length || extraEntries.length) await dispatch(sendEntriesToSisAction(entries, extraEntries))
+    else dispatch(sendMissingEnrollmentEmail(batchId))
+    setSent(true)
   }
 
   const SendButton = () => {
@@ -128,22 +160,6 @@ export default withRouter(({ rows, batchId, history }) => {
   const revert = () => {
     dispatch(resetNewRawEntriesConfirmAction())
     dispatch(handleBatchDeletionAction(batchId))
-  }
-
-  const send = async () => {
-    const { entries, extraEntries } = rows
-      .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
-      .reduce(
-        (acc, { entry }) => {
-          if (entry.type === 'ENTRY') acc.entries.push(entry.id)
-          else acc.extraEntries.push(entry.id)
-          return acc
-        },
-        { entries: [], extraEntries: [] }
-      )
-    if (entries.length || extraEntries.length) await dispatch(sendEntriesToSisAction(entries, extraEntries))
-    else dispatch(sendMissingEnrollmentEmail(batchId))
-    setSent(true)
   }
 
   return (
@@ -217,18 +233,3 @@ export default withRouter(({ rows, batchId, history }) => {
     </Segment>
   )
 })
-
-const getGrade = (gradeScaleId, gradeId, language) => {
-  if (!gradeId || !gradeScaleId || !language) return null
-  if (gradeScaleId === 'sis-0-5') return gradeId
-  if (gradeScaleId === 'sis-hyl-hyv') {
-    const gradeMap = [
-      { en: 'Fail', fi: 'Hyl.', sv: 'F' },
-      { en: 'Pass', fi: 'Hyv.', sv: 'G' }
-    ]
-    const grade = gradeMap[gradeId]
-    if (!grade) return null
-    return grade[language]
-  }
-  return null
-}

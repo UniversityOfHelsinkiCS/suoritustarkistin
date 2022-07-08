@@ -10,18 +10,6 @@ const eduwebGet = async (course) => {
   return data
 }
 
-const getMultipleCourseRegistrations = async (courseNames) => {
-  let registrationData = []
-
-  for (const cn of courseNames) {
-    const courseData = await getRegistrations(cn)
-
-    registrationData = registrationData.concat(courseData)
-  }
-
-  return registrationData
-}
-
 const getRegistrations = async (course) => {
   logger.info({ message: `Fetching registrations for course ${course} from eduweb` })
   const instances = await eduwebGet(course)
@@ -35,6 +23,19 @@ const getRegistrations = async (course) => {
 
   logger.info({ message: `Found total of ${registrations ? registrations.length : 0} registrations` })
   return registrations
+}
+
+const getMultipleCourseRegistrations = async (courseNames) => {
+  let registrationData = []
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const cn of courseNames) {
+    const courseData = await getRegistrations(cn)
+
+    registrationData = registrationData.concat(courseData)
+  }
+
+  return registrationData
 }
 
 const getRegistrationsByInstance = async (course) => {

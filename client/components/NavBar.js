@@ -9,6 +9,14 @@ import { setFilterAction, getAllSisReportsAction, getUnsentBatchCountAction } fr
 
 const STAGING = process.env.NODE_ENV === 'staging'
 
+const getMenuItemFromUrl = () => {
+  // In production path is prefixed with /suoritustarkistin/
+  const index = process.env.NODE_ENV === 'development' ? 1 : 2
+  const path = window.location.pathname.split('/')[index] || '/'
+  if (path === '/') return 'newReport'
+  return path
+}
+
 export default () => {
   const [activeItem, setActiveItem] = useState(getMenuItemFromUrl())
   const dispatch = useDispatch()
@@ -25,6 +33,7 @@ export default () => {
   }, [user.adminMode])
 
   const handleAdminModeToggle = () => {
+    // eslint-disable-next-line no-unused-expressions
     user.adminMode ? dispatch(disableAdminModeAction()) : dispatch(activateAdminModeAction())
 
     dispatch(setFilterAction('adminmode', !user.adminMode))
@@ -174,12 +183,4 @@ export default () => {
       </Menu.Item>
     </Menu>
   )
-}
-
-function getMenuItemFromUrl() {
-  // In production path is prefixed with /suoritustarkistin/
-  const index = process.env.NODE_ENV === 'development' ? 1 : 2
-  const path = window.location.pathname.split('/')[index] || '/'
-  if (path === '/') return 'newReport'
-  return path
 }

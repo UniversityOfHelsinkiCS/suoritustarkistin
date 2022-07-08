@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import React, { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Loader } from 'semantic-ui-react'
@@ -59,6 +60,13 @@ export default () => {
     acceptedFiles.forEach((file) => reader.readAsBinaryString(file))
   }
 
+  const { getRootProps, getInputProps, isDragActive, isDragReject, isDragAccept } = useDropzone({
+    onDrop,
+    multiple: false,
+    maxSize: 5000000,
+    accept: '.csv, .txt, .dat'
+  })
+
   const style = useMemo(
     () => ({
       ...baseStyle,
@@ -68,13 +76,6 @@ export default () => {
     }),
     [isDragActive, isDragReject]
   )
-
-  const { getRootProps, getInputProps, isDragActive, isDragReject, isDragAccept } = useDropzone({
-    onDrop,
-    multiple: false,
-    maxSize: 5000000,
-    accept: '.csv, .txt, .dat'
-  })
 
   return (
     <div className="container" style={{ cursor: 'pointer' }}>

@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 const Sequelize = require('sequelize')
 
 const {Op} = Sequelize

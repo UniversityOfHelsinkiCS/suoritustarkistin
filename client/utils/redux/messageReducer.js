@@ -91,7 +91,7 @@ export default (state = null, action) => {
       }
     }
     case 'RUN_JOB_SUCCESS': {
-      if (action.response.message == 'success') {
+      if (action.response.message === 'success') {
         return {
           header: 'New report created!',
           type: 'positive',
@@ -119,7 +119,7 @@ export default (state = null, action) => {
       }
     }
     case 'CREATE_KURKI_REPORT_SUCCESS':
-      if (action.response.message == 'success') {
+      if (action.response.message === 'success') {
         return {
           header: 'New report created!',
           type: 'positive',

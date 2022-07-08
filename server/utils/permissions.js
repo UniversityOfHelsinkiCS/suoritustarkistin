@@ -2,6 +2,18 @@ const logger = require('@utils/logger')
 const { inProduction } = require('./common')
 const db = require('../models/index')
 
+/**
+ * Reusable permission check
+ * @param {*} predicate Method to evaluate permission, may be async. Request is passed to method when evaluating.
+ * @param {*} error Error message to return
+ * @returns func
+ */
+ const permissionClass = async (req, res, next, predicate, error) => {
+  if (await predicate(req)) return next()
+  logger.warn({ message: error, user: req.user })
+  return res.status(401).send({ error })
+}
+
 const checkGrader = (req, res, next) =>
   permissionClass(req, res, next, (req) => req.user && (req.user.isGrader || req.user.isAdmin), 'Unauthorized access')
 
@@ -69,18 +81,6 @@ const deleteBatch = (req, res, next) =>
     },
     'Unauthorized access'
   )
-
-/**
- * Reusable permission check
- * @param {*} predicate Method to evaluate permission, may be async. Request is passed to method when evaluating.
- * @param {*} error Error message to return
- * @returns func
- */
-const permissionClass = async (req, res, next, predicate, error) => {
-  if (await predicate(req)) return next()
-  logger.warn({ message: error, user: req.user })
-  return res.status(401).send({ error })
-}
 
 module.exports = {
   checkGrader,

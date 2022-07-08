@@ -35,7 +35,7 @@ const parseRawEntries = (rawEntries) => {
 }
 
 const parseCourseName = (newRawEntries, defaultCourse, courses) => {
-  if (!newRawEntries.data || !courses) return <></>
+  if (!newRawEntries.data || !courses) return null
 
   let rowCourses = []
   newRawEntries.data.forEach((row) => {

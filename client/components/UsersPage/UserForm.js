@@ -33,6 +33,20 @@ export default ({ close, user }) => {
 
   if (!currentUser) return null
 
+  const parseUser = (fetchedUser) => ({
+    email: fetchedUser.primaryEmail || formData.email,
+    uid: fetchedUser.eduPersonPrincipalName ? fetchedUser.eduPersonPrincipalName.split('@')[0] : formData.uid,
+    employeeId: fetchedUser.employeeNumber || formData.employeeId,
+    name:
+      fetchedUser.firstNames || fetchedUser.lastName
+        ? `${fetchedUser.firstNames} ${fetchedUser.lastName}`
+        : formData.name,
+    courses:
+      fetchedUser.courses && fetchedUser.courses.length
+        ? courseOptions.filter((option) => fetchedUser.courses.includes(option.coursecode)).map((option) => option.key)
+        : formData.courses
+  })
+
   useEffect(() => {
     if (data.error) setMessage(data.fetchedUser.error)
     if (!data.error && !data.pending) setFormData({ ...formData, ...parseUser(data.fetchedUser) })
@@ -75,20 +89,6 @@ export default ({ close, user }) => {
   }
 
   const handleFetchUser = () => dispatch(fetchUser(formData))
-
-  const parseUser = (fetchedUser) => ({
-    email: fetchedUser.primaryEmail || formData.email,
-    uid: fetchedUser.eduPersonPrincipalName ? fetchedUser.eduPersonPrincipalName.split('@')[0] : formData.uid,
-    employeeId: fetchedUser.employeeNumber || formData.employeeId,
-    name:
-      fetchedUser.firstNames || fetchedUser.lastName
-        ? `${fetchedUser.firstNames} ${fetchedUser.lastName}`
-        : formData.name,
-    courses:
-      fetchedUser.courses && fetchedUser.courses.length
-        ? courseOptions.filter((option) => fetchedUser.courses.includes(option.coursecode)).map((option) => option.key)
-        : formData.courses
-  })
 
   // Check if the user is trying to edit themselves
   // If so, disable editing uid and employee number as that would crash the login

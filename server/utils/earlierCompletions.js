@@ -1,29 +1,5 @@
 const moment = require('moment')
 
-/**
- * Return true if given grade is valid for student. That is any of:
- *  1. Given grade is better than grade in earlier attainments
- *  2. Given grade is same with greater credits than grade in earlier attainments
- *  3. Given grade and credits is same with greater completion date than grade in earlier attainments
- *  4. Given grade is exactly same as than grade in earlier attainments :wat:
- */
-const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completionDate, credits) => {
-  if (!allEarlierAttainments) return true
-  if (!grade) return false
-  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
-  const earlierAttainments = student ? student.attainments.filter((a) => !a.misregistration) : undefined
-  if (!earlierAttainments || !earlierAttainments.length) return true
-
-  const sanitizedCredits = Number(credits.replace(',', '.'))
-  const sanitizedGrade = Number(grade.replace(',', '.'))
-  if (sanitizedGrade >= 1 && sanitizedGrade <= 5)
-    return checkNumericImprovement(earlierAttainments, sanitizedGrade, completionDate, sanitizedCredits)
-
-  if (grade === 'Hyv.') return checkPassed(earlierAttainments, completionDate, sanitizedCredits)
-
-  return checkFailed(earlierAttainments, completionDate, sanitizedCredits)
-}
-
 const checkNumericImprovement = (earlierAttainments, grade, completionDate, credits) => {
   const completionDateMoment = moment(completionDate)
 
@@ -80,6 +56,38 @@ const checkFailed = (earlierAttainments, completionDate, credits) => {
   return false
 }
 
+/**
+ * Return true if given grade is valid for student. That is any of:
+ *  1. Given grade is better than grade in earlier attainments
+ *  2. Given grade is same with greater credits than grade in earlier attainments
+ *  3. Given grade and credits is same with greater completion date than grade in earlier attainments
+ *  4. Given grade is exactly same as than grade in earlier attainments :wat:
+ */
+const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completionDate, credits) => {
+  if (!allEarlierAttainments) return true
+  if (!grade) return false
+  const student = allEarlierAttainments.find((a) => a.studentNumber === studentNumber)
+  const earlierAttainments = student ? student.attainments.filter((a) => !a.misregistration) : undefined
+  if (!earlierAttainments || !earlierAttainments.length) return true
+
+  const sanitizedCredits = Number(credits.replace(',', '.'))
+  const sanitizedGrade = Number(grade.replace(',', '.'))
+  if (sanitizedGrade >= 1 && sanitizedGrade <= 5)
+    return checkNumericImprovement(earlierAttainments, sanitizedGrade, completionDate, sanitizedCredits)
+
+  if (grade === 'Hyv.') return checkPassed(earlierAttainments, completionDate, sanitizedCredits)
+
+  return checkFailed(earlierAttainments, completionDate, sanitizedCredits)
+}
+
+const isSameGrade = (a, grade) => {
+  const sanitizedGrade = Number(grade.replace(',', '.'))
+
+  if (sanitizedGrade >= 1 && sanitizedGrade <= 5) return a.grade.numericCorrespondence === sanitizedGrade
+  if (grade === 'Pass' || grade === 'Hyv.' || grade === 'G') return a.grade.name.en === 'Pass'
+  return !a.grade.passed
+}
+
 const identicalCompletionFound = (allEarlierAttainments, studentNumber, courseCode, grade, attainmentDate, credits) => {
   if (!allEarlierAttainments) return false
   if (!grade) return false
@@ -96,14 +104,6 @@ const identicalCompletionFound = (allEarlierAttainments, studentNumber, courseCo
       new Date(a.attainmentDate).getTime() === new Date(sanitizedDate).getTime() &&
       a.credits === sanitizedCredits
   )
-}
-
-const isSameGrade = (a, grade) => {
-  const sanitizedGrade = Number(grade.replace(',', '.'))
-
-  if (sanitizedGrade >= 1 && sanitizedGrade <= 5) return a.grade.numericCorrespondence === sanitizedGrade
-  if (grade === 'Pass' || grade === 'Hyv.' || grade === 'G') return a.grade.name.en === 'Pass'
-  return !a.grade.passed
 }
 
 const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, completionDate) => {

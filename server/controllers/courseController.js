@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const logger = require('@utils/logger')
 const { Op } = require('sequelize')
 const _ = require('lodash')

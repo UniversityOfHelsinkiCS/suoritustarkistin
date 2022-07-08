@@ -195,27 +195,27 @@ export default withRouter(({ rows, batchId, history }) => {
           </Table.Header>
           <Table.Body data-cy="confirm-entries-table">
             {rows.map(({ entry, ...rawEntry }) => (
-                <Table.Row
-                  key={entry.id}
-                  warning={entry.missingEnrolment}
-                  style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
-                >
-                  <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
-                  <Table.Cell>{entry.studentName}</Table.Cell>
-                  <Table.Cell>
-                    {!entry.missingEnrolment || entry.type === 'EXTRA_ENTRY'
-                      ? getGrade(entry.gradeScaleId, entry.gradeId, entry.completionLanguage)
-                      : rawEntry.grade}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <CompletionDate attainmentDate={rawEntry.attainmentDate} completionDate={entry.completionDate} />
-                  </Table.Cell>
-                  <Table.Cell>{rawEntry.language}</Table.Cell>
-                  <Table.Cell>{rawEntry.credits}</Table.Cell>
-                  <Table.Cell>{rawEntry.course.name}</Table.Cell>
-                  <Table.Cell>{getCourseUnitRealisationName(entry)}</Table.Cell>
-                </Table.Row>
-              ))}
+              <Table.Row
+                key={entry.id}
+                warning={entry.missingEnrolment}
+                style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
+              >
+                <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
+                <Table.Cell>{entry.studentName}</Table.Cell>
+                <Table.Cell>
+                  {!entry.missingEnrolment || entry.type === 'EXTRA_ENTRY'
+                    ? getGrade(entry.gradeScaleId, entry.gradeId, entry.completionLanguage)
+                    : rawEntry.grade}
+                </Table.Cell>
+                <Table.Cell>
+                  <CompletionDate attainmentDate={rawEntry.attainmentDate} completionDate={entry.completionDate} />
+                </Table.Cell>
+                <Table.Cell>{rawEntry.language}</Table.Cell>
+                <Table.Cell>{rawEntry.credits}</Table.Cell>
+                <Table.Cell>{rawEntry.course.name}</Table.Cell>
+                <Table.Cell>{getCourseUnitRealisationName(entry)}</Table.Cell>
+              </Table.Row>
+            ))}
           </Table.Body>
         </Table>
       </Segment>

@@ -50,7 +50,7 @@ const currentUser = async (req, res, next) => {
 
 const errorMiddleware = (req, res, next) => {
   const oldWrite = res.write
-    const oldEnd = res.end
+  const oldEnd = res.end
 
   const chunks = []
 

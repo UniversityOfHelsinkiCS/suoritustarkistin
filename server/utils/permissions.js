@@ -8,7 +8,7 @@ const db = require('../models/index')
  * @param {*} error Error message to return
  * @returns func
  */
- const permissionClass = async (req, res, next, predicate, error) => {
+const permissionClass = async (req, res, next, predicate, error) => {
   if (await predicate(req)) return next()
   logger.warn({ message: error, user: req.user })
   return res.status(401).send({ error })

@@ -6,7 +6,8 @@ const { isValidCourse } = require('@root/utils/validators')
 const db = require('../models/index')
 const { getResponsibles } = require('../services/importer')
 
-const cleanCourses = (courses) => courses.map((course) => ({
+const cleanCourses = (courses) =>
+  courses.map((course) => ({
     id: course.id,
     name: course.name,
     courseCode: course.courseCode,
@@ -71,7 +72,7 @@ const addCourse = async (req, res) => {
 
   try {
     const course = req.body
-    const {graders} = course
+    const { graders } = course
 
     if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
 
@@ -122,7 +123,7 @@ const editCourse = async (req, res) => {
 
   try {
     const course = req.body
-    const {graders} = course
+    const { graders } = course
 
     if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
 

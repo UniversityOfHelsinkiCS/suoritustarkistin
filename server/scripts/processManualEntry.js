@@ -118,15 +118,14 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       isMissingEnrollment,
       courseCode: course.courseCode
     }
-  } 
-    return {
-      message: 'error',
-      success: success.concat(successExtras),
-      failed: failed.concat(failedExtras),
-      batchId,
-      courseCode: course.courseCode
-    }
-  
+  }
+  return {
+    message: 'error',
+    success: success.concat(successExtras),
+    failed: failed.concat(failedExtras),
+    batchId,
+    courseCode: course.courseCode
+  }
 }
 
 module.exports = {

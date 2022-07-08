@@ -8,7 +8,7 @@ const attainmentsToSisu = require('../utils/sendToSisu')
 const { failedInSisuReport, missingEnrolmentReport } = require('../utils/emailFactory')
 const sendEmail = require('../utils/sendEmail')
 
-const {Op} = Sequelize
+const { Op } = Sequelize
 const PAGE_SIZE = 15 // Batches, no single reports
 
 const handleDatabaseError = (res, error) => {

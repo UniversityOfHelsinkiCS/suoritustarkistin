@@ -12,18 +12,17 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
       render={(props) => {
         if (hasPermissions) {
           return <Component {...rest} {...props} />
-        } 
-          return (
-            <Redirect
-              to={{
-                pathname: '/unauthorized',
-                state: {
-                  from: props.location
-                }
-              }}
-            />
-          )
-        
+        }
+        return (
+          <Redirect
+            to={{
+              pathname: '/unauthorized',
+              state: {
+                from: props.location
+              }
+            }}
+          />
+        )
       }}
     />
   )

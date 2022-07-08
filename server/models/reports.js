@@ -1,4 +1,3 @@
-
 module.exports = (sequelize, DataTypes) => {
   const Reports = sequelize.define('reports', {
     fileName: DataTypes.STRING,

@@ -7,7 +7,7 @@ const axios = require('axios')
 const moment = require('moment')
 const db = require('../models/index')
 const { getAcceptorPersons, getAcceptorPersonsByCourseUnit } = require('../services/importer')
-const { ALLOW_SEND_TO_SISU } = require("./common")
+const { ALLOW_SEND_TO_SISU } = require('./common')
 
 const URLS = {
   entries: 'suotar/',

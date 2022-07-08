@@ -34,10 +34,7 @@
     "no-await-in-loop": "off",
     "default-param-last": "off",
     "array-callback-return": "off",
-    "prefer-destructuring": [
-      "error",
-      { "object": true, "array": false }
-    ],
+    "prefer-destructuring": ["error", { "object": true, "array": false }],
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
     "react/jsx-props-no-spreading": "off",
@@ -46,10 +43,7 @@
     "arrow-parens": ["error", "always"],
     "import/no-unresolved": "off",
     "import/no-import-module-exports": "off",
-    "import/no-extraneous-dependencies": [
-      "error",
-      { "devDependencies": true }
-    ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "react/no-array-index-key": "off",
     "react/no-unstable-nested-components": "off",
     "react/jsx-filename-extension": "off",

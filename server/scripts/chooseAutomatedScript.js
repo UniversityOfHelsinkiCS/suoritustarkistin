@@ -4,11 +4,11 @@ const {
   NEW_BAI_ADVANCED_CODE,
   NEW_MOOC_COURSES
 } = require('@root/utils/common')
-const { processEoaiEntries } = require("./processEoaiEntries")
-const { processBaiIntermediateEntries } = require("./processBaiIntermediateEntries")
-const { processBaiAdvancedEntries } = require("./processBaiAdvancedEntries")
-const { processMoocEntries } = require("./processMoocEntries")
-const { processNewMoocEntries } = require("./processNewMoocEntries")
+const { processEoaiEntries } = require('./processEoaiEntries')
+const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntries')
+const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')
+const { processMoocEntries } = require('./processMoocEntries')
+const { processNewMoocEntries } = require('./processNewMoocEntries')
 
 const chooseScript = (courseCode) => {
   if (NEW_EOAI_CODE === courseCode) return processEoaiEntries

@@ -224,7 +224,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
 
   const set = ({ value: grade }, person, date) => {
     if (!grade) {
-      const newGrades = { ...grades}
+      const newGrades = { ...grades }
       delete newGrades[person.studentNumber]
       setGrades(newGrades)
     } else

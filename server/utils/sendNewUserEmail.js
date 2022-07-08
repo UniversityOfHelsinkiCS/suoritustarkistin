@@ -1,5 +1,5 @@
-const sendEmail = require("./sendEmail")
-const { newUserForAdmin } = require("./emailFactory")
+const sendEmail = require('./sendEmail')
+const { newUserForAdmin } = require('./emailFactory')
 
 const sendNewUserEmail = async (user) =>
   await sendEmail({

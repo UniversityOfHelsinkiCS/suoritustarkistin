@@ -203,7 +203,8 @@ const createTestOodiReports = async () => {
       const testReportData = course.gradeScale === 'sis-hyl-hyv' ? testRawEntriesHylHyv : testRawEntries0to5
 
       const data = testReportData
-        .map(({ studentNumber, grade }) => `
+        .map(
+          ({ studentNumber, grade }) => `
           ${studentNumber}##1#
           ${course.courseCode}#
           ${course.name}#
@@ -211,7 +212,8 @@ const createTestOodiReports = async () => {
           ${grade}#106##
           ${grader.employeeId}#2#H930#####
           ${course.credits}
-        `)
+        `
+        )
         .join('\n')
 
       await db.reports.create({

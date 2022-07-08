@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 const Sequelize = require('sequelize')
 
-const {Op} = Sequelize
+const { Op } = Sequelize
 const moment = require('moment')
 const { flatMap } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
@@ -285,13 +285,14 @@ const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attai
 
 const mapGrades = (gradeScales, id, rawEntry) => {
   // TODO: likely skipped for entries from new mooc
-  let {grade} = rawEntry
+  let { grade } = rawEntry
   if (id === 'sis-0-5') {
     if (grade === 'Hyl.' || grade === '-') {
       grade = '0'
     }
     return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === grade)
-  } if (id === 'sis-hyl-hyv') {
+  }
+  if (id === 'sis-hyl-hyv') {
     if (grade === 0 || grade === '0' || grade === '-') {
       grade = 'Hyl.'
     }

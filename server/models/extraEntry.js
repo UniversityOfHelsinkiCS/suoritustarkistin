@@ -1,5 +1,3 @@
-
-
 /**
  * This model represents course unit attainment (erilliskirjaus) in Sisu. See:
  * https://sis-helsinki.funidata.fi/ori/docs/index.html#_courseunitattainment

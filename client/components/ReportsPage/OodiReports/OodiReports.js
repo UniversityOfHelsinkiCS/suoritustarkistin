@@ -11,23 +11,23 @@ const LANGUAGES = { 1: 'fi', 2: 'sv', 6: 'en' }
 
 const reportTable = (report) => {
   const TableBody = () => (
-      <Table.Body>
-        {report.data.split('\n').map((rawLine, index) => {
-          const line = rawLine.split('#')
-          return (
-            <Table.Row key={`row-${index}`}>
-              <Table.Cell>{line[3]}</Table.Cell>
-              <Table.Cell>{line[4]}</Table.Cell>
-              <Table.Cell>{line[0]}</Table.Cell>
-              <Table.Cell>{line[7]}</Table.Cell>
-              <Table.Cell>{line[17]}</Table.Cell>
-              <Table.Cell>{LANGUAGES[line[2]]}</Table.Cell>
-              <Table.Cell>{line[5]}</Table.Cell>
-            </Table.Row>
-          )
-        })}
-      </Table.Body>
-    )
+    <Table.Body>
+      {report.data.split('\n').map((rawLine, index) => {
+        const line = rawLine.split('#')
+        return (
+          <Table.Row key={`row-${index}`}>
+            <Table.Cell>{line[3]}</Table.Cell>
+            <Table.Cell>{line[4]}</Table.Cell>
+            <Table.Cell>{line[0]}</Table.Cell>
+            <Table.Cell>{line[7]}</Table.Cell>
+            <Table.Cell>{line[17]}</Table.Cell>
+            <Table.Cell>{LANGUAGES[line[2]]}</Table.Cell>
+            <Table.Cell>{line[5]}</Table.Cell>
+          </Table.Row>
+        )
+      })}
+    </Table.Body>
+  )
 
   return (
     <Accordion.Content>
@@ -78,10 +78,10 @@ export default () => {
   if (manualReports.length === 0) return <div>NO REPORTS FOUND.</div>
 
   const panels = manualReports.map((r, i) => ({
-      key: `panel-${i}`,
-      title: title(r),
-      content: reportTable(r)
-    }))
+    key: `panel-${i}`,
+    title: title(r),
+    content: reportTable(r)
+  }))
 
   return <Accordion panels={panels} exclusive={false} fluid styled />
 }

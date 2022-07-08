@@ -7,10 +7,10 @@ import { KANDI_EXTRA_COURSES } from 'Root/utils/common'
 const markDuplicates = (data, defaultCourse) => {
   if (!data) return []
   const indexes = data.map((row, index) => ({
-      index,
-      studentnumber: row.studentId,
-      course: row.course.length ? row.course : defaultCourse
-    }))
+    index,
+    studentnumber: row.studentId,
+    course: row.course.length ? row.course : defaultCourse
+  }))
 
   let duplicates = []
   const grouped = _.groupBy(indexes, 'studentnumber')

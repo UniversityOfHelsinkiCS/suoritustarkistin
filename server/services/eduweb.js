@@ -42,7 +42,7 @@ const getRegistrationsByInstance = async (course) => {
   const instances = await eduwebGet(course)
 
   const registrations = await instances.reduce(async (accPromise, instance) => {
-    const {url} = instance
+    const { url } = instance
     const instanceRegistrations = await eduwebGet(url)
     const acc = await accPromise
     return { ...acc, [String(url)]: instanceRegistrations }

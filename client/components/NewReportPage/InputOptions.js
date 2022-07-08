@@ -72,7 +72,7 @@ const defineCourseOptions = (courses, kandi, extra) => {
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
 
-  const {defaultGrade} = rawEntries
+  const { defaultGrade } = rawEntries
   return {
     ...rawEntries,
     data: rawEntries.data.map((row) => {
@@ -231,13 +231,13 @@ export default ({ kandi, extra, parseCSV }) => {
           </Form.Field>
           {!kandi ? (
             <Form.Field
-                className="default-grade"
-                control={Checkbox}
-                data-cy="default-grade-election"
-                onChange={handleDefaultGradeSelection}
-                checked={defaultGrade}
-                label="Give all students grade 'Hyv.'"
-              />
+              className="default-grade"
+              control={Checkbox}
+              data-cy="default-grade-election"
+              onChange={handleDefaultGradeSelection}
+              checked={defaultGrade}
+              label="Give all students grade 'Hyv.'"
+            />
           ) : null}
         </Form.Group>
       </Form>

@@ -14,7 +14,8 @@ const NotDownloaded = () => (
   </div>
 )
 
-const reportLines = (report) => report.data.split('\n').map((line, index) => <div key={`${report.id}-${index}`}>{line}</div>)
+const reportLines = (report) =>
+  report.data.split('\n').map((line, index) => <div key={`${report.id}-${index}`}>{line}</div>)
 
 export default ({ reports }) => {
   const [loading, setLoading] = useState(true)
@@ -29,13 +30,13 @@ export default ({ reports }) => {
   return (
     <div data-cy="raw-oodi-reports">
       {reports.data.map((report) => (
-          <Segment key={report.id}>
-            <div>
-              {report.fileName} {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
-            </div>
-            {reportLines(report)}
-          </Segment>
-        ))}
+        <Segment key={report.id}>
+          <div>
+            {report.fileName} {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
+          </div>
+          {reportLines(report)}
+        </Segment>
+      ))}
     </div>
   )
 }

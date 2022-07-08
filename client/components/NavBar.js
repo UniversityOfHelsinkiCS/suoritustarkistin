@@ -43,76 +43,76 @@ export default () => {
   const handleItemClick = (e, { name }) => (name === 'logo' ? setActiveItem('') : setActiveItem(name))
 
   const getAdminButton = () => (
-      <Menu.Item>
-        <span style={{ fontSize: '0.85em', marginRight: '5px' }}>Admin-mode:</span>
-        <Radio data-cy="adminmode-enable" toggle checked={user.adminMode} onClick={handleAdminModeToggle} />
-      </Menu.Item>
-    )
+    <Menu.Item>
+      <span style={{ fontSize: '0.85em', marginRight: '5px' }}>Admin-mode:</span>
+      <Radio data-cy="adminmode-enable" toggle checked={user.adminMode} onClick={handleAdminModeToggle} />
+    </Menu.Item>
+  )
 
   const getSandboxButton = () => (
-      <Menu.Item
-        data-cy="nav-sandbox"
-        as={Link}
-        to="/sandbox"
-        name="sandbox"
-        active={activeItem === 'sandbox'}
-        onClick={handleItemClick}
-      >
-        Sandbox
-      </Menu.Item>
-    )
+    <Menu.Item
+      data-cy="nav-sandbox"
+      as={Link}
+      to="/sandbox"
+      name="sandbox"
+      active={activeItem === 'sandbox'}
+      onClick={handleItemClick}
+    >
+      Sandbox
+    </Menu.Item>
+  )
 
   const CoursesButton = () => (
-      <Menu.Item
-        data-cy="nav-courses"
-        as={Link}
-        to="/courses"
-        name="courses"
-        active={activeItem === 'courses'}
-        onClick={handleItemClick}
-      >
-        Edit courses
-      </Menu.Item>
-    )
+    <Menu.Item
+      data-cy="nav-courses"
+      as={Link}
+      to="/courses"
+      name="courses"
+      active={activeItem === 'courses'}
+      onClick={handleItemClick}
+    >
+      Edit courses
+    </Menu.Item>
+  )
 
   const UsersButton = () => (
-      <Menu.Item
-        data-cy="nav-users"
-        as={Link}
-        to="/users"
-        name="users"
-        active={activeItem === 'users'}
-        onClick={handleItemClick}
-      >
-        Edit users
-      </Menu.Item>
-    )
+    <Menu.Item
+      data-cy="nav-users"
+      as={Link}
+      to="/users"
+      name="users"
+      active={activeItem === 'users'}
+      onClick={handleItemClick}
+    >
+      Edit users
+    </Menu.Item>
+  )
 
   const AutomatedReportsButton = () => (
-      <Menu.Item
-        data-cy="nav-automated-reports"
-        as={Link}
-        to="/automated-reports"
-        name="automated-reports"
-        active={activeItem === 'automated-reports'}
-        onClick={handleItemClick}
-      >
-        Automated reports
-      </Menu.Item>
-    )
+    <Menu.Item
+      data-cy="nav-automated-reports"
+      as={Link}
+      to="/automated-reports"
+      name="automated-reports"
+      active={activeItem === 'automated-reports'}
+      onClick={handleItemClick}
+    >
+      Automated reports
+    </Menu.Item>
+  )
 
   const ApiChecks = () => (
-      <Menu.Item
-        data-cy="nav-apichecks"
-        as={Link}
-        to="/apichecks"
-        name="apichecks"
-        active={activeItem === 'apichecks'}
-        onClick={handleItemClick}
-      >
-        API Checks
-      </Menu.Item>
-    )
+    <Menu.Item
+      data-cy="nav-apichecks"
+      as={Link}
+      to="/apichecks"
+      name="apichecks"
+      active={activeItem === 'apichecks'}
+      onClick={handleItemClick}
+    >
+      API Checks
+    </Menu.Item>
+  )
 
   const handleUnhijack = () => {
     window.localStorage.removeItem('adminLoggedInAs')
@@ -120,12 +120,12 @@ export default () => {
   }
 
   const unHijackButton = () => (
-      <Menu.Item data-cy="sign-in-as" onClick={handleUnhijack}>
-        <Label color="green" horizontal>
-          Unhijack
-        </Label>
-      </Menu.Item>
-    )
+    <Menu.Item data-cy="sign-in-as" onClick={handleUnhijack}>
+      <Label color="green" horizontal>
+        Unhijack
+      </Label>
+    </Menu.Item>
+  )
 
   if (!user) return null
   return (

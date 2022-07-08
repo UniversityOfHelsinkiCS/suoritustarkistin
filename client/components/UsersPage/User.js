@@ -36,7 +36,8 @@ export default ({ user }) => {
 
   const handleDeleteUser = () => dispatch(deleteUser(user.id))
 
-  const GraderBadge = () => user.isGrader ? (
+  const GraderBadge = () =>
+    user.isGrader ? (
       <Popup
         trigger={<Icon data-cy={`${user.name}-is-grader`} name="check" color="green" size="large" />}
         content={
@@ -66,7 +67,8 @@ export default ({ user }) => {
       />
     )
 
-  const AdminBadge = () => user.isAdmin ? (
+  const AdminBadge = () =>
+    user.isAdmin ? (
       <Popup
         trigger={<Icon data-cy={`${user.name}-is-admin`} name="check" color="green" size="large" />}
         content={

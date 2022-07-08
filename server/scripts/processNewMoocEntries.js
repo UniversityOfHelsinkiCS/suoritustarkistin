@@ -24,7 +24,7 @@ const selectLanguage = (completion, course) => {
 }
 
 const defineGrade = (completion, course) => {
-  const {grade} = completion
+  const { grade } = completion
   if (!grade && course.gradeScale === 'sis-hyl-hyv') return 'Hyv.'
   if (!grade && course.gradeScale === 'sis-0-5') return null
   if (!grade && !course.gradeScale) return 'Hyv.'
@@ -39,9 +39,8 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
     const courseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
-      } 
-        return pairs
-      
+      }
+      return pairs
     }, [])
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
@@ -98,13 +97,12 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
           moocUserId: completion.user_upstream_id,
           moocCompletionId: completion.id
         })
-      } 
-        if (registration && !registration.onro)
-          logger.info({
-            message: `${course.courseCode}: Registration student number missing for ${registration.email}`
-          })
-        return matches
-      
+      }
+      if (registration && !registration.onro)
+        logger.info({
+          message: `${course.courseCode}: Registration student number missing for ${registration.email}`
+        })
+      return matches
     }, [])
 
     if (!matches) matches = []

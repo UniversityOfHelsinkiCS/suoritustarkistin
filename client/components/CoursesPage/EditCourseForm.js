@@ -116,7 +116,7 @@ export default ({ course, close: closeModal }) => {
           label={
             <label>
               Use as erilliskirjaus
-                <Help text='Select this only if course is used as "erilliskirjaus" together with bachelors thesis' />
+              <Help text='Select this only if course is used as "erilliskirjaus" together with bachelors thesis' />
             </label>
           }
           control={Checkbox}

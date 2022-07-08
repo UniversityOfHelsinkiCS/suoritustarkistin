@@ -1,8 +1,6 @@
-
-
 const Sequelize = require('sequelize')
 
-const {Op} = Sequelize
+const { Op } = Sequelize
 
 /**
  * This model represents assessment item attainment in Sisu. See:

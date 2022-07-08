@@ -13,13 +13,9 @@ export default ({ job, jobs }) => {
 
   const course = courses ? courses.find((c) => c.id === job.courseId) : null
 
-  const getCourseName = () => {
-    return course ? course.name : null
-  }
+  const getCourseName = () => course ? course.name : null
 
-  const getCourseCode = () => {
-    return course ? course.courseCode : null
-  }
+  const getCourseCode = () => course ? course.courseCode : null
 
   const getGraderName = () => {
     if (!graders) return null

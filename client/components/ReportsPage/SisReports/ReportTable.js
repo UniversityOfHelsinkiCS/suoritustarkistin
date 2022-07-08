@@ -223,7 +223,7 @@ const EntryCells = ({ entry, course, grader }) => {
       <Table.Cell data-cy="report-completionDate">
         {completionDate ? moment(completionDate).format('DD.MM.YYYY') : null}
       </Table.Cell>
-      <Table.Cell data-cy="report-completionLanguage">{completionLanguage ? completionLanguage : null}</Table.Cell>
+      <Table.Cell data-cy="report-completionLanguage">{completionLanguage || null}</Table.Cell>
       <Table.Cell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</Table.Cell>
       <Table.Cell>{grader ? grader.name : 'Grader not found'}</Table.Cell>
       <Table.Cell data-cy={`report-courseUnitRealisationName-${gradeId}`}>
@@ -271,7 +271,7 @@ const getSisUnitName = (name, language) => {
   try {
     const parsed = typeof name === 'string' ? JSON.parse(name) : name
     if (!parsed) return <span style={{ color: '#573a08' }}>Enrolment missing</span>
-    if (!parsed[language]) return parsed['fi']
+    if (!parsed[language]) return parsed.fi
     return parsed[language]
   } catch {
     return `${name}`

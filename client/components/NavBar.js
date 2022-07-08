@@ -33,17 +33,14 @@ export default () => {
 
   const handleItemClick = (e, { name }) => (name === 'logo' ? setActiveItem('') : setActiveItem(name))
 
-  const getAdminButton = () => {
-    return (
+  const getAdminButton = () => (
       <Menu.Item>
         <span style={{ fontSize: '0.85em', marginRight: '5px' }}>Admin-mode:</span>
         <Radio data-cy="adminmode-enable" toggle checked={user.adminMode} onClick={handleAdminModeToggle} />
       </Menu.Item>
     )
-  }
 
-  const getSandboxButton = () => {
-    return (
+  const getSandboxButton = () => (
       <Menu.Item
         data-cy="nav-sandbox"
         as={Link}
@@ -55,10 +52,8 @@ export default () => {
         Sandbox
       </Menu.Item>
     )
-  }
 
-  const CoursesButton = () => {
-    return (
+  const CoursesButton = () => (
       <Menu.Item
         data-cy="nav-courses"
         as={Link}
@@ -70,10 +65,8 @@ export default () => {
         Edit courses
       </Menu.Item>
     )
-  }
 
-  const UsersButton = () => {
-    return (
+  const UsersButton = () => (
       <Menu.Item
         data-cy="nav-users"
         as={Link}
@@ -85,10 +78,8 @@ export default () => {
         Edit users
       </Menu.Item>
     )
-  }
 
-  const AutomatedReportsButton = () => {
-    return (
+  const AutomatedReportsButton = () => (
       <Menu.Item
         data-cy="nav-automated-reports"
         as={Link}
@@ -100,10 +91,8 @@ export default () => {
         Automated reports
       </Menu.Item>
     )
-  }
 
-  const ApiChecks = () => {
-    return (
+  const ApiChecks = () => (
       <Menu.Item
         data-cy="nav-apichecks"
         as={Link}
@@ -115,22 +104,19 @@ export default () => {
         API Checks
       </Menu.Item>
     )
-  }
 
   const handleUnhijack = () => {
     window.localStorage.removeItem('adminLoggedInAs')
     window.location.reload()
   }
 
-  const unHijackButton = () => {
-    return (
+  const unHijackButton = () => (
       <Menu.Item data-cy="sign-in-as" onClick={handleUnhijack}>
         <Label color="green" horizontal>
           Unhijack
         </Label>
       </Menu.Item>
     )
-  }
 
   if (!user) return null
   return (

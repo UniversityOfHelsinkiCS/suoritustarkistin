@@ -18,8 +18,7 @@ const Wrap = ({ childComponent: ChildComponent, narrow }) => (
 )
 
 export default () => (
-  <>
-    <Switch>
+  <Switch>
       <ProtectedRoute exact path="/" component={Wrap} childComponent={NewReportPage} narrow />
       <ProtectedRoute exact path="/reports" component={Wrap} childComponent={ReportsPage} narrow />
       <ProtectedRoute exact path="/reports/sisu/:activeBatch" component={Wrap} childComponent={ReportsPage} narrow />
@@ -31,5 +30,4 @@ export default () => (
       <Route exact path="/unauthorized" component={UnauthorizedPage} />
       <Route path="*" render={() => <div>Page not found!</div>} />
     </Switch>
-  </>
 )

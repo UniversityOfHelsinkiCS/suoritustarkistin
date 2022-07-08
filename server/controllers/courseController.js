@@ -5,8 +5,7 @@ const { isValidCourse } = require('@root/utils/validators')
 const db = require('../models/index')
 const { getResponsibles } = require('../services/importer')
 
-const cleanCourses = (courses) => {
-  return courses.map((course) => ({
+const cleanCourses = (courses) => courses.map((course) => ({
     id: course.id,
     name: course.name,
     courseCode: course.courseCode,
@@ -16,7 +15,6 @@ const cleanCourses = (courses) => {
     gradeScale: course.gradeScale,
     useAsExtra: course.useAsExtra
   }))
-}
 
 const getCourses = async (req, res) => {
   try {
@@ -71,8 +69,8 @@ const addCourse = async (req, res) => {
   const transaction = await db.sequelize.transaction()
 
   try {
-    let course = req.body
-    const graders = course.graders
+    const course = req.body
+    const {graders} = course
 
     if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
 
@@ -122,8 +120,8 @@ const editCourse = async (req, res) => {
   const transaction = await db.sequelize.transaction()
 
   try {
-    let course = req.body
-    const graders = course.graders
+    const course = req.body
+    const {graders} = course
 
     if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
 

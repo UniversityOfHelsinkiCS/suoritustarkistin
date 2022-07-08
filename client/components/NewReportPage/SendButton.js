@@ -9,7 +9,7 @@ import { areValidNewRawEntries } from 'Root/utils/validators'
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
 
-  const defaultGrade = rawEntries.defaultGrade
+  const {defaultGrade} = rawEntries
   return {
     ...rawEntries,
     data: rawEntries.data.map((row) => {

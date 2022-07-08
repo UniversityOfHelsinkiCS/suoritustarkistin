@@ -37,7 +37,7 @@ const currentUser = async (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     const loggedInAs = req.headers['x-admin-logged-in-as']
     if (loggedInAs) {
-      let fakeUser = await db.users.findOne({
+      const fakeUser = await db.users.findOne({
         where: { employeeId: loggedInAs }
       })
 
@@ -48,8 +48,8 @@ const currentUser = async (req, res, next) => {
 }
 
 const errorMiddleware = (req, res, next) => {
-  const oldWrite = res.write,
-    oldEnd = res.end
+  const oldWrite = res.write
+    const oldEnd = res.end
 
   const chunks = []
 

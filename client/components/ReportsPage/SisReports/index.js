@@ -35,9 +35,9 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 const getBatchLink = (id) => {
   if (process.env.NODE_ENV === 'production')
     return `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
-  else if (process.env.NODE_ENV === 'staging')
+  if (process.env.NODE_ENV === 'staging')
     return `https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/reports/sisu/${id}`
-  else return `http://localhost:8000/reports/sisu/${id}`
+  return `http://localhost:8000/reports/sisu/${id}`
 }
 
 const reportContents = (report, dispatch, user, openAccordions, batchLoading) => {

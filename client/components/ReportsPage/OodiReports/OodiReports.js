@@ -10,8 +10,7 @@ const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
 const LANGUAGES = { 1: 'fi', 2: 'sv', 6: 'en' }
 
 const reportTable = (report) => {
-  const TableBody = () => {
-    return (
+  const TableBody = () => (
       <Table.Body>
         {report.data.split('\n').map((rawLine, index) => {
           const line = rawLine.split('#')
@@ -29,7 +28,6 @@ const reportTable = (report) => {
         })}
       </Table.Body>
     )
-  }
 
   return (
     <Accordion.Content>
@@ -79,13 +77,11 @@ export default () => {
 
   if (manualReports.length === 0) return <div>NO REPORTS FOUND.</div>
 
-  const panels = manualReports.map((r, i) => {
-    return {
+  const panels = manualReports.map((r, i) => ({
       key: `panel-${i}`,
       title: title(r),
       content: reportTable(r)
-    }
-  })
+    }))
 
   return <Accordion panels={panels} exclusive={false} fluid styled />
 }

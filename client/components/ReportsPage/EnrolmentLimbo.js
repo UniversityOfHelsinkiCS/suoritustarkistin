@@ -64,8 +64,7 @@ const EnrolmentLimbo = () => {
       {!rows.length && !pending && reportsFetched ? (
         <Message success>No completions without enrollment info!</Message>
       ) : (
-        <>
-          <Segment loading={pending}>
+        <Segment loading={pending}>
             <Message style={{ maxWidth: 800 }} info>
               <Message.Header>What is enrollment limbo?</Message.Header>
               <Message.Content>
@@ -121,7 +120,6 @@ const EnrolmentLimbo = () => {
             </Table>
             <Pagination reduxKey="enrolmentLimbo" action={getAllEnrollmentLimboEntriesAction} disableFilters />
           </Segment>
-        </>
       )}
     </>
   )

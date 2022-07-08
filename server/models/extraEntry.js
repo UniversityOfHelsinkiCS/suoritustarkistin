@@ -1,4 +1,4 @@
-'use strict'
+
 
 /**
  * This model represents course unit attainment (erilliskirjaus) in Sisu. See:

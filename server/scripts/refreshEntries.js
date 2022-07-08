@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 
-const Op = Sequelize.Op
+const {Op} = Sequelize
 const logger = require('@utils/logger')
 const { sendSentryMessage } = require('@utils/sentry')
 const moment = require('moment')

@@ -178,8 +178,7 @@ export default withRouter(({ rows, batchId, history }) => {
             </Table.Row>
           </Table.Header>
           <Table.Body data-cy="confirm-entries-table">
-            {rows.map(({ entry, ...rawEntry }) => {
-              return (
+            {rows.map(({ entry, ...rawEntry }) => (
                 <Table.Row
                   key={entry.id}
                   warning={entry.missingEnrolment}
@@ -200,8 +199,7 @@ export default withRouter(({ rows, batchId, history }) => {
                   <Table.Cell>{rawEntry.course.name}</Table.Cell>
                   <Table.Cell>{getCourseUnitRealisationName(entry)}</Table.Cell>
                 </Table.Row>
-              )
-            })}
+              ))}
           </Table.Body>
         </Table>
       </Segment>

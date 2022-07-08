@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 
-const Op = Sequelize.Op
+const {Op} = Sequelize
 const moment = require('moment')
 const { flatMap } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
@@ -169,7 +169,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           message: `
                 Invalid grade "${rawEntry.grade}" for course "${course.courseCode}".
                 Available grades are: ${gradeScales[filteredEnrolment.gradeScaleId].map(
-                  ({ abbreviation }) => abbreviation['fi']
+                  ({ abbreviation }) => abbreviation.fi
                 )}
               `
         })
@@ -284,17 +284,17 @@ const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attai
 
 const mapGrades = (gradeScales, id, rawEntry) => {
   // TODO: likely skipped for entries from new mooc
-  let grade = rawEntry.grade
+  let {grade} = rawEntry
   if (id === 'sis-0-5') {
     if (grade === 'Hyl.' || grade === '-') {
       grade = '0'
     }
     return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === grade)
-  } else if (id === 'sis-hyl-hyv') {
+  } if (id === 'sis-hyl-hyv') {
     if (grade === 0 || grade === '0' || grade === '-') {
       grade = 'Hyl.'
     }
-    return gradeScales[id].find(({ abbreviation }) => abbreviation['fi'] === grade)
+    return gradeScales[id].find(({ abbreviation }) => abbreviation.fi === grade)
   }
 }
 

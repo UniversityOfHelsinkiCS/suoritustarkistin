@@ -57,7 +57,7 @@ const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) =>
     await transaction.rollback()
     await db.raw_entries.destroy({
       where: {
-        batchId: batchId
+        batchId
       }
     })
     logger.error(`Error processing new completions: ${error.message}`)

@@ -104,7 +104,7 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
     for (const { courseCode, graderName } of completions) {
       const course = await db.courses.findOne({
         where: {
-          courseCode: courseCode
+          courseCode
         }
       })
       const grader = await db.users.findOne({
@@ -132,7 +132,7 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
             grade,
             credits: course.credits,
             language: course.language,
-            attainmentDate: attainmentDate,
+            attainmentDate,
             graderId: grader.id,
             reporterId: course.name.includes('Avoin yo') ? null : grader.id,
             courseId: course.id,
@@ -182,7 +182,7 @@ const createTestOodiReports = async () => {
     for (const { courseCode, graderName } of testCompletions) {
       const course = await db.courses.findOne({
         where: {
-          courseCode: courseCode
+          courseCode
         }
       })
 
@@ -202,8 +202,7 @@ const createTestOodiReports = async () => {
       const testReportData = course.gradeScale === 'sis-hyl-hyv' ? testRawEntriesHylHyv : testRawEntries0to5
 
       const data = testReportData
-        .map(({ studentNumber, grade }) => {
-          return `
+        .map(({ studentNumber, grade }) => `
           ${studentNumber}##1#
           ${course.courseCode}#
           ${course.name}#
@@ -211,8 +210,7 @@ const createTestOodiReports = async () => {
           ${grade}#106##
           ${grader.employeeId}#2#H930#####
           ${course.credits}
-        `
-        })
+        `)
         .join('\n')
 
       await db.reports.create({

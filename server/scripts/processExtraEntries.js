@@ -12,7 +12,7 @@ const {
 const { generateSisuId } = require('../utils/common')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
 
-const Op = Sequelize.Op
+const {Op} = Sequelize
 
 const COMMON = {
   gradeId: '1',

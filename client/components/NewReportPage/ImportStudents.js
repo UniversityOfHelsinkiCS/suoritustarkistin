@@ -216,13 +216,13 @@ export default ({ isOpen, setIsOpen, importRows }) => {
 
   const set = ({ value: grade }, person, date) => {
     if (!grade) {
-      const newGrades = Object.assign({}, grades)
+      const newGrades = { ...grades}
       delete newGrades[person.studentNumber]
       setGrades(newGrades)
     } else
       setGrades({
         ...grades,
-        [person.studentNumber]: { name: `${person.lastName}, ${person.firstNames}`, grade: grade, date }
+        [person.studentNumber]: { name: `${person.lastName}, ${person.firstNames}`, grade, date }
       })
   }
 

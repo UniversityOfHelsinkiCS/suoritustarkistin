@@ -1,10 +1,6 @@
-export const setMessageAction = (message) => {
-  return { type: 'SET_MESSAGE', payload: message }
-}
+export const setMessageAction = (message) => ({ type: 'SET_MESSAGE', payload: message })
 
-export const clearMessageAction = () => {
-  return { type: 'CLEAR_MESSAGE' }
-}
+export const clearMessageAction = () => ({ type: 'CLEAR_MESSAGE' })
 
 export default (state = null, action) => {
   switch (action.type) {

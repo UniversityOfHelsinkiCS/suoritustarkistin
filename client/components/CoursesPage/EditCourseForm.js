@@ -115,10 +115,8 @@ export default ({ course, close: closeModal }) => {
         <Form.Field
           label={
             <label>
-              <>
-                Use as erilliskirjaus
+              Use as erilliskirjaus
                 <Help text='Select this only if course is used as "erilliskirjaus" together with bachelors thesis' />
-              </>
             </label>
           }
           control={Checkbox}

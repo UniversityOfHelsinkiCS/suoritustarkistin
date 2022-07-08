@@ -43,9 +43,9 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
     const courseStudentPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: NEW_EOAI_CODE, studentNumber: registration.onro })
-      } else {
+      } 
         return pairs
-      }
+      
     }, [])
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
@@ -87,30 +87,30 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
 
         if (!isImprovedGrade(earlierAttainments, registration.onro, 'Hyv.', attainmentDate, course.credits)) {
           return matches
-        } else if (matches.some((c) => c.studentNumber === registration.onro)) {
+        } if (matches.some((c) => c.studentNumber === registration.onro)) {
           return matches
-        } else {
+        } 
           return matches.concat({
             studentNumber: registration.onro,
-            batchId: batchId,
+            batchId,
             grade: 'Hyv.',
             credits: course.credits,
-            language: language,
-            attainmentDate: attainmentDate,
+            language,
+            attainmentDate,
             graderId: grader.id,
             reporterId: null,
             courseId: course.id,
             moocUserId: completion.user_upstream_id,
             moocCompletionId: completion.id
           })
-        }
-      } else {
+        
+      } 
         if (registration && !registration.onro)
           logger.info({
             message: `${course.courseCode}: Registration student number missing for ${registration.email}`
           })
         return matches
-      }
+      
     }, [])
 
     if (!matches) matches = []

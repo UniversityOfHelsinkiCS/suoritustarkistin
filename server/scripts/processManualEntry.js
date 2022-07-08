@@ -43,13 +43,13 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       studentNumber: rawEntry.studentId,
       studentName: rawEntry.studentName,
       email: rawEntry.email,
-      batchId: batchId,
+      batchId,
       grade: rawEntry.grade,
       credits: rawEntry.credits ? rawEntry.credits : course.credits,
       language: rawEntry.language ? rawEntry.language : course.language,
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,
-      reporterId: reporterId,
+      reporterId,
       courseId: course.id
     }
   }
@@ -117,7 +117,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       isMissingEnrollment,
       courseCode: course.courseCode
     }
-  } else {
+  } 
     return {
       message: 'error',
       success: success.concat(successExtras),
@@ -125,7 +125,7 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       batchId,
       courseCode: course.courseCode
     }
-  }
+  
 }
 
 module.exports = {

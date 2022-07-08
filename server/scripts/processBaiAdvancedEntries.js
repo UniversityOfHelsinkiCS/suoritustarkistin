@@ -75,25 +75,25 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
     const oldBaiPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: OLD_BAI_CODE, studentNumber: registration.onro })
-      } else {
+      } 
         return pairs
-      }
+      
     }, [])
 
     const oldAdvancedPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: OLD_BAI_ADVANCED_CODE, studentNumber: registration.onro })
-      } else {
+      } 
         return pairs
-      }
+      
     }, [])
 
     const advancedPairs = registrations.reduce((pairs, registration) => {
       if (registration && registration.onro) {
         return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
-      } else {
+      } 
         return pairs
-      }
+      
     }, [])
 
     const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiPairs)
@@ -124,30 +124,30 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
         if (await advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, attainmentDate)) {
           logger.info({ message: `Earlier attainment found for student ${registration.onro}` })
           return matches
-        } else if (matches.some((c) => c.studentNumber === registration.onro)) {
+        } if (matches.some((c) => c.studentNumber === registration.onro)) {
           return matches
-        } else {
+        } 
           return matches.concat({
             studentNumber: registration.onro,
-            batchId: batchId,
+            batchId,
             grade: 'Hyv.',
             credits: 1,
             language: 'en',
-            attainmentDate: attainmentDate,
+            attainmentDate,
             graderId: grader.id,
             reporterId: null,
             courseId: course.id,
             moocUserId: completion.user_upstream_id,
             moocCompletionId: completion.id
           })
-        }
-      } else {
+        
+      } 
         if (registration && !registration.onro)
           logger.info({
             message: `${course.courseCode}: Registration student number missing for ${registration.email}`
           })
         return matches
-      }
+      
     }, [])
 
     if (!matches) matches = []

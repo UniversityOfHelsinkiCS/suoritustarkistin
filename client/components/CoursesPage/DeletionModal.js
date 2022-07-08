@@ -15,8 +15,7 @@ const DeletionModal = ({ showForm, setShowForm, id }) => {
   }
 
   return (
-    <>
-      <Modal basic open={showForm} onClose={closeModal} size="small">
+    <Modal basic open={showForm} onClose={closeModal} size="small">
         <Modal.Content>
           <Segment style={{ height: '15em', textAlign: 'center', padding: '2em' }}>
             <Header size="large">Are you sure you want to delete the course?</Header>
@@ -34,7 +33,6 @@ const DeletionModal = ({ showForm, setShowForm, id }) => {
           </Segment>
         </Modal.Content>
       </Modal>
-    </>
   )
 }
 

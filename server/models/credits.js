@@ -1,4 +1,4 @@
-'use strict'
+
 module.exports = (sequelize, DataTypes) => {
   const Credits = sequelize.define(
     'credits',

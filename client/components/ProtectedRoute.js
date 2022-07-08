@@ -12,7 +12,7 @@ export default function ProtectedRoute({ component: Component, ...rest }) {
       render={(props) => {
         if (hasPermissions) {
           return <Component {...rest} {...props} />
-        } else {
+        } 
           return (
             <Redirect
               to={{
@@ -23,7 +23,7 @@ export default function ProtectedRoute({ component: Component, ...rest }) {
               }}
             />
           )
-        }
+        
       }}
     />
   )

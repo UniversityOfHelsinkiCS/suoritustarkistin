@@ -72,7 +72,7 @@ const getGradeCell = (grade, defaultGrade) => {
         {grade}
       </Table.Cell>
     )
-  } else if (!grade && defaultGrade) {
+  } if (!grade && defaultGrade) {
     return <Table.Cell style={validStyle}>Hyv.</Table.Cell>
   }
 
@@ -176,7 +176,7 @@ const getDateCell = (date) => {
 }
 
 const getErrorCell = (newRawEntries, studentId, courseCode) => {
-  const failed = newRawEntries.failed
+  const {failed} = newRawEntries
 
   if (failed) {
     const failedRow = failed.find((f) => f.studentNumber === studentId && f.courseCode === courseCode)
@@ -188,21 +188,19 @@ const getErrorCell = (newRawEntries, studentId, courseCode) => {
           {failedRow.message}
         </Table.Cell>
       )
-    } else {
+    } 
       return <Table.Cell />
-    }
+    
   }
 
   return null
 }
 
-const getDeletionCell = (index, handleRowDeletion) => {
-  return (
+const getDeletionCell = (index, handleRowDeletion) => (
     <Table.Cell style={validStyle}>
       <Button style={{ width: '100%' }} icon="trash" onClick={() => handleRowDeletion(index)} />
     </Table.Cell>
   )
-}
 
 const validCourse = (course, courses) => courses.find((c) => c.courseCode === course)
 
@@ -222,7 +220,7 @@ export default ({ allowDelete = true, kandi }) => {
   if (!newRawEntries.data) return null
 
   const grader = graders.find((g) => g.employeeId === newRawEntries.graderId)
-  const defaultGrade = newRawEntries.defaultGrade
+  const {defaultGrade} = newRawEntries
   const defaultCourse = courses.find((c) => c.id === newRawEntries.courseId)
   const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
 

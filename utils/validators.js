@@ -42,9 +42,7 @@ const isPastDate = (date) => {
   return false
 }
 
-const isDateObject = (date) => {
-  return Object.prototype.toString.call(date) === '[object Date]'
-}
+const isDateObject = (date) => Object.prototype.toString.call(date) === '[object Date]'
 
 const isValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
 
@@ -81,9 +79,7 @@ const isValidCourse = (course) => {
   return true
 }
 
-const isValidLanguage = (language) => {
-  return SIS_LANGUAGES.includes(language)
-}
+const isValidLanguage = (language) => SIS_LANGUAGES.includes(language)
 
 const isValidRow = (row, date, courseId) => {
   if (row.duplicate) return false
@@ -120,9 +116,7 @@ const isValidJob = (job) => {
   return true
 }
 
-const isValidSchedule = (schedule) => {
-  return cron.validate(schedule)
-}
+const isValidSchedule = (schedule) => cron.validate(schedule)
 
 module.exports = {
   SIS_LANGUAGES,

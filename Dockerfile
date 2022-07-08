@@ -15,7 +15,7 @@ RUN echo "${NODE_ENV}"
 WORKDIR /usr/src/app
 COPY package* ./
 
-RUN npm ci --only=production
+RUN npm ci --only=production --ignore-scripts
 
 # Install Sentry
 RUN curl -sL https://sentry.io/get-cli/ | bash

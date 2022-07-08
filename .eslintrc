@@ -32,6 +32,10 @@
     "comma-dangle": ["error", "never"],
     "arrow-parens": ["error", "always"],
     "import/no-unresolved": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": true }
+    ],
     "react/no-array-index-key": "off",
     "react/jsx-filename-extension": "off",
     "react/jsx-wrap-multilines": "off",

@@ -41,6 +41,7 @@ const editJob = async (req, res) => {
     })
 
     if (rows) {
+      // eslint-disable-next-line no-unused-expressions
       updatedJob.active ? activateJob(updatedJob.id) : deactivateJob(updatedJob.id)
       return res.status(200).json(updatedJob)
     }

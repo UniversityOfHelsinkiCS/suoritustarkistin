@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 const { flatten } = require('lodash')
 const logger = require('@utils/logger')
 const { getBatchId } = require('@root/utils/common')
@@ -43,13 +44,13 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       studentNumber: rawEntry.studentId,
       studentName: rawEntry.studentName,
       email: rawEntry.email,
-      batchId: batchId,
+      batchId,
       grade: rawEntry.grade,
       credits: rawEntry.credits ? rawEntry.credits : course.credits,
       language: rawEntry.language ? rawEntry.language : course.language,
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,
-      reporterId: reporterId,
+      reporterId,
       courseId: course.id
     }
   }
@@ -117,14 +118,13 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       isMissingEnrollment,
       courseCode: course.courseCode
     }
-  } else {
-    return {
-      message: 'error',
-      success: success.concat(successExtras),
-      failed: failed.concat(failedExtras),
-      batchId,
-      courseCode: course.courseCode
-    }
+  }
+  return {
+    message: 'error',
+    success: success.concat(successExtras),
+    failed: failed.concat(failedExtras),
+    batchId,
+    courseCode: course.courseCode
   }
 }
 

@@ -1,4 +1,3 @@
-'use strict'
 module.exports = (sequelize, DataTypes) => {
   const RawEntry = sequelize.define(
     'raw_entries',

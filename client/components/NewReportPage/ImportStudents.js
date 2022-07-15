@@ -124,12 +124,12 @@ const Accordion = ({
   allAttainments,
   hideWithAttainment
 }) => {
+  const [open, setOpen] = useState(false)
+
   const openAccordion = () => {
     if (!open) fetchAttainments(rows.map(({ person }) => person.studentNumber))
     setOpen(!open)
   }
-
-  const [open, setOpen] = useState(false)
 
   return (
     <>
@@ -195,6 +195,14 @@ const Accordion = ({
   )
 }
 
+const getTitle = (row) => {
+  const includeYearToStart =
+    moment(row.activityPeriod.startDate).get('year') !== moment(row.activityPeriod.endDate).get('year')
+  const start = moment(row.activityPeriod.startDate).format(includeYearToStart ? 'DD.MM.YYYY' : 'DD.MM.')
+  const end = moment(row.activityPeriod.endDate).subtract(1, 'day').format('DD.MM.YYYY')
+  return `${row.name.fi} (${start} - ${end}), ${row.enrollments.length} student(s)`
+}
+
 export default ({ isOpen, setIsOpen, importRows }) => {
   const dispatch = useDispatch()
   const [grades, setGrades] = useState({})
@@ -216,13 +224,13 @@ export default ({ isOpen, setIsOpen, importRows }) => {
 
   const set = ({ value: grade }, person, date) => {
     if (!grade) {
-      const newGrades = Object.assign({}, grades)
+      const newGrades = { ...grades }
       delete newGrades[person.studentNumber]
       setGrades(newGrades)
     } else
       setGrades({
         ...grades,
-        [person.studentNumber]: { name: `${person.lastName}, ${person.firstNames}`, grade: grade, date }
+        [person.studentNumber]: { name: `${person.lastName}, ${person.firstNames}`, grade, date }
       })
   }
 
@@ -355,11 +363,3 @@ const SummaryTable = ({ rows }) => (
     </Table.Body>
   </Table>
 )
-
-const getTitle = (row) => {
-  const includeYearToStart =
-    moment(row.activityPeriod.startDate).get('year') !== moment(row.activityPeriod.endDate).get('year')
-  const start = moment(row.activityPeriod.startDate).format(includeYearToStart ? 'DD.MM.YYYY' : 'DD.MM.')
-  const end = moment(row.activityPeriod.endDate).subtract(1, 'day').format('DD.MM.YYYY')
-  return `${row.name.fi} (${start} - ${end}), ${row.enrollments.length} student(s)`
-}

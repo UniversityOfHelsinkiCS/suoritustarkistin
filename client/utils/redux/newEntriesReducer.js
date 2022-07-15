@@ -9,9 +9,7 @@ const initialState = {
   date: moment().format('D.M.YYYY')
 }
 
-export const setNewEntriesAction = (entries) => {
-  return { type: 'SET_NEW_ENTRIES', payload: entries }
-}
+export const setNewEntriesAction = (entries) => ({ type: 'SET_NEW_ENTRIES', payload: entries })
 
 export const sendNewEntriesAction = (entries) => {
   const route = `/sis_entries`

@@ -48,7 +48,7 @@ const addRawEntries = async (req, res) => {
         graderId,
         reporterId: req.user.id,
         courseId,
-        date: date ? date : new Date(),
+        date: date || new Date(),
         data,
         isKandi
       },
@@ -66,11 +66,10 @@ const addRawEntries = async (req, res) => {
         rows: rawEntries,
         batchId: result.batchId
       })
-    } else {
-      await transaction.rollback()
-      logger.error({ message: `Processing new completions failed` })
-      return res.status(400).json({ message: 'Processing new completions failed', failed: result.failed })
     }
+    await transaction.rollback()
+    logger.error({ message: `Processing new completions failed` })
+    return res.status(400).json({ message: 'Processing new completions failed', failed: result.failed })
   } catch (error) {
     logger.error(error)
     logger.error(error.stack)

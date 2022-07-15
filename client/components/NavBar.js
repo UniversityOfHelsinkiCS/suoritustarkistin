@@ -9,6 +9,14 @@ import { setFilterAction, getAllSisReportsAction, getUnsentBatchCountAction } fr
 
 const STAGING = process.env.NODE_ENV === 'staging'
 
+const getMenuItemFromUrl = () => {
+  // In production path is prefixed with /suoritustarkistin/
+  const index = process.env.NODE_ENV === 'development' ? 1 : 2
+  const path = window.location.pathname.split('/')[index] || '/'
+  if (path === '/') return 'newReport'
+  return path
+}
+
 export default () => {
   const [activeItem, setActiveItem] = useState(getMenuItemFromUrl())
   const dispatch = useDispatch()
@@ -25,6 +33,7 @@ export default () => {
   }, [user.adminMode])
 
   const handleAdminModeToggle = () => {
+    // eslint-disable-next-line no-unused-expressions
     user.adminMode ? dispatch(disableAdminModeAction()) : dispatch(activateAdminModeAction())
 
     dispatch(setFilterAction('adminmode', !user.adminMode))
@@ -33,104 +42,90 @@ export default () => {
 
   const handleItemClick = (e, { name }) => (name === 'logo' ? setActiveItem('') : setActiveItem(name))
 
-  const getAdminButton = () => {
-    return (
-      <Menu.Item>
-        <span style={{ fontSize: '0.85em', marginRight: '5px' }}>Admin-mode:</span>
-        <Radio data-cy="adminmode-enable" toggle checked={user.adminMode} onClick={handleAdminModeToggle} />
-      </Menu.Item>
-    )
-  }
+  const getAdminButton = () => (
+    <Menu.Item>
+      <span style={{ fontSize: '0.85em', marginRight: '5px' }}>Admin-mode:</span>
+      <Radio data-cy="adminmode-enable" toggle checked={user.adminMode} onClick={handleAdminModeToggle} />
+    </Menu.Item>
+  )
 
-  const getSandboxButton = () => {
-    return (
-      <Menu.Item
-        data-cy="nav-sandbox"
-        as={Link}
-        to="/sandbox"
-        name="sandbox"
-        active={activeItem === 'sandbox'}
-        onClick={handleItemClick}
-      >
-        Sandbox
-      </Menu.Item>
-    )
-  }
+  const getSandboxButton = () => (
+    <Menu.Item
+      data-cy="nav-sandbox"
+      as={Link}
+      to="/sandbox"
+      name="sandbox"
+      active={activeItem === 'sandbox'}
+      onClick={handleItemClick}
+    >
+      Sandbox
+    </Menu.Item>
+  )
 
-  const CoursesButton = () => {
-    return (
-      <Menu.Item
-        data-cy="nav-courses"
-        as={Link}
-        to="/courses"
-        name="courses"
-        active={activeItem === 'courses'}
-        onClick={handleItemClick}
-      >
-        Edit courses
-      </Menu.Item>
-    )
-  }
+  const CoursesButton = () => (
+    <Menu.Item
+      data-cy="nav-courses"
+      as={Link}
+      to="/courses"
+      name="courses"
+      active={activeItem === 'courses'}
+      onClick={handleItemClick}
+    >
+      Edit courses
+    </Menu.Item>
+  )
 
-  const UsersButton = () => {
-    return (
-      <Menu.Item
-        data-cy="nav-users"
-        as={Link}
-        to="/users"
-        name="users"
-        active={activeItem === 'users'}
-        onClick={handleItemClick}
-      >
-        Edit users
-      </Menu.Item>
-    )
-  }
+  const UsersButton = () => (
+    <Menu.Item
+      data-cy="nav-users"
+      as={Link}
+      to="/users"
+      name="users"
+      active={activeItem === 'users'}
+      onClick={handleItemClick}
+    >
+      Edit users
+    </Menu.Item>
+  )
 
-  const AutomatedReportsButton = () => {
-    return (
-      <Menu.Item
-        data-cy="nav-automated-reports"
-        as={Link}
-        to="/automated-reports"
-        name="automated-reports"
-        active={activeItem === 'automated-reports'}
-        onClick={handleItemClick}
-      >
-        Automated reports
-      </Menu.Item>
-    )
-  }
+  const AutomatedReportsButton = () => (
+    <Menu.Item
+      data-cy="nav-automated-reports"
+      as={Link}
+      to="/automated-reports"
+      name="automated-reports"
+      active={activeItem === 'automated-reports'}
+      onClick={handleItemClick}
+    >
+      Automated reports
+    </Menu.Item>
+  )
 
-  const ApiChecks = () => {
-    return (
-      <Menu.Item
-        data-cy="nav-apichecks"
-        as={Link}
-        to="/apichecks"
-        name="apichecks"
-        active={activeItem === 'apichecks'}
-        onClick={handleItemClick}
-      >
-        API Checks
-      </Menu.Item>
-    )
-  }
+  const ApiChecks = () => (
+    <Menu.Item
+      data-cy="nav-apichecks"
+      as={Link}
+      to="/apichecks"
+      name="apichecks"
+      active={activeItem === 'apichecks'}
+      onClick={handleItemClick}
+    >
+      API Checks
+    </Menu.Item>
+  )
 
   const handleUnhijack = () => {
     window.localStorage.removeItem('adminLoggedInAs')
     window.location.reload()
   }
 
-  const unHijackButton = () => {
-    return (
-      <Menu.Item data-cy="sign-in-as" onClick={handleUnhijack}>
-        <Label color="green" horizontal>
-          Unhijack
-        </Label>
-      </Menu.Item>
-    )
-  }
+  const unHijackButton = () => (
+    <Menu.Item data-cy="sign-in-as" onClick={handleUnhijack}>
+      <Label color="green" horizontal>
+        Unhijack
+      </Label>
+    </Menu.Item>
+  )
 
   if (!user) return null
   return (
@@ -188,12 +183,4 @@ export default () => {
       </Menu.Item>
     </Menu>
   )
-}
-
-function getMenuItemFromUrl() {
-  // In production path is prefixed with /suoritustarkistin/
-  const index = process.env.NODE_ENV === 'development' ? 1 : 2
-  const path = window.location.pathname.split('/')[index] || '/'
-  if (path === '/') return 'newReport'
-  return path
 }

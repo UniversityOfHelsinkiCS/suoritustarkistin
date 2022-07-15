@@ -12,11 +12,19 @@ const {
 const { generateSisuId } = require('../utils/common')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
 
-const Op = Sequelize.Op
+const { Op } = Sequelize
 
 const COMMON = {
   gradeId: '1',
   gradeScaleId: 'sis-hyl-hyv'
+}
+
+const getActiveCourseUnitId = (courseUnits) => {
+  const now = moment()
+  return courseUnits.find(({ validityPeriod }) => {
+    if (!validityPeriod.endDate) return moment(validityPeriod.startDate).isSameOrBefore(now)
+    return moment(validityPeriod.startDate).isSameOrBefore(now) && moment(validityPeriod.endDate).isAfter(now) // dates are half-open intervals, do not include end date
+  })
 }
 
 const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) => {
@@ -126,14 +134,6 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
   })
 
   return [failed, success]
-}
-
-const getActiveCourseUnitId = (courseUnits) => {
-  const now = moment()
-  return courseUnits.find(({ validityPeriod }) => {
-    if (!validityPeriod.endDate) return moment(validityPeriod.startDate).isSameOrBefore(now)
-    return moment(validityPeriod.startDate).isSameOrBefore(now) && moment(validityPeriod.endDate).isAfter(now) // dates are half-open intervals, do not include end date
-  })
 }
 
 module.exports = processExtraEntries

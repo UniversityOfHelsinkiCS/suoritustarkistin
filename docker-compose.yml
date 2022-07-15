@@ -17,13 +17,12 @@ services:
   db:
     image: postgres:13.1
     container_name: suotar_db
-    command: ["postgres", "-c", "log_statement=all"]
+    command: ['postgres', '-c', 'log_statement=all']
     environment:
       - PGDATA=/data
       - POSTGRES_PASSWORD=postgres
     volumes:
       - pg_data:/data
-    container_name: suotar_db
   adminer-suotar:
     environment:
       - ADMINER_DESIGN=pepa-linha

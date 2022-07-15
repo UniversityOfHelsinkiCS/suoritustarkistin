@@ -8,7 +8,7 @@ const attainmentsToSisu = require('../utils/sendToSisu')
 const { failedInSisuReport, missingEnrolmentReport } = require('../utils/emailFactory')
 const sendEmail = require('../utils/sendEmail')
 
-const Op = Sequelize.Op
+const { Op } = Sequelize
 const PAGE_SIZE = 15 // Batches, no single reports
 
 const handleDatabaseError = (res, error) => {
@@ -296,6 +296,36 @@ const refreshEnrollments = async (req, res) => {
   }
 }
 
+const sendEmails = async (ccEmail, { missingStudents, batchId, failedInSisu }) => {
+  const cc = ccEmail ? `${process.env.CC_RECEIVER},${ccEmail}` : process.env.CC_RECEIVER
+  if (missingStudents.length)
+    sendEmail({
+      subject: `New completions reported with missing enrollment`,
+      attachments: [
+        {
+          filename: 'suotar.png',
+          path: `${process.cwd()}/client/assets/suotar.png`,
+          cid: 'toskasuotarlogoustcid'
+        }
+      ],
+      html: missingEnrolmentReport(missingStudents, batchId),
+      cc
+    })
+  if (failedInSisu)
+    sendEmail({
+      subject: `Some completions failed in Sisu`,
+      attachments: [
+        {
+          filename: 'suotar.png',
+          path: `${process.cwd()}/client/assets/suotar.png`,
+          cid: 'toskasuotarlogoustcid'
+        }
+      ],
+      html: failedInSisuReport(batchId),
+      cc
+    })
+}
+
 /**
  * Send entries to Sisu using importer-db-api.
  * Request body should contain a list of entry ids to be sent to Sisu.
@@ -376,36 +406,6 @@ const refreshSisStatus = async (req, res) => {
   const successExtras = await checkEntries(extraEntries, 'extra_entries')
   if (!success || !successExtras) return res.status(400).send('Failed to refresh entries from Sisu')
   return res.status(200).send()
-}
-
-const sendEmails = async (ccEmail, { missingStudents, batchId, failedInSisu }) => {
-  const cc = ccEmail ? `${process.env.CC_RECEIVER},${ccEmail}` : process.env.CC_RECEIVER
-  if (missingStudents.length)
-    sendEmail({
-      subject: `New completions reported with missing enrollment`,
-      attachments: [
-        {
-          filename: 'suotar.png',
-          path: `${process.cwd()}/client/assets/suotar.png`,
-          cid: 'toskasuotarlogoustcid'
-        }
-      ],
-      html: missingEnrolmentReport(missingStudents, batchId),
-      cc
-    })
-  if (failedInSisu)
-    sendEmail({
-      subject: `Some completions failed in Sisu`,
-      attachments: [
-        {
-          filename: 'suotar.png',
-          path: `${process.cwd()}/client/assets/suotar.png`,
-          cid: 'toskasuotarlogoustcid'
-        }
-      ],
-      html: failedInSisuReport(batchId),
-      cc
-    })
 }
 
 module.exports = {

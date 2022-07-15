@@ -12,6 +12,7 @@ const handleImporterApiErrors = (e) => {
 const chunkifyApi = async (data, url, size = 50) => {
   let allData = []
   const chunks = _.chunk(data, size)
+  // eslint-disable-next-line no-restricted-syntax
   for (const chunk of chunks) {
     const res = await api.post(url, chunk)
     allData = _.concat(allData, res.data)

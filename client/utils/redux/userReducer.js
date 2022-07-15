@@ -19,7 +19,7 @@ export const logoutAction = () => {
   const returnUrl = window.location.origin
   const route = '/logout'
   const prefix = 'LOGOUT'
-  return callBuilder(route, prefix, 'post', { returnUrl: returnUrl })
+  return callBuilder(route, prefix, 'post', { returnUrl })
 }
 
 export const activateAdminModeAction = () => {

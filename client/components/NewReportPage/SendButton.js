@@ -9,7 +9,7 @@ import { areValidNewRawEntries } from 'Root/utils/validators'
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
 
-  const defaultGrade = rawEntries.defaultGrade
+  const { defaultGrade } = rawEntries
   return {
     ...rawEntries,
     data: rawEntries.data.map((row) => {
@@ -35,7 +35,7 @@ const parseRawEntries = (rawEntries) => {
 }
 
 const parseCourseName = (newRawEntries, defaultCourse, courses) => {
-  if (!newRawEntries.data || !courses) return <></>
+  if (!newRawEntries.data || !courses) return null
 
   let rowCourses = []
   newRawEntries.data.forEach((row) => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import * as CSV from 'csv-string'
 import * as _ from 'lodash'
 import { isDateObject, isValidDate, isValidOodiDate, isValidStudentId } from 'Root/utils/validators'
@@ -5,19 +6,17 @@ import { KANDI_EXTRA_COURSES } from 'Root/utils/common'
 
 const markDuplicates = (data, defaultCourse) => {
   if (!data) return []
-  const indexes = data.map((row, index) => {
-    return {
-      index,
-      studentnumber: row.studentId,
-      course: row.course.length ? row.course : defaultCourse
-    }
-  })
+  const indexes = data.map((row, index) => ({
+    index,
+    studentnumber: row.studentId,
+    course: row.course.length ? row.course : defaultCourse
+  }))
 
   let duplicates = []
   const grouped = _.groupBy(indexes, 'studentnumber')
   for (const [studentnumber, completions] of Object.entries(grouped)) {
     for (const { course, index } of completions) {
-      if (completions.some((c) => c.course == course && c.index !== index)) {
+      if (completions.some((c) => c.course === course && c.index !== index)) {
         duplicates = [...duplicates, studentnumber]
       }
     }

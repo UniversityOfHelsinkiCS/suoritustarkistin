@@ -20,6 +20,7 @@ const runMigrations = async () => {
   return migrator.up()
 }
 
+// eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const initializeDatabaseConnection = async (attempt = 1) => {

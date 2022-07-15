@@ -89,6 +89,66 @@ const TableColumns = ({ allowDelete }) => (
   </Table.Header>
 )
 
+const parseEntryError = (error) => {
+  const errors = []
+  try {
+    Object.keys(error).forEach((key) => {
+      const { messageTemplate, message } = error[key]
+      if (!sisuErrorMessages[messageTemplate]) {
+        errors.push(message)
+      } else errors.push(sisuErrorMessages[messageTemplate])
+    })
+  } catch (e) {
+    return 'Click to view full error'
+  }
+  return errors.join(', ')
+}
+
+const MinimalExpand = ({ title, content }) => {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
+        {title} <Icon name={`triangle ${open ? 'down' : 'right'}`} />
+      </span>
+      {open ? <p>{content}</p> : null}
+    </>
+  )
+}
+
+const getSisUnitName = (name, language) => {
+  try {
+    const parsed = typeof name === 'string' ? JSON.parse(name) : name
+    if (!parsed) return <span style={{ color: '#573a08' }}>Enrolment missing</span>
+    if (!parsed[language]) return parsed.fi
+    return parsed[language]
+  } catch {
+    return `${name}`
+  }
+}
+
+const getCourseName = (rawEntry, course) => {
+  if (rawEntry.entry.type === 'EXTRA_ENTRY') return `Erilliskirjaus (${course.courseCode})`
+  if (EOAI_CODES.includes(course.courseCode))
+    return `${EOAI_NAMEMAP[rawEntry.entry.completionLanguage].name} (${course.courseCode})`
+  return `${course.name} (${course.courseCode})`
+}
+
+const getGrade = (gradeScaleId, gradeId, language) => {
+  if (!gradeId || !gradeScaleId || !language) return null
+  if (gradeScaleId === 'sis-0-5') return gradeId
+  if (gradeScaleId === 'sis-hyl-hyv') {
+    const gradeMap = [
+      { en: 'Fail', fi: 'Hyl.', sv: 'F' },
+      { en: 'Pass', fi: 'Hyv.', sv: 'G' }
+    ]
+    const grade = gradeMap[gradeId]
+    if (!grade) return null
+    return grade[language]
+  }
+  return null
+}
+
 const TableBody = ({ user, rawEntries }) => {
   const student = useSelector((state) => state.sisReports.filters.student)
 
@@ -223,7 +283,7 @@ const EntryCells = ({ entry, course, grader }) => {
       <Table.Cell data-cy="report-completionDate">
         {completionDate ? moment(completionDate).format('DD.MM.YYYY') : null}
       </Table.Cell>
-      <Table.Cell data-cy="report-completionLanguage">{completionLanguage ? completionLanguage : null}</Table.Cell>
+      <Table.Cell data-cy="report-completionLanguage">{completionLanguage || null}</Table.Cell>
       <Table.Cell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</Table.Cell>
       <Table.Cell>{grader ? grader.name : 'Grader not found'}</Table.Cell>
       <Table.Cell data-cy={`report-courseUnitRealisationName-${gradeId}`}>
@@ -238,64 +298,4 @@ const EntryCells = ({ entry, course, grader }) => {
       <Table.Cell data-cy="report-registered">{getSisuStatusCell(sent, errors, registered)}</Table.Cell>
     </>
   )
-}
-
-const parseEntryError = (error) => {
-  const errors = []
-  try {
-    Object.keys(error).forEach((key) => {
-      const { messageTemplate, message } = error[key]
-      if (!sisuErrorMessages[messageTemplate]) {
-        errors.push(message)
-      } else errors.push(sisuErrorMessages[messageTemplate])
-    })
-  } catch (e) {
-    return 'Click to view full error'
-  }
-  return errors.join(', ')
-}
-
-const MinimalExpand = ({ title, content }) => {
-  const [open, setOpen] = useState(false)
-  return (
-    <>
-      <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
-        {title} <Icon name={`triangle ${open ? 'down' : 'right'}`} />
-      </span>
-      {open ? <p>{content}</p> : null}
-    </>
-  )
-}
-
-const getSisUnitName = (name, language) => {
-  try {
-    const parsed = typeof name === 'string' ? JSON.parse(name) : name
-    if (!parsed) return <span style={{ color: '#573a08' }}>Enrolment missing</span>
-    if (!parsed[language]) return parsed['fi']
-    return parsed[language]
-  } catch {
-    return `${name}`
-  }
-}
-
-const getCourseName = (rawEntry, course) => {
-  if (rawEntry.entry.type === 'EXTRA_ENTRY') return `Erilliskirjaus (${course.courseCode})`
-  if (EOAI_CODES.includes(course.courseCode))
-    return `${EOAI_NAMEMAP[rawEntry.entry.completionLanguage].name} (${course.courseCode})`
-  return `${course.name} (${course.courseCode})`
-}
-
-const getGrade = (gradeScaleId, gradeId, language) => {
-  if (!gradeId || !gradeScaleId || !language) return null
-  if (gradeScaleId === 'sis-0-5') return gradeId
-  if (gradeScaleId === 'sis-hyl-hyv') {
-    const gradeMap = [
-      { en: 'Fail', fi: 'Hyl.', sv: 'F' },
-      { en: 'Pass', fi: 'Hyv.', sv: 'G' }
-    ]
-    const grade = gradeMap[gradeId]
-    if (!grade) return null
-    return grade[language]
-  }
-  return null
 }

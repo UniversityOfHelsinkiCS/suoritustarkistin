@@ -11,12 +11,15 @@ const isValidStudentId = (id) => {
       .substring(1, 8)
       .split('')
       .reduce((sum, curr, index) => (sum + curr * multipliers[index]) % 10, 0)
+    // eslint-disable-next-line eqeqeq
     return (10 - checksum) % 10 == id[8]
   }
   return false
 }
 
 const isValidOodiDate = (date) => /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.5.2019
+
+const isDateObject = (date) => Object.prototype.toString.call(date) === '[object Date]'
 
 const isValidDate = (date) => {
   if (!date) return false
@@ -40,10 +43,6 @@ const isPastDate = (date) => {
     if (date < moment().subtract(100, 'days')) return 'past'
   }
   return false
-}
-
-const isDateObject = (date) => {
-  return Object.prototype.toString.call(date) === '[object Date]'
 }
 
 const isValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
@@ -71,6 +70,8 @@ const isValidGradeScale = (gradeScale) => {
   return true
 }
 
+const isValidLanguage = (language) => SIS_LANGUAGES.includes(language)
+
 const isValidCourse = (course) => {
   if (!isValidCourseCode(course.courseCode)) return false
   if (!course.name) return false
@@ -79,10 +80,6 @@ const isValidCourse = (course) => {
   if (!areValidGraders(course.graders)) return false
   if (!isValidGradeScale(course.gradeScale)) return false
   return true
-}
-
-const isValidLanguage = (language) => {
-  return SIS_LANGUAGES.includes(language)
 }
 
 const isValidRow = (row, date, courseId) => {
@@ -114,14 +111,12 @@ const areValidNewRawEntries = (rawEntries) => {
   return true
 }
 
+const isValidSchedule = (schedule) => cron.validate(schedule)
+
 const isValidJob = (job) => {
   if (!isValidSchedule(job.schedule)) return false
   if (!job.courseId) return false
   return true
-}
-
-const isValidSchedule = (schedule) => {
-  return cron.validate(schedule)
 }
 
 module.exports = {

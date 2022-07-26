@@ -1,5 +1,5 @@
 const Router = require('express')
-const { checkEduweb, checkMooc } = require('@controllers/apiCheckController')
+const { checkEduweb, checkMooc, checkNewMooc } = require('@controllers/apiCheckController')
 const {
   seedDatabaseForTests,
   seedTestCompletions,
@@ -118,6 +118,7 @@ router.delete('/jobs/:id', checkAdmin, deleteJob)
 
 router.get('/apicheck/eduweb/:id', checkAdmin, checkEduweb)
 router.get('/apicheck/mooc/:id', checkAdmin, checkMooc)
+router.get('/apicheck/newmooc/:id', checkAdmin, checkNewMooc)
 
 router.get('/status', (req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
 

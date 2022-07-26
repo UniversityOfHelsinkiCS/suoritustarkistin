@@ -2,7 +2,7 @@ const axios = require('axios')
 
 const newMoocApi = axios.create({
   headers: {
-    Authorization: process.env.MOOC_TOKEN || ''
+    Authorization: process.env.NEW_MOOC_TOKEN || ''
   },
   baseURL: process.env.NEW_MOOC_ADDRESS
 })

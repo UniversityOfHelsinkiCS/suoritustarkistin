@@ -10,7 +10,7 @@ const { PORT, inProduction, inDevelopment, inTest, SHIBBOLETH_HEADERS } = requir
 const { requestLogger, parseUser, currentUser, errorMiddleware } = require('./utils/middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
-const { checkAllEntriesFromSisu, checkRegisteredForMooc } = require('./scripts/checkSisEntries')
+const { checkAllEntriesFromSisu, checkRegisteredForMooc, checkRegisteredForNewMooc } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
 
 const { IN_MAINTENANCE } = process.env
@@ -85,7 +85,10 @@ initializeDatabaseConnection()
       cron.schedule('15 3 * * 5', () => {
         checkRegisteredForMooc()
       })
-      // TODO: cronjob for sending completions to new mooc
+
+      cron.schedule('15 4 * * 5', () => {
+        checkRegisteredForNewMooc()
+      })
     }
 
     app.listen(PORT, () => {

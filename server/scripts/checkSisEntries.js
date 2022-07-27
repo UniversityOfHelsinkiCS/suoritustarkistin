@@ -3,6 +3,7 @@ const logger = require('@utils/logger')
 const db = require('../models/index')
 const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
+const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
 
 const markAsRegistered = async (entries, model) => {
   const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
@@ -82,7 +83,10 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
     { registeredToMooc: date },
     {
       where: {
-        moocCompletionId: { [Sequelize.Op.in]: moocCompletionsIds }
+        [Sequelize.Op.or]: [
+          { moocCompletionId: { [Sequelize.Op.in]: moocCompletionsIds } },
+          { newMoocCompletionId: { [Sequelize.Op.in]: moocCompletionsIds } }
+        ]
       }
     }
   )
@@ -127,8 +131,48 @@ const checkRegisteredForMooc = async () => {
   }
 }
 
+const checkRegisteredForNewMooc = async () => {
+  try {
+    const unregistered = await db.raw_entries.findAll({
+      where: {
+        registeredToMooc: { [Sequelize.Op.eq]: null },
+        newMoocCompletionId: { [Sequelize.Op.not]: null }
+      },
+      include: [{ model: db.entries, as: 'entry' }]
+    })
+
+    logger.info(`Found ${unregistered.length} unchecked completions for new Mooc`)
+
+    const completionStudentPairs = unregistered.reduce((completionStudentPairs, rawEntry) => {
+      const alreadyInSis =
+        rawEntry.entry &&
+        (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED')
+      if (alreadyInSis) {
+        return completionStudentPairs.concat({
+          completion_id: rawEntry.moocCompletionId,
+          student_number: String(rawEntry.studentNumber),
+          registration_date: rawEntry.attainmentDate
+        })
+      }
+      return completionStudentPairs
+    }, [])
+
+    logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
+
+    if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
+      const result = await postNewMoocRegistrations(completionStudentPairs)
+      if (result === 'OK') {
+        await markAsRegisteredToMooc(completionStudentPairs)
+      }
+    }
+  } catch (error) {
+    logger.error(`Error in running new Mooc registration check: ${error.message}`)
+  }
+}
+
 module.exports = {
   checkAllEntriesFromSisu,
   checkEntries,
-  checkRegisteredForMooc
+  checkRegisteredForMooc,
+  checkRegisteredForNewMooc
 }

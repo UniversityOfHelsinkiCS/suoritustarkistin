@@ -1,9 +1,8 @@
-/* Mostly a copy of processMoocEntries for now, updated once new api available */
 const logger = require('@utils/logger')
 const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 const { getRegistrations } = require('../services/eduweb')
-const { getCompletions } = require('../services/pointsmooc')
+const { getCompletions } = require('../services/newMooc')
 const { getEarlierAttainments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
@@ -24,7 +23,7 @@ const selectLanguage = (completion, course) => {
 }
 
 const defineGrade = (completion, course) => {
-  const { grade } = completion
+  const { grade } = completion.grade
   if (!grade && course.gradeScale === 'sis-hyl-hyv') return 'Hyv.'
   if (!grade && course.gradeScale === 'sis-0-5') return null
   if (!grade && !course.gradeScale) return 'Hyv.'
@@ -95,7 +94,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
           reporterId: null,
           courseId: course.id,
           moocUserId: completion.user_upstream_id,
-          moocCompletionId: completion.id
+          newMoocCompletionId: completion.id
         })
       }
       if (registration && !registration.onro)

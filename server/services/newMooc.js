@@ -1,4 +1,3 @@
-/* Mostly a copy of pointsMooc for now, updated once new api available */
 const logger = require('@utils/logger')
 const newMoocApi = require('../config/newMoocApi')
 
@@ -14,7 +13,7 @@ const getCompletions = async (course) => {
 const postRegistrations = async (completionAndStudentIdList) => {
   try {
     logger.info({ message: 'Posting completion registrations to new mooc' })
-    const response = await newMoocApi.post('/completion-registered-to-study-registry', { completions: completionAndStudentIdList })
+    const response = await newMoocApi.post('/completion-registered-to-study-registry', completionAndStudentIdList)
     logger.info({ message: `new mooc-api response: ${response.statusText}` })
     return response.statusText
   } catch (error) {

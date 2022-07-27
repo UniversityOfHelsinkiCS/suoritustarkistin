@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       attainmentDate: DataTypes.DATE, // This date should not be used, entry mankel might adjust the date
       moocUserId: DataTypes.INTEGER,
       moocCompletionId: DataTypes.STRING,
+      newMoocCompletionId: DataTypes.STRING,
       registeredToMooc: DataTypes.DATE,
       graderId: {
         type: DataTypes.INTEGER,

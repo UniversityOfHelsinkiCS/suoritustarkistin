@@ -1,4 +1,3 @@
-/* Mostly a copy of pointsMooc for now, updated once new api available */
 const logger = require('@utils/logger')
 const newMoocApi = require('../config/newMoocApi')
 

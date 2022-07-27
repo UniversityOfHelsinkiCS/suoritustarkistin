@@ -3,6 +3,7 @@ const logger = require('@utils/logger')
 const db = require('../models/index')
 const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
+const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
 
 const markAsRegistered = async (entries, model) => {
   const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)

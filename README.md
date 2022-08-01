@@ -69,11 +69,17 @@ There are a bunch courses with automatic reporting. These are courses that come 
 ### Development Environment
 
 1. Clone the repository
-2. Make sure you have a .env-file with the necessary variables in the project root
+2. Make sure you have a .env-file with the contents of .env.template
 3. `npm install`
 4. `npm run dev`
 5. Open [localhost:8000](localhost:8000)
 6. Dev-database can be viewed at: [localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public)
+
+### Production data
+Get production data for debugging/development with
+```bash
+./scripts/get_prod_db.sh
+```
 
 ### Testing
 

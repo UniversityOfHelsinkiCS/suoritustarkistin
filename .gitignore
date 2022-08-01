@@ -14,3 +14,5 @@ testdata.js
 *.sql
 *.gz
 *.log
+backups/
+scripts/my_username

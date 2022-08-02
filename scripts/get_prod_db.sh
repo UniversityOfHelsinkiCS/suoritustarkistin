@@ -43,4 +43,4 @@ get_username
 
 scp -r -o ProxyCommand="ssh -l $username -W %h:%p melkki.cs.helsinki.fi"  $username@$SERVER:$SERVER_FILE $BACKUPS
 
-./restore-db.sh ${BACKUPS}${SERVER_FILE_NAME}
+$PROJECT_ROOT/scripts/restore-db.sh ${BACKUPS}${SERVER_FILE_NAME}

@@ -113,7 +113,8 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
         const attainmentDate = getMoocAttainmentDate({
           registrationAttemptDate: completion.completion_registration_attempt_date,
           completionDate: completion.completion_date,
-          today: date
+          today: date,
+          courseCode: course.courseCode
         })
 
         // Check that the student does not have Advanced course completion yet

@@ -62,7 +62,6 @@ const KANDI_EXTRA_COURSES = {
 
 const THESIS_COURSES = ['TKT20013']
 
-// eslint-disable-next-line no-unused-vars
 const DEFA_COURSES = [
   'TKT21018',
   'AYTKT21018',
@@ -106,14 +105,23 @@ const isRegularExtraCourse = (course) =>
  *
  * !! If the chosen date is NOT within the studyright it is attached to, it will be adjusted to be within
  * the studyright automatically when entries are processed. !!
+ *
+ * For DEFA courses after registration period between July and August sets date to 30.6.
  * * */
 
 const getMoocAttainmentDate = ({
   registrationAttemptDate,
   completionDate,
   today,
-  useManualCompletionDate = false
+  useManualCompletionDate = false,
+  courseCode
 }) => {
+  if (
+    DEFA_COURSES.includes(courseCode) &&
+    registrationAttemptDate &&
+    moment(registrationAttemptDate).isBetween(moment('2022-06-30'), moment('2022-08-01'))
+  )
+    return new Date('2022-06-30')
   if (useManualCompletionDate && completionDate) return completionDate
   if (!useManualCompletionDate && registrationAttemptDate) return registrationAttemptDate
   if (completionDate) return completionDate

@@ -15,6 +15,7 @@ export default () => {
   const getEnrollments = () => {
     if (!mooc) return ''
     if (mooc && !mooc.length && !mooc.error) return 'The course has no completions'
+    if (mooc.error || !Array.isArray(mooc)) return 'Something went wrong'
 
     return (
       <Card fluid style={{ padding: '20px' }}>

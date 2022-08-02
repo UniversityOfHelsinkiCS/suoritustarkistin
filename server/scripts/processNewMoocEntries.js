@@ -23,9 +23,11 @@ const selectLanguage = (completion, course) => {
 }
 
 const defineGrade = (completion, course) => {
-  const { grade } = completion.grade
+  const { grade, scale } = completion.grade
   if (!grade && course.gradeScale === 'sis-hyl-hyv') return 'Hyv.'
+  if (grade === "1" && scale === "sis-hyv-hyl") return "Hyv."
   if (!grade && course.gradeScale === 'sis-0-5') return null
+  if (grade === "0" && scale === "sis-hyv-hyl") return null
   if (!grade && !course.gradeScale) return 'Hyv.'
   return grade
 }
@@ -50,7 +52,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
     let matches = await completions.reduce(async (matchesPromise, completion) => {
       const matches = await matchesPromise
 
-      if (completion.grade && !isValidGrade(completion.grade)) {
+      if (completion.grade.grade && !isValidGrade(completion.grade.grade)) {
         return matches
       }
 

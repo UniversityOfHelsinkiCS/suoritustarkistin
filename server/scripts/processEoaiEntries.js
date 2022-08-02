@@ -80,8 +80,7 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
         const attainmentDate = getMoocAttainmentDate({
           registrationAttemptDate: completion.completion_registration_attempt_date,
           completionDate: completion.completion_date,
-          today: date,
-          courseCode: NEW_EOAI_CODE
+          today: date
         })
 
         if (!isImprovedGrade(earlierAttainments, registration.onro, 'Hyv.', attainmentDate, course.credits)) {

@@ -12,7 +12,7 @@ const checkNumericImprovement = (earlierAttainments, grade, completionDate, cred
   if (
     earlierAttainments
       .filter((a) => a.grade.numericCorrespondence === grade && Number(a.credits) === credits)
-      .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
+      .every((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
   )
     return true
 
@@ -31,7 +31,7 @@ const checkPassed = (earlierAttainments, completionDate, credits) => {
   if (
     earlierAttainments
       .filter((a) => a.grade.passed && Number(a.credits) === credits)
-      .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
+      .every((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
   )
     return true
 
@@ -49,7 +49,7 @@ const checkFailed = (earlierAttainments, completionDate, credits) => {
   if (
     earlierAttainments
       .filter((a) => !a.grade.passed && Number(a.credits) === credits)
-      .some((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
+      .every((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
   )
     return true
 

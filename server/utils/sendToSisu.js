@@ -123,7 +123,7 @@ const extraEntriesToRequestData = (extraEntries, acceptors) =>
       registrationDate: moment().format('YYYY-MM-DD'),
       state: 'ATTAINED',
       credits: parseFloat(rawEntry.credits),
-      privateComment: 'Kurjen kautta tuotu erilliskirjaus',
+      administrativeNote: 'Kurjen kautta tuotu erilliskirjaus',
       attainmentLanguageUrn: `urn:code:language:${completionLanguage}`,
       id,
       personId,

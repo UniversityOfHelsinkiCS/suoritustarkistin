@@ -62,6 +62,7 @@ const KANDI_EXTRA_COURSES = {
 
 const THESIS_COURSES = ['TKT20013']
 
+// eslint-disable-next-line no-unused-vars
 const DEFA_COURSES = [
   'TKT21018',
   'AYTKT21018',
@@ -113,15 +114,8 @@ const getMoocAttainmentDate = ({
   registrationAttemptDate,
   completionDate,
   today,
-  useManualCompletionDate = false,
-  courseCode
+  useManualCompletionDate = false
 }) => {
-  if (
-    DEFA_COURSES.includes(courseCode) &&
-    registrationAttemptDate &&
-    moment(registrationAttemptDate).isBetween(moment('2022-06-30'), moment('2022-08-01'))
-  )
-    return new Date('2022-06-30')
   if (useManualCompletionDate && completionDate) return completionDate
   if (!useManualCompletionDate && registrationAttemptDate) return registrationAttemptDate
   if (completionDate) return completionDate

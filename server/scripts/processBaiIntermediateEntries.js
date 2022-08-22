@@ -92,8 +92,7 @@ const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu
         const attainmentDate = getMoocAttainmentDate({
           registrationAttemptDate: completion.completion_registration_attempt_date,
           completionDate: completion.completion_date,
-          today: date,
-          courseCode: course.courseCode
+          today: date
         })
 
         if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {

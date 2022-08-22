@@ -28,7 +28,7 @@ export default () => {
       <Card fluid style={{ padding: '20px' }}>
         {newMooc.map((s) => (
           <div key={s.id}>
-            {getCardRow(s, 'user_upstream_id')}
+            {getCardRow(s, 'user_id')}
             {getCardRow(s, 'email')}
             {getCardRow(s, 'completion_date')}
             {getCardRow(s, 'completion_registration_attempt_date')}

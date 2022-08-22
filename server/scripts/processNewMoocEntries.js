@@ -95,7 +95,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
           graderId: grader.id,
           reporterId: null,
           courseId: course.id,
-          moocUserId: completion.user_upstream_id,
+          moocUserId: completion.user_id,
           newMoocCompletionId: completion.id
         })
       }

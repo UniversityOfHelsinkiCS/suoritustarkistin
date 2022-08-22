@@ -78,7 +78,7 @@ initializeDatabaseConnection()
     const STAGING = process.env.NODE_ENV === 'staging'
 
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
-      cron.schedule('0 * * * *', () => {
+      cron.schedule('0 6 * * *', () => {
         checkAllEntriesFromSisu()
       })
 
@@ -86,7 +86,7 @@ initializeDatabaseConnection()
         checkRegisteredForMooc()
       })
 
-      cron.schedule('15 4 * * 5', () => {
+      cron.schedule('10 6 * * *', () => {
         checkRegisteredForNewMooc()
       })
     }

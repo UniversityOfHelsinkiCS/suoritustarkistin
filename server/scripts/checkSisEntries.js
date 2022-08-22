@@ -149,7 +149,7 @@ const checkRegisteredForNewMooc = async () => {
         (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED')
       if (alreadyInSis) {
         return completionStudentPairs.concat({
-          completion_id: rawEntry.moocCompletionId,
+          completion_id: rawEntry.newMoocCompletionId,
           student_number: String(rawEntry.studentNumber),
           registration_date: rawEntry.attainmentDate
         })

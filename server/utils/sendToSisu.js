@@ -99,7 +99,7 @@ const entriesToRequestData = (entries, acceptors) =>
       gradeScaleId,
       gradeId,
       state: gradeId === '0' ? 'FAILED' : 'ATTAINED', // naive, 0 equals to failing grade
-      credits: parseFloat(rawEntry.credits)
+      credits: parseFloat(rawEntry.credits.replace(',', '.'))
     }
   })
 
@@ -122,7 +122,7 @@ const extraEntriesToRequestData = (extraEntries, acceptors) =>
       attainmentDate: moment(completionDate).format('YYYY-MM-DD'),
       registrationDate: moment().format('YYYY-MM-DD'),
       state: 'ATTAINED',
-      credits: parseFloat(rawEntry.credits),
+      credits: parseFloat(rawEntry.credits.replace(',', '.')),
       administrativeNote: 'Kurjen kautta tuotu erilliskirjaus',
       attainmentLanguageUrn: `urn:code:language:${completionLanguage}`,
       id,

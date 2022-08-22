@@ -78,6 +78,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
       const completionDate = moment(rawEntry.attainmentDate)
       const course = courses.find((c) => c.id === rawEntry.courseId)
       const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
+      const credits = parseFloat(rawEntry.credits.replace(',', '.'))
 
       if (!student) {
         failed.push({
@@ -128,8 +129,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         }
         return Promise.resolve()
       }
-
-      if (!validateCredits(filteredEnrolment, parseFloat(rawEntry.credits))) {
+      if (!validateCredits(filteredEnrolment, credits)) {
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
@@ -284,7 +284,6 @@ const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attai
 }
 
 const mapGrades = (gradeScales, id, rawEntry) => {
-  // TODO: likely skipped for entries from new mooc
   let { grade } = rawEntry
   if (id === 'sis-0-5') {
     if (grade === 'Hyl.' || grade === '-') {

@@ -86,7 +86,7 @@ initializeDatabaseConnection()
         checkRegisteredForMooc()
       })
 
-      cron.schedule('40 6 * * *', () => {
+      cron.schedule('0 7 * * *', () => {
         checkRegisteredForNewMooc()
       })
     }

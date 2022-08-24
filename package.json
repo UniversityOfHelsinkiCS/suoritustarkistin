@@ -49,17 +49,17 @@
     "babel-preset-stage-2": "^6.24.1",
     "body-parser": "^1.2.0",
     "cross-env": "^5.2.1",
-    "css-loader": "^2.1.1",
+    "css-loader": "^5.2.7",
     "csv-string": "^4.1.0",
     "dotenv": "^16.0.1",
     "elliptic": "^6.5.4",
     "express": "^4.18.1",
     "faker": "^5.5.3",
-    "file-loader": "^3.0.1",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^3.2.0",
     "html-webpack-template": "^6.2.0",
     "lodash": "^4.17.21",
-    "mini-css-extract-plugin": "^0.5.0",
+    "mini-css-extract-plugin": "^1.6.2",
     "module-alias": "^2.2.2",
     "moment": "^2.29.4",
     "node-cron": "^2.0.3",
@@ -102,9 +102,9 @@
     "npm-run-all": "^4.1.5",
     "prettier": "2.7.1",
     "wait-on": "^3.3.0",
-    "webpack-dev-middleware": "^3.7.3",
-    "webpack-dev-server": "^3.11.3",
-    "webpack-hot-middleware": "^2.25.1"
+    "webpack-dev-middleware": "^5.3.3",
+    "webpack-dev-server": "^4.10.0",
+    "webpack-hot-middleware": "^2.25.2"
   },
   "nodemonConfig": {
     "ignore": [

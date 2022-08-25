@@ -81,7 +81,9 @@ const DEFA_COURSES = [
 
 const NEW_MOOC_COURSES = [
   'DATA20041',
-  'DATA20042'
+  'DATA20042',
+  'ATM385',
+  'ATM386'
 ]
 
 const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)

@@ -7,13 +7,15 @@ const { flatMap } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
 const db = require('../models/index')
 const { identicalCompletionFound } = require('../utils/earlierCompletions')
+const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
 const {
   getEmployees,
   getStudents,
   getGrades,
   getEnrolments,
   getMultipleStudyRights,
-  getEarlierAttainmentsWithoutSubstituteCourses
+  getEarlierAttainmentsWithoutSubstituteCourses,
+  getMultipleStudyRightsByPersons
 } = require('../services/importer')
 
 /**
@@ -177,7 +179,16 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         return Promise.resolve()
       }
 
-      const validAttainmentDate = getDateWithinStudyright(studyRights, student.id, filteredEnrolment, completionDate)
+      const validAttainmentDate = await getDateWithinStudyright(studyRights, student.id, filteredEnrolment, completionDate)
+      if (!validAttainmentDate) {
+        failed.push({
+          id: rawEntry.id,
+          studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
+          message: 'No valid attainment date for completion found'
+        })
+        return Promise.resolve()
+      }
 
       delete filteredEnrolment.studyRightId
       success.push({
@@ -253,7 +264,7 @@ const filterEnrolments = (completionDate, { enrolments }) => {
 
 const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
 
-const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attainmentDate) => {
+const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment, attainmentDate) => {
   if (!studyRights || !personId || !attainmentDate) return null
   const enrolmentStudyRight = studyRights.find(
     (s) => s.id === filteredEnrolment.studyRightId && s.personId === personId
@@ -280,7 +291,14 @@ const getDateWithinStudyright = (studyRights, personId, filteredEnrolment, attai
 
   // If there is no studyright attached to the enrolment, as long as the student
   // has any enrolment for the time of the registration, it will pass
-  return attainmentDate
+  const allStudyRights = await getMultipleStudyRightsByPersons([personId])
+
+  const { id: studyRightId } = resolveStudyRight(allStudyRights, attainmentDate)
+  if (studyRightId) return attainmentDate
+
+  // If there is no active studyright get the closest possible date within past studyrights
+  const [_studyRightId, newAttainmentDate] = getClosestStudyRight(allStudyRights, attainmentDate)
+  return newAttainmentDate
 }
 
 const mapGrades = (gradeScales, id, rawEntry) => {

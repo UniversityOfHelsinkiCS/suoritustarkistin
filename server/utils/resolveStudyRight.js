@@ -23,7 +23,7 @@ const resolveTerm = (attainmentDate) => {
  * If doing kandikirjaus, qualify on Matlu studyrights
  * If none found return empty object.
  */
-const resolveStudyRight = (studyRights, attainmentDate, onlyMatlu) => {
+const resolveStudyRight = (studyRights, attainmentDate, onlyMatlu = false) => {
   const attDate = moment(attainmentDate)
   const { attainmentStartYear, attainmentTermIndex } = resolveTerm(attDate)
 

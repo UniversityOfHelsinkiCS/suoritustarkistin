@@ -1,8 +1,7 @@
 FROM cypress/base:14.7.0
 
 # Set timezone to Europe/Helsinki
-RUN echo "Europe/Helsinki" > /etc/timezone
-RUN dpkg-reconfigure -f noninteractive tzdata
+ENV TZ="Europe/Helsinki"
 
 # Setup
 WORKDIR /usr/src/app

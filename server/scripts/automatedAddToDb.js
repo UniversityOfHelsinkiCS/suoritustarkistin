@@ -47,11 +47,11 @@ const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) =>
     await transaction.commit()
 
     if (sendToSisu) {
-      const [status, message] = await attainmentsToSisu('entries', {
+      const [status, { message }] = await attainmentsToSisu('entries', {
         user: {},
         body: { entryIds: entriesToSend.map(({ id }) => id) }
       })
-      if (status > 200) sendSentryMessage(`Sending automatedy entries to Sisu failed with message: ${message}`)
+      if (status > 200) sendSentryMessage(`Sending automated entries to Sisu failed with message: ${message}`)
     }
     return { message: 'success' }
   } catch (error) {

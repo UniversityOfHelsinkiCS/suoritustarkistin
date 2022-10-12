@@ -5,8 +5,9 @@ SERVICE_NAME=db
 DB_NAME=postgres
 
 SERVER=opetushallinto.cs.helsinki.fi
-SERVER_FILE_NAME=suotar-$(date -d "yesterday" '+%Y%m%d')_001201.sql
+SERVER_FILE_NAME=suotar-$(date -d "yesterday" '+%Y%m%d')_001201.sql.gz
 SERVER_FILE="/home/opetushallinto_user/suotar/backups/suotar/${SERVER_FILE_NAME}"
+SQL_FILE=suotar-$(date -d "yesterday" '+%Y%m%d')_001201.sql
 
 PROJECT_ROOT=$(dirname $(dirname $(realpath "$0")))
 BACKUPS=$PROJECT_ROOT/backups/
@@ -43,4 +44,6 @@ get_username
 
 scp -r -o ProxyCommand="ssh -l $username -W %h:%p melkki.cs.helsinki.fi"  $username@$SERVER:$SERVER_FILE $BACKUPS
 
-$PROJECT_ROOT/scripts/restore-db.sh ${BACKUPS}${SERVER_FILE_NAME}
+gunzip ${BACKUPS}${SERVER_FILE_NAME}
+
+$PROJECT_ROOT/scripts/restore-db.sh ${BACKUPS}${SQL_FILE}

@@ -45,10 +45,16 @@ const getGrade = (gradeScaleId, gradeId, language) => {
   return null
 }
 
+const getGraderName = (graderId, graders) => {
+  const { name } = graders.find(({ id }) => id === graderId)
+  return name
+}
+
 export default withRouter(({ rows, batchId, history }) => {
   const dispatch = useDispatch()
   const { pending, error } = useSelector((state) => state.sisReports)
   const graderId = useSelector((state) => state.newRawEntries.graderId)
+  const graders = useSelector((state) => state.graders.data)
   const [sent, setSent] = useState(false)
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
 
@@ -188,6 +194,7 @@ export default withRouter(({ rows, batchId, history }) => {
               <Table.HeaderCell>Grade</Table.HeaderCell>
               <Table.HeaderCell>Completion date</Table.HeaderCell>
               <Table.HeaderCell>Language</Table.HeaderCell>
+              <Table.HeaderCell>Grader</Table.HeaderCell>
               <Table.HeaderCell>Credits</Table.HeaderCell>
               <Table.HeaderCell>Course name</Table.HeaderCell>
               <Table.HeaderCell>Course realisation name</Table.HeaderCell>
@@ -211,6 +218,7 @@ export default withRouter(({ rows, batchId, history }) => {
                   <CompletionDate attainmentDate={rawEntry.attainmentDate} completionDate={entry.completionDate} />
                 </Table.Cell>
                 <Table.Cell>{rawEntry.language}</Table.Cell>
+                <Table.Cell>{getGraderName(rawEntry.graderId, graders)}</Table.Cell>
                 <Table.Cell>{rawEntry.credits}</Table.Cell>
                 <Table.Cell>{rawEntry.course.name}</Table.Cell>
                 <Table.Cell>{getCourseUnitRealisationName(entry)}</Table.Cell>

@@ -26,7 +26,7 @@
     "__BASE_PATH__": true
   },
   "rules": {
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_" }],
     "no-shadow": "off",
     "func-names": "off",
     "consistent-return": "off",

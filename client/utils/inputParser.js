@@ -84,8 +84,8 @@ export const parseExtraCSV = (string, defaultCourse) => {
   if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
-    const [studentId, grade, credits, language, attainmentDate, course] = row.split(CSV.detect(row))
-    return { ...toRawEntry(studentId, grade, credits, language, attainmentDate, course), isExtra: true }
+    const [studentId, grade, credits, language, attainmentDate, course, uid] = row.split(CSV.detect(row))
+    return { ...toRawEntry(studentId, grade, credits, language, attainmentDate, course, uid), isExtra: true }
   })
   return markDuplicates(data, defaultCourse)
 }

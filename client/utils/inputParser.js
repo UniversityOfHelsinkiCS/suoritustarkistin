@@ -57,7 +57,7 @@ const addLeadingZero = (studentnumber) => {
   return studentnumber
 }
 
-const toRawEntry = (studentId, grade, credits, language, attainmentDate, course) => ({
+const toRawEntry = (studentId, grade, credits, language, attainmentDate, course, uid) => ({
   studentId: addLeadingZero(studentId).trim(),
   batchId: '',
   grade: formatGrade(grade),
@@ -66,15 +66,16 @@ const toRawEntry = (studentId, grade, credits, language, attainmentDate, course)
   attainmentDate: formatDate(attainmentDate),
   graderId: '',
   reporterId: '',
-  course: course ? course.trim() : ''
+  course: course ? course.trim() : '',
+  uid
 })
 
 export const parseCSV = (string, defaultCourse) => {
   if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
-    const [studentId, grade, credits, language, attainmentDate, course] = row.split(CSV.detect(row))
-    return toRawEntry(studentId, grade, credits, language, attainmentDate, course)
+    const [studentId, grade, credits, language, attainmentDate, course, uid] = row.split(CSV.detect(row))
+    return toRawEntry(studentId, grade, credits, language, attainmentDate, course, uid)
   })
   return markDuplicates(data, defaultCourse)
 }

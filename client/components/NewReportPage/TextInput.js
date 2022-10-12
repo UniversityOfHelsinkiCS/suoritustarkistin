@@ -12,7 +12,14 @@ export default ({ kandi, parseCSV }) => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
   const courses = useSelector((state) => state.courses.data)
+  const graders = useSelector((state) => state.graders.data)
   const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
+
+  const getGraderId = ({ graderId, uid }) => {
+    const { employeeId } = graders.find((grader) => grader.uid === uid) || {}
+
+    return employeeId || graderId || ''
+  }
 
   const handleDataChange = (event) => {
     let rawData = event.target.value
@@ -28,7 +35,9 @@ export default ({ kandi, parseCSV }) => {
     }
 
     const defaultCourses = kandi ? getKandiExtras() : newRawEntries.defaultCourse
-    const data = parseCSV(rawData.trim(), defaultCourses)
+    const parsed = parseCSV(rawData.trim(), defaultCourses)
+
+    const data = parsed.map((entry) => ({ ...entry, graderId: getGraderId(entry) }))
 
     dispatch(
       setNewRawEntriesAction({

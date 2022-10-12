@@ -31,6 +31,13 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
   const toRawEntry = async (rawEntry) => {
     await validateEntry(rawEntry)
 
+    const grader = await db.users.findOne({
+      where: {
+        employeeId: rawEntry.graderId || graderId
+      }
+    })
+    if (!grader) throw new Error('Grader employee id does not exist.')
+
     if (rawEntry.course) {
       course = await db.courses.findOne({
         where: {
@@ -77,14 +84,6 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
     throw new Error(
       'Course information missing! Check that you have given a default course or each completion has its own course'
     )
-
-  const grader = await db.users.findOne({
-    where: {
-      employeeId: graderId
-    }
-  })
-
-  if (!grader) throw new Error('Grader employee id does not exist.')
 
   const batchId = getBatchId(course.courseCode)
 

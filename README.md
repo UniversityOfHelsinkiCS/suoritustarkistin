@@ -76,7 +76,9 @@ There are a bunch courses with automatic reporting. These are courses that come 
 6. Dev-database can be viewed at: [localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public)
 
 ### Production data
+
 Get production data for debugging/development with
+
 ```bash
 ./scripts/get_prod_db.sh
 ```

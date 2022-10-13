@@ -79,13 +79,7 @@ const DEFA_COURSES = [
   'AYTKT100051'
 ]
 
-const NEW_MOOC_COURSES = [
-  'DATA20041',
-  'DATA20042',
-  'ATM385',
-  'ATM386',
-  'TKT21039'
-]
+const NEW_MOOC_COURSES = ['DATA20041', 'DATA20042', 'ATM385', 'ATM386', 'TKT21039']
 
 const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
 const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
@@ -113,12 +107,7 @@ const isRegularExtraCourse = (course) =>
  * For DEFA courses after registration period between July and August sets date to 30.6.
  * * */
 
-const getMoocAttainmentDate = ({
-  registrationAttemptDate,
-  completionDate,
-  today,
-  useManualCompletionDate = false
-}) => {
+const getMoocAttainmentDate = ({ registrationAttemptDate, completionDate, today, useManualCompletionDate = false }) => {
   if (useManualCompletionDate && completionDate) return completionDate
   if (!useManualCompletionDate && registrationAttemptDate) return registrationAttemptDate
   if (completionDate) return completionDate

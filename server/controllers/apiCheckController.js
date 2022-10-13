@@ -32,7 +32,7 @@ const checkMooc = async (req, res) => {
 
 const checkNewMooc = async (req, res) => {
   try {
-    const result  = await checkNewMoocCompletions(req.params.id)
+    const result = await checkNewMoocCompletions(req.params.id)
     return res.status(200).send(result)
   } catch (error) {
     if (error.message === 'Request failed with status code 404') {

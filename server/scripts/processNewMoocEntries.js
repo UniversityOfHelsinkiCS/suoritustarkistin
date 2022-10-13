@@ -25,9 +25,9 @@ const selectLanguage = (completion, course) => {
 const defineGrade = (completion, course) => {
   const { grade, scale } = completion.grade
   if (!grade && course.gradeScale === 'sis-hyl-hyv') return 'Hyv.'
-  if (grade === "1" && scale === "sis-hyv-hyl") return "Hyv."
+  if (grade === '1' && scale === 'sis-hyv-hyl') return 'Hyv.'
   if (!grade && course.gradeScale === 'sis-0-5') return null
-  if (grade === "0" && scale === "sis-hyv-hyl") return null
+  if (grade === '0' && scale === 'sis-hyv-hyl') return null
   if (!grade && !course.gradeScale) return 'Hyv.'
   return grade
 }

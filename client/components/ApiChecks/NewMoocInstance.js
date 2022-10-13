@@ -14,8 +14,8 @@ export default () => {
 
   const getGradeRow = (instance) => (
     <div>
-        <b>grade: </b>
-        {instance.grade ? JSON.stringify(instance.grade) : 'null'}
+      <b>grade: </b>
+      {instance.grade ? JSON.stringify(instance.grade) : 'null'}
     </div>
   )
 

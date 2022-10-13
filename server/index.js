@@ -10,7 +10,11 @@ const { PORT, inProduction, inDevelopment, inTest, SHIBBOLETH_HEADERS } = requir
 const { requestLogger, parseUser, currentUser, errorMiddleware } = require('./utils/middleware')
 
 const { initializeDatabaseConnection } = require('./database/connection')
-const { checkAllEntriesFromSisu, checkRegisteredForMooc, checkRegisteredForNewMooc } = require('./scripts/checkSisEntries')
+const {
+  checkAllEntriesFromSisu,
+  checkRegisteredForMooc,
+  checkRegisteredForNewMooc
+} = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
 
 const { IN_MAINTENANCE } = process.env

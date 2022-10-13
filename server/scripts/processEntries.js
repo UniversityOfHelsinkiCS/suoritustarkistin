@@ -179,7 +179,12 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         return Promise.resolve()
       }
 
-      const validAttainmentDate = await getDateWithinStudyright(studyRights, student.id, filteredEnrolment, completionDate)
+      const validAttainmentDate = await getDateWithinStudyright(
+        studyRights,
+        student.id,
+        filteredEnrolment,
+        completionDate
+      )
       if (!validAttainmentDate) {
         failed.push({
           id: rawEntry.id,

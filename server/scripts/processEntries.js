@@ -5,6 +5,8 @@ const { Op } = Sequelize
 const moment = require('moment')
 const { flatMap } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
+
+const logger = require('@utils/logger')
 const db = require('../models/index')
 const { identicalCompletionFound } = require('../utils/earlierCompletions')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
@@ -285,10 +287,21 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
     let newAttainmentDate
     if (attainmentDate.isBetween(studyRightStart, studyRightEnd)) {
       newAttainmentDate = attainmentDate
-    } else if (attainmentDate.isBefore(studyRightStart)) {
+    } else if (attainmentDate.isSameOrBefore(studyRightStart)) {
       newAttainmentDate = studyRightStart
     } else if (attainmentDate.isSameOrAfter(studyRightEnd)) {
       newAttainmentDate = studyRightEnd.subtract(1, 'day')
+    }
+
+    // If the grant date of studyright is after the start
+    // of studyright the completion fails in Sisu
+    const grantDate = moment(enrolmentStudyRight.grantDate)
+    if (grantDate.isBetween(studyRightStart, studyRightEnd) && newAttainmentDate.isBefore(grantDate)) {
+      logger.info({
+        message: `Attainment date ${newAttainmentDate} is before grant date ${grantDate}`,
+        enrolmentStudyRight
+      })
+      newAttainmentDate = grantDate
     }
 
     return newAttainmentDate

@@ -17,7 +17,7 @@ const resolveTerm = (attainmentDate) => {
 }
 
 /**
- * Filter study right which is within given attainment date.
+ * Filter study right which is within given attainment date and after the grant date of studyright.
  * Filter study right where the student has registered ATTENDING or is avoin studyright (these do not include term registrations)
  * Take primarily Matlu studyright, if none active exists, take any studyright
  * If doing kandikirjaus, qualify on Matlu studyrights
@@ -27,8 +27,10 @@ const resolveStudyRight = (studyRights, attainmentDate, onlyMatlu = false) => {
   const attDate = moment(attainmentDate)
   const { attainmentStartYear, attainmentTermIndex } = resolveTerm(attDate)
 
-  const filterByAttainmentDate = ({ valid }) =>
-    moment(valid.startDate).isSameOrBefore(attDate) && moment(valid.endDate).isAfter(attDate)
+  const filterByAttainmentDate = ({ valid, grantDate }) =>
+    moment(valid.startDate).isSameOrBefore(attDate) &&
+    moment(valid.endDate).isAfter(attDate) &&
+    moment(grantDate).isSameOrBefore(attDate)
 
   const filterByTermRegistration = ({ term_registrations, id }) => {
     if (id.includes('avoin')) return true
@@ -83,7 +85,9 @@ const getClosestStudyRight = (studyRights, attainmentDate) => {
 
   if (!id) return []
 
-  const { valid } = studyRights.find((s) => s.id === id)
+  const studyRight = studyRights.find((s) => s.id === id)
+  const { valid } = studyRight
+  const grantDate = moment(studyRight.grantDate)
 
   const studyRightStart = moment(valid.startDate)
   const studyRightEnd = moment(valid.endDate)
@@ -92,6 +96,10 @@ const getClosestStudyRight = (studyRights, attainmentDate) => {
   let newAttainmentDate
   if (attDate.isBefore(studyRightStart)) newAttainmentDate = studyRightStart
   else if (attDate.isSameOrAfter(studyRightEnd)) newAttainmentDate = studyRightEnd.subtract(1, 'day')
+
+  if (grantDate.isBetween(studyRightStart, studyRightEnd) && newAttainmentDate.isBefore(grantDate))
+    newAttainmentDate = grantDate
+
   return [id, newAttainmentDate]
 }
 

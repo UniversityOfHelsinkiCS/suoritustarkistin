@@ -103,8 +103,6 @@ const isRegularExtraCourse = (course) =>
  *
  * !! If the chosen date is NOT within the studyright it is attached to, it will be adjusted to be within
  * the studyright automatically when entries are processed. !!
- *
- * For DEFA courses after registration period between July and August sets date to 30.6.
  * * */
 
 const getMoocAttainmentDate = ({ registrationAttemptDate, completionDate, today, useManualCompletionDate = false }) => {

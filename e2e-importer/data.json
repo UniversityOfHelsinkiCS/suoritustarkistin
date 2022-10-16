@@ -121,7 +121,8 @@
         "endDate": "2022-08-31",
         "startDate": "2021-10-21"
       },
-      "snapshotDateTime": null
+      "snapshotDateTime": null,
+      "grantDate": "2021-10-21T00:00:00.000Z"
     }
   ],
   "studyRightsByPeron": [
@@ -133,6 +134,7 @@
         "startDate": "2021-08-01"
       },
       "snapshotDateTime": "2021-08-01T04:12:14.077Z",
+      "grantDate": "2021-08-01T00:00:00.000Z",
       "organisation": {
         "code": "H50"
       },
@@ -175,6 +177,7 @@
         "startDate": "2021-08-01"
       },
       "snapshotDateTime": "2021-08-01T04:12:14.097Z",
+      "grantDate": "2021-08-01T00:00:00.000Z",
       "organisation": {
         "code": "H50"
       },
@@ -216,6 +219,7 @@
         "startDate": "2021-08-01"
       },
       "snapshotDateTime": null,
+      "grantDate": "2021-08-01T00:00:00.000Z",
       "organisation": {
         "code": null
       },
@@ -258,6 +262,7 @@
         "startDate": "2021-08-01"
       },
       "snapshotDateTime": "2021-08-01T02:19:45.367Z",
+      "grantDate": "2021-08-01T00:00:00.000Z",
       "organisation": {
         "code": "H50"
       },

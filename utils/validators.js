@@ -17,7 +17,7 @@ const isValidStudentId = (id) => {
   return false
 }
 
-const isValidOodiDate = (date) => /^(3[01]|[12][0-9]|[1-9])\.(1[0-2]|[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.5.2019
+const isValidOodiDate = (date) => /^(3[01]|[12][0-9]|[1-9]|0[1-9])\.(1[0-2]|[1-9]|0[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.05.2019
 
 const isDateObject = (date) => Object.prototype.toString.call(date) === '[object Date]'
 

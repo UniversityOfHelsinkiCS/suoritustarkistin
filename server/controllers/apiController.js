@@ -16,16 +16,16 @@ const handleDatabaseError = (res, error) => {
 }
 
 const getGraderId = async (uid) => {
-  const { employeeId } = await db.users.findOne({
+  const grader = await db.users.findOne({
     where: {
       uid
     },
-    attributes: ['employeeId']
+    attributes: ['id', 'employeeId']
   })
 
-  if (!employeeId) return false
+  if (!grader) return false
 
-  return employeeId
+  return grader
 }
 
 const parseEntry = async (entry) => {
@@ -39,6 +39,8 @@ const parseEntry = async (entry) => {
     grader
    ] = entry.split(';')
 
+   const { id, employeeId } = await getGraderId(grader)
+
    return {
     studentId: isValidStudentId(studentId) && studentId,
     grade: isValidGrade(grade) && grade,
@@ -46,7 +48,8 @@ const parseEntry = async (entry) => {
     language: isValidLanguage(language) && language,
     attainmentDate: isValidOodiDate(attainmentDate) && new Date(Date(attainmentDate)) || new Date(Date.now()),
     course: isValidCourseCode(course) && course,
-    graderId: await getGraderId(grader)
+    reporterId: id,
+    graderId: employeeId
   }
 }
 
@@ -55,14 +58,14 @@ const createEntries = async (req, res) => {
   const parsedEntries = await Promise.all(entries.map(parseEntry))
 
   const validationFailed = parsedEntries.map(Object.values).flat().some((value) => !value)
-
-  if (validationFailed) {
+  if (validationFailed)
     res.status(400).json({ error: 'Incorrect data' })
-  }
+
+  const { reporterId } = parsedEntries[0]
 
   const transaction = await db.sequelize.transaction()
   try {
-    const result = await processManualEntry({ data: parsedEntries }, transaction)
+    const result = await processManualEntry({ reporterId, data: parsedEntries }, transaction)
     if (result.message === 'success') {
       await transaction.commit()
       logger.info({ message: '[API] Report of new completions created successfully.' })

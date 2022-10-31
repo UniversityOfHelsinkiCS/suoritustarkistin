@@ -20,6 +20,18 @@ const checkGrader = (req, res, next) =>
 const checkAdmin = (req, res, next) =>
   permissionClass(req, res, next, (req) => req.user && req.user.isAdmin, 'Unauthorized access')
 
+const checkToken = (req, res, next) => {
+  const { SUOTAR_TOKEN } = process.env
+  const { query, headers } = req
+
+  if (query.token !== SUOTAR_TOKEN && headers.token !== SUOTAR_TOKEN) {
+    logger.info(`Failed token check`, query, headers)
+    return res.status(401).end()
+  }
+
+  next()
+}
+
 const checkIdMatch = (req, res, next) =>
   permissionClass(
     req,
@@ -85,6 +97,7 @@ const deleteBatch = (req, res, next) =>
 module.exports = {
   checkGrader,
   checkAdmin,
+  checkToken,
   checkIdMatch,
   notInProduction,
   deleteSingleEntry,

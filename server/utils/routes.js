@@ -1,5 +1,6 @@
 const Router = require('express')
 const { checkEduweb, checkMooc, checkNewMooc } = require('@controllers/apiCheckController')
+const { createEntries } = require('@controllers/apiController')
 const {
   seedDatabaseForTests,
   seedTestCompletions,
@@ -53,6 +54,7 @@ const {
   notInProduction,
   deleteSingleEntry,
   checkGrader,
+  checkToken,
   deleteBatch
 } = require('./permissions')
 const { paginateMiddleware, useFilters } = require('./middleware')
@@ -119,6 +121,8 @@ router.delete('/jobs/:id', checkAdmin, deleteJob)
 router.get('/apicheck/eduweb/:id', checkAdmin, checkEduweb)
 router.get('/apicheck/mooc/:id', checkAdmin, checkMooc)
 router.get('/apicheck/newmooc/:id', checkAdmin, checkNewMooc)
+
+router.post('/create', checkToken, createEntries)
 
 router.get('/status', (req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
 

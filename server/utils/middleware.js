@@ -48,18 +48,6 @@ const currentUser = async (req, res, next) => {
   next()
 }
 
-const checkToken = (req, res, next) => {
-  const { SUOTAR_TOKEN } = process.env
-  const { query, headers } = req
-
-  if (query.token !== SUOTAR_TOKEN && headers.token !== SUOTAR_TOKEN) {
-    logger.info(`Failed token check`, query, headers)
-    return res.status(401).end()
-  }
-
-  next()
-}
-
 const errorMiddleware = (req, res, next) => {
   const oldWrite = res.write
   const oldEnd = res.end
@@ -143,7 +131,6 @@ module.exports = {
   requestLogger,
   parseUser,
   currentUser,
-  checkToken,
   errorMiddleware,
   paginateMiddleware,
   useFilters

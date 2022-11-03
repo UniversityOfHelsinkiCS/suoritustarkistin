@@ -109,7 +109,8 @@ const getBaches = async ({ offset, moocReports = false, filters }) => {
     where: {
       batchId: {
         [Op.in]: batchIds
-      }
+      },
+      ...query
     },
     include: [...RAW_ENTRY_INCLUDES],
     order: [['createdAt', 'DESC'], 'studentNumber'],

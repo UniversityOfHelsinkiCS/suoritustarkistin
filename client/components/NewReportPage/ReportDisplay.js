@@ -122,6 +122,15 @@ const getLanguageCell = (language, course) => {
   return <Table.Cell />
 }
 
+const getGraderCell = (graderId, graders) => {
+  const grader = graders.find((g) => g.employeeId === graderId)
+  if (grader) {
+    return <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
+  }
+
+  return <Table.Cell />
+}
+
 const getDateCell = (date) => {
   if (date) {
     const past = isPastDate(date)
@@ -219,8 +228,7 @@ export default ({ allowDelete = true, kandi }) => {
 
   if (!newRawEntries.data) return null
 
-  const grader = graders.find((g) => g.employeeId === newRawEntries.graderId)
-  const { defaultGrade } = newRawEntries
+  const { defaultGrade, graderId } = newRawEntries
   const defaultCourse = courses.find((c) => c.id === newRawEntries.courseId)
   const date = newRawEntries.date ? newRawEntries.date : 'add completion date'
 
@@ -243,7 +251,7 @@ export default ({ allowDelete = true, kandi }) => {
         {getGradeCell(row.grade, defaultGrade)}
         {getCreditCell(row.credits, course)}
         {getLanguageCell(row.language, course)}
-        {grader ? <Table.Cell style={validStyle}>{grader.name}</Table.Cell> : <Table.Cell />}
+        {getGraderCell(row.graderId || graderId, graders)}
         {getDateCell(row.attainmentDate || date)}
         {getErrorCell(newRawEntries, row.studentId, course.courseCode)}
         {allowDelete ? getDeletionCell(index, handleRowDeletion) : null}

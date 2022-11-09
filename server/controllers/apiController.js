@@ -1,5 +1,5 @@
 const logger = require('@utils/logger')
-const attainmentsToSisu = require('@utils/sendToSisu')
+// const attainmentsToSisu = require('@utils/sendToSisu')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
 const {
@@ -73,15 +73,15 @@ const createEntries = async (req, res) => {
       if (orphans) logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
       const rawEntries = await db.raw_entries.getByBatch(result.batchId)
 
-      const entryIds = rawEntries.map(({ entry }) => entry.id)
+      /* const entryIds = rawEntries.map(({ entry }) => entry.id)
 
       let [status, message] = []
       if (entryIds.length) {
         [status, message] = await attainmentsToSisu('entries', { user, body: { entryIds } })
-      }
+      } */
 
-      return res.status(status).json({
-        message,
+      return res.status(201).json({
+        // message,
         isMissingEnrollment: result.isMissingEnrollment,
         rows: rawEntries,
         batchId: result.batchId

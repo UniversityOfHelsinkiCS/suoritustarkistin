@@ -6,7 +6,6 @@ const {
   isValidStudentId,
   isValidGrade,
   isValidCreditAmount,
-  isValidLanguage,
   isValidOodiDate,
   isValidCourseCode
 } = require('../../utils/validators')
@@ -34,7 +33,7 @@ const parseEntry = async (entry) => {
     studentId,
     grade,
     credits,
-    language,
+    _language,
     attainmentDate,
     course,
     grader
@@ -46,7 +45,6 @@ const parseEntry = async (entry) => {
     studentId: isValidStudentId(studentId) && studentId,
     grade: isValidGrade(grade) && grade,
     credits: isValidCreditAmount(credits) && credits,
-    language: isValidLanguage(language) && language,
     attainmentDate: isValidOodiDate(attainmentDate) && new Date(Date(attainmentDate)) || new Date(Date.now()),
     course: isValidCourseCode(course) && course,
     graderId: employeeId
@@ -59,7 +57,7 @@ const createEntries = async (req, res) => {
 
   const validationFailed = parsedEntries.map(Object.values).flat().some((value) => !value)
   if (validationFailed)
-    res.status(400).json({ error: 'Incorrect data' })
+    return res.status(400).json({ error: 'Incorrect data' })
 
   const user = await getGrader(senderUid)
 

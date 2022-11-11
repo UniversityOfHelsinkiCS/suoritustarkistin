@@ -1,6 +1,5 @@
 const logger = require('@utils/logger')
 const attainmentsToSisu = require('@utils/sendToSisu')
-const { sendSentryMessage } = require('@utils/sentry')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
 const {
@@ -72,14 +71,13 @@ const createEntries = async (req, res) => {
       if (orphans) logger.warn(`Deleted ${JSON.stringify(orphans)} orphans`)
       const rawEntries = await db.raw_entries.getByBatch(result.batchId)
 
-      const entryIds = rawEntries.map(({ entry }) => entry.id)
+      const entryIds = rawEntries
+        .filter(({ entry }) => !entry.missingEnrolment)
+        .map(({ entry }) => entry.id)
 
-      let [status, message] = []
+      let [_, message] = []
       if (entryIds.length) {
-        [status, message] = await attainmentsToSisu('entries', { user, body: { entryIds } })
-
-        if (status > 200)
-          return sendSentryMessage(`Sending entries to Sisu from API failed with message: ${message}`)
+        [_, message] = await attainmentsToSisu('entries', { user, body: { entryIds } })
       }
 
       return res.status(201).json({

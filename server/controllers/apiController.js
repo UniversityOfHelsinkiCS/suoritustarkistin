@@ -1,5 +1,6 @@
 const logger = require('@utils/logger')
 const attainmentsToSisu = require('@utils/sendToSisu')
+const { sendSentryMessage } = require('@utils/sentry')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
 const {
@@ -73,9 +74,12 @@ const createEntries = async (req, res) => {
 
       const entryIds = rawEntries.map(({ entry }) => entry.id)
 
-      let [_status, message] = []
+      let [status, message] = []
       if (entryIds.length) {
-        [_status, message] = await attainmentsToSisu('entries', { user, body: { entryIds } })
+        [status, message] = await attainmentsToSisu('entries', { user, body: { entryIds } })
+
+        if (status > 200)
+          return sendSentryMessage(`Sending entries to Sisu from API failed with message: ${message}`)
       }
 
       return res.status(201).json({

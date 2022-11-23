@@ -96,6 +96,7 @@ const notifyMissingEnrollment = async (req, res) => {
   const missingStudents = rawEntries
     .filter(({ entry }) => entry.missingEnrolment)
     .map(({ studentNumber }) => studentNumber)
+  const to = req.user.email || process.env.EMAIL_RECEIVER
   const cc = req.user.email ? `${process.env.CC_RECEIVER},${req.user.email}` : process.env.CC_RECEIVER
 
   await sendEmail({
@@ -108,6 +109,7 @@ const notifyMissingEnrollment = async (req, res) => {
       }
     ],
     html: missingEnrolmentReport(missingStudents, batchId),
+    to,
     cc
   })
   return res.status(200).send()

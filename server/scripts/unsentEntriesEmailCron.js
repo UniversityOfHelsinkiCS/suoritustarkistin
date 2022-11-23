@@ -12,16 +12,18 @@ const sendEmailAboutUnsentEntries = async () => {
   const batchIds = [...new Set(entries.map((entry) => entry.rawEntry.batchId))]
 
   sendEmail({
+    to: 'Toska <grp-toska@helsinki.fi>',
+    cc: null,
+    replyTo: 'Toska <grp-toska@helsinki.fi>',
     subject: 'Unsent entries in Suotar',
+    html: unsentEntriesTemplate(batchIds),
     attachments: [
       {
         filename: 'suotar.png',
         path: `${process.cwd()}/client/assets/suotar.png`,
         cid: 'toskasuotarlogoustcid'
       }
-    ],
-    html: unsentEntriesTemplate(batchIds),
-    cc: process.env.CC_RECEIVER
+    ]
   })
 }
 

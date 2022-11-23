@@ -297,8 +297,9 @@ const refreshEnrollments = async (req, res) => {
   }
 }
 
-const sendEmails = async (ccEmail, { missingStudents, batchId, failedInSisu }) => {
-  const cc = ccEmail ? `${process.env.CC_RECEIVER},${ccEmail}` : process.env.CC_RECEIVER
+const sendEmails = async (email, { missingStudents, batchId, failedInSisu }) => {
+  const to = email || process.env.EMAIL_RECEIVER
+  const cc = email ? `${process.env.CC_RECEIVER},${email}` : process.env.CC_RECEIVER
   if (missingStudents.length)
     sendEmail({
       subject: `New completions reported with missing enrollment`,
@@ -310,6 +311,7 @@ const sendEmails = async (ccEmail, { missingStudents, batchId, failedInSisu }) =
         }
       ],
       html: missingEnrolmentReport(missingStudents, batchId),
+      to,
       cc
     })
   if (failedInSisu)
@@ -323,6 +325,7 @@ const sendEmails = async (ccEmail, { missingStudents, batchId, failedInSisu }) =
         }
       ],
       html: failedInSisuReport(batchId),
+      to,
       cc
     })
 }

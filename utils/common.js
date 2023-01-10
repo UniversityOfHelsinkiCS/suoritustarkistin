@@ -79,7 +79,7 @@ const DEFA_COURSES = [
   'AYTKT100051'
 ]
 
-const NEW_MOOC_COURSES = ['DATA20041', 'DATA20042', 'ATM385', 'ATM386', 'TKT21039']
+const NEW_MOOC_COURSES = ['DATA20041', 'DATA20042', 'ATM385', 'ATM386', 'TKT21039', 'CSM90004']
 
 const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
 const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)

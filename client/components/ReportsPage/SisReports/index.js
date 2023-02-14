@@ -36,7 +36,7 @@ const getBatchLink = (id) => {
   if (process.env.NODE_ENV === 'production')
     return `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
   if (process.env.NODE_ENV === 'staging')
-    return `https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/reports/sisu/${id}`
+    return `https://toska-staging.cs.helsinki.fi/suotar/reports/sisu/${id}`
   return `http://localhost:8000/reports/sisu/${id}`
 }
 

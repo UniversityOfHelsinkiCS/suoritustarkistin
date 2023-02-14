@@ -48,7 +48,7 @@ jobs:
           tags: toska/suoritustarkistin:staging
           push: true
           build-args: |
-            BASE_PATH=/suotar
+            BASE_PATH=/suotar/
             NODE_ENV=staging
           secrets: |
             "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_TOKEN }}"
@@ -67,7 +67,7 @@ jobs:
         with:
           webhook-url: ${{ secrets.SLACKBOT_URL }}
           message-type: deployment
-          softa-url: https://opetushallinto.cs.helsinki.fi/staging/suoritustarkistin/
+          softa-url: https://toska-staging.cs.helsinki.fi/suotar
           deployment-target: staging
 
   report_failure:

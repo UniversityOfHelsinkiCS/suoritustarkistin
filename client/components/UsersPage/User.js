@@ -14,7 +14,7 @@ export default ({ user }) => {
     localStorage.setItem('adminLoggedInAs', user.employeeId)
 
     if (process.env.NODE_ENV === 'production') window.location.href = '/suoritustarkistin'
-    else if (process.env.NODE_ENV === 'staging') window.location.href = '/staging/suoritustarkistin'
+    else if (process.env.NODE_ENV === 'staging') window.location.href = '/suotar'
     else window.location.href = '/'
   }
 

@@ -14,4 +14,8 @@ COPY package* ./
 RUN npm ci -f --omit-dev --ignore-scripts
 COPY . .
 
+RUN npm run build
+
+EXPOSE 7000
+
 CMD ["npm", "start"]

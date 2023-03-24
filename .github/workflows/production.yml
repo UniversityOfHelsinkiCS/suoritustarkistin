@@ -62,7 +62,7 @@ jobs:
       - name: Pull image and create a container
         run: docker create --name suotar toska/suoritustarkistin:production
       - name: Copy assets from the container
-        run: docker cp kliksutin:/opt/app-root/src ./app
+        run: docker cp suotar:/opt/app-root/src ./app
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:

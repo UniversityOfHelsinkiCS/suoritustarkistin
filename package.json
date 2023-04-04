@@ -85,7 +85,8 @@
     "uuid": "^8.3.2",
     "webpack": "^4.46.0",
     "webpack-cli": "^4.10.0",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "winston-gelf-transporter": "^1.0.2"
   },
   "devDependencies": {
     "cypress": "8.0.0",

@@ -1,7 +1,7 @@
 const os = require('os')
 
 const winston = require('winston')
-const WinstonGelfTransporter = require('winston-gelf-transporter')
+const { WinstonGelfTransporter } = require('winston-gelf-transporter')
 
 const { NODE_ENV } = process.env
 const { combine, timestamp, printf, splat } = winston.format

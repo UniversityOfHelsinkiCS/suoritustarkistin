@@ -9,7 +9,7 @@ const handleImporterApiErrors = (e) => {
   throw new Error(e.toString())
 }
 
-const chunkifyApi = async (data, url, size = 50) => {
+const chunkifyApi = async (data, url, size = 10) => {
   let allData = []
   const chunks = _.chunk(data, size)
   // eslint-disable-next-line no-restricted-syntax

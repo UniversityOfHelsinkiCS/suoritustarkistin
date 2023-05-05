@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Pull image and create a container
-        run: docker create --name suotar toska/suoritustarkistin:production
+        run: docker create --name suotar quay.io/toska/suoritustarkistin:production
       - name: Copy assets from the container
         run: docker cp suotar:/opt/app-root/src ./app
       - name: Create Sentry release

@@ -24,7 +24,7 @@ const initializeCronJobs = async () => {
       const timestamp = new Date(Date.now())
       logger.info(`${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode}) completions.`)
 
-      const script = chooseScript(course.courseCode)
+      const script = chooseScript(course)
       const result = await script({ course, grader, job }, true)
 
       if (result.message === 'no new entries' || result.message === 'success') {
@@ -51,7 +51,7 @@ const activateJob = async (id) => {
     const timestamp = new Date(Date.now())
     logger.info(`${timestamp.toLocaleString()} Processing new ${course.name} (${course.courseCode}) completions.`)
 
-    const script = chooseScript(course.courseCode)
+    const script = chooseScript(course)
     const result = await script({ course, grader, job }, true)
 
     if (result.message === 'no new entries' || result.message === 'success') {

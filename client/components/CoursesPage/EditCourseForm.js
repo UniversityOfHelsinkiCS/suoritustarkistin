@@ -123,6 +123,17 @@ export default ({ course, close: closeModal }) => {
           checked={data.useAsExtra}
           onChange={(e, d) => setData({ ...data, useAsExtra: d.checked })}
         />
+        <Form.Field
+          label={
+            <label>
+              Use new mooc platform
+              <Help text='Select if course is a mooc course running on courses.mooc.fi' />
+            </label>
+          }
+          control={Checkbox}
+          checked={data.isNewMooc}
+          onChange={(e, d) => setData({ ...data, isNewMooc: d.checked })}
+        />
         <Form.Group>
           <Form.Field negative control={Button} content="Cancel" onClick={() => close()} />
           <Form.Field

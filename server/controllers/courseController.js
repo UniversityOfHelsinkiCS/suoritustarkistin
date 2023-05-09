@@ -15,7 +15,8 @@ const cleanCourses = (courses) =>
     credits: course.credits,
     graders: course.graders,
     gradeScale: course.gradeScale,
-    useAsExtra: course.useAsExtra
+    useAsExtra: course.useAsExtra,
+    isNewMooc: course.isNewMooc
   }))
 
 const getCourses = async (req, res) => {

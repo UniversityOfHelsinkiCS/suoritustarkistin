@@ -87,7 +87,7 @@ const runJob = async (req, res) => {
         course.courseCode
       }) completions`
     )
-    const script = chooseScript(course.courseCode)
+    const script = chooseScript(course)
     const result = await script({ job, course, grader })
 
     if (result.message === 'no new entries' || result.message === 'success') {

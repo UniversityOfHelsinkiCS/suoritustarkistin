@@ -36,6 +36,9 @@ export default () => {
           <Grid.Column width={1}>
             <Header as="h4">Extra completions</Header>
           </Grid.Column>
+          <Grid.Column width={1}>
+            <Header as="h4">New Mooc Course</Header>
+          </Grid.Column>
           <Grid.Column width={2} />
         </Grid.Row>
         {_.sortBy(courses, 'name').map((c) => (

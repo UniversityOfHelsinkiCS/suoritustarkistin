@@ -31,6 +31,9 @@ export default ({ course, graders }) => {
       <Grid.Column textAlign="center" width={1}>
         {course.useAsExtra ? <Icon name="check" color="green" size="large" /> : null}
       </Grid.Column>
+      <Grid.Column textAlign="center" width={1}>
+        {course.isNewMooc ? <Icon name="check" color="green" size="large" /> : null}
+      </Grid.Column>
       <Grid.Column width={2}>
         <EditCourse course={course} />
         <Button

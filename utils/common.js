@@ -62,25 +62,6 @@ const KANDI_EXTRA_COURSES = {
 
 const THESIS_COURSES = ['TKT20013']
 
-// eslint-disable-next-line no-unused-vars
-const DEFA_COURSES = [
-  'TKT21018',
-  'AYTKT21018',
-  'TKT210281',
-  'TKT210282',
-  'TKT21031',
-  'TKT200091',
-  'TKT200092',
-  'TKT200093',
-  'CSM132041',
-  'CSM132042',
-  'CSM132043',
-  'TKT100051',
-  'AYTKT100051'
-]
-
-const NEW_MOOC_COURSES = ['DATA20041', 'DATA20042', 'ATM385', 'ATM386', 'TKT21039', 'CSM90004']
-
 const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
 const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
 const isOneOfKandiCourses = (course) => isThesisCourse(course) || isKandiExtraCourse(course)
@@ -282,7 +263,6 @@ const testRawEntriesHylHyv = [
 module.exports = {
   gradeScales,
   KANDI_EXTRA_COURSES,
-  NEW_MOOC_COURSES,
   NEW_EOAI_CODE,
   EOAI_CODES,
   ALL_EOAI_CODES,

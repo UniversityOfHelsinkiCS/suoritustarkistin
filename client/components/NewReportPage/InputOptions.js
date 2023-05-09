@@ -110,6 +110,8 @@ export default ({ kandi, extra, parseCSV }) => {
   const courseOptions = defineCourseOptions(filterAYCodes(courses), kandi, extra)
   const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
 
+  const disableSend = newRawEntries.sending || !newRawEntries.data || !isValid || newRawEntries.data.length > 50
+
   const sendRawEntries = async () => await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
 
   useEffect(() => {
@@ -252,7 +254,7 @@ export default ({ kandi, extra, parseCSV }) => {
           ) // Add empty element to align send button to right with justify-content space-between
         }
         <Button
-          disabled={newRawEntries.sending || !newRawEntries.data || !isValid}
+          disabled={disableSend}
           data-cy="confirm-sending-button"
           color="green"
           onClick={sendRawEntries}
@@ -261,9 +263,18 @@ export default ({ kandi, extra, parseCSV }) => {
         </Button>
       </div>
       <div style={styles.info}>Remember to report completions for the correct academic year (1.8. – 31.7.)</div>
-      {newRawEntries.data && newRawEntries.data.some((entry) => entry.duplicate) && (
-        <Message negative>There are duplicate entries.</Message>
-      )}
+      {newRawEntries.data && <Alerts entryData={newRawEntries.data} />}
     </>
   )
 }
+
+const Alerts = ({ entryData }) => (
+  <>
+    {entryData.some((entry) => entry.duplicate) && (
+      <Message negative>There are duplicate entries.</Message>
+    )}
+    {entryData.length > 50 && (
+      <Message negative>There are more than 50 entries.</Message>
+    )}
+  </>
+)

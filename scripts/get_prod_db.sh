@@ -6,7 +6,7 @@ DB_NAME=postgres
 
 FILE_NAME=suotar.sql
 
-SERVER=toska.cs.helsinki.fi
+SERVER=toska-tmp.cs.helsinki.fi
 SERVER_PATH=/home/toska_user/most_recent_backup_store/
 SERVER_FILE="${SERVER_PATH}${FILE_NAME}.gz"
 

@@ -13,7 +13,7 @@ import ErrorBoundary from 'Components/ErrorBoundary'
 
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
   Sentry.init({
-    dsn: 'https://86bd3a31dbb84a518b581f10cce03b2e@sentry.cs.helsinki.fi/3',
+    dsn: 'https://6fb694554ea5cfb9c82fb2d7d2a8bc5f@toska.cs.helsinki.fi/16',
     environment: process.env.NODE_ENV,
     release: process.env.SENTRY_RELEASE,
     normalizeDepth: 10

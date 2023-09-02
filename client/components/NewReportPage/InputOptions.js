@@ -223,6 +223,7 @@ export default ({ kandi, extra, parseCSV }) => {
             <DatePicker
               id="date-picker"
               className="date-picker"
+              autoComplete="off"
               style={{ height: '20px', width: '100%' }}
               dateFormat="dd.MM.yyyy"
               selected={showingDate}

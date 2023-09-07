@@ -57,6 +57,7 @@ export default withRouter(({ rows, batchId, history }) => {
   const graders = useSelector((state) => state.graders.data)
   const [sent, setSent] = useState(false)
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
+  const dateHasChanged = rows.some(({ entry, attainmentDate }) => !moment(attainmentDate).isSame(moment(entry.completionDate), 'day'))
 
   useEffect(() => {
     if (sent && !pending && !(error || {}).genericError) {
@@ -148,6 +149,15 @@ export default withRouter(({ rows, batchId, history }) => {
       </Message>
     ) : null
 
+  const ChangedDateInfo = () =>
+    dateHasChanged ? (
+      <Message style={styles.missingEnrolmentInfo} warning>
+        One or more completion date has been changed to match the study right in the enrollment.
+        <br />
+        The changed dates are marked with a pencil icon. Please check the new dates before approving.
+      </Message>
+    ) : null
+
   const CompletionDate = ({ attainmentDate, completionDate }) =>
     completionDate ? (
       <div style={styles.completionDate}>
@@ -179,6 +189,7 @@ export default withRouter(({ rows, batchId, history }) => {
           after student enrolls to the course.{' '}
         </p>
         <MissingEnrollmentsInfo />
+        <ChangedDateInfo />
       </Segment>
       {sent && error ? (
         <Segment basic>

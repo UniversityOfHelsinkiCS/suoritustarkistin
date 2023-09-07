@@ -41,7 +41,7 @@ const addRawEntries = async (req, res) => {
       return res.status(400).json({ error: 'Data missing!' })
     }
 
-    logger.info({ message: 'Raw sis entries', data: JSON.stringify({ courseId, graderId, date, data, isKandi }) })
+    logger.info({ message: 'Raw sis entries', graderId, date, data: JSON.stringify(data), isKandi })
 
     const result = await processManualEntry(
       {

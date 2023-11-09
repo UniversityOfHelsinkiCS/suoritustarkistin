@@ -1,10 +1,12 @@
 const logger = require('@utils/logger')
 const newMoocApi = require('../config/newMoocApi')
 
-const getCompletions = async (course) => {
+const getCompletions = async (course, registeredIncluded = false) => {
   logger.info({ message: `Fetching completions for course ${course}` })
 
-  const { data } = await newMoocApi.get(`/study-registry/completions/${course}`)
+  const { data } = registeredIncluded
+    ? await newMoocApi.get(`/study-registry/completions/${course}`)
+    : await newMoocApi.get(`/study-registry/completions/${course}?exclude_already_registered=true`)
 
   logger.info({ message: `Found total of ${data ? data.length : 0} completions` })
   return data

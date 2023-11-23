@@ -3,8 +3,11 @@ const { sendSentryMessage } = require('@utils/sentry')
 const db = require('../models/index')
 const { processEntries } = require('./processEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
+const { filterDuplicateMatches } = require('../utils/earlierCompletions')
 
-const automatedAddToDb = async (matches, course, batchId, sendToSisu = false) => {
+const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false) => {
+  const matches = filterDuplicateMatches(allMatches)
+
   const transaction = await db.sequelize.transaction()
 
   if (!matches.length) {

@@ -174,4 +174,15 @@ const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, co
   return false
 }
 
-module.exports = { isImprovedGrade, identicalCompletionFound, earlierBaiCompletionFound, advancedFound }
+const filterDuplicateMatches = (matches) => {
+  const uniqueMatches = []
+  matches.forEach((match) => {
+    if (!uniqueMatches.some((m) => m.studentNumber === match.studentNumber && m.courseId === match.courseId)) {
+      uniqueMatches.push(match)
+    }
+  })
+
+  return uniqueMatches
+}
+
+module.exports = { isImprovedGrade, identicalCompletionFound, earlierBaiCompletionFound, advancedFound, filterDuplicateMatches }

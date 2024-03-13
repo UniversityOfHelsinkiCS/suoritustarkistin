@@ -62,7 +62,7 @@ There are a bunch courses with automatic reporting. These are courses that come 
 
 ### Deprecated: Combo Courses
 
-**Note** *feature is no longer needed since AY codes does not exist anymore. The support can be removed from the code* 
+*Feature is no longer needed since AY codes does not exist anymore. The support can be removed from the code* 
 
 For some courses, same course instance has students signed in from both AY and TKT. These courses are called Combo Courses. When marked as such in the SuotarDB, and approved by Open University, Suotar can automatically detect which completion should the student receive. You can see the selection for each student after inserting the data. The Open University completions will be painted blue.
 

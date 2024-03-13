@@ -56,13 +56,15 @@ Any details and validation errors can be seen in the table below the copy-paste-
 
 In case some students are missing enrolment to the course, Suotar will catch these completions into something called enrolment limbo. Suotar checks automatically every week, whether these students already have enrolled to the course. Once they have, Suotar will create a report of these completions. Teacher does not need to report completions without initial enrolment again.
 
-### Combo Courses
-
-For some courses, same course instance has students signed in from both AY and TKT. These courses are called Combo Courses. When marked as such in the SuotarDB, and approved by Open University, Suotar can automatically detect which completion should the student receive. You can see the selection for each student after inserting the data. The Open University completions will be painted blue.
-
 ### Automated reports (for admins only)
 
 There are a bunch courses with automatic reporting. These are courses that come from MOOC and can be found from the page 'Automated Reports'.
+
+### Combo Courses
+
+**Note** *feature is no longer needed since AY codes does not exist anymore. The support can be removed from the code* 
+
+For some courses, same course instance has students signed in from both AY and TKT. These courses are called Combo Courses. When marked as such in the SuotarDB, and approved by Open University, Suotar can automatically detect which completion should the student receive. You can see the selection for each student after inserting the data. The Open University completions will be painted blue.
 
 ## Developer Information
 

@@ -60,7 +60,7 @@ In case some students are missing enrolment to the course, Suotar will catch the
 
 There are a bunch courses with automatic reporting. These are courses that come from MOOC and can be found from the page 'Automated Reports'.
 
-### Combo Courses
+### Deprecated: Combo Courses
 
 **Note** *feature is no longer needed since AY codes does not exist anymore. The support can be removed from the code* 
 

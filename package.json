@@ -4,14 +4,14 @@
   "description": "Tool for collecting course completions.",
   "main": "index.js",
   "scripts": {
-    "dev": "docker-compose up",
-    "test": "npm run test:clean && docker-compose -f docker-compose.e2e.yml up --abort-on-container-exit --exit-code-from e2e",
+    "dev": "docker compose up",
+    "test": "npm run test:clean && docker compose -f docker-compose.e2e.yml up --abort-on-container-exit --exit-code-from e2e",
     "start": "node index.js",
     "lint": "eslint .",
     "lintfix": "eslint . --fix",
     "prepare": "husky install",
     "cypress:open": "npm run test:clean && npm run start:cypress-open",
-    "start:cypress": "docker-compose -f docker-compose.e2e.yml run --service-ports e2e npm run start:dev",
+    "start:cypress": "docker compose -f docker-compose.e2e.yml run --service-ports e2e npm run start:dev",
     "start:ci": "npm-run-all -r -p start cypress:run",
     "start:cypress-open": "npm-run-all -p start:cypress cypress:interactive",
     "cypress:run": "npx cypress run --headless",
@@ -19,7 +19,7 @@
     "build": "webpack",
     "start:dev": "nodemon index.js",
     "test:build": "webpack --mode production",
-    "test:clean": "docker-compose -f docker-compose.e2e.yml rm -vf && docker-compose -f docker-compose.e2e.yml build",
+    "test:clean": "docker compose -f docker-compose.e2e.yml rm -vf && docker compose -f docker-compose.e2e.yml build",
     "cli": "node ./server/scripts/fixCompletionDates.js"
   },
   "engines": {

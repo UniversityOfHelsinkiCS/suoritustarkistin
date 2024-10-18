@@ -1,4 +1,4 @@
-FROM node:14.17
+FROM node:20.18
 
 # Set timezone to Europe/Helsinki
 ENV TZ="Europe/Helsinki"

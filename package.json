@@ -44,7 +44,7 @@
     "@babel/register": "^7.18.9",
     "@sentry/node": "^6.19.7",
     "@sentry/react": "^6.19.7",
-    "axios": "^0.28.0",
+    "axios": "^1.0.0",
     "babel-loader": "^8.2.5",
     "babel-preset-stage-2": "^6.24.1",
     "body-parser": "^1.2.0",

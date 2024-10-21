@@ -15,7 +15,7 @@ services:
       - 8000:8000
     container_name: suotar_dev
   db:
-    image: postgres:13.1
+    image: postgres:13.16
     container_name: suotar_db
     command: ['postgres', '-c', 'log_statement=all']
     environment:
@@ -27,7 +27,7 @@ services:
     environment:
       - ADMINER_DESIGN=pepa-linha
       - ADMINER_DEFAULT_SERVER=db
-    image: adminer:4.7.5
+    image: adminer:4.8.1
     ports:
       - 8080:8080 # localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public
 

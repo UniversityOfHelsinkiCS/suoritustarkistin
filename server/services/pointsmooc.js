@@ -16,10 +16,12 @@ const getCompletions = async (course, registeredIncluded = false) => {
 const postRegistrations = async (completionAndStudentIdList) => {
   try {
     logger.info({ message: 'Posting completion registrations to mooc' })
+    logger.info('completionAndStudentIdList:', JSON.stringify(completionAndStudentIdList))
     const response = await moocApi.post(`/register-completions`, { completions: completionAndStudentIdList })
     logger.info({ message: `mooc-api response: ${response.statusText}` })
     return response.statusText
   } catch (error) {
+    logger.error(error)
     logger.error(`Error in updating confirmed registrations. Error: ${error}`)
   }
 }

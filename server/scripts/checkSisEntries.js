@@ -131,7 +131,7 @@ const checkRegisteredForMooc = async () => {
   }
 }
 
-const checkRegisteredForMoocDebug = async () => {
+const checkRegisteredForMoocDebug = async (number) => {
   try {
     const unregistered = await db.raw_entries.findAll({
       where: {
@@ -159,7 +159,7 @@ const checkRegisteredForMoocDebug = async () => {
 
     logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
 
-    completionStudentPairs = completionStudentPairs.slice(0, 1)
+    completionStudentPairs = completionStudentPairs.slice(0, number)
 
     logger.info(`endew with ${completionStudentPairs.length} new completion registrations in Sis`)
 

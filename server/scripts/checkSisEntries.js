@@ -161,7 +161,7 @@ const checkRegisteredForMoocDebug = async (number) => {
 
     completionStudentPairs = completionStudentPairs.slice(0, number)
 
-    logger.info(`endew with ${completionStudentPairs.length} new completion registrations in Sis`)
+    logger.info(`ende with ${completionStudentPairs.length} new completion registrations in Sis`)
 
     if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
       const result = await postRegistrations(completionStudentPairs)
@@ -172,6 +172,15 @@ const checkRegisteredForMoocDebug = async (number) => {
   } catch (error) {
     logger.error(`Error in running Mooc registration check: ${error.message}`)
   }
+}
+
+function chunkArray(array) {
+  const CHUINK_SIZE = 100
+  const result = []
+  for (let i = 0; i < array.length; i += CHUINK_SIZE) {
+    result.push(array.slice(i, i + CHUINK_SIZE))
+  }
+  return result
 }
 
 const checkRegisteredForNewMooc = async () => {
@@ -185,7 +194,6 @@ const checkRegisteredForNewMooc = async () => {
     })
 
     logger.info(`Found ${unregistered.length} unchecked completions for new Mooc`)
-
 
     const completionStudentPairs = unregistered.reduce((completionStudentPairs, rawEntry) => {
       const alreadyInSis =
@@ -204,10 +212,22 @@ const checkRegisteredForNewMooc = async () => {
     logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
 
     if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
+      const chunks = chunkArray(completionStudentPairs)
+      // eslint-disable-next-line no-restricted-syntax
+      for (const chunk of chunks) {
+        const result = await postNewMoocRegistrations(chunk)
+        if (result === 'OK') {
+          await markAsRegisteredToMooc(chunk)
+        } 
+      }
+
+      /*
       const result = await postNewMoocRegistrations(completionStudentPairs)
       if (result === 'OK') {
         await markAsRegisteredToMooc(completionStudentPairs)
       }
+      */
+
     }
   } catch (error) {
     logger.error(`Error in running new Mooc registration check: ${error.message}`)

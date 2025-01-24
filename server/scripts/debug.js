@@ -1,9 +1,10 @@
 require('module-alias/register')
 const {
-  checkRegisteredForMoocDebug
+  checkRegisteredForNewMooc
 } = require('./checkSisEntries')
 
 const main = async () => {
+  /*
   const args = process.argv.slice(2)
   if (args.length === 0) {
     console.log('Usage: node server/scripts/debug.js <number>')
@@ -14,8 +15,8 @@ const main = async () => {
     process.exit(1)
   }
   console.log('Checking', number, 'entries')
-
-  await checkRegisteredForMoocDebug(number)
+*/
+  await checkRegisteredForNewMooc()
 }
 
 main()

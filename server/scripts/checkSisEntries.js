@@ -92,6 +92,15 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
   )
 }
 
+function chunkArray(array) {
+  const CHUINK_SIZE = 10
+  const result = []
+  for (let i = 0; i < array.length; i += CHUINK_SIZE) {
+    result.push(array.slice(i, i + CHUINK_SIZE))
+  }
+  return result
+}
+
 const checkRegisteredForMooc = async () => {
   try {
     const unregistered = await db.raw_entries.findAll({
@@ -121,66 +130,18 @@ const checkRegisteredForMooc = async () => {
     logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
 
     if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
-      const result = await postRegistrations(completionStudentPairs)
-      if (result === 'OK') {
-        await markAsRegisteredToMooc(completionStudentPairs)
+      const chunks = chunkArray(completionStudentPairs)
+      // eslint-disable-next-line no-restricted-syntax
+      for (const chunk of chunks) {
+        const result = await postRegistrations(chunk)
+        if (result === 'OK') {
+          await markAsRegisteredToMooc(chunk)
+        } 
       }
     }
   } catch (error) {
     logger.error(`Error in running Mooc registration check: ${error.message}`)
   }
-}
-
-const checkRegisteredForMoocDebug = async (number) => {
-  try {
-    const unregistered = await db.raw_entries.findAll({
-      where: {
-        registeredToMooc: { [Sequelize.Op.eq]: null },
-        moocCompletionId: { [Sequelize.Op.not]: null }
-      },
-      include: [{ model: db.entries, as: 'entry' }]
-    })
-
-    logger.info(`Found ${unregistered.length} unchecked completions`)
-
-    let completionStudentPairs = unregistered.reduce((completionStudentPairs, rawEntry) => {
-      const alreadyInSis =
-        rawEntry.entry &&
-        (rawEntry.entry.registered === 'PARTLY_REGISTERED' || rawEntry.entry.registered === 'REGISTERED')
-      if (alreadyInSis) {
-        return completionStudentPairs.concat({
-          completion_id: rawEntry.moocCompletionId,
-          student_number: String(rawEntry.studentNumber),
-          registration_date: rawEntry.attainmentDate
-        })
-      }
-      return completionStudentPairs
-    }, [])
-
-    logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
-
-    completionStudentPairs = completionStudentPairs.slice(0, number)
-
-    logger.info(`ende with ${completionStudentPairs.length} new completion registrations in Sis`)
-
-    if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
-      const result = await postRegistrations(completionStudentPairs)
-      if (result === 'OK') {
-        await markAsRegisteredToMooc(completionStudentPairs)
-      }
-    }
-  } catch (error) {
-    logger.error(`Error in running Mooc registration check: ${error.message}`)
-  }
-}
-
-function chunkArray(array) {
-  const CHUINK_SIZE = 100
-  const result = []
-  for (let i = 0; i < array.length; i += CHUINK_SIZE) {
-    result.push(array.slice(i, i + CHUINK_SIZE))
-  }
-  return result
 }
 
 const checkRegisteredForNewMooc = async () => {
@@ -221,16 +182,10 @@ const checkRegisteredForNewMooc = async () => {
         } 
       }
 
-      /*
-      const result = await postNewMoocRegistrations(completionStudentPairs)
-      if (result === 'OK') {
-        await markAsRegisteredToMooc(completionStudentPairs)
-      }
-      */
-
     }
   } catch (error) {
     logger.error(`Error in running new Mooc registration check: ${error.message}`)
+    logger.error(error)
   }
 }
 
@@ -238,6 +193,5 @@ module.exports = {
   checkAllEntriesFromSisu,
   checkEntries,
   checkRegisteredForMooc,
-  checkRegisteredForNewMooc,
-  checkRegisteredForMoocDebug
+  checkRegisteredForNewMooc
 }

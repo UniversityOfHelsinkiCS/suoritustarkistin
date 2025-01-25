@@ -93,7 +93,7 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
 }
 
 function chunkArray(array) {
-  const CHUINK_SIZE = 10
+  const CHUINK_SIZE = 1
   const result = []
   for (let i = 0; i < array.length; i += CHUINK_SIZE) {
     result.push(array.slice(i, i + CHUINK_SIZE))
@@ -185,7 +185,6 @@ const checkRegisteredForNewMooc = async () => {
     }
   } catch (error) {
     logger.error(`Error in running new Mooc registration check: ${error.message}`)
-    logger.error(error)
   }
 }
 

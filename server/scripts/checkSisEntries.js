@@ -93,7 +93,7 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
 }
 
 function chunkArray(array) {
-  const SIZE = 10
+  const SIZE = 100
   const result = []
   for (let i = 0; i < array.length; i += SIZE) {
     result.push(array.slice(i, i + SIZE))

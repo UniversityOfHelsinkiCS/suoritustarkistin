@@ -93,12 +93,31 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
 }
 
 function chunkArray(array) {
-  const CHUINK_SIZE = 1
+  const SIZE = 10
   const result = []
-  for (let i = 0; i < array.length; i += CHUINK_SIZE) {
-    result.push(array.slice(i, i + CHUINK_SIZE))
+  for (let i = 0; i < array.length; i += SIZE) {
+    result.push(array.slice(i, i + SIZE))
   }
   return result
+}
+
+const registerChunks = async (chunks, poster) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const chunk of chunks) {
+    const result = await poster(chunk)
+    if (result === 'OK') {
+      await markAsRegisteredToMooc(chunk)
+    } else {
+      // fallback to single students
+      // eslint-disable-next-line no-restricted-syntax
+        for (const entry of chunk) {
+        const result = await poster([entry])
+        if (result === 'OK') {
+          await markAsRegisteredToMooc([entry])
+        }
+      }
+    }
+  }
 }
 
 const checkRegisteredForMooc = async () => {
@@ -131,13 +150,7 @@ const checkRegisteredForMooc = async () => {
 
     if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
       const chunks = chunkArray(completionStudentPairs)
-      // eslint-disable-next-line no-restricted-syntax
-      for (const chunk of chunks) {
-        const result = await postRegistrations(chunk)
-        if (result === 'OK') {
-          await markAsRegisteredToMooc(chunk)
-        } 
-      }
+      await registerChunks(chunks, postRegistrations)
     }
   } catch (error) {
     logger.error(`Error in running Mooc registration check: ${error.message}`)
@@ -172,16 +185,9 @@ const checkRegisteredForNewMooc = async () => {
 
     logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
 
-    if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
+    if (completionStudentPairs.length) {
       const chunks = chunkArray(completionStudentPairs)
-      // eslint-disable-next-line no-restricted-syntax
-      for (const chunk of chunks) {
-        const result = await postNewMoocRegistrations(chunk)
-        if (result === 'OK') {
-          await markAsRegisteredToMooc(chunk)
-        } 
-      }
-
+      await registerChunks(chunks, postNewMoocRegistrations)
     }
   } catch (error) {
     logger.error(`Error in running new Mooc registration check: ${error.message}`)

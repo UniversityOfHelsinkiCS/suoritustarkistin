@@ -304,7 +304,7 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
       newAttainmentDate = grantDate
     }
 
-    return newAttainmentDate
+    return newAttainmentDate.add(3, 'hours')
   }
 
   // If there is no studyright attached to the enrolment, as long as the student

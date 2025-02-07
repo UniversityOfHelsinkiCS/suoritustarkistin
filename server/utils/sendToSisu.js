@@ -87,6 +87,21 @@ const entriesToRequestData = (entries, acceptors) =>
       rawEntry
     } = entry
 
+    console.log("NEW ENTRIES")
+
+    console.log({
+      id,
+      personId,
+      courseUnitRealisationId,
+      assessmentItemId,
+      completionLanguage,
+      courseUnitId,
+      gradeScaleId,
+      gradeId,
+      completionDate,
+      rawEntry
+    })
+
     return {
       id,
       personId,

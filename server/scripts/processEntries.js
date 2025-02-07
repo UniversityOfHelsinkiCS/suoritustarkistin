@@ -288,7 +288,8 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
     if (attainmentDate.isBetween(studyRightStart, studyRightEnd)) {
       newAttainmentDate = attainmentDate
     } else if (attainmentDate.isSameOrBefore(studyRightStart)) {
-      newAttainmentDate = studyRightStart
+      // the API does not handle properly timezones
+      newAttainmentDate = studyRightStart.add(3, 'hours')
     } else if (attainmentDate.isSameOrAfter(studyRightEnd)) {
       newAttainmentDate = studyRightEnd.subtract(1, 'day')
     }
@@ -304,7 +305,7 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
       newAttainmentDate = grantDate
     }
 
-    return newAttainmentDate.add(3, 'hours')
+    return newAttainmentDate
   }
 
   // If there is no studyright attached to the enrolment, as long as the student

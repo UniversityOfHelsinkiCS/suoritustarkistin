@@ -23,7 +23,10 @@ const gradeScales = [
 const moocLanguageMap = {
   fi_FI: 'fi',
   en_US: 'en',
-  sv_SE: 'sv'
+  sv_SE: 'sv',
+  'fi-FI': 'fi',
+  'en-US': 'en',
+  'sv-SE': 'sv'
 }
 
 const NEW_EOAI_CODE = 'TKT21018'

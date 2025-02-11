@@ -74,11 +74,13 @@ const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) =
         if (!grade) {
           return matches
         }
+
         if (
           !isImprovedGrade(earlierAttainments, registration.onro, grade, completion.completion_date, course.credits)
         ) {
           return matches
         }
+
         if (matches.some((c) => c.studentNumber === registration.onro)) {
           return matches
         }

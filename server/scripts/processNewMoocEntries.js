@@ -9,16 +9,20 @@ const { automatedAddToDb } = require('./automatedAddToDb')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
+ 
   const courseLanguage = course.language
   if (!completionLanguage) {
     return courseLanguage
   }
+
   if (completionLanguage && Object.keys(moocLanguageMap).includes(completionLanguage)) {
     return moocLanguageMap[completionLanguage]
   }
+
   if (completionLanguage && !SIS_LANGUAGES.includes(completionLanguage)) {
     return courseLanguage
   }
+
   return completionLanguage
 }
 

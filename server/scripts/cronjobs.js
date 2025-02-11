@@ -40,6 +40,24 @@ const initializeCronJobs = async () => {
   cronjobs['send-email-about-unsent-entries'] = cron.schedule('0 9 * * 2', sendEmailAboutUnsentEntries)
 }
 
+const runJob = async (id) => {
+  const job = await db.jobs.findOne({ where: { id } })
+  const course = await db.courses.findOne({ where: { id: job.courseId } })
+  const grader = await db.users.findOne({ where: { id: job.graderId } })
+
+  const script = chooseScript(course)
+
+  const result = await script({ course, grader, job }, true)
+
+  console.log('result', result)
+
+  if (result.message === 'no new entries' || result.message === 'success') {
+    logger.info({ message: result.message })
+  } else {
+    logger.error({ error: result.message })
+  }
+}
+
 const activateJob = async (id) => {
   const job = await db.jobs.findOne({ where: { id } })
   const course = await db.courses.findOne({ where: { id: job.courseId } })
@@ -70,5 +88,6 @@ const deactivateJob = async (id) => {
 module.exports = {
   initializeCronJobs,
   activateJob,
-  deactivateJob
+  deactivateJob,
+  runJob
 }

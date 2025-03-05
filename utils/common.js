@@ -23,9 +23,11 @@ const gradeScales = [
 const moocLanguageMap = {
   fi_FI: 'fi',
   en_US: 'en',
+  en_GB: 'en',
   sv_SE: 'sv',
   'fi-FI': 'fi',
   'en-US': 'en',
+  'en-GB': 'en',
   'sv-SE': 'sv'
 }
 

@@ -1,14 +1,15 @@
 const moment = require('moment')
 
 const checkNumericImprovement = (earlierAttainments, grade, completionDate, credits) => {
-  const completionDateMoment = moment(completionDate)
+  // due to hours dropped in SISU API, remove one day from completion date
+  const completionDateMoment = moment(completionDate).subtract(1, 'days')
 
-  if (earlierAttainments.some((a) => a.grade.numericCorrespondence < grade)) return true
+  if (earlierAttainments.every((a) => a.grade.numericCorrespondence < grade)) return true
 
-  if (earlierAttainments.some((a) => a.grade.numericCorrespondence === grade && Number(a.credits) < credits))
+  if (earlierAttainments.every((a) => a.grade.numericCorrespondence === grade && Number(a.credits) < credits))
     return true
 
-  // Same grade and credits but greater completion date
+  // Same grade and credits but greater completion date, see the comment above about adding one day
   if (
     earlierAttainments
       .filter((a) => a.grade.numericCorrespondence === grade && Number(a.credits) === credits)
@@ -72,6 +73,7 @@ const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completion
 
   const sanitizedCredits = Number(credits.replace(',', '.'))
   const sanitizedGrade = Number(grade.replace(',', '.'))
+
   if (sanitizedGrade >= 1 && sanitizedGrade <= 5)
     return checkNumericImprovement(earlierAttainments, sanitizedGrade, completionDate, sanitizedCredits)
 

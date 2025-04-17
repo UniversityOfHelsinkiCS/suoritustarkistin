@@ -48,7 +48,7 @@
     "babel-loader": "^8.2.5",
     "babel-preset-stage-2": "^6.24.1",
     "body-parser": "^1.2.0",
-    "cross-env": "^5.2.1",
+    "cross-env": "^7.0.0",
     "css-loader": "^5.2.7",
     "csv-string": "^4.1.0",
     "dotenv": "^16.0.1",

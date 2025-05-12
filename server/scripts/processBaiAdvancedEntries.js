@@ -15,6 +15,7 @@ const { automatedAddToDb } = require('./automatedAddToDb')
 const { advancedFound } = require('../utils/earlierCompletions')
 
 const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) => {
+  logger.info({ message: `Processing BAI Advanced entries for course: ${course.courseCode}` })
   try {
     const rawCredits = await db.credits.findAll({
       where: {

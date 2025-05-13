@@ -130,7 +130,7 @@ const checkRegisteredForMooc = async () => {
       include: [{ model: db.entries, as: 'entry' }]
     })
 
-    logger.info(`Found ${unregistered.length} unchecked completions`)
+    logger.info(`checkRegisteredForMooc: Found ${unregistered.length} unchecked completions`)
 
     const completionStudentPairs = unregistered.reduce((completionStudentPairs, rawEntry) => {
       const alreadyInSis =
@@ -167,7 +167,7 @@ const checkRegisteredForNewMooc = async () => {
       include: [{ model: db.entries, as: 'entry' }]
     })
 
-    logger.info(`Found ${unregistered.length} unchecked completions for new Mooc`)
+    logger.info(`checkRegisteredForNewMooc: Found ${unregistered.length} unchecked completions for new Mooc`)
 
     const completionStudentPairs = unregistered.reduce((completionStudentPairs, rawEntry) => {
       const alreadyInSis =

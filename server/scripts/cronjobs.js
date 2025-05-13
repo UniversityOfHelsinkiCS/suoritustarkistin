@@ -8,11 +8,14 @@ const sendEmailAboutUnsentEntries = require('./unsentEntriesEmailCron')
 let cronjobs = {}
 
 const initializeCronJobs = async () => {
-  logger.info({ message: 'Initialized cronjobs' })
+  logger.info({ message: 'Initializing cronjobs' })
 
   const jobs = await db.jobs.findAll({
     where: { active: true }
   })
+
+  logger.info({ message: JSON.stringify(jobs, null, 2) })
+
   const courses = await db.courses.findAll({})
   const users = await db.users.findAll({})
 

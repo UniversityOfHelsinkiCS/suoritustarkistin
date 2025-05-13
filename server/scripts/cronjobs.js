@@ -52,6 +52,7 @@ const runJob = async (id) => {
 
   const result = await script({ course, grader, job }, true)
 
+  // eslint-disable-next-line no-console
   console.log('result', result)
 
   if (result.message === 'no new entries' || result.message === 'success') {

@@ -80,25 +80,17 @@ initializeDatabaseConnection()
     if (!IN_MAINTENANCE && inProduction) initializeCronJobs()
 
     const STAGING = process.env.NODE_ENV === 'staging'
-    // eslint-disable-next-line no-console
-    console.log('suotar starting', inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE)
+    logger.info('Suotar starting', inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE)
     
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
-      // eslint-disable-next-line no-console
-      console.log('Suotar: Starting cron jobs')
-
-      cron.schedule('* * * * *', () => {
-        // eslint-disable-next-line no-console
-        console.log('Suotar: cron job running')
-      })
+      logger.info('Suotar: Starting cron jobs')
 
       cron.schedule('0 * * * *', () => {
         checkAllEntriesFromSisu()
       })
 
       cron.schedule('15 3 * * *', () => {
-        // eslint-disable-next-line no-console
-        console.log('Suotar: Checking registered for mooc cron')
+        logger.info('Suotar: Checking registered for mooc cron')
         checkRegisteredForMooc() 
       })
 

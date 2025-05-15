@@ -121,6 +121,8 @@ const registerChunks = async (chunks, poster) => {
 }
 
 const checkRegisteredForMooc = async () => {
+  logger.info(`Suotar: checkRegisteredForMooc`)
+
   try {
     const unregistered = await db.raw_entries.findAll({
       where: {
@@ -130,7 +132,7 @@ const checkRegisteredForMooc = async () => {
       include: [{ model: db.entries, as: 'entry' }]
     })
 
-    logger.info(`checkRegisteredForMooc: Found ${unregistered.length} unchecked completions`)
+    logger.info(`Suotar: checkRegisteredForMooc: Found ${unregistered.length} unchecked completions`)
 
     const completionStudentPairs = unregistered.reduce((completionStudentPairs, rawEntry) => {
       const alreadyInSis =

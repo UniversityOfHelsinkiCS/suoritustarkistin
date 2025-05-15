@@ -87,6 +87,8 @@ initializeDatabaseConnection()
       })
 
       cron.schedule('15 3 * * *', () => {
+        // eslint-disable-next-line no-console
+        console.log('Checking registered for mooc cron')
         checkRegisteredForMooc()
       })
 

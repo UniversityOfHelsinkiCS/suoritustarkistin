@@ -80,16 +80,26 @@ initializeDatabaseConnection()
     if (!IN_MAINTENANCE && inProduction) initializeCronJobs()
 
     const STAGING = process.env.NODE_ENV === 'staging'
-
+    // eslint-disable-next-line no-console
+    console.log('suotar starting', inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE)
+    
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
+      // eslint-disable-next-line no-console
+      console.log('Suotar: Starting cron jobs')
+
+      cron.schedule('* * * * *', () => {
+        // eslint-disable-next-line no-console
+        console.log('Suotar: cron job running')
+      })
+
       cron.schedule('0 * * * *', () => {
         checkAllEntriesFromSisu()
       })
 
       cron.schedule('15 3 * * *', () => {
         // eslint-disable-next-line no-console
-        console.log('Checking registered for mooc cron')
-        checkRegisteredForMooc()
+        console.log('Suotar: Checking registered for mooc cron')
+        checkRegisteredForMooc() 
       })
 
       cron.schedule('15 4 * * *', () => {
@@ -98,7 +108,7 @@ initializeDatabaseConnection()
     }
 
     app.listen(PORT, () => {
-      logger.info(`Started on port ${PORT} with environment ${process.env.NODE_ENV}`)
+      logger.info(`Suotar started on port ${PORT} with environment ${process.env.NODE_ENV}`)
       if (IN_MAINTENANCE) logger.info(`Maintenance mode enabled for environment ${process.env.NODE_ENV}`)
     })
   })

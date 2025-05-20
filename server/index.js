@@ -86,6 +86,7 @@ initializeDatabaseConnection()
       logger.info('Suotar: Starting cron jobs')
 
       cron.schedule('0 * * * *', () => {
+        logger.info('Suotar: Checking all entries from Sisu cron')
         checkAllEntriesFromSisu()
       })
 
@@ -95,6 +96,7 @@ initializeDatabaseConnection()
       })
 
       cron.schedule('15 4 * * *', () => {
+        logger.info('Suotar: Checking registered for newmooc cron')
         checkRegisteredForNewMooc()
       })
     }

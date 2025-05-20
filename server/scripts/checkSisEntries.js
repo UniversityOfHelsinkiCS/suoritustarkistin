@@ -148,14 +148,15 @@ const checkRegisteredForMooc = async () => {
       return completionStudentPairs
     }, [])
 
-    logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
+    logger.info(`Suotar: checkRegisteredForMooc: ${completionStudentPairs.length} new completion registrations in Sis`)
 
-    if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
+    // eslint-disable-next-line no-constant-condition
+    if (false && completionStudentPairs.length && process.env.NODE_ENV === 'production') {
       const chunks = chunkArray(completionStudentPairs)
       await registerChunks(chunks, postRegistrations)
     }
   } catch (error) {
-    logger.error(`Error in running Mooc registration check: ${error.message}`)
+    logger.error(`Suotar: checkRegisteredForMooc: Error in running Mooc registration check: ${error.message}`)
   }
 }
 

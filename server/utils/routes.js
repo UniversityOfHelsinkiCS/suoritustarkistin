@@ -48,6 +48,8 @@ const {
 const { addJob, getJobs, editJob, runJob, deleteJob } = require('@controllers/moocJobsController')
 const { login, logout } = require('@controllers/loginController')
 
+const { runJobs } = require('@controllers/cronController')
+
 const {
   checkAdmin,
   checkIdMatch,
@@ -75,6 +77,8 @@ router.post('/seed/erilliskirjaus', notInProduction, seedErilliskirjaus)
 // Production routes
 router.post('/login', login)
 router.post('/logout', logout)
+
+router.get('/cron', runJobs)
 
 router.get('/courses', checkAdmin, getCourses)
 router.post('/courses', addCourse)

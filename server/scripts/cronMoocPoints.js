@@ -5,10 +5,10 @@ const {
 } = require('./checkSisEntries')
 
 const main = async () => {
-
   console.log('starting checkRegisteredForMooc')
   await checkRegisteredForMooc()
   console.log('Done')
+   process.exit(1)
 }
 
 main()

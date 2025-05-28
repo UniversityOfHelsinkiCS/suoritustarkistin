@@ -1,10 +1,13 @@
 const os = require('os')
 
 const winston = require('winston')
+const LokiTransport = require('winston-loki')
 const { WinstonGelfTransporter } = require('winston-gelf-transporter')
 
 const { NODE_ENV } = process.env
 const { combine, timestamp, printf, splat } = winston.format
+
+const LOKI_HOST = 'http://loki-svc.toska-lokki.svc.cluster.local:3100'
 
 const transports = []
 
@@ -43,6 +46,13 @@ if (NODE_ENV === 'production') {
     })
   )
   transports.push(new winston.transports.Console({ format: prodFormat }))
+
+  transports.push(
+    new LokiTransport({
+      host: LOKI_HOST,
+      labels: { app: 'suotar', environment: process.env.NODE_ENV || 'production' }
+    })
+  )
 
   transports.push(
     new WinstonGelfTransporter({

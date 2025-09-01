@@ -151,7 +151,7 @@ const checkRegisteredForMooc = async () => {
     logger.info(`Suotar: checkRegisteredForMooc: ${completionStudentPairs.length} new completion registrations in Sis`)
 
     // eslint-disable-next-line no-constant-condition
-    if (false && completionStudentPairs.length && process.env.NODE_ENV === 'production') {
+    if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
       const chunks = chunkArray(completionStudentPairs)
       await registerChunks(chunks, postRegistrations)
     }

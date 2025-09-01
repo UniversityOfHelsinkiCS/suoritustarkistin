@@ -48,7 +48,7 @@ const {
 const { addJob, getJobs, editJob, runJob, deleteJob } = require('@controllers/moocJobsController')
 const { login, logout } = require('@controllers/loginController')
 
-const { runJobs } = require('@controllers/cronController')
+const { runJobs, dryRunJobs } = require('@controllers/cronController')
 
 const {
   checkAdmin,
@@ -78,6 +78,7 @@ router.post('/seed/erilliskirjaus', notInProduction, seedErilliskirjaus)
 router.post('/login', login)
 router.post('/logout', logout)
 
+router.get('/cron/dryrun', dryRunJobs)
 router.get('/cron', runJobs)
 
 router.get('/courses', checkAdmin, getCourses)

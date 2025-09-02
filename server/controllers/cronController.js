@@ -1,4 +1,5 @@
 const { checkRegisteredForMooc } = require('../scripts/checkSisEntries')
+const { runJob: runCronJob } = require('../scripts/cronjobs')
 
 const dryRunJobs = async (req, res) => {
   if (req.query.token !== process.env.CRON_TOKEN) {
@@ -6,8 +7,11 @@ const dryRunJobs = async (req, res) => {
   }
 
   // eslint-disable-next-line no-console
-  console.log("Suotar: checkRegisteredForMooc dryrun triggered")
-  res.status(200).json({ message: "Suotar: checkRegisteredForMooc dryrun done" })
+  console.log("Suotar: cronjob triggered")
+  await runCronJob(27)
+  // eslint-disable-next-line no-console
+  
+  res.status(200).json({ message: "Suotar: cronjob done" })
 }
 
 const runJobs = async (req, res) => {

@@ -7,17 +7,17 @@ const dryRunJobs = async (req, res) => {
   }
 
   // eslint-disable-next-line no-console
-  console.log("Suotar: cronjob triggered")
-  await runCronJob(27)
-  // eslint-disable-next-line no-console
-  
-  res.status(200).json({ message: "Suotar: cronjob done" })
+  console.log("Suotar: checkRegisteredForMooc dryrun triggered")
+  res.status(200).json({ message: "Suotar: checkRegisteredForMooc dryrun done" })
 }
 
 const runJobs = async (req, res) => {
   if (req.query.token !== process.env.CRON_TOKEN) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
+
+  console.log("Suotar: register BAI")
+  await runCronJob(27)
 
   // eslint-disable-next-line no-console
   console.log("Suotar: checkRegisteredForMooc triggered")

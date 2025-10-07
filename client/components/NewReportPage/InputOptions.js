@@ -110,7 +110,15 @@ export default ({ kandi, extra, parseCSV }) => {
   const courseOptions = defineCourseOptions(filterAYCodes(courses), kandi, extra)
   const getKandiExtras = () => courses.filter((course) => isKandiExtraCourse(course))
 
-  const sendRawEntries = async () => await dispatch(sendNewRawEntriesAction(parseRawEntries(newRawEntries)))
+  const sendRawEntries = async () => {
+    const acualDataNewRawEntries = {
+      ...newRawEntries,
+      importStudentsAttainments: undefined,
+      importStudents: undefined
+    }
+
+    await dispatch(sendNewRawEntriesAction(parseRawEntries(acualDataNewRawEntries)))
+  }
 
   useEffect(() => {
     if (user.adminMode) {

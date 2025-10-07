@@ -26,8 +26,9 @@ initializeDatabaseConnection()
       dsn: process.env.SENTRY_ADDR,
       environment: process.env.NODE_ENV
     })
+
     app.use(Sentry.Handlers.requestHandler())
-    app.use(express.json({ limit: '5mb' }))
+    app.use(express.json({ limit: '50mb' }))
     app.use(errorMiddleware)
 
     /**

@@ -173,7 +173,20 @@ const getCourseUnitIds = async (codes) => {
 const getCourseUnitEnrolments = async (code) => {
   try {
     const { data } = await api.get(`suotar/course-unit-enrolments/${code}`)
-    return data
+
+    const now = new Date()
+    const twoMonthsAgo = new Date()
+    twoMonthsAgo.setMonth(now.getMonth() - 2)
+
+    const filteredData = data.filter((item) => {
+      if (!item.activityPeriod || !item.activityPeriod.endDate) {
+        return false
+      }
+      const endDate = new Date(item.activityPeriod.endDate)
+      return endDate >= twoMonthsAgo
+    })
+
+    return filteredData
   } catch (e) {
     handleImporterApiErrors(e)
   }

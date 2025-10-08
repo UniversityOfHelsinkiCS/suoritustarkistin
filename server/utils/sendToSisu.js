@@ -125,6 +125,7 @@ const extraEntriesToRequestData = (extraEntries, acceptors) =>
       credits: parseFloat(rawEntry.credits.replace(',', '.')),
       administrativeNote: 'Kurjen kautta tuotu erilliskirjaus',
       attainmentLanguageUrn: `urn:code:language:${completionLanguage}`,
+      studyFieldUrn : 'urn:code:study-field:okm-7',
       id,
       personId,
       studyRightId,

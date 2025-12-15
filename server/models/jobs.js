@@ -19,7 +19,13 @@ module.exports = (sequelize, DataTypes) => {
       schedule: DataTypes.STRING,
       active: DataTypes.BOOLEAN,
       slug: DataTypes.STRING,
-      useManualCompletionDate: DataTypes.BOOLEAN
+      useManualCompletionDate: DataTypes.BOOLEAN,
+      sisu: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.id === 132
+        }
+      }
     },
     {}
   )

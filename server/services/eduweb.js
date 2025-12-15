@@ -1,17 +1,23 @@
 const axios = require('axios')
+const https = require('https')
 const logger = require('@utils/logger')
 
 const eduwebGet = async (course) => {
   const { data } = await axios.get(`${process.env.EDUWEB_URL}${course}`, {
     headers: {
       Authorized: process.env.EDUWEB_TOKEN
-    }
+    },
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false
+    })
   })
+
   return data
 }
 
 const getRegistrations = async (course) => {
   logger.info({ message: `Fetching registrations for course ${course} from eduweb` })
+
   const instances = await eduwebGet(course)
 
   const registrations = await instances.reduce(async (accPromise, instance) => {

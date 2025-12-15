@@ -3,7 +3,7 @@ const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
 const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/newMooc')
-const { getEarlierAttainments } = require('../services/importer')
+const { getEarlierAttainments, getCourseUnitEnrolments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
@@ -36,9 +36,30 @@ const defineGrade = (completion, course) => {
   return grade
 }
 
+function flattenEnrollments(data) {
+  return data.flatMap((course) =>
+    course.enrollments.map((enrollment) => ({
+      onro: enrollment.person.studentNumber,
+      firstNames: enrollment.person.firstNames,
+      lastName: enrollment.person.lastName,
+      email: enrollment.person.primaryEmail,
+      mooc: enrollment.person.secondaryEmail
+    }))
+  )
+}
+
+const fetchRegistrationsFor = async (code, job) => {
+  if (job.sisu) {
+    const registrationsInSisu = await getCourseUnitEnrolments(code)
+    return flattenEnrollments(registrationsInSisu)
+  }
+  // from eduweb
+  return await getRegistrations(code)
+}
+
 const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false) => {
   try {
-    const registrations = await getRegistrations(course.courseCode)
+    const registrations = await fetchRegistrationsFor(course.courseCode, job)
     const completions = await getCompletions(job.slug || course.courseCode)
 
     const courseStudentPairs = registrations.reduce((pairs, registration) => {
@@ -63,8 +84,8 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
       const language = selectLanguage(completion, course)
       const registration = registrations.find(
         (registration) =>
-          registration.email.toLowerCase() === completion.email.toLowerCase() ||
-          registration.mooc.toLowerCase() === completion.email.toLowerCase()
+          (registration.email && (registration.email.toLowerCase() === completion.email.toLowerCase())) ||
+          (registration.mooc && (registration.mooc.toLowerCase() === completion.email.toLowerCase()))
       )
 
       if (registration && registration.onro) {

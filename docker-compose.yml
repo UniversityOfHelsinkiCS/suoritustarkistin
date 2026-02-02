@@ -28,7 +28,7 @@ services:
     environment:
       - ADMINER_DESIGN=pepa-linha
       - ADMINER_DEFAULT_SERVER=db
-    image: adminer:4.7.5
+    image: adminer:5.4.1
     ports:
       - 8080:8080 # localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public
 

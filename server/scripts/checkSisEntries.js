@@ -43,6 +43,7 @@ const checkEntries = async (entries, model) => {
   // eslint-disable-next-line no-plusplus
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {
+      console.log('/suotar/verify', postData.length)
       const { data } = await api.post('/suotar/verify', postData)
       console.log('SUCCESS, try', attempt)
       if (!data.length) return true
@@ -57,7 +58,7 @@ const checkEntries = async (entries, model) => {
       logger.error({ message: `Failed to check Sisu entries (attempt ${attempt}/10)`, error: e.toString() })
       
       if (attempt < 10) {
-        const waitMinutes = attempt
+        const waitMinutes = 1
         logger.info({ message: `Waiting ${waitMinutes} minute(s) before retry...` })
         // eslint-disable-next-line no-promise-executor-return
         await new Promise((resolve) => setTimeout(resolve, waitMinutes * 60 * 1000))

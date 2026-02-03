@@ -8,7 +8,7 @@ const getCompletions = async (course, registeredIncluded = false) => {
     ? await newMoocApi.get(`/study-registry/completions/${course}`)
     : await newMoocApi.get(`/study-registry/completions/${course}?exclude_already_registered=true`)
 
-  logger.info({ message: `Found total of ${data ? data.length : 0} completions` })
+  logger.info({ message: `Found total of ${data ? data.length : 0} completions, ${course}` })
   return data
 }
 

@@ -40,19 +40,32 @@ const markAsRegistered = async (entries, model) => {
 const checkEntries = async (entries, model) => {
   const postData = entries.map(({ personId, id }) => ({ id, personId }))
 
-  try {
-    const { data } = await api.post('/suotar/verify', postData)
-    if (!data.length) return true
-    const amountUpdated = await markAsRegistered(data, model)
-    logger.info({
-      message: `Checked total ${entries.length} ${model}, found ${amountUpdated} new registrations.`,
-      newRegistrations: data.length,
-      missingRegistrations: entries.length - data.length
-    })
-    return true
-  } catch (e) {
-    logger.error({ message: 'Failed to check Sisu entries 2', error: e.toString() })
-    return false
+  // eslint-disable-next-line no-plusplus
+  for (let attempt = 1; attempt <= 10; attempt++) {
+    try {
+      const { data } = await api.post('/suotar/verify', postData)
+      console.log('SUCCESS, try', attempt)
+      if (!data.length) return true
+      const amountUpdated = await markAsRegistered(data, model)
+      logger.info({
+        message: `Checked total ${entries.length} ${model}, found ${amountUpdated} new registrations.`,
+        newRegistrations: data.length,
+        missingRegistrations: entries.length - data.length
+      })
+      return true
+    } catch (e) {
+      logger.error({ message: `Failed to check Sisu entries (attempt ${attempt}/10)`, error: e.toString() })
+      
+      if (attempt < 10) {
+        const waitMinutes = attempt
+        logger.info({ message: `Waiting ${waitMinutes} minute(s) before retry...` })
+        // eslint-disable-next-line no-promise-executor-return
+        await new Promise((resolve) => setTimeout(resolve, waitMinutes * 60 * 1000))
+      } else {
+        logger.error({ message: 'Failed to check Sisu entries after 10 attempts' })
+        return false
+      }
+    }
   }
 }
 

@@ -27,7 +27,7 @@ const getRegistrations = async (course) => {
     return acc.concat(instanceRegistrations)
   }, [])
 
-  logger.info({ message: `Found total of ${registrations ? registrations.length : 0} registrations` })
+  logger.info({ message: `Found total of ${registrations ? registrations.length : 0} registrations, ${course}` })
   return registrations
 }
 

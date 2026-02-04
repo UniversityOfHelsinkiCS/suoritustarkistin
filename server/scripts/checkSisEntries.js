@@ -6,7 +6,7 @@ const { postRegistrations } = require('../services/pointsmooc')
 const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
 
 function chunkArray(array) {
-  const SIZE = 100
+  const SIZE = 50
   const result = []
   for (let i = 0; i < array.length; i += SIZE) {
     result.push(array.slice(i, i + SIZE))

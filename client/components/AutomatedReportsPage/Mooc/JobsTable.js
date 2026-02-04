@@ -7,8 +7,21 @@ import JobRow from 'Components/AutomatedReportsPage/Mooc/JobRow'
 
 export default () => {
   const jobs = useSelector((state) => state.moocJobs)
+  const courses = useSelector((state) => state.courses.data)
 
   if (!jobs || !jobs.data) return null
+
+  const sortedJobs = _.orderBy(
+    jobs.data,
+    [
+      'active',
+      (job) => {
+        const course = courses?.find((c) => c.id === job.courseId)
+        return course?.name?.toLowerCase() || ''
+      }
+    ],
+    ['desc', 'asc']
+  )
 
   return (
     <Segment>
@@ -41,7 +54,7 @@ export default () => {
               <Header as="h4">Actions</Header>
             </Table.HeaderCell>
           </Table.Row>
-          {_.sortBy(jobs.data, 'slug').map((j) => (
+          {sortedJobs.map((j) => (
             <JobRow job={j} jobs={jobs} key={j.id} />
           ))}
         </Table.Header>

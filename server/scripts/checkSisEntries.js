@@ -5,8 +5,8 @@ const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
 const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
 
-function chunkArray(array) {
-  const SIZE = 50
+function chunkArray(array, size) {
+  const SIZE = size || 50
   const result = []
   for (let i = 0; i < array.length; i += SIZE) {
     result.push(array.slice(i, i + SIZE))
@@ -48,7 +48,7 @@ const markAsRegistered = async (entries, model) => {
 
 const checkEntries = async (entries, model) => {
   const postData = entries.map(({ personId, id }) => ({ id, personId }))
-  const chunks = chunkArray(postData)
+  const chunks = chunkArray(postData, 20)
 
   // eslint-disable-next-line no-plusplus
   for (let attempt = 1; attempt <= 10; attempt++) {
@@ -71,7 +71,7 @@ const checkEntries = async (entries, model) => {
       })
       return true
     } catch (e) {
-      logger.error({ message: `Failed to check Sisu entries (attempt ${attempt}/10)`, error: e.toString() })
+      logger.error({ message: `Failed to check Sisu entries (attempt ${attempt}/5)`, error: e.toString() })
       
       if (attempt < 5) {
         const waitMinutes = 1

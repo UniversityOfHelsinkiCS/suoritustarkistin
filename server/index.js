@@ -86,7 +86,7 @@ initializeDatabaseConnection()
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
       logger.info('Suotar: Starting cron jobs')
 
-      cron.schedule('0 * * * *', () => {
+      cron.schedule('0 17 * * *', () => {
         logger.info('Suotar: Checking all entries from Sisu cron')
         checkAllEntriesFromSisu()
       })

@@ -5,6 +5,15 @@ const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
 const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
 
+function chunkArray(array) {
+  const SIZE = 100
+  const result = []
+  for (let i = 0; i < array.length; i += SIZE) {
+    result.push(array.slice(i, i + SIZE))
+  }
+  return result
+}
+
 const markAsRegistered = async (entries, model) => {
   const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
   const registeredIds = entries.filter(({ registered }) => registered === 'CourseUnitAttainment').map(({ id }) => id)
@@ -39,31 +48,38 @@ const markAsRegistered = async (entries, model) => {
 
 const checkEntries = async (entries, model) => {
   const postData = entries.map(({ personId, id }) => ({ id, personId }))
+  const chunks = chunkArray(postData)
 
   // eslint-disable-next-line no-plusplus
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {
-      console.log('/suotar/verify', postData.length)
-      const { data } = await api.post('/suotar/verify', postData)
+      console.log('/suotar/verify', postData.length, 'entries in', chunks.length, 'chunks')
+      let allData = []
+      // eslint-disable-next-line no-restricted-syntax
+      for (const chunk of chunks) {
+        const { data } = await api.post('/suotar/verify', chunk)
+        console.log('SUCCESS chunk!')
+        allData = allData.concat(data)
+      }
       console.log('SUCCESS, try', attempt)
-      if (!data.length) return true
-      const amountUpdated = await markAsRegistered(data, model)
+      if (!allData.length) return true
+      const amountUpdated = await markAsRegistered(allData, model)
       logger.info({
         message: `Checked total ${entries.length} ${model}, found ${amountUpdated} new registrations.`,
-        newRegistrations: data.length,
-        missingRegistrations: entries.length - data.length
+        newRegistrations: allData.length,
+        missingRegistrations: entries.length - allData.length
       })
       return true
     } catch (e) {
       logger.error({ message: `Failed to check Sisu entries (attempt ${attempt}/10)`, error: e.toString() })
       
-      if (attempt < 10) {
+      if (attempt < 5) {
         const waitMinutes = 1
         logger.info({ message: `Waiting ${waitMinutes} minute(s) before retry...` })
         // eslint-disable-next-line no-promise-executor-return
         await new Promise((resolve) => setTimeout(resolve, waitMinutes * 60 * 1000))
       } else {
-        logger.error({ message: 'Failed to check Sisu entries after 10 attempts' })
+        logger.error({ message: 'Failed to check Sisu entries after 5 attempts' })
         return false
       }
     }
@@ -104,15 +120,6 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
       }
     }
   )
-}
-
-function chunkArray(array) {
-  const SIZE = 100
-  const result = []
-  for (let i = 0; i < array.length; i += SIZE) {
-    result.push(array.slice(i, i + SIZE))
-  }
-  return result
 }
 
 const registerChunks = async (chunks, poster) => {

@@ -39,8 +39,32 @@ if (NODE_ENV === 'production') {
     silly: 6
   }
 
+  // Safe stringify that handles circular references and errors
+  const safeStringify = (obj) => {
+    const seen = new WeakSet()
+    return JSON.stringify(obj, (key, value) => {
+      // Handle Error objects specifically
+      if (value instanceof Error) {
+        return {
+          message: value.message,
+          stack: value.stack,
+          name: value.name,
+          ...(value.code && { code: value.code })
+        }
+      }
+      // Handle circular references
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) {
+          return '[Circular]'
+        }
+        seen.add(value)
+      }
+      return value
+    })
+  }
+
   const prodFormat = winston.format.printf(({ level, ...rest }) =>
-    JSON.stringify({
+    safeStringify({
       level: levels[level],
       ...rest
     })

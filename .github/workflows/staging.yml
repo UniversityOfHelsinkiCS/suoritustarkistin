@@ -22,7 +22,7 @@ jobs:
           echo "$HOME/.safe-chain/shims" >> "$GITHUB_PATH"
           echo "$HOME/.safe-chain/bin" >> "$GITHUB_PATH"
       - name: Verify Aikido Safe Chain
-        run: npm safe-chain-verify
+        run: safe-chain --version
       - name: Install eslint
         run: npm install eslint
       - name: Run lint
@@ -45,7 +45,7 @@ jobs:
           echo "$HOME/.safe-chain/shims" >> "$GITHUB_PATH"
           echo "$HOME/.safe-chain/bin" >> "$GITHUB_PATH"
       - name: Verify Aikido Safe Chain
-        run: npm safe-chain-verify
+        run: safe-chain --version
 
       - name: Test
         run: npm run test

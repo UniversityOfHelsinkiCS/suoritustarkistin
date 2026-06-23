@@ -16,3 +16,4 @@ testdata.js
 *.log
 backups/
 scripts/my_username
+gitignored/*

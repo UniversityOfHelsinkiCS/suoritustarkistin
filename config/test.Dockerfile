@@ -7,8 +7,12 @@ ENV TZ="Europe/Helsinki"
 WORKDIR /usr/src/app
 
 COPY package* ./
-COPY ../npmrc ./
+COPY .npmrc ./
 RUN npm ci
+
+# post install scripts are disabled so cypress binaries must be installed
+RUN npm install cypress 
+RUN npx cypress install 
 
 COPY . .
 

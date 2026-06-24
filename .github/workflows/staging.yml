@@ -3,7 +3,7 @@ name: Build, test and release staging
 on:
   push:
     branches:
-      - trunk
+      - 794-node-upgrade-from-14-to-24
 
 env:
   SAFE_CHAIN_VERSION: 1.5.3

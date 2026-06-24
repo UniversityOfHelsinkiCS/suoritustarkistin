@@ -15,14 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 14.17
-      - name: Install Aikido Safe Chain
-        run: |
-          curl -fsSL https://github.com/AikidoSec/safe-chain/releases/download/${SAFE_CHAIN_VERSION}/install-safe-chain.sh | sh -s -- --ci
-          echo "$HOME/.safe-chain/shims" >> "$GITHUB_PATH"
-          echo "$HOME/.safe-chain/bin" >> "$GITHUB_PATH"
-      - name: Verify Aikido Safe Chain
-        run: safe-chain --version
+          node-version: 24
       - name: Install eslint
         run: npm install eslint
       - name: Run lint

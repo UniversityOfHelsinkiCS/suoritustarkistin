@@ -23,7 +23,7 @@
     "cli": "node ./server/scripts/fixCompletionDates.js"
   },
   "engines": {
-    "node": ">=10.15"
+    "node": "24"
   },
   "repository": {
     "type": "git",
@@ -114,6 +114,9 @@
       "client/*",
       "cypress/*"
     ]
+  },
+  "overrides": {
+    "node-releases": "2.0.47"
   },
   "_moduleAliases": {
     "@root": ".",

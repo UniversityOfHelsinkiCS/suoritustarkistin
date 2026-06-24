@@ -87,7 +87,7 @@ router.get('/status', (req, res) => res.send({ inMaintenance: !!process.env.IN_M
 
 
 const graderOrAdminRouter = Router()
-graderOrAdminRouter.use(checkGrader) //this allows both graders and admins to access paths in this route
+graderOrAdminRouter.use(checkGrader) // this allows both graders and admins to access paths in this route
 
 graderOrAdminRouter.get('/courses', checkAdmin, getCourses)
 graderOrAdminRouter.post('/courses', checkAdmin, addCourse)

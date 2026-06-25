@@ -16,8 +16,4 @@ testdata.js
 *.log
 backups/
 scripts/my_username
-<<<<<<< HEAD
 gitignored/*
-=======
-gitignored/*
->>>>>>> master

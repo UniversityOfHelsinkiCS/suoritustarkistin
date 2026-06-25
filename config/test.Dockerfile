@@ -1,4 +1,4 @@
-FROM cypress/base:14.7.0
+FROM cypress/included:cypress-15.18.0-node-24.17.0-chrome-149.0.7827.155-1-ff-152.0-edge-149.0.4022.80-1
 
 # Set timezone to Europe/Helsinki
 ENV TZ="Europe/Helsinki"
@@ -7,8 +7,12 @@ ENV TZ="Europe/Helsinki"
 WORKDIR /usr/src/app
 
 COPY package* ./
-
+COPY .npmrc ./
 RUN npm ci
+
+# post install scripts are disabled so cypress binaries must be installed
+RUN npm install cypress 
+RUN npx cypress install 
 
 COPY . .
 
@@ -16,4 +20,5 @@ RUN npm run test:build
 
 EXPOSE 8001
 
+ENTRYPOINT []
 CMD ["npm", "run", "start:ci"]

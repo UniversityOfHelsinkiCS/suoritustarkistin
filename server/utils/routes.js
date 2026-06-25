@@ -81,54 +81,61 @@ router.post('/logout', logout)
 router.get('/cron/dryrun', dryRunJobs)
 router.get('/cron', runJobs)
 
-router.get('/courses', checkAdmin, getCourses)
-router.post('/courses', checkAdmin, addCourse)
-router.put('/courses/:id', checkAdmin, editCourse)
-router.get('/courses/:id/confirm_deletion', checkAdmin, confirmDeletion)
-router.delete('/courses/:id/', checkAdmin, deleteCourse)
-router.get('/courses/:courseCode/responsibles', checkAdmin, getCourseResponsibles)
-
-router.get('/users', checkAdmin, getUsers)
-router.get('/users/graders', checkAdmin, getGraders)
-router.post('/users/fetch', checkAdmin, fetchUserDetails)
-router.post('/users', checkAdmin, addUser)
-router.put('/users/:id', checkAdmin, editUser)
-router.delete('/users/:id', checkAdmin, deleteUser)
-router.get('/users/:id/graders', checkIdMatch, getUsersGraders)
-router.get('/users/:id/oodi_reports', checkIdMatch, getUsersOodiReports)
-router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
-
-router.get('/oodi_reports', checkAdmin, getOodiReports)
-
-router.use(['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo'], paginateMiddleware)
-router.use(['/sis_reports', '/sis_mooc_reports'], useFilters)
-router.get('/sis_reports', checkGrader, getAllSisReports)
-router.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
-router.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
-router.get('/unsent_batch_count', checkAdmin, getUnsentBatchCount)
-router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
-router.delete('/sis_reports/batch/:batchId', deleteBatch, deleteSisBatch)
-router.post('/sis_raw_entries', addRawEntries)
-router.get('/import-students/:code', importStudents)
-router.post('/import-students/attainments', importStudentsAttainments)
-router.post('/entries_to_sis', sendToSis)
-router.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
-router.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
-router.get('/sis_reports/offset/:batchId', checkGrader, getOffset)
-router.get('/sis_reports/missing_enrollment_email/:batchId', notifyMissingEnrollment)
-
-router.get('/jobs', checkAdmin, getJobs)
-router.post('/jobs', checkAdmin, addJob)
-router.put('/jobs/:id', checkAdmin, editJob)
-router.post('/jobs/:id', checkAdmin, runJob)
-router.delete('/jobs/:id', checkAdmin, deleteJob)
-
-router.get('/apicheck/eduweb/:id', checkAdmin, checkEduweb)
-router.get('/apicheck/mooc/:id', checkAdmin, checkMooc)
-router.get('/apicheck/newmooc/:id', checkAdmin, checkNewMooc)
-
 router.post('/create', checkToken, createEntries)
 
 router.get('/status', (req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
+
+
+const graderOrAdminRouter = Router()
+graderOrAdminRouter.use(checkGrader) // this allows both graders and admins to access paths in this route
+
+graderOrAdminRouter.get('/courses', checkAdmin, getCourses)
+graderOrAdminRouter.post('/courses', checkAdmin, addCourse)
+graderOrAdminRouter.put('/courses/:id', checkAdmin, editCourse)
+graderOrAdminRouter.get('/courses/:id/confirm_deletion', checkAdmin, confirmDeletion)
+graderOrAdminRouter.delete('/courses/:id/', checkAdmin, deleteCourse)
+graderOrAdminRouter.get('/courses/:courseCode/responsibles', checkAdmin, getCourseResponsibles)
+
+graderOrAdminRouter.get('/users', checkAdmin, getUsers)
+graderOrAdminRouter.get('/users/graders', checkAdmin, getGraders)
+graderOrAdminRouter.post('/users/fetch', checkAdmin, fetchUserDetails)
+graderOrAdminRouter.post('/users', checkAdmin, addUser)
+graderOrAdminRouter.put('/users/:id', checkAdmin, editUser)
+graderOrAdminRouter.delete('/users/:id', checkAdmin, deleteUser)
+graderOrAdminRouter.get('/users/:id/graders', checkIdMatch, getUsersGraders)
+graderOrAdminRouter.get('/users/:id/oodi_reports', checkIdMatch, getUsersOodiReports)
+graderOrAdminRouter.get('/users/:id/courses', checkIdMatch, getUsersCourses)
+
+graderOrAdminRouter.get('/oodi_reports', checkAdmin, getOodiReports)
+
+graderOrAdminRouter.use(['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo'], paginateMiddleware)
+graderOrAdminRouter.use(['/sis_reports', '/sis_mooc_reports'], useFilters)
+graderOrAdminRouter.get('/sis_reports', checkGrader, getAllSisReports)
+graderOrAdminRouter.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
+graderOrAdminRouter.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
+graderOrAdminRouter.get('/unsent_batch_count', checkAdmin, getUnsentBatchCount)
+graderOrAdminRouter.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
+graderOrAdminRouter.delete('/sis_reports/batch/:batchId', deleteBatch, deleteSisBatch)
+graderOrAdminRouter.post('/sis_raw_entries', addRawEntries)
+graderOrAdminRouter.get('/import-students/:code', importStudents)
+graderOrAdminRouter.post('/import-students/attainments', importStudentsAttainments)
+graderOrAdminRouter.post('/entries_to_sis', sendToSis)
+graderOrAdminRouter.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
+graderOrAdminRouter.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
+graderOrAdminRouter.get('/sis_reports/offset/:batchId', checkGrader, getOffset)
+graderOrAdminRouter.get('/sis_reports/missing_enrollment_email/:batchId', notifyMissingEnrollment)
+
+graderOrAdminRouter.get('/jobs', checkAdmin, getJobs)
+graderOrAdminRouter.post('/jobs', checkAdmin, addJob)
+graderOrAdminRouter.put('/jobs/:id', checkAdmin, editJob)
+graderOrAdminRouter.post('/jobs/:id', checkAdmin, runJob)
+graderOrAdminRouter.delete('/jobs/:id', checkAdmin, deleteJob)
+
+graderOrAdminRouter.get('/apicheck/eduweb/:id', checkAdmin, checkEduweb)
+graderOrAdminRouter.get('/apicheck/mooc/:id', checkAdmin, checkMooc)
+graderOrAdminRouter.get('/apicheck/newmooc/:id', checkAdmin, checkNewMooc)
+
+router.use(graderOrAdminRouter)
+
 
 module.exports = router

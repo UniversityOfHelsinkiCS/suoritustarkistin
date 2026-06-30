@@ -236,6 +236,13 @@ const attainmentsToSisu = async (model, { user, body }) => {
         successEntries.map(({ id }) => id),
         user.uid
       )
+      
+      logger.info({
+          message: 'attainmentsToSisu succeeded with retry',
+          user: user.name,
+          payload: JSON.stringify(e)
+        })
+
     } catch (e) {
       const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })

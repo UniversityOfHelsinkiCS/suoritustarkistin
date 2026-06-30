@@ -155,6 +155,8 @@ const attainmentsToSisu = async (model, { user, body }) => {
     })
 
   const send = async (url, data, modelIds, uid) => {
+    logger.info({message: 'DEBUG: send inside attainmentsToSisu  called'})
+
     logger.info({
       message: 'Sending entries to Sisu',
       amount: data.length,
@@ -173,7 +175,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
       }
       catch(e){
        logger.info({
-          message: 'attainmentsToSisu went BOOM',
+          message: 'DEBUG: attainmentsToSisu went BOOM',
           user: user.name,
           payload: JSON.stringify(e)
         })
@@ -206,7 +208,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
     model === 'entries' ? entriesToRequestData(rawData, acceptors) : extraEntriesToRequestData(rawData, acceptors)
 
   try {
-    await send(URLS[model], data, id, user.uid)
+    await send(URLS[model], data, id, user.uid) // <--- boom
     return [200]
   } catch (e) {
     const payload = JSON.stringify(data)
@@ -215,6 +217,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
     sendSentryMessage('Sending entries to Sisu failed', user, { errorMessage, payload: data })
 
     if (!isValidSisuError(e.response)) {
+      logger.info({message: 'DEBUG: isValidSisuEntry triggered'})
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: user.name })
       return [400, { message: e.response ? e.response.data : '', genericError: true, user: user.name }]
     }
@@ -236,6 +239,13 @@ const attainmentsToSisu = async (model, { user, body }) => {
         successEntries.map(({ id }) => id),
         user.uid
       )
+      
+      logger.info({
+          message: 'DEBUG: attainmentsToSisu succeeded with retry no need to worry',
+          user: user.name,
+          payload
+        })
+
     } catch (e) {
       const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })

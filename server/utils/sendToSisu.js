@@ -4,6 +4,8 @@
 const logger = require('@utils/logger')
 const { sendSentryMessage } = require('@utils/sentry')
 const axios = require('axios')
+const http = require('http')
+const https = require('https')
 const moment = require('moment')
 const db = require('../models/index')
 const { getAcceptorPersons, getAcceptorPersonsByCourseUnit } = require('../services/importer')
@@ -21,7 +23,10 @@ const API = process.env.POST_IMPORTER_DB_API_URL
       headers: {
         token: process.env.IMPORTER_DB_API_TOKEN || ''
       },
-      baseURL: process.env.POST_IMPORTER_DB_API_URL
+      baseURL: process.env.POST_IMPORTER_DB_API_URL,
+      // See importerApi.js: avoid Node 19+ keepAlive socket hang ups.
+      httpAgent: new http.Agent({ keepAlive: false }),
+      httpsAgent: new https.Agent({ keepAlive: false })
     })
   : require('../config/importerApi')
 

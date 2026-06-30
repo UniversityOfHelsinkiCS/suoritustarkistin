@@ -147,6 +147,13 @@ const attainmentsToSisu = async (model, { user, body }) => {
   const { entryIds, extraEntryIds } = body
   const senderId = user.id
 
+   logger.info({
+      message: 'attainmentsToSisu called',
+      user: user.name,
+      model,
+      payload: JSON.stringify(body)
+    })
+
   const send = async (url, data, modelIds, uid) => {
     logger.info({
       message: 'Sending entries to Sisu',
@@ -154,7 +161,26 @@ const attainmentsToSisu = async (model, { user, body }) => {
       user: user.name,
       payload: JSON.stringify(data)
     })
-    if (ALLOW_SEND_TO_SISU) await API.post(url, data)
+    if (ALLOW_SEND_TO_SISU) { 
+     try{
+      const apiResult = await API.post(url, data) 
+        
+      logger.info({
+          message: 'Sending entries to Sisu',
+          user: user.name,
+          payload: JSON.stringify(apiResult)
+        })
+      }
+      catch(e){
+       logger.info({
+          message: 'attainmentsToSisu went BOOM',
+          user: user.name,
+          payload: JSON.stringify(e)
+        })
+        throw(e)
+      }
+
+    }
     else logger.info(`Dry run, would send to Sisu: ${JSON.stringify(data)}`)
     await updateSuccess(model, modelIds, senderId)
     logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, sentToSisu: true, uid })
@@ -175,6 +201,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
       ? await getAcceptorPersons(rawData.map(({ courseUnitRealisationId }) => courseUnitRealisationId))
       : await getAcceptorPersonsByCourseUnit(rawData.map(({ courseUnitId }) => courseUnitId))
 
+  
   const data =
     model === 'entries' ? entriesToRequestData(rawData, acceptors) : extraEntriesToRequestData(rawData, acceptors)
 

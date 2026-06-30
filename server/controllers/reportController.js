@@ -341,6 +341,14 @@ const sendToSis = async (req, res) => {
 
   const { entryIds = [], extraEntryIds = [] } = req.body
 
+  logger.info({
+    message: 'sendToSis: received request',
+    context: 'sendToSis',
+    user: req.user.email,
+    entryIds,
+    extraEntryIds
+  })
+
   if (!entryIds.length && !extraEntryIds.length) return res.status(400).send({ message: 'No entries to send' })
 
   const email = async (failedInSisu) => {
@@ -369,10 +377,14 @@ const sendToSis = async (req, res) => {
   let [status, message] = []
   try {
     if (entryIds.length) {
+      logger.info({ message: 'sendToSis: sending entries to Sisu', context: 'sendToSis', entryIds });
       [status, message] = await attainmentsToSisu('entries', req)
+      logger.info({ message: 'sendToSis: entries sent to Sisu', context: 'sendToSis', status, response: message })
     }
     if (extraEntryIds.length) {
+      logger.info({ message: 'sendToSis: sending extra entries to Sisu', context: 'sendToSis', extraEntryIds });
       [status, message] = await attainmentsToSisu('extra_entries', req)
+      logger.info({ message: 'sendToSis: extra entries sent to Sisu', context: 'sendToSis', status, response: message })
     }
     email(message && !message.genericError)
     if (message) return res.status(status).send(message)
@@ -385,6 +397,15 @@ const sendToSis = async (req, res) => {
     },
     include: [...RAW_ENTRY_INCLUDES],
     order: [['createdAt', 'DESC'], 'studentNumber']
+  })
+
+  logger.info({
+    message: 'sendToSis: fetched updated raw entries',
+    context: 'sendToSis',
+    entryIds,
+    extraEntryIds,
+    rawEntryCount: updatedWithRawEntries.length,
+    rawEntryIds: updatedWithRawEntries.map((re) => re.id)
   })
 
   return res.status(200).json(updatedWithRawEntries)

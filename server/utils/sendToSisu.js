@@ -4,8 +4,6 @@
 const logger = require('@utils/logger')
 const { sendSentryMessage } = require('@utils/sentry')
 const axios = require('axios')
-const http = require('http')
-const https = require('https')
 const moment = require('moment')
 const db = require('../models/index')
 const { getAcceptorPersons, getAcceptorPersonsByCourseUnit } = require('../services/importer')
@@ -23,10 +21,7 @@ const API = process.env.POST_IMPORTER_DB_API_URL
       headers: {
         token: process.env.IMPORTER_DB_API_TOKEN || ''
       },
-      baseURL: process.env.POST_IMPORTER_DB_API_URL,
-      // See importerApi.js: avoid Node 19+ keepAlive socket hang ups.
-      httpAgent: new http.Agent({ keepAlive: false }),
-      httpsAgent: new https.Agent({ keepAlive: false })
+      baseURL: process.env.POST_IMPORTER_DB_API_URL
     })
   : require('../config/importerApi')
 
@@ -147,42 +142,14 @@ const attainmentsToSisu = async (model, { user, body }) => {
   const { entryIds, extraEntryIds } = body
   const senderId = user.id
 
-   logger.info({
-      message: 'attainmentsToSisu called',
-      user: user.name,
-      model,
-      payload: JSON.stringify(body)
-    })
-
   const send = async (url, data, modelIds, uid) => {
-    logger.info({message: 'DEBUG: send inside attainmentsToSisu  called'})
-
     logger.info({
       message: 'Sending entries to Sisu',
       amount: data.length,
       user: user.name,
       payload: JSON.stringify(data)
     })
-    if (ALLOW_SEND_TO_SISU) { 
-     try{
-      const apiResult = await API.post(url, data) 
-        
-      logger.info({
-          message: 'Sending entries to Sisu',
-          user: user.name,
-          payload: JSON.stringify(apiResult)
-        })
-      }
-      catch(e){
-       logger.info({
-          message: 'DEBUG: attainmentsToSisu went BOOM',
-          user: user.name,
-          payload: JSON.stringify(e)
-        })
-        throw(e)
-      }
-
-    }
+    if (ALLOW_SEND_TO_SISU) await API.post(url, data)
     else logger.info(`Dry run, would send to Sisu: ${JSON.stringify(data)}`)
     await updateSuccess(model, modelIds, senderId)
     logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, sentToSisu: true, uid })
@@ -203,12 +170,11 @@ const attainmentsToSisu = async (model, { user, body }) => {
       ? await getAcceptorPersons(rawData.map(({ courseUnitRealisationId }) => courseUnitRealisationId))
       : await getAcceptorPersonsByCourseUnit(rawData.map(({ courseUnitId }) => courseUnitId))
 
-  
   const data =
     model === 'entries' ? entriesToRequestData(rawData, acceptors) : extraEntriesToRequestData(rawData, acceptors)
 
   try {
-    await send(URLS[model], data, id, user.uid) // <--- boom
+    await send(URLS[model], data, id, user.uid)
     return [200]
   } catch (e) {
     const payload = JSON.stringify(data)
@@ -217,7 +183,6 @@ const attainmentsToSisu = async (model, { user, body }) => {
     sendSentryMessage('Sending entries to Sisu failed', user, { errorMessage, payload: data })
 
     if (!isValidSisuError(e.response)) {
-      logger.info({message: 'DEBUG: isValidSisuEntry triggered'})
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: user.name })
       return [400, { message: e.response ? e.response.data : '', genericError: true, user: user.name }]
     }
@@ -239,13 +204,6 @@ const attainmentsToSisu = async (model, { user, body }) => {
         successEntries.map(({ id }) => id),
         user.uid
       )
-      
-      logger.info({
-          message: 'DEBUG: attainmentsToSisu succeeded with retry no need to worry',
-          user: user.name,
-          payload
-        })
-
     } catch (e) {
       const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })

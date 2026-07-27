@@ -1,4 +1,4 @@
-FROM docker.io/node:24-alpine
+FROM node:14.17
 
 # Set timezone to Europe/Helsinki
 ENV TZ="Europe/Helsinki"

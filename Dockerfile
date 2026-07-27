@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-24
+FROM registry.access.redhat.com/ubi8/nodejs-14
 
 ENV TZ="Europe/Helsinki"
 
@@ -11,7 +11,6 @@ ENV NODE_ENV=$NODE_ENV
 
 # Setup
 COPY package* ./
-COPY .npmrc ./
 RUN npm ci -f --omit-dev --ignore-scripts
 COPY . .
 

@@ -2,7 +2,6 @@ const Sentry = require('@sentry/node')
 const logger = require('@utils/logger')
 
 const sendSentryMessage = (title, user, extras) =>
-  // staging is removed in sentry side
   Sentry.withScope((scope) => {
     if (user) scope.setUser(user.get ? user.get({ plain: true }) : user)
     if (extras) scope.setExtras(JSON.stringify(extras))

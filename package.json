@@ -20,6 +20,10 @@
     "start:dev": "nodemon index.js",
     "test:build": "webpack --mode production",
     "test:clean": "docker compose -f docker-compose.e2e.yml rm -vf && docker compose -f docker-compose.e2e.yml build",
+    "e2e:compose": "docker compose -f docker-compose.e2e.yml -f docker-compose.e2e.local.yml",
+    "e2e:up": "npm run e2e:compose -- up -d --wait",
+    "e2e:spec": "npm run e2e:up && npm run e2e:compose -- exec -T e2e npx cypress run --headless --spec",
+    "e2e:down": "npm run e2e:compose -- down -v --remove-orphans",
     "cli": "node ./server/scripts/fixCompletionDates.js"
   },
   "engines": {

@@ -61,7 +61,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=entry-accordion]').should('contain', 'Ohjelmoinnin perusteet (TKT10002)')
   })
 
-  it.only('Reports can be filtered by student number', () => {
+  it('Reports can be filtered by student number', () => {
     cy.login('admin').visit('')
     cy.get('[data-cy=adminmode-enable]').click().wait(500)
 

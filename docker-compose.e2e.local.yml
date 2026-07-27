@@ -1,0 +1,30 @@
+# Local-only override for running individual Cypress specs against a warm app
+# container. Not used by CI: `npm test` and the GitHub Actions workflow use
+# docker-compose.e2e.yml alone, so they keep testing the image as built.
+#
+# Usage:
+#   npm run e2e:up
+#   npm run e2e:spec -- cypress/integration/e2e/permissions.js
+#   npm run e2e:down
+#
+# The bind mount points at the image's WORKDIR so source edits are picked up
+# without a rebuild. The named node_modules volume is populated from the image
+# on first creation and shields the container from the host's node_modules;
+# run `npm run e2e:down` (which passes -v) after changing package.json.
+
+services:
+  e2e:
+    # App only, under nodemon. The image CMD (start:ci) would also run the full
+    # Cypress suite, which is what we are trying to avoid here.
+    command: npm run start:dev
+    volumes:
+      - ./:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    healthcheck:
+      # webpack-dev-middleware holds requests until the bundle is built, so a
+      # 200 here means the app is genuinely ready to serve, not just listening.
+      test: ['CMD', 'curl', '-f', 'http://localhost:8001']
+      interval: 5s
+      timeout: 10s
+      retries: 24
+      start_period: 20s

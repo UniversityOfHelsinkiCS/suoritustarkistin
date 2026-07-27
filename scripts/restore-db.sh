@@ -16,4 +16,4 @@ docker-compose exec db createdb -U postgres postgres
 echo "Restore db from $1"
 docker-compose exec -T db psql -U postgres < "$1"
 
-npm run dev
+echo "Done. Start the app with: npm run dev"

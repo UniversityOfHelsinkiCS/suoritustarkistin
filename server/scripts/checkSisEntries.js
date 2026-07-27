@@ -4,6 +4,7 @@ const db = require('../models/index')
 const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
 const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
+const { ALLOW_SEND_TO_MOOC } = require('../utils/common')
 
 function chunkArray(array, size) {
   const SIZE = size || 50
@@ -171,10 +172,15 @@ const checkRegisteredForMooc = async () => {
 
     logger.info(`Suotar: checkRegisteredForMooc: ${completionStudentPairs.length} new completion registrations in Sis`)
 
-    // eslint-disable-next-line no-constant-condition
-    if (completionStudentPairs.length && process.env.NODE_ENV === 'production') {
-      const chunks = chunkArray(completionStudentPairs)
-      await registerChunks(chunks, postRegistrations)
+    if (completionStudentPairs.length) {
+      if (ALLOW_SEND_TO_MOOC) {
+        const chunks = chunkArray(completionStudentPairs)
+        await registerChunks(chunks, postRegistrations)
+      } else {
+        logger.info(
+          `Suotar: checkRegisteredForMooc: Dry run, would register ${completionStudentPairs.length} completions to mooc`
+        )
+      }
     }
   } catch (error) {
     logger.error(`Suotar: checkRegisteredForMooc: Error in running Mooc registration check: ${error.message}`)
@@ -210,8 +216,12 @@ const checkRegisteredForNewMooc = async () => {
     logger.info(`Found ${completionStudentPairs.length} new completion registrations in Sis`)
 
     if (completionStudentPairs.length) {
-      const chunks = chunkArray(completionStudentPairs)
-      await registerChunks(chunks, postNewMoocRegistrations)
+      if (ALLOW_SEND_TO_MOOC) {
+        const chunks = chunkArray(completionStudentPairs)
+        await registerChunks(chunks, postNewMoocRegistrations)
+      } else {
+        logger.info(`Dry run, would register ${completionStudentPairs.length} completions to new mooc`)
+      }
     }
   } catch (error) {
     logger.error(`Error in running new Mooc registration check: ${error.message}`)

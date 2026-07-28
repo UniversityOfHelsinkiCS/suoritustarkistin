@@ -10,8 +10,8 @@ describe('Automated reports', () => {
     cy.get('[data-cy=nav-automated-reports]').click()
     cy.get('[data-cy=add-job-button]').click()
 
-    cy.get('[data-cy=add-job-schedule').type('0 0 * * *')
-    cy.get('[data-cy=add-job-course').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
+    cy.get('[data-cy=add-job-schedule]').type('0 0 * * *')
+    cy.get('[data-cy=add-job-course]').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
     cy.get('[data-cy=add-job-grader]').click().children().contains('grader').click()
     cy.get('[data-cy=add-job-active]').click()
 

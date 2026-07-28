@@ -150,7 +150,7 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
             personId: 'entryPersonId',
             verifierPersonId: 'entryVerifierpersonId',
             courseUnitRealisationId: 'entryCourseUnitRealisationId',
-            assessmentItemId: 'entryVerifierpersonId',
+            assessmentItemId: 'entryAssessmentItemId',
             completionLanguage: rawEntry.language,
             completionDate: attainmentDate,
             rawEntryId: rawEntry.id,

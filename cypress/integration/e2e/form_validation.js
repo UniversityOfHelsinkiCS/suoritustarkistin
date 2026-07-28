@@ -24,7 +24,6 @@ describe('Form validation', () => {
       cy.logout()
     })
 
-    // Fix me later
     it('when there are missing fields', () => {
       cy.login('admin').visit('')
       cy.get('[data-cy=adminmode-enable]').click().wait(500)
@@ -92,7 +91,7 @@ describe('Bachelor thesis form validation', () => {
     it('kandi tab should be visible', () => {
       cy.get('[data-cy=course-selection] > [role=listbox]').children().should('have.length', 4)
       cy.get('[data-cy=course-selection]').contains('Kandidaatin tutkielma')
-      cy.get('[data-cy=userguide').contains('Reporting bachelor thesis completions through Suotar')
+      cy.get('[data-cy=userguide]').contains('Reporting bachelor thesis completions through Suotar')
     })
 
     it('form is submittable with valid data and correct rows are displayed', () => {

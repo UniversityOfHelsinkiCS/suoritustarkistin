@@ -53,7 +53,7 @@ describe('User management', () => {
     cy.get('[data-cy=regular-delete]').click()
     cy.get('[data-cy=delete-user-confirm]').click()
 
-    cy.get('[data-cy=regular-delete').should('not.exist')
+    cy.get('[data-cy=regular-delete]').should('not.exist')
   })
 
   it('User can be created', () => {

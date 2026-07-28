@@ -11,7 +11,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=report-table]').its('length').should('eq', 7)
 
-    cy.get('[data-cy=report-TKT10002').should('contain', 'Ohjelmoinnin perusteet').click()
+    cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()
     cy.get('[data-cy=entry-accordion]').should('contain', 'Ohjelmoinnin perusteet (TKT10002)')
     cy.get('[data-cy=entry-accordion]').click({ multiple: true, force: true }) // Open all entry accordions
     cy.get('[data-cy=report-course-content]').should('contain', 'entryPersonId')
@@ -22,14 +22,13 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=report-courseUnitRealisationName-1]').should('contain', 'courseUnitRealisationName-fi-1')
 
-    cy.get('[data-cy=report-course-content]').should(
-      'contain',
-      'entryCourseUnitId',
-      'entryCourseUnitRealisation',
-      'Assessment ID 1',
-      "Grader's ID 1",
-      'sis-0-5'
-    )
+    cy.get('[data-cy=report-course-content]').should('contain', 'entryCourseUnitId')
+    cy.get('[data-cy=report-course-content]').should('contain', 'entryCourseUnitRealisationId')
+    cy.get('[data-cy=report-course-content]').should('contain', 'Assessment item ID')
+    cy.get('[data-cy=report-course-content]').should('contain', 'Grader ID')
+    cy.get('[data-cy=report-course-content]').should('contain', 'entryAssessmentItemId')
+    cy.get('[data-cy=report-course-content]').should('contain', 'entryVerifierpersonId')
+    cy.get('[data-cy=report-course-content]').should('contain', 'sis-0-5')
   })
 
   it('When not in admin-mode only own reports are visible', () => {
@@ -39,7 +38,7 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=sis-reports-tab]').click()
     cy.get('[data-cy=report-table]').its('length').should('eq', 4)
-    cy.get('[data-cy=report-TKT10002').should('contain', 'Ohjelmoinnin perusteet')
+    cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet')
 
     cy.get('[data-cy=adminmode-enable]').click().wait(500)
     cy.get('[data-cy=report-table]').its('length').should('eq', 7)
@@ -57,7 +56,7 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=report-table]').its('length').should('eq', 1)
 
-    cy.get('[data-cy=report-TKT10002').should('contain', 'Ohjelmoinnin perusteet').click()
+    cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()
     cy.get('[data-cy=entry-accordion]').should('contain', 'Ohjelmoinnin perusteet (TKT10002)')
   })
 

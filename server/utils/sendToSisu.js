@@ -51,7 +51,7 @@ const writeErrorsToEntries = async ({ data }, senderId, model) => {
   const failingIds = parseSisuErrors(data) || data
   logger.info(`failingIds ${failingIds}`)
   await Promise.all(
-    failingIds.map((id) => {
+    failingIds.map((id) =>
       db[model].update(
         {
           errors: { ...data.violations[id] },
@@ -62,7 +62,7 @@ const writeErrorsToEntries = async ({ data }, senderId, model) => {
           where: { id }
         }
       )
-    })
+    )
   )
   return failingIds
 }

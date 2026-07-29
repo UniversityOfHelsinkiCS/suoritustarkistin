@@ -13,6 +13,7 @@ env:
 
 jobs:
   lint:
+    if: ${{ github.event.pull_request.user.login != 'renovate[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,6 +33,7 @@ jobs:
         run: npm run lint
 
   integration:
+    if: ${{ github.event.pull_request.user.login != 'renovate[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -53,6 +55,7 @@ jobs:
         run: npm run test:integration
 
   build-and-test:
+    if: ${{ github.event.pull_request.user.login != 'renovate[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

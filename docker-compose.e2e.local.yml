@@ -23,7 +23,11 @@ services:
     healthcheck:
       # webpack-dev-middleware holds requests until the bundle is built, so a
       # 200 here means the app is genuinely ready to serve, not just listening.
-      test: ['CMD', 'curl', '-f', 'http://localhost:8001']
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://localhost:8001',(r)=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
       interval: 5s
       timeout: 10s
       retries: 24

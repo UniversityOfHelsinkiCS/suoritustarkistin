@@ -351,7 +351,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     }
     case 'RESET_FILTERS': {
       const { filters } = INITIAL_STATE
-      filters.adminmode = window.localStorage.getItem('adminmode')
+      filters.adminmode = window.localStorage.getItem('adminmode') || false
       return {
         ...state,
         filters

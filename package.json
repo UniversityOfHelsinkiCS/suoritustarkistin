@@ -15,7 +15,7 @@
     "start:ci": "npm-run-all -r -p start cypress:run",
     "start:cypress-open": "npm-run-all -p start:cypress cypress:interactive",
     "cypress:run": "npx cypress run --headless",
-    "cypress:interactive": "npx cypress open -P ./",
+    "cypress:interactive": "npx cypress open --e2e -P ./",
     "build": "webpack",
     "start:dev": "nodemon index.js",
     "test:build": "webpack --mode production",
@@ -27,7 +27,7 @@
     "cli": "node ./server/scripts/fixCompletionDates.js"
   },
   "engines": {
-    "node": ">=10.15"
+    "node": ">=24 <25"
   },
   "repository": {
     "type": "git",
@@ -80,14 +80,14 @@
     "umzug": "^2.3.0",
     "unfuck-utf8-headers-middleware": "^1.0.1",
     "uuid": "^8.3.2",
-    "webpack": "^4.46.0",
+    "webpack": "^4.47.0",
     "webpack-cli": "^4.10.0",
     "winston": "^3.8.2",
     "winston-gelf-transporter": "^1.0.2",
     "winston-loki": "^6.1.3"
   },
   "devDependencies": {
-    "cypress": "8.0.0",
+    "cypress": "15.19.0",
     "eslint": "^8.22.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",

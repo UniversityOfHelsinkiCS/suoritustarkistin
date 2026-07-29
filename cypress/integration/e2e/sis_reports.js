@@ -68,10 +68,10 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=sis-reports-tab]').click()
 
-    cy.get('[data-cy=student-filter]').type('011111112').wait(500)
+    cy.get('[data-cy=student-filter] input').type('011111112').wait(500)
     cy.contains('No reports found')
 
-    cy.get('[data-cy=student-filter]').clear().type('011111111').wait(500)
+    cy.get('[data-cy=student-filter] input').clear().type('011111111').wait(500)
     cy.get('[data-cy=report-table]').its('length').should('eq', 7)
 
     cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()

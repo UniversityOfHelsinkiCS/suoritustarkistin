@@ -78,11 +78,13 @@ describe('Bachelor thesis form validation', () => {
   describe('when logged in as kandi grader', () => {
     before(function () {
       cy.request('api/seed/bsc_thesis')
-      cy.login('grader').visit('')
-      cy.get('[data-cy=copypaste-kandi]').click()
     })
 
     beforeEach(() => {
+      // Cypress >=12 resets the page between tests (testIsolation), so the login and
+      // navigation this suite used to do once in `before` must happen per test.
+      cy.login('grader').visit('')
+      cy.get('[data-cy=copypaste-kandi]').click()
       cy.get('[data-cy=paste-field]').clear()
       cy.get('[data-cy=course-selection]').click().children().contains('Kandidaatin tutkielma').click()
       cy.get('[data-cy=grader-selection]').click().children().contains('grader').click()

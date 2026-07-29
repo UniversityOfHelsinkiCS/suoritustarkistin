@@ -1,4 +1,4 @@
-FROM cypress/base:14.7.0
+FROM cypress/base:24.18.0
 
 # Set timezone to Europe/Helsinki
 ENV TZ="Europe/Helsinki"
@@ -12,7 +12,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run test:build
+RUN NODE_ENV=production npm run test:build
 
 EXPOSE 8001
 

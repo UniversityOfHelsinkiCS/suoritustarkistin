@@ -7,6 +7,7 @@ const axios = require('axios')
 const moment = require('moment')
 const db = require('../models/index')
 const { getAcceptorPersons, getAcceptorPersonsByCourseUnit } = require('../services/importer')
+const { httpAgent, httpsAgent } = require('../config/httpAgents')
 const { ALLOW_SEND_TO_SISU } = require('./common')
 
 const URLS = {
@@ -21,9 +22,17 @@ const API = process.env.POST_IMPORTER_DB_API_URL
       headers: {
         token: process.env.IMPORTER_DB_API_TOKEN || ''
       },
-      baseURL: process.env.POST_IMPORTER_DB_API_URL
+      baseURL: process.env.POST_IMPORTER_DB_API_URL,
+      httpAgent,
+      httpsAgent
     })
   : require('../config/importerApi')
+
+// A network-level failure (socket hang up, ECONNRESET) has no `.response`, and the
+// axios error is circular via request -> agent -> socket -> _httpMessage, so
+// JSON.stringify would throw a TypeError from inside the catch.
+const describeError = (e) =>
+  e.response ? JSON.stringify(e.response.data || null) : JSON.stringify({ message: e.message, code: e.code })
 
 // If the error is coming from Sisu
 // it contains keys failingIds and violations
@@ -125,7 +134,7 @@ const extraEntriesToRequestData = (extraEntries, acceptors) =>
       credits: parseFloat(rawEntry.credits.replace(',', '.')),
       administrativeNote: 'Kurjen kautta tuotu erilliskirjaus',
       attainmentLanguageUrn: `urn:code:language:${completionLanguage}`,
-      studyFieldUrn : 'urn:code:study-field:okm-7',
+      studyFieldUrn: 'urn:code:study-field:okm-7',
       id,
       personId,
       studyRightId,
@@ -178,7 +187,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
     return [200]
   } catch (e) {
     const payload = JSON.stringify(data)
-    const errorMessage = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
+    const errorMessage = describeError(e)
     logger.error({ message: 'Error when sending entries to Sisu', errorMessage, payload })
     sendSentryMessage('Sending entries to Sisu failed', user, { errorMessage, payload: data })
 
@@ -205,7 +214,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
         user.uid
       )
     } catch (e) {
-      const err = e.response ? JSON.stringify(e.response.data || null) : JSON.stringify(e)
+      const err = describeError(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })
       sendSentryMessage(`Sending entries to Sisu failed! (Round 2)`, user, { payload, errorMessage: err })
       return [400, { message: 'No entries sent to Sisu' }]

@@ -19,6 +19,18 @@ const { initializeCronJobs } = require('./scripts/cronjobs')
 
 const { IN_MAINTENANCE } = process.env
 
+/**
+ * Node >=15 terminates the process on an unhandled promise rejection. Node 14 only
+ * warned. Log and keep running, as Node 14 did. Maybe consider a more modern pattern
+ * once Node upgrade is live and stable.
+ */
+process.on('unhandledRejection', (reason) => {
+  logger.error({
+    message: 'Unhandled promise rejection',
+    reason: reason instanceof Error ? reason.stack : String(reason)
+  })
+})
+
 initializeDatabaseConnection()
   .then(() => {
     const app = express()
@@ -81,8 +93,11 @@ initializeDatabaseConnection()
     if (!IN_MAINTENANCE && inProduction) initializeCronJobs()
 
     const STAGING = process.env.NODE_ENV === 'staging'
-    logger.info('Suotar starting', inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE)
-    
+    logger.info(
+      'Suotar starting',
+      inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE
+    )
+
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
       logger.info('Suotar: Starting cron jobs')
 
@@ -93,7 +108,7 @@ initializeDatabaseConnection()
 
       cron.schedule('15 3 * * *', () => {
         logger.info('Suotar: Checking registered for mooc cron')
-        checkRegisteredForMooc() 
+        checkRegisteredForMooc()
       })
 
       cron.schedule('15 4 * * *', () => {

@@ -23,7 +23,7 @@ describe('Automated reports', () => {
       .should('contain', 'grader')
 
     cy.get('[data-cy=edit-job]').click()
-    cy.get('[data-cy=edit-job-schedule]').clear().type('0 0 1 1 1')
+    cy.get('[data-cy=edit-job-schedule] input').clear().type('0 0 1 1 1')
     cy.get('[data-cy=edit-job-active]').click()
 
     cy.get('[data-cy=edit-job-confirm]').click()

@@ -15,12 +15,12 @@ describe('Creating and assigning courses work', function () {
     cy.get('[data-cy=add-course-confirm]').should('not.be.disabled')
 
     // Missing course name
-    cy.get('[data-cy=add-course-name]').clear()
+    cy.get('[data-cy=add-course-name] input').clear()
     cy.get('[data-cy=add-course-confirm]').should('be.disabled')
 
     cy.get('[data-cy=add-course-name] input').type('Testi kurssi')
     cy.get('[data-cy=add-course-confirm]').should('not.be.disabled')
-    cy.get('[data-cy=add-course-code]').clear()
+    cy.get('[data-cy=add-course-code] input').clear()
     cy.get('[data-cy=add-course-confirm]').should('be.disabled')
 
     // Course code with typos
@@ -28,7 +28,7 @@ describe('Creating and assigning courses work', function () {
     cy.get('[data-cy=add-course-confirm]').should('be.disabled')
 
     // Missing course code
-    cy.get('[data-cy=add-course-code]').clear()
+    cy.get('[data-cy=add-course-code] input').clear()
     cy.get('[data-cy=add-course-confirm]').should('be.disabled')
 
     // Invalid language

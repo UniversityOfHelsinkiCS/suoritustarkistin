@@ -16,6 +16,7 @@
     "start:cypress-open": "npm-run-all -p start:cypress cypress:interactive",
     "cypress:run": "npx cypress run --headless",
     "cypress:interactive": "npx cypress open --e2e -P ./",
+    "test:integration": "node --test 'server/**/*.test.js'",
     "build": "webpack",
     "start:dev": "nodemon index.js",
     "test:build": "webpack --mode production",

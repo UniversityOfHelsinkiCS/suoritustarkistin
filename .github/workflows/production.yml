@@ -10,14 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Build image
         id: build-image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@v3
         with:
           image: suoritustarkistin
           tags: production ${{ github.sha }}
+          # buildah-build v3 changed the default to true
+          squash: false
           containerfiles: |
             ./Dockerfile
           build-args: |
@@ -25,7 +27,7 @@ jobs:
             NODE_ENV=production
 
       - name: Push to quay.io
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@v3
         with:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
@@ -38,7 +40,7 @@ jobs:
     needs: publish
     if: success()
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Pull image and create a container
         run: docker create --name suotar quay.io/toska/suoritustarkistin:production
       - name: Copy assets from the container
@@ -65,7 +67,7 @@ jobs:
     if: success()
     steps:
       - name: "Send notification to Slack"
-        uses: UniversityOfHelsinkiCS/slackbot-action@v1.4.2
+        uses: UniversityOfHelsinkiCS/slackbot-action@v1.5
         with:
           webhook-url: ${{ secrets.SLACKBOT_URL }}
           message-type: deployment
@@ -80,7 +82,7 @@ jobs:
     if: failure()
     steps:
       - name: "Send notification to Slack"
-        uses: UniversityOfHelsinkiCS/slackbot-action@v1.4.2
+        uses: UniversityOfHelsinkiCS/slackbot-action@v1.5
         with:
           webhook-url: ${{ secrets.SLACKBOT_URL }}
           message-type: deployment-failure

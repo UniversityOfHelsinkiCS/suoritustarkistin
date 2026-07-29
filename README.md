@@ -62,7 +62,7 @@ There are a bunch courses with automatic reporting. These are courses that come 
 
 ### Deprecated: Combo Courses
 
-*Feature is no longer needed since AY codes does not exist anymore. The support can be removed from the code* 
+_Feature is no longer needed since AY codes does not exist anymore. The support can be removed from the code_
 
 For some courses, same course instance has students signed in from both AY and TKT. These courses are called Combo Courses. When marked as such in the SuotarDB, and approved by Open University, Suotar can automatically detect which completion should the student receive. You can see the selection for each student after inserting the data. The Open University completions will be painted blue.
 
@@ -73,9 +73,10 @@ For some courses, same course instance has students signed in from both AY and T
 1. Clone the repository
 2. Make sure you have a .env-file with the contents of .env.template
 3. `npm install`
-4. `npm run dev`
-5. Open [localhost:8000](localhost:8000)
-6. Dev-database can be viewed at: [localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public)
+4. `npm run prepare` (husky hooks, has to be run manually due to `ignore-scripts=true`)
+5. `npm run dev`
+6. Open [localhost:8000](localhost:8000)
+7. Dev-database can be viewed at: [localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public)
 
 ### Production data
 

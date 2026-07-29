@@ -11,6 +11,7 @@ ENV NODE_ENV=$NODE_ENV
 
 # Setup
 COPY package* ./
+COPY .npmrc ./
 RUN npm ci -f --omit-dev --ignore-scripts
 COPY . .
 

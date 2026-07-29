@@ -8,9 +8,6 @@ on:
     branches:
       - master
 
-env:
-  SAFE_CHAIN_VERSION: 1.5.3
-
 jobs:
   lint:
     if: ${{ github.event.pull_request.user.login != 'renovate[bot]' }}
@@ -20,15 +17,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 24
-      - name: Install Aikido Safe Chain
-        run: |
-          curl -fsSL https://github.com/AikidoSec/safe-chain/releases/download/${SAFE_CHAIN_VERSION}/install-safe-chain.sh | sh -s -- --ci
-          echo "$HOME/.safe-chain/shims" >> "$GITHUB_PATH"
-          echo "$HOME/.safe-chain/bin" >> "$GITHUB_PATH"
-      - name: Verify Aikido Safe Chain
-        run: safe-chain --version
-      - name: Install eslint
-        run: npm install eslint
+      - name: Install dependencies
+        run: npm ci
       - name: Run lint
         run: npm run lint
 
@@ -40,17 +30,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 24
-      - name: Install Aikido Safe Chain
-        run: |
-          curl -fsSL https://github.com/AikidoSec/safe-chain/releases/download/${SAFE_CHAIN_VERSION}/install-safe-chain.sh | sh -s -- --ci
-          echo "$HOME/.safe-chain/shims" >> "$GITHUB_PATH"
-          echo "$HOME/.safe-chain/bin" >> "$GITHUB_PATH"
-      - name: Verify Aikido Safe Chain
-        run: safe-chain --version
-      # --ignore-scripts skips the Cypress binary download; these tests are
-      # server-side only and need no browser.
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
       - name: Run integration tests
         run: npm run test:integration
 
@@ -64,14 +45,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 24
-
-      - name: Install Aikido Safe Chain
-        run: |
-          curl -fsSL https://github.com/AikidoSec/safe-chain/releases/download/${SAFE_CHAIN_VERSION}/install-safe-chain.sh | sh -s -- --ci
-          echo "$HOME/.safe-chain/shims" >> "$GITHUB_PATH"
-          echo "$HOME/.safe-chain/bin" >> "$GITHUB_PATH"
-      - name: Verify Aikido Safe Chain
-        run: safe-chain --version
 
       - name: Test
         run: npm run test

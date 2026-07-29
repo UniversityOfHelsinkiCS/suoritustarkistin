@@ -7,8 +7,10 @@ ENV TZ="Europe/Helsinki"
 WORKDIR /usr/src/app
 
 COPY package* ./
+COPY .npmrc ./
 
 RUN npm ci
+RUN npx cypress install
 
 COPY . .
 

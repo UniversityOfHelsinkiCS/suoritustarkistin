@@ -254,7 +254,6 @@ export default withRouter(({ mooc, match }) => {
       const notSentWithValidEntries = report.every((row) => row.entry && !row.entry.missingEnrolment && !row.entry.sent)
       return !notSentWithValidEntries
     })
-    .sort((a, b) => new Date(b[0].updatedAt) - new Date(a[0].updatedAt))
     .map((report, index) => {
       const reportWithEntries = report.sort((a, b) => {
         if (!a.entry.missingEnrolment && !b.entry.missingEnrolment) return a.entry.type.localeCompare(b.entry.type)

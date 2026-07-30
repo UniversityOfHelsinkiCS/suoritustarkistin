@@ -104,10 +104,11 @@ const request = { user: { id: 1, uid: 'tester', name: 'Tester' }, body: { entryI
 const sentUpdates = () => updates.filter((u) => u.values.sent && u.values.errors === null)
 
 test('records the entry as sent when Sisu accepts it', async () => {
-  const result = await attainmentsToSisu('entries', request)
+  const [status, body] = await attainmentsToSisu('entries', request)
 
   assert.equal(posts, 1, 'the importer should have received the attainments')
-  assert.deepEqual(result, [200], 'the operator should be told the send succeeded')
+  assert.equal(status, 200, 'the operator should be told the send succeeded')
+  assert.ok(body, 'the success path must return a body like every other path')
   assert.equal(sentUpdates().length, 1, 'Sisu accepted it, so the entry must be recorded as sent')
 })
 
@@ -120,6 +121,7 @@ test('reports a failure without crashing when the connection drops after Sisu ac
 
   assert.equal(status, 400)
   assert.equal(body.genericError, true)
+  assert.match(body.message, /ECONNRESET|socket hang up/, 'the body should say what went wrong')
   assert.equal(sentUpdates().length, 0, 'nothing may be marked sent when the outcome is unknown')
 })
 
@@ -129,9 +131,10 @@ test('writes per-entry errors back when Sisu rejects an attainment', async () =>
     res.end(JSON.stringify({ failingIds: [ENTRY.id], violations: { [ENTRY.id]: ['bad grade'] } }))
   }
 
-  const [status] = await attainmentsToSisu('entries', request)
+  const [status, body] = await attainmentsToSisu('entries', request)
 
   assert.equal(status, 400)
+  assert.equal(typeof body.message, 'string', 'the caller destructures the body on every path')
   const errorUpdate = updates.find((u) => u.values.errors)
   assert.ok(errorUpdate, 'the violation should be recorded against the entry')
   assert.equal(errorUpdate.options.where.id, ENTRY.id)

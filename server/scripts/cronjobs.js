@@ -33,7 +33,7 @@ const initializeCronJobs = async () => {
       if (result.message === 'no new entries' || result.message === 'success') {
         logger.info({ message: result.message })
       } else {
-        logger.error({ error: result.message })
+        logger.error({ message: result.message })
       }
     })
     return { ...acc, [job.id]: createdJob }
@@ -58,7 +58,7 @@ const runJob = async (id) => {
   if (result.message === 'no new entries' || result.message === 'success') {
     logger.info({ message: result.message })
   } else {
-    logger.error({ error: result.message })
+    logger.error({ message: result.message })
   }
 }
 
@@ -79,7 +79,7 @@ const activateJob = async (id) => {
     if (result.message === 'no new entries' || result.message === 'success') {
       logger.info({ message: result.message })
     } else {
-      logger.error({ error: result.message })
+      logger.error({ message: result.message })
     }
   })
   cronjobs = { ...cronjobs, [job.id]: createdJob }

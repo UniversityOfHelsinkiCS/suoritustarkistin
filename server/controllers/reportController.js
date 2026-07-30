@@ -366,16 +366,15 @@ const sendToSis = async (req, res) => {
     sendEmails(req.user.email, { missingStudents, batchId, failedInSisu })
   }
 
-  let [status, message] = []
   try {
-    if (entryIds.length) {
-      [status, message] = await attainmentsToSisu('entries', req)
-    }
-    if (extraEntryIds.length) {
-      [status, message] = await attainmentsToSisu('extra_entries', req)
-    }
-    email(message && !message.genericError)
-    if (message) return res.status(status).send(message)
+    const results = []
+    if (entryIds.length) results.push(await attainmentsToSisu('entries', req))
+    if (extraEntryIds.length) results.push(await attainmentsToSisu('extra_entries', req))
+
+    const [status, message] = results.find(([resultStatus]) => resultStatus !== 200) || results[0]
+
+    email(status !== 200 && !message?.genericError)
+    if (status !== 200) return res.status(status).send(message)
   } catch (e) {
     logger.error({ message: e.toString(), error: e })
   }

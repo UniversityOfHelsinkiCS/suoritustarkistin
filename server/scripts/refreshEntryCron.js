@@ -34,7 +34,8 @@ const refreshEntriesCron = async () => {
     user: {},
     body: { entryIds: entriesToSend.map(({ id }) => id) }
   })
-  if (status > 200) return sendSentryMessage(`Sending enrollment limbo entries to Sisu failed with message: ${message}`)
+  const reason = typeof message === 'string' ? message : JSON.stringify(message)
+  if (status > 200) return sendSentryMessage(`Sending enrollment limbo entries to Sisu failed with message: ${reason}`)
   return sendSentryMessage('Successfully sent enrollment limbo entries to Sisu!')
 }
 

@@ -8,12 +8,13 @@ const { filterDuplicateMatches } = require('../utils/earlierCompletions')
 const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false) => {
   const matches = filterDuplicateMatches(allMatches)
 
-  const transaction = await db.sequelize.transaction()
-
   if (!matches.length) {
     return { message: 'no new entries' }
   }
 
+  const transaction = await db.sequelize.transaction()
+
+  let entriesToSend
   try {
     const newRawEntries = await db.raw_entries.bulkCreate(matches, transaction, { returning: true })
     logger.info({
@@ -45,18 +46,9 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
       return { message: 'no new entries' }
     }
 
-    const entriesToSend = await db.entries.bulkCreate(success, { transaction, returning: true })
+    entriesToSend = await db.entries.bulkCreate(success, { transaction, returning: true })
     logger.info({ message: `${success.length} new entries created`, amount: success.length })
     await transaction.commit()
-
-    if (sendToSisu) {
-      const [status, { message }] = await attainmentsToSisu('entries', {
-        user: {},
-        body: { entryIds: entriesToSend.map(({ id }) => id) }
-      })
-      if (status > 200) sendSentryMessage(`Sending automated entries to Sisu failed with message: ${message}`)
-    }
-    return { message: 'success' }
   } catch (error) {
     await transaction.rollback()
     await db.raw_entries.destroy({
@@ -68,6 +60,27 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
     sendSentryMessage(`Error processing new completions: ${error.message}`, null, error)
     return { message: `Error processing new completions: ${error.message}` }
   }
+
+  if (sendToSisu) {
+    const failed = (reason, error) => {
+      const message = `Entries created, but sending them to Sisu failed: ${reason}`
+      logger.error(message)
+      sendSentryMessage(message, null, error)
+      return { message }
+    }
+
+    try {
+      const [status, body] = await attainmentsToSisu('entries', {
+        user: {},
+        body: { entryIds: entriesToSend.map(({ id }) => id) }
+      })
+      const { message } = body
+      if (status > 200) return failed(typeof message === 'string' ? message : JSON.stringify(message))
+    } catch (error) {
+      return failed(error.message, error)
+    }
+  }
+  return { message: 'success' }
 }
 
 module.exports = { automatedAddToDb }

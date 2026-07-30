@@ -23,6 +23,7 @@ const API = process.env.POST_IMPORTER_DB_API_URL
         token: process.env.IMPORTER_DB_API_TOKEN || ''
       },
       baseURL: process.env.POST_IMPORTER_DB_API_URL,
+      timeout: 600_000,
       httpAgent,
       httpsAgent
     })
@@ -37,7 +38,7 @@ const describeError = (e) =>
 // If the error is coming from Sisu
 // it contains keys failingIds and violations
 const isValidSisuError = (response) => {
-  if (!response) return false
+  if (!response || !response.data) return false
   const { failingIds, violations } = response.data
   return !!failingIds && !!violations
 }
@@ -184,7 +185,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
 
   try {
     await send(URLS[model], data, id, user.uid)
-    return [200]
+    return [200, { message: 'success' }]
   } catch (e) {
     const payload = JSON.stringify(data)
     const errorMessage = describeError(e)
@@ -193,7 +194,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
 
     if (!isValidSisuError(e.response)) {
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: user.name })
-      return [400, { message: e.response ? e.response.data : '', genericError: true, user: user.name }]
+      return [400, { message: (e.response && e.response.data) || e.message, genericError: true, user: user.name }]
     }
     const failedEntries = await writeErrorsToEntries(e.response, senderId, model)
     logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, user: user.name })
@@ -207,7 +208,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
         model === 'entries'
           ? entriesToRequestData(successEntries, acceptors)
           : extraEntriesToRequestData(successEntries, acceptors)
-      send(
+      await send(
         URLS[model],
         payload,
         successEntries.map(({ id }) => id),

@@ -35,8 +35,7 @@ const getCourseUnitRealisationSisuUrl = (realisation) => `
 const getBatchLink = (id) => {
   if (process.env.NODE_ENV === 'production')
     return `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
-  if (process.env.NODE_ENV === 'staging')
-    return `https://toska-staging.cs.helsinki.fi/suotar/reports/sisu/${id}`
+  if (process.env.NODE_ENV === 'staging') return `https://toska-staging.cs.helsinki.fi/suotar/reports/sisu/${id}`
   return `http://localhost:8000/reports/sisu/${id}`
 }
 
@@ -197,7 +196,7 @@ const title = (batch) => {
   )
   const [code, ...extraCodes] = Array.from(courseCodes)
   const [name, ...extraNames] = Array.from(courseNames)
-  const date = moment(batch[0].createdAt).format('DD.MM.YY - HH:mm:SS')
+  const date = moment(batch[0].createdAt).format('DD.MM.YY - HH:mm:ss')
   const extras = extraCodes && extraCodes.length ? `+ ${extraCodes.length} others` : ''
   const titleString = batch[0].batchId.startsWith('limbo') ? batch[0].batchId : `${name} - ${code} ${extras} - ${date}`
   return (

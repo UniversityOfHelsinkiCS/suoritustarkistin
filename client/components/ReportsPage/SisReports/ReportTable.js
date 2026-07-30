@@ -66,7 +66,7 @@ const TableColumns = ({ allowDelete }) => (
         content={
           <div>
             <p>
-              <strong>Suotar checks this status from Sisu once every hour</strong>
+              <strong>Suotar checks this status from Sisu once per day</strong>
             </p>
             <p>
               <strong> One checkmark</strong> means that the attainment is successfully registered in Sisu as a partial

@@ -174,7 +174,7 @@ export default () => {
       {user.adminMode ? <ApiChecks /> : null}
       {user.adminMode ? <CoursesButton /> : null}
       {user.adminMode ? <UsersButton /> : null}
-      {user.isAdmin ? getSandboxButton() : null}
+      {user.adminMode ? getSandboxButton() : null}
       {user.isAdmin ? getAdminButton() : null}
 
       {window.localStorage.getItem('adminLoggedInAs') ? unHijackButton() : <FakeShibboMenu />}

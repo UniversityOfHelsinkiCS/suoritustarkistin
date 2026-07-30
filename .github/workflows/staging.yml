@@ -6,7 +6,7 @@ name: Build, test and release staging
 on:
   push:
     branches:
-      - trunk
+      - master
 
 jobs:
   lint:

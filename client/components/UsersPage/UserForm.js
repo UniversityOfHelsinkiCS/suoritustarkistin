@@ -31,8 +31,6 @@ export default ({ close, user }) => {
   const courses = useSelector((state) => state.courses)
   const currentUser = useSelector((state) => state.user.data)
 
-  if (!currentUser) return null
-
   const parseUser = (fetchedUser) => ({
     email: fetchedUser.primaryEmail || formData.email,
     uid: fetchedUser.eduPersonPrincipalName ? fetchedUser.eduPersonPrincipalName.split('@')[0] : formData.uid,
@@ -73,6 +71,8 @@ export default ({ close, user }) => {
       })
     }
   }, [courses, user])
+
+  if (!currentUser) return null
 
   const handleFieldChange = (event) => {
     const { name, value } = event.target

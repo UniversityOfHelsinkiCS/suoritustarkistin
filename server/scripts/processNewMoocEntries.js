@@ -1,7 +1,6 @@
 const logger = require('@utils/logger')
 const { isValidGrade, SIS_LANGUAGES } = require('@root/utils/validators')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@root/utils/common')
-const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/newMooc')
 const { getEarlierAttainments, getCourseUnitEnrolments } = require('../services/importer')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
@@ -48,18 +47,14 @@ function flattenEnrollments(data) {
   )
 }
 
-const fetchRegistrationsFor = async (code, job) => {
-  if (job.sisu) {
-    const registrationsInSisu = await getCourseUnitEnrolments(code)
-    return flattenEnrollments(registrationsInSisu)
-  }
-  // from eduweb
-  return await getRegistrations(code)
+const fetchRegistrationsFor = async (code) => {
+  const registrationsInSisu = await getCourseUnitEnrolments(code)
+  return flattenEnrollments(registrationsInSisu)
 }
 
 const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false) => {
   try {
-    const registrations = await fetchRegistrationsFor(course.courseCode, job)
+    const registrations = await fetchRegistrationsFor(course.courseCode)
     const completions = await getCompletions(job.slug || course.courseCode)
 
     const courseStudentPairs = registrations.reduce((pairs, registration) => {

@@ -12,7 +12,7 @@ export default () => {
   useEffect(() => {
     dispatch(getAllCoursesAction())
     dispatch(getAllGradersAction())
-  }, [])
+  }, [dispatch])
 
   return (
     <>

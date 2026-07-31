@@ -15,7 +15,7 @@ export default () => {
     dispatch(getAllJobsAction())
     dispatch(getAllCoursesAction())
     dispatch(getAllGradersAction())
-  }, [])
+  }, [dispatch])
 
   return (
     <>

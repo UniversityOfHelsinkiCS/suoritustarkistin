@@ -13,7 +13,7 @@ export default () => {
 
   useEffect(() => {
     dispatch(getAllUsersAction())
-  }, [])
+  }, [dispatch])
 
   return (
     <>

@@ -19,7 +19,7 @@ export default () => {
 
   useEffect(() => {
     if (!user.adminMode && oodiEnabled) dispatch(getUsersOodiReportsAction(user.id))
-  }, [user])
+  }, [user, dispatch])
 
   useEffect(() => {
     // If batch in url is a mooc report, switch

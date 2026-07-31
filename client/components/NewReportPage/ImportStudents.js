@@ -217,7 +217,7 @@ export default ({ isOpen, setIsOpen, importRows }) => {
       dispatch(importStudentsAction(defaultCourse))
       setGrades({})
     }
-  }, [defaultCourse])
+  }, [defaultCourse, dispatch])
 
   const fetchAttainments = (students) =>
     dispatch(importStudentsAttainments(students.map((studentNumber) => ({ studentNumber, courseCode: defaultCourse }))))

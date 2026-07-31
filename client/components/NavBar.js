@@ -30,7 +30,7 @@ export default () => {
 
   useEffect(() => {
     if (user.adminMode) dispatch(getUnsentBatchCountAction())
-  }, [user.adminMode])
+  }, [user.adminMode, dispatch])
 
   const handleAdminModeToggle = () => {
     // eslint-disable-next-line no-unused-expressions

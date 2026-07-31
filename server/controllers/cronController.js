@@ -16,6 +16,7 @@ const runJobs = async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
+  // oxlint-disable-next-line no-console
   console.log('Suotar: register BAI')
   await runCronJob(27)
 

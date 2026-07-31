@@ -41,7 +41,7 @@ export default withRouter(({ history }) => {
     setInterval(() => {
       dispatch(pingAction())
     }, 60 * 1000) // One minute
-  }, [])
+  }, [dispatch])
 
   // Login failed, because no employeenumber
   if (user.error && user.errorCode === 1)

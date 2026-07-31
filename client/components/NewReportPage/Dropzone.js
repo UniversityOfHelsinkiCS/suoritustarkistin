@@ -74,7 +74,7 @@ export default () => {
       ...(isDragAccept ? acceptStyle : {}),
       ...(isDragReject ? rejectStyle : {})
     }),
-    [isDragActive, isDragReject]
+    [isDragActive, isDragAccept, isDragReject]
   )
 
   return (

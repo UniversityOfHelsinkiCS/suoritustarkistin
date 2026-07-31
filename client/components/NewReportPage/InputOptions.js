@@ -128,7 +128,7 @@ export default ({ kandi, extra, parseCSV }) => {
       dispatch(getUsersCoursesAction(user.id))
       dispatch(getUsersGradersAction(user.id))
     }
-  }, [user])
+  }, [user, dispatch])
 
   useEffect(() => {
     if (areValidNewRawEntries(parseRawEntries(newRawEntries))) setIsValid(true)

@@ -17,6 +17,7 @@ services:
       - PORT=8001
       - IMPORTER_DB_API_URL=http://importer-mock:3000/
       - POST_IMPORTER_DB_API_URL=http://importer-mock:3000/
+      - SEND_TO_SISU=true
     volumes:
       - ./:/opt/app-root/src
       - node_modules:/opt/app-root/src/node_modules

@@ -13,23 +13,48 @@
   "globals": {
     "__BASE_PATH__": "readonly"
   },
-  "ignorePatterns": ["**/node_modules", "**/dist", "**/migrations", "**/seeders"],
+  // node_modules and dist come from .gitignore, which oxlint reads by default
+  "ignorePatterns": ["**/migrations"],
   "rules": {
     "no-console": "warn",
     "no-unused-vars": ["error", { "varsIgnorePattern": "^_" }],
-    // was off under eslint too: the codebase shadows req/e/id freely in nested handlers
+    // deliberately off: side-effect imports (polyfills, css, module-alias) are load-bearing,
+    // req/e/id are shadowed throughout the server, and the a11y patterns are accepted here
     "no-shadow": "off",
-    // side-effect imports are used deliberately (polyfills, css, module-alias registration)
     "import/no-unassigned-import": "off",
     "import/no-named-as-default-member": "off",
-    // all four were explicitly disabled in the old .eslintrc; keeping the same stance
     "react/no-unstable-nested-components": "off",
     "jsx-a11y/no-static-element-interactions": "off",
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/label-has-associated-control": "off",
-    // not enforced before (airbnb-hooks was never enabled); surfacing as warnings for now
+    // warn, not error: the remaining violations need real refactors (functional setState,
+    // useCallback) rather than dependency additions, which would cause render loops
     "react-hooks/exhaustive-deps": "warn",
-    // pedantic-category rule
-    "eqeqeq": "error"
+    // everything below is picked individually from the pedantic category
+    "eqeqeq": "error",
+    "no-throw-literal": "error",
+    "prefer-promise-reject-errors": "error",
+    "preserve-caught-error": "error",
+    "no-self-compare": "error",
+    "no-return-assign": "error",
+    "radix": "error",
+    "guard-for-in": "error",
+    "no-loop-func": "error",
+    "no-constructor-return": "error",
+    "no-eval": "error",
+    "no-new-wrappers": "error",
+    "no-array-constructor": "error",
+    "default-case-last": "error",
+    "no-lone-blocks": "error",
+    "no-object-as-default-parameter": "error",
+    "accessor-pairs": "error",
+    "no-else-return": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "no-fallthrough": "error",
+    "no-case-declarations": "error",
+    "no-redeclare": "error",
+    "no-prototype-builtins": "error",
+    "no-inner-declarations": "error",
+    "import/no-cycle": "error"
   }
 }

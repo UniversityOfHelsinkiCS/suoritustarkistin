@@ -2,13 +2,26 @@
   "name": "suoritustarkistin",
   "version": "0.1.0",
   "description": "Tool for collecting course completions.",
+  "homepage": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin#readme",
+  "bugs": {
+    "url": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/issues"
+  },
+  "license": "ISC",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UniversityOfHelsinkiCS/suoritustarkistin.git"
+  },
   "main": "index.js",
   "scripts": {
     "dev": "docker compose up",
     "test": "npm run test:clean && docker compose -f docker-compose.e2e.yml up --abort-on-container-exit --exit-code-from e2e",
     "start": "node index.js",
-    "lint": "eslint .",
-    "lintfix": "eslint . --fix",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "lint:quiet": "oxlint --quiet .",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "prepare": "husky",
     "cypress:open": "npm run test:clean && npm run start:cypress-open",
     "start:cypress": "docker compose -f docker-compose.e2e.yml run --service-ports e2e npm run start:dev",
@@ -27,22 +40,8 @@
     "e2e:down": "npm run e2e:compose -- down -v --remove-orphans",
     "cli": "node ./server/scripts/fixCompletionDates.js"
   },
-  "engines": {
-    "node": ">=24 <25"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/UniversityOfHelsinkiCS/suoritustarkistin.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin/issues"
-  },
-  "homepage": "https://github.com/UniversityOfHelsinkiCS/suoritustarkistin#readme",
   "dependencies": {
     "@babel/core": "7.18.13",
-    "@babel/eslint-parser": "7.18.9",
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.18.10",
     "@babel/preset-react": "7.18.6",
@@ -89,18 +88,11 @@
   },
   "devDependencies": {
     "cypress": "15.19.0",
-    "eslint": "8.22.0",
-    "eslint-config-airbnb": "19.0.4",
-    "eslint-config-prettier": "8.5.0",
-    "eslint-plugin-cypress": "2.12.1",
-    "eslint-plugin-import": "2.26.0",
-    "eslint-plugin-jsx-a11y": "6.6.1",
-    "eslint-plugin-prettier": "4.2.1",
-    "eslint-plugin-react": "7.30.1",
     "husky": "9.1.7",
     "nodemon": "3.1.14",
     "npm-run-all": "4.1.5",
-    "prettier": "2.7.1",
+    "oxfmt": "0.60.0",
+    "oxlint": "1.75.0",
     "webpack-dev-middleware": "5.3.4",
     "webpack-hot-middleware": "2.25.2"
   },
@@ -110,6 +102,9 @@
       "client/*",
       "cypress/*"
     ]
+  },
+  "engines": {
+    "node": ">=24 <25"
   },
   "_moduleAliases": {
     "@root": ".",

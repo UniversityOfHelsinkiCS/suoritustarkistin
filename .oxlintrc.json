@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "react", "jsx-a11y"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "16.14.0"
+    }
+  },
+  "globals": {
+    "__BASE_PATH__": "readonly"
+  },
+  "ignorePatterns": ["**/node_modules", "**/dist", "**/migrations", "**/seeders"],
+  "rules": {
+    "no-console": "warn",
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_" }],
+    // was off under eslint too: the codebase shadows req/e/id freely in nested handlers
+    "no-shadow": "off",
+    // side-effect imports are used deliberately (polyfills, css, module-alias registration)
+    "import/no-unassigned-import": "off",
+    "import/no-named-as-default-member": "off",
+    // all four were explicitly disabled in the old .eslintrc; keeping the same stance
+    "react/no-unstable-nested-components": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    // not enforced before (airbnb-hooks was never enabled); surfacing as warnings for now
+    "react-hooks/exhaustive-deps": "warn"
+  }
+}

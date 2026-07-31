@@ -17,3 +17,4 @@ testdata.js
 backups/
 scripts/my_username
 gitignored/*
+.zed

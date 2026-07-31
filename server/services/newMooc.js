@@ -26,7 +26,7 @@ const postRegistrations = async (completionAndStudentIdList) => {
   } catch (error) {
     logger.error(`Error in updating ${completionAndStudentIdList.length} confirmed registrations. Error: ${error}`)
     if (completionAndStudentIdList.length === 1) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(JSON.stringify(completionAndStudentIdList))
     }
   }

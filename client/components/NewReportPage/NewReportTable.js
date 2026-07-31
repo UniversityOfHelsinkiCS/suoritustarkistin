@@ -71,7 +71,6 @@ export default withRouter(({ rows, batchId, history }) => {
 
   useEffect(() => {
     window.onbeforeunload = () => '' // Display confirmation alert when tab is closed
-    // eslint-disable-next-line no-return-assign
     return () => (window.onbeforeunload = null)
   })
 

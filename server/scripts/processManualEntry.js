@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 const { flatten } = require('lodash')
 const logger = require('@utils/logger')
 const { getBatchId } = require('@root/utils/common')

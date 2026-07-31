@@ -33,7 +33,7 @@ export default () => {
   }, [user.adminMode, dispatch])
 
   const handleAdminModeToggle = () => {
-    // eslint-disable-next-line no-unused-expressions
+    // oxlint-disable-next-line no-unused-expressions
     user.adminMode ? dispatch(disableAdminModeAction()) : dispatch(activateAdminModeAction())
 
     dispatch(setFilterAction('adminmode', !user.adminMode))

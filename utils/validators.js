@@ -11,8 +11,7 @@ const isValidStudentId = (id) => {
       .substring(1, 8)
       .split('')
       .reduce((sum, curr, index) => (sum + curr * multipliers[index]) % 10, 0)
-    // eslint-disable-next-line eqeqeq
-    return (10 - checksum) % 10 == id[8]
+    return (10 - checksum) % 10 === Number(id[8])
   }
   return false
 }

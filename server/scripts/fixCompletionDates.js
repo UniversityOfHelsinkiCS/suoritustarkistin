@@ -1,4 +1,4 @@
-/* eslint-disable no-console, no-unused-vars, prefer-const */
+/* oxlint-disable no-console, no-unused-vars */
 const moment = require('moment')
 const db = require('../models/index')
 const { getStudyRight, getEnrolments } = require('../services/importer')

@@ -1,4 +1,3 @@
-/* eslint-disable eqeqeq */
 import callBuilder from '../apiConnection'
 /**
  * Actions and reducers are in the same file for readability
@@ -80,6 +79,7 @@ export default (state = { data: [] }, action) => {
     case 'EDIT_JOB_SUCCESS':
       return {
         ...state,
+        // oxlint-disable-next-line eqeqeq
         data: state.data.map((j) => (j.id == action.response.id ? action.response : j)),
         pending: false,
         error: false
@@ -99,6 +99,7 @@ export default (state = { data: [] }, action) => {
     case 'DELETE_JOB_SUCCESS':
       return {
         ...state,
+        // oxlint-disable-next-line eqeqeq
         data: state.data.filter((j) => j.id != action.response.id),
         pending: false,
         error: false

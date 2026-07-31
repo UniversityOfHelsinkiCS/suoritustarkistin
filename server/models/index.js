@@ -1,5 +1,3 @@
-/* eslint-disable import/no-dynamic-require, global-require */
-
 const fs = require('fs')
 const path = require('path')
 const Sequelize = require('sequelize')

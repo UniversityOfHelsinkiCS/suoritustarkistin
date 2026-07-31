@@ -52,7 +52,7 @@ export default ({ reduxKey, action }) => {
   }, [filters])
 
   useEffect(() => {
-    // eslint-disable-next-line no-unused-expressions
+    // oxlint-disable-next-line no-unused-expressions
     user.adminMode ? dispatch(getAllCoursesAction()) : dispatch(getUsersCoursesAction(user.id))
   }, [user, dispatch])
 

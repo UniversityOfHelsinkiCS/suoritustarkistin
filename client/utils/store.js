@@ -8,7 +8,7 @@ import combinedReducers from 'Utilities/redux'
 
 const sentryReduxEnhancer = Sentry.createReduxEnhancer({})
 
-// eslint-disable-next-line
+// oxlint-disable-next-line no-underscore-dangle
 const composeEnhancers = (!inProduction && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose
 const store = createStore(
   combinedReducers,

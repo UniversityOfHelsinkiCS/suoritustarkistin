@@ -1,4 +1,3 @@
-/* eslint-disable no-alert */
 import React, { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Loader } from 'semantic-ui-react'

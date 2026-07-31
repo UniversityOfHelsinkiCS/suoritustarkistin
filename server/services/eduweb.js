@@ -34,7 +34,6 @@ const getRegistrations = async (course) => {
 const getMultipleCourseRegistrations = async (courseNames) => {
   let registrationData = []
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const cn of courseNames) {
     const courseData = await getRegistrations(cn)
 

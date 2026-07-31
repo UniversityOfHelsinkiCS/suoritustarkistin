@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import * as CSV from 'csv-string'
 import * as _ from 'lodash'
 import { isDateObject, isValidDate, isValidOodiDate, isValidStudentId } from 'Root/utils/validators'

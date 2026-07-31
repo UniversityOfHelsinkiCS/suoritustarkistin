@@ -8,10 +8,10 @@ const webpack = require('webpack')
 const { SENTRY_RELEASE, NODE_ENV } = process.env
 const sentryRelease = !SENTRY_RELEASE ? 'unknown' : SENTRY_RELEASE
 
-// eslint-disable-next-line
+// oxlint-disable-next-line no-console
 console.log('sentry settings:', { sentryRelease }, 'env', NODE_ENV)
 
-// eslint-disable-next-line
+// oxlint-disable-next-line no-unused-vars
 module.exports = (env, argv) => {
   const additionalPlugins =
     NODE_ENV === 'production' || NODE_ENV === 'staging'

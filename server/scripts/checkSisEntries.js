@@ -51,12 +51,10 @@ const checkEntries = async (entries, model) => {
   const postData = entries.map(({ personId, id }) => ({ id, personId }))
   const chunks = chunkArray(postData, 20)
 
-  // eslint-disable-next-line no-plusplus
   for (let attempt = 1; attempt <= 10; attempt++) {
     try {
       console.log('/suotar/verify', postData.length, 'entries in', chunks.length, 'chunks')
       let allData = []
-      // eslint-disable-next-line no-restricted-syntax
       for (const chunk of chunks) {
         const { data } = await api.post('/suotar/verify', chunk)
         console.log('SUCCESS chunk!')
@@ -77,7 +75,6 @@ const checkEntries = async (entries, model) => {
       if (attempt < 5) {
         const waitMinutes = 1
         logger.info({ message: `Waiting ${waitMinutes} minute(s) before retry...` })
-        // eslint-disable-next-line no-promise-executor-return
         await new Promise((resolve) => setTimeout(resolve, waitMinutes * 60 * 1000))
       } else {
         logger.error({ message: 'Failed to check Sisu entries after 5 attempts' })
@@ -108,7 +105,6 @@ const checkAllEntriesFromSisu = async () => {
 
 const markAsRegisteredToMooc = async (completionStudentPairs) => {
   const date = new Date()
-  // eslint-disable-next-line camelcase
   const moocCompletionsIds = completionStudentPairs.map(({ completion_id }) => completion_id)
   return await db.raw_entries.update(
     { registeredToMooc: date },
@@ -124,14 +120,12 @@ const markAsRegisteredToMooc = async (completionStudentPairs) => {
 }
 
 const registerChunks = async (chunks, poster) => {
-  // eslint-disable-next-line no-restricted-syntax
   for (const chunk of chunks) {
     const result = await poster(chunk)
     if (result === 'OK') {
       await markAsRegisteredToMooc(chunk)
     } else {
       // fallback to single students
-      // eslint-disable-next-line no-restricted-syntax
       for (const entry of chunk) {
         const result = await poster([entry])
         if (result === 'OK') {

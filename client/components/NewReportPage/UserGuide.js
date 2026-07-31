@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import React from 'react'
 import { Header, Icon, List, Popup, Segment } from 'semantic-ui-react'
 

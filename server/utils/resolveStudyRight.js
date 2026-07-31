@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 const moment = require('moment')
 const { flatten } = require('lodash')
 

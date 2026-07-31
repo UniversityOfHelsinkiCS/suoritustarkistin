@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 const logger = require('@utils/logger')
 const db = require('../models/index')
 const { bscThesisEntryFactory } = require('../models/factory')

@@ -47,11 +47,9 @@ initializeDatabaseConnection()
      * Use hot loading when in development, else serve the static content
      */
     if (inDevelopment || inTest) {
-      /* eslint-disable */
       const middleware = require('webpack-dev-middleware')
       const hotMiddleWare = require('webpack-hot-middleware')
       const webpackConf = require('@root/webpack.config')
-      /* eslint-enable */
       const compiler = webpack(webpackConf('development', { mode: 'development' }))
       const devMiddleware = middleware(compiler)
 

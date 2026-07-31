@@ -98,7 +98,7 @@ const parseEntryError = (error) => {
         errors.push(message)
       } else errors.push(sisuErrorMessages[messageTemplate])
     })
-  } catch (e) {
+  } catch {
     return 'Click to view full error'
   }
   return errors.join(', ')

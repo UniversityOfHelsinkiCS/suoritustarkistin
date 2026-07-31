@@ -15,7 +15,7 @@ export default () => {
   const crashBackend = async () => {
     try {
       await axios.get(`${__BASE_PATH__}api/sandbox`)
-    } catch (e) {
+    } catch {
       setMessage('Backend exploded successfully')
     }
   }

@@ -15,7 +15,7 @@ const getUid = async ({ email }) => {
     const userData = { email }
     const { data } = await api.post('suotar/resolve_user', userData)
     return data.eduPersonPrincipalName.split('@')[0]
-  } catch (e) {
+  } catch {
     return null
   }
 }

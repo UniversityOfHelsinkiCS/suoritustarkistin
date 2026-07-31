@@ -16,7 +16,7 @@ export default ({ course, close: closeModal }) => {
   const dispatch = useDispatch()
   const allGraders = useSelector((state) => state.graders.data)
   const courseData = useSelector((state) => state.courses)
-  const [data, setData] = useState({ ...course, graders: course.graders.map((g) => g.id) } || { graders: [] })
+  const [data, setData] = useState({ ...course, graders: course.graders.map((g) => g.id) })
 
   useEffect(() => {
     if (courseData.responsibles && !courseData.pending) {

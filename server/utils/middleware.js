@@ -16,8 +16,8 @@ const parseUser = async (req, res, next) => {
           uid: req.headers.uid,
           email: req.headers.mail,
           name: `${req.headers.givenname} ${req.headers.sn}`,
-          isGrader: false || !!(req.headers.employeenumber === 'grader' && !inProduction),
-          isAdmin: false || !!(req.headers.employeenumber === 'admin' && !inProduction),
+          isGrader: !!(req.headers.employeenumber === 'grader' && !inProduction),
+          isAdmin: !!(req.headers.employeenumber === 'admin' && !inProduction),
           lastLogin: new Date()
         }
       })

@@ -28,7 +28,7 @@ const initializeDatabaseConnection = async (attempt = 1) => {
     await sequelize.authenticate()
     await runMigrations()
     return true
-  } catch (e) {
+  } catch {
     if (attempt === DB_CONNECTION_RETRY_LIMIT) {
       logger.error(`Connection to database failed after ${attempt} attempts`)
       process.exit(1)

@@ -216,7 +216,7 @@ const confirmDeletion = async (req, res) => {
   try {
     const unsent = await unsentEntries(req.params.id)
     res.status(200).json({ unsent: unsent.length })
-  } catch (e) {
+  } catch {
     res.status(500).json({ error: 'Server went BOOM!' })
   }
 }
@@ -229,7 +229,7 @@ const deleteCourse = async (req, res) => {
     await db.courses.destroy({ where: { id: req.params.id }, transaction })
     transaction.commit()
     res.status(200).json({ id: req.params.id })
-  } catch (error) {
+  } catch {
     transaction.rollback()
     res.status(500).json({ error: 'Server went BOOM!' })
   }

@@ -82,7 +82,7 @@ const createEntries = async (req, res) => {
 
     let [status, message] = []
     if (entryIds.length) {
-      [status, message] = await attainmentsToSisu('entries', { user, body: { entryIds } })
+      ;[status, message] = await attainmentsToSisu('entries', { user, body: { entryIds } })
     }
 
     return res.status(201).json({

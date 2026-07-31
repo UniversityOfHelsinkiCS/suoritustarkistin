@@ -57,7 +57,9 @@ export default withRouter(({ rows, batchId, history }) => {
   const graders = useSelector((state) => state.graders.data)
   const [sent, setSent] = useState(false)
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
-  const dateHasChanged = rows.some(({ entry, attainmentDate }) => !moment(attainmentDate).isSame(moment(entry.completionDate), 'day'))
+  const dateHasChanged = rows.some(
+    ({ entry, attainmentDate }) => !moment(attainmentDate).isSame(moment(entry.completionDate), 'day')
+  )
 
   useEffect(() => {
     if (sent && !pending && !(error || {}).genericError) {

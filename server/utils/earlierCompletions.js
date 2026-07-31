@@ -187,4 +187,10 @@ const filterDuplicateMatches = (matches) => {
   return uniqueMatches
 }
 
-module.exports = { isImprovedGrade, identicalCompletionFound, earlierBaiCompletionFound, advancedFound, filterDuplicateMatches }
+module.exports = {
+  isImprovedGrade,
+  identicalCompletionFound,
+  earlierBaiCompletionFound,
+  advancedFound,
+  filterDuplicateMatches
+}

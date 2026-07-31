@@ -23,7 +23,6 @@ const postRegistrations = async (completionAndStudentIdList) => {
 
     logger.info({ message: `new mooc-api response: ${response.statusText}` })
     return response.statusText
-
   } catch (error) {
     logger.error(`Error in updating ${completionAndStudentIdList.length} confirmed registrations. Error: ${error}`)
     if (completionAndStudentIdList.length === 1) {

@@ -9,7 +9,7 @@ const { automatedAddToDb } = require('./automatedAddToDb')
 
 const selectLanguage = (completion, course) => {
   const completionLanguage = completion.completion_language
- 
+
   const courseLanguage = course.language
   if (!completionLanguage) {
     return courseLanguage
@@ -84,8 +84,8 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
       const language = selectLanguage(completion, course)
       const registration = registrations.find(
         (registration) =>
-          (registration.email && (registration.email.toLowerCase() === completion.email.toLowerCase())) ||
-          (registration.mooc && (registration.mooc.toLowerCase() === completion.email.toLowerCase()))
+          (registration.email && registration.email.toLowerCase() === completion.email.toLowerCase()) ||
+          (registration.mooc && registration.mooc.toLowerCase() === completion.email.toLowerCase())
       )
 
       if (registration && registration.onro) {

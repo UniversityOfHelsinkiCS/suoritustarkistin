@@ -127,7 +127,7 @@ export default ({ course, close: closeModal }) => {
           label={
             <label>
               Use new mooc platform
-              <Help text='Select if course is a mooc course running on courses.mooc.fi' />
+              <Help text="Select if course is a mooc course running on courses.mooc.fi" />
             </label>
           }
           control={Checkbox}

@@ -33,6 +33,6 @@ Mankeling steps:
 3. From the enrolments find instances which are for proper course unit realisation, based on the attainment date
 4. Mankel again the enrolments to get Suotar entries
 5. Resolve all nested promises ??
- 
+
 Returns list with three elements:
- [failedEntries, validEntries, isMissingEnrollment]
+[failedEntries, validEntries, isMissingEnrollment]

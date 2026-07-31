@@ -1,8 +1,4 @@
-const {
-  NEW_EOAI_CODE,
-  NEW_BAI_INTERMEDIATE_CODE,
-  NEW_BAI_ADVANCED_CODE
-} = require('@root/utils/common')
+const { NEW_EOAI_CODE, NEW_BAI_INTERMEDIATE_CODE, NEW_BAI_ADVANCED_CODE } = require('@root/utils/common')
 const { processEoaiEntries } = require('./processEoaiEntries')
 const { processBaiIntermediateEntries } = require('./processBaiIntermediateEntries')
 const { processBaiAdvancedEntries } = require('./processBaiAdvancedEntries')

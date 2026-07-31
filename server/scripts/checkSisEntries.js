@@ -73,7 +73,7 @@ const checkEntries = async (entries, model) => {
       return true
     } catch (e) {
       logger.error({ message: `Failed to check Sisu entries (attempt ${attempt}/5)`, error: e.toString() })
-      
+
       if (attempt < 5) {
         const waitMinutes = 1
         logger.info({ message: `Waiting ${waitMinutes} minute(s) before retry...` })
@@ -132,7 +132,7 @@ const registerChunks = async (chunks, poster) => {
     } else {
       // fallback to single students
       // eslint-disable-next-line no-restricted-syntax
-        for (const entry of chunk) {
+      for (const entry of chunk) {
         const result = await poster([entry])
         if (result === 'OK') {
           await markAsRegisteredToMooc([entry])

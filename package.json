@@ -49,7 +49,7 @@
     "@sentry/node": "6.19.7",
     "@sentry/react": "6.19.7",
     "axios": "1.18.1",
-    "babel-loader": "8.2.5",
+    "babel-loader": "10.1.1",
     "css-loader": "5.2.7",
     "csv-string": "4.1.1",
     "dotenv": "17.4.2",

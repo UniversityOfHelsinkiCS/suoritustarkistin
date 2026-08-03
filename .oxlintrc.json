@@ -17,7 +17,7 @@
   "ignorePatterns": ["**/migrations"],
   "rules": {
     "no-console": "warn",
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^_" }],
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
     // deliberately off: side-effect imports (polyfills, css, module-alias) are load-bearing,
     // req/e/id are shadowed throughout the server, and the a11y patterns are accepted here
     "no-shadow": "off",

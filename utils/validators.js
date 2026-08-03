@@ -1,9 +1,11 @@
-const moment = require('moment')
-const cron = require('node-cron')
+import moment from 'moment'
 
-const SIS_LANGUAGES = ['fi', 'sv', 'en']
+// Extension required: node's ESM loader resolves this file too, via require(esm)
+import { validate as validateCronExpression } from './cronSchedule.js'
 
-const isValidStudentId = (id) => {
+export const SIS_LANGUAGES = ['fi', 'sv', 'en']
+
+export const isValidStudentId = (id) => {
   if (/^0[12]\d{7}$/.test(id)) {
     // is a 9 digit number with leading 01 or 02
     const multipliers = [7, 1, 3, 7, 1, 3, 7]
@@ -16,11 +18,12 @@ const isValidStudentId = (id) => {
   return false
 }
 
-const isValidOodiDate = (date) => /^(3[01]|[12][0-9]|[1-9]|0[1-9])\.(1[0-2]|[1-9]|0[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.05.2019
+export const isValidOodiDate = (date) =>
+  /^(3[01]|[12][0-9]|[1-9]|0[1-9])\.(1[0-2]|[1-9]|0[1-9])\.20[0-9][0-9]$/.test(date) // valid format 29.05.2019
 
-const isDateObject = (date) => Object.prototype.toString.call(date) === '[object Date]'
+export const isDateObject = (date) => Object.prototype.toString.call(date) === '[object Date]'
 
-const isValidDate = (date) => {
+export const isValidDate = (date) => {
   if (!date) return false
   if (isDateObject(date)) {
     if (date.getFullYear() > 1999 && date.getFullYear() < 2099) return true
@@ -28,7 +31,7 @@ const isValidDate = (date) => {
   return false
 }
 
-const isFutureDate = (date) => {
+export const isFutureDate = (date) => {
   if (!date) return false
   if (isDateObject(date)) {
     if (date > new Date()) return true
@@ -36,7 +39,7 @@ const isFutureDate = (date) => {
   return false
 }
 
-const isPastDate = (date) => {
+export const isPastDate = (date) => {
   if (!date) return false
   if (isDateObject(date)) {
     if (date < moment().subtract(100, 'days')) return 'past'
@@ -44,18 +47,18 @@ const isPastDate = (date) => {
   return false
 }
 
-const isValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
+export const isValidGrade = (grade) => /^(|-|[0-5]|Hyv\.|Hyl\.)$/.test(grade) // -, 0 to 5, Hyv. or Hyl.
 
-const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // Hyv. or Hyl.
+export const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // Hyv. or Hyl.
 
-const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
+export const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
 
-const isValidEmailAddress = (address) =>
+export const isValidEmailAddress = (address) =>
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
     address
   )
 
-const isValidCourseCode = (courseCode) =>
+export const isValidCourseCode = (courseCode) =>
   /^(TKT|BSCS|BSPH|CSM|MAT|DATA|AY|MFK|JODG|JODG-|ENG|ENG-|ATM|ELK|ECOK|EDUMCE|SOSM|FAF-|TERV-|FOR-|ON-|SUO-|SON-|MED-)[A-Za-z0-9-]{3,12}$/.test(
     courseCode
   )
@@ -71,9 +74,9 @@ const isValidGradeScale = (gradeScale) => {
   return true
 }
 
-const isValidLanguage = (language) => SIS_LANGUAGES.includes(language)
+export const isValidLanguage = (language) => SIS_LANGUAGES.includes(language)
 
-const isValidCourse = (course) => {
+export const isValidCourse = (course) => {
   if (!isValidCourseCode(course.courseCode)) return false
   if (!course.name) return false
   if (!isValidLanguage(course.language)) return false
@@ -98,7 +101,7 @@ const isValidRow = (row, date, courseId) => {
   return true
 }
 
-const areValidNewRawEntries = (rawEntries) => {
+export const areValidNewRawEntries = (rawEntries) => {
   if (!rawEntries) return false
   if (!rawEntries.graderId) return false
   if (!rawEntries.data) return false
@@ -112,30 +115,10 @@ const areValidNewRawEntries = (rawEntries) => {
   return true
 }
 
-const isValidSchedule = (schedule) => cron.validate(schedule)
+export const isValidSchedule = (schedule) => validateCronExpression(schedule)
 
-const isValidJob = (job) => {
+export const isValidJob = (job) => {
   if (!isValidSchedule(job.schedule)) return false
   if (!job.courseId) return false
   return true
-}
-
-module.exports = {
-  SIS_LANGUAGES,
-  isValidStudentId,
-  isValidOodiDate,
-  isValidDate,
-  isDateObject,
-  isFutureDate,
-  isPastDate,
-  isValidGrade,
-  isValidHylHyvGrade,
-  isValidCreditAmount,
-  isValidLanguage,
-  isValidEmailAddress,
-  areValidNewRawEntries,
-  isValidCourse,
-  isValidCourseCode,
-  isValidJob,
-  isValidSchedule
 }

@@ -1,7 +1,14 @@
-import * as CSV from 'csv-string'
 import * as _ from 'lodash'
 import { isDateObject, isValidDate, isValidOodiDate, isValidStudentId } from 'Root/utils/validators'
 import { KANDI_EXTRA_COURSES } from 'Root/utils/common'
+
+const SEPARATORS = [',', ';', '|', '\t']
+
+const detectSeparator = (row) => {
+  const positions = SEPARATORS.map((separator) => row.indexOf(separator)).filter((index) => index !== -1)
+  if (!positions.length) return ','
+  return row[Math.min(...positions)]
+}
 
 const markDuplicates = (data, defaultCourse) => {
   if (!data) return []
@@ -73,7 +80,7 @@ export const parseCSV = (string, defaultCourse) => {
   if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
-    const [studentId, grade, credits, language, attainmentDate, course, uid] = row.split(CSV.detect(row))
+    const [studentId, grade, credits, language, attainmentDate, course, uid] = row.split(detectSeparator(row))
     return toRawEntry(studentId, grade, credits, language, attainmentDate, course, uid)
   })
   return markDuplicates(data, defaultCourse)
@@ -83,7 +90,7 @@ export const parseExtraCSV = (string, defaultCourse) => {
   if (!string) return []
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
-    const [studentId, grade, credits, language, attainmentDate, course, uid] = row.split(CSV.detect(row))
+    const [studentId, grade, credits, language, attainmentDate, course, uid] = row.split(detectSeparator(row))
     return { ...toRawEntry(studentId, grade, credits, language, attainmentDate, course, uid), isExtra: true }
   })
   return markDuplicates(data, defaultCourse)
@@ -94,7 +101,7 @@ export const parseKandiCSV = (string, extraCourses = []) => {
   const rows = string.trim().split('\n')
   const data = rows.map((row) => {
     const [studentId, grade, credits, language, attainmentDate, motherTongueLang, kypLang, researchLang] = row.split(
-      CSV.detect(row)
+      detectSeparator(row)
     )
     const extras = !['0', 'hyl.', 'hyl'].includes((grade || '').toLowerCase())
       ? extraCourses

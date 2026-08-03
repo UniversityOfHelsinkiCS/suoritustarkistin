@@ -1,13 +1,13 @@
 /**
  * Insert application wide common items here
  */
-const moment = require('moment')
+import moment from 'moment'
 
-const inProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' // staging is production ¯\_(ツ)_/¯
-const inDevelopment = process.env.NODE_ENV === 'development'
-const inTest = process.env.NODE_ENV === 'test'
+export const inProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' // staging is production ¯\_(ツ)_/¯
+export const inDevelopment = process.env.NODE_ENV === 'development'
+export const inTest = process.env.NODE_ENV === 'test'
 
-const gradeScales = [
+export const gradeScales = [
   {
     key: 'sis-0-5',
     value: 'sis-0-5',
@@ -20,7 +20,7 @@ const gradeScales = [
   }
 ]
 
-const moocLanguageMap = {
+export const moocLanguageMap = {
   fi_FI: 'fi',
   en_US: 'en',
   en_GB: 'en',
@@ -31,11 +31,11 @@ const moocLanguageMap = {
   'sv-SE': 'sv'
 }
 
-const NEW_EOAI_CODE = 'TKT21018'
-const EOAI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
-const ALL_EOAI_CODES = ['TKT21018', 'AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+export const NEW_EOAI_CODE = 'TKT21018'
+export const EOAI_CODES = ['AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
+export const ALL_EOAI_CODES = ['TKT21018', 'AYTKT21018', 'AYTKT21018fi', 'AYTKT21018sv']
 
-const EOAI_NAMEMAP = {
+export const EOAI_NAMEMAP = {
   en: {
     name: 'The Elements of AI',
     code: 'AYTKT21018'
@@ -50,16 +50,16 @@ const EOAI_NAMEMAP = {
   }
 }
 
-const NEW_BAI_INTERMEDIATE_CODE = 'TKT210281'
-const NEW_BAI_ADVANCED_CODE = 'TKT210282'
+export const NEW_BAI_INTERMEDIATE_CODE = 'TKT210281'
+export const NEW_BAI_ADVANCED_CODE = 'TKT210282'
 
-const OLD_BAI_CODE = 'AYTKT21028en'
-const OLD_BAI_INTERMEDIATE_CODE = 'AYTKT210281en'
-const OLD_BAI_ADVANCED_CODE = 'AYTKT210282en'
+export const OLD_BAI_CODE = 'AYTKT21028en'
+export const OLD_BAI_INTERMEDIATE_CODE = 'AYTKT210281en'
+export const OLD_BAI_ADVANCED_CODE = 'AYTKT210282en'
 
-const getBatchId = (courseCode) => `${courseCode}-${moment().tz('Europe/Helsinki').format('DD.MM.YY-HHmmss')}`
+export const getBatchId = (courseCode) => `${courseCode}-${moment().tz('Europe/Helsinki').format('DD.MM.YY-HHmmss')}`
 
-const KANDI_EXTRA_COURSES = {
+export const KANDI_EXTRA_COURSES = {
   TKT50001: 'ÄIDINKIELINEN_VIESTINTÄ',
   TKT20014: 'KYPSYYSNÄYTE',
   TKT50002: 'TUTKIMUSTIEDONHAKU'
@@ -67,10 +67,10 @@ const KANDI_EXTRA_COURSES = {
 
 const THESIS_COURSES = ['TKT20013']
 
-const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
-const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
-const isOneOfKandiCourses = (course) => isThesisCourse(course) || isKandiExtraCourse(course)
-const isRegularExtraCourse = (course) =>
+export const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
+export const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
+export const isOneOfKandiCourses = (course) => isThesisCourse(course) || isKandiExtraCourse(course)
+export const isRegularExtraCourse = (course) =>
   !Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode) && course.useAsExtra
 
 /**
@@ -91,14 +91,19 @@ const isRegularExtraCourse = (course) =>
  * the studyright automatically when entries are processed. !!
  * * */
 
-const getMoocAttainmentDate = ({ registrationAttemptDate, completionDate, today, useManualCompletionDate = false }) => {
+export const getMoocAttainmentDate = ({
+  registrationAttemptDate,
+  completionDate,
+  today,
+  useManualCompletionDate = false
+}) => {
   if (useManualCompletionDate && completionDate) return completionDate
   if (!useManualCompletionDate && registrationAttemptDate) return registrationAttemptDate
   if (completionDate) return completionDate
   return today
 }
 
-const testCourses = [
+export const testCourses = [
   {
     name: 'Ohjelmoinnin perusteet',
     courseCode: 'TKT10002',
@@ -157,7 +162,7 @@ const testCourses = [
   }
 ]
 
-const testUsers = [
+export const testUsers = [
   {
     name: 'admin',
     employeeId: 1111,
@@ -184,7 +189,7 @@ const testUsers = [
   }
 ]
 
-const testCompletions = [
+export const testCompletions = [
   {
     courseCode: testCourses[0].courseCode,
     graderName: testUsers[0].name
@@ -219,7 +224,7 @@ const testCompletions = [
   }
 ]
 
-const testRawEntries0to5 = [
+export const testRawEntries0to5 = [
   {
     studentNumber: '011111111',
     grade: 1
@@ -242,7 +247,7 @@ const testRawEntries0to5 = [
   }
 ]
 
-const testRawEntriesHylHyv = [
+export const testRawEntriesHylHyv = [
   {
     studentNumber: '011111111',
     grade: 'Hyl.'
@@ -264,32 +269,3 @@ const testRawEntriesHylHyv = [
     grade: 'Hyl.'
   }
 ]
-
-module.exports = {
-  gradeScales,
-  KANDI_EXTRA_COURSES,
-  NEW_EOAI_CODE,
-  EOAI_CODES,
-  ALL_EOAI_CODES,
-  EOAI_NAMEMAP,
-  NEW_BAI_INTERMEDIATE_CODE,
-  NEW_BAI_ADVANCED_CODE,
-  OLD_BAI_CODE,
-  OLD_BAI_INTERMEDIATE_CODE,
-  OLD_BAI_ADVANCED_CODE,
-  isThesisCourse,
-  isKandiExtraCourse,
-  isOneOfKandiCourses,
-  isRegularExtraCourse,
-  moocLanguageMap,
-  inProduction,
-  inDevelopment,
-  inTest,
-  getBatchId,
-  getMoocAttainmentDate,
-  testCourses,
-  testUsers,
-  testCompletions,
-  testRawEntries0to5,
-  testRawEntriesHylHyv
-}

@@ -46,7 +46,3 @@ if (process.env.NODE_ENV === 'development' && !window.localStorage.getItem('runn
 }
 
 refresh()
-
-if (module.hot) {
-  module.hot.accept()
-}

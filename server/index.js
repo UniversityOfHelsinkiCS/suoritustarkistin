@@ -1,4 +1,3 @@
-const webpack = require('webpack')
 const express = require('express')
 const path = require('path')
 const cron = require('node-cron')
@@ -32,7 +31,7 @@ process.on('unhandledRejection', (reason) => {
 })
 
 initializeDatabaseConnection()
-  .then(() => {
+  .then(async () => {
     const app = express()
     Sentry.init({
       dsn: process.env.SENTRY_ADDR,
@@ -47,31 +46,10 @@ initializeDatabaseConnection()
      * Use hot loading when in development, else serve the static content
      */
     if (inDevelopment || inTest) {
-      const middleware = require('webpack-dev-middleware')
-      const hotMiddleWare = require('webpack-hot-middleware')
-      const webpackConf = require('@root/webpack.config')
-      const compiler = webpack(webpackConf('development', { mode: 'development' }))
-      const devMiddleware = middleware(compiler)
-
-      app.use(devMiddleware)
-      app.use(hotMiddleWare(compiler))
-
       app.use(parseUser)
       app.use(currentUser)
       app.use(requestLogger)
       app.use('/api', routes)
-
-      app.use('*', (req, res, next) => {
-        const filename = path.join(compiler.outputPath, 'index.html')
-        devMiddleware.waitUntilValid(() => {
-          compiler.outputFileSystem.readFile(filename, (err, result) => {
-            if (err) return next(err)
-            res.set('content-type', 'text/html')
-            res.send(result)
-            return res.end()
-          })
-        })
-      })
     } else {
       app.use(shibbolethCharsetMiddleware(SHIBBOLETH_HEADERS))
       app.use(parseUser)
@@ -84,7 +62,17 @@ initializeDatabaseConnection()
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
       app.use(Sentry.Handlers.errorHandler())
     }
-    app.use((err, req, res) => {
+    /**
+     * Anything that reaches this point matched no route. In dev and test express
+     * serves nothing but /api, so this is the end of the line for a mistyped or
+     * parameterless api path; in production app.get('*') has already answered
+     * every GET, so only unmatched non-GETs land here.
+     */
+    app.use((_req, res) => res.status(404).send({ error: 'Not found' }))
+
+    // Express only treats a middleware as an error handler if it declares four
+    // arguments, hence _next: with three, `res` here would be `next`.
+    app.use((err, _req, res, _next) => {
       res.status(500).send(err.toString())
     })
 
@@ -115,10 +103,25 @@ initializeDatabaseConnection()
       })
     }
 
-    app.listen(PORT, () => {
-      logger.info(`Suotar started on port ${PORT} with environment ${process.env.NODE_ENV}`)
+    /**
+     * In dev and test the Vite dev server is the one the browser talks to, so it takes
+     * PORT (the only port compose publishes) and proxies /api to express one port above.
+     * In production the client is a static build and express serves it on PORT itself.
+     */
+    const apiPort = inDevelopment || inTest ? Number(PORT) + 1 : PORT
+
+    app.listen(apiPort, () => {
+      logger.info(`Suotar started on port ${apiPort} with environment ${process.env.NODE_ENV}`)
       if (IN_MAINTENANCE) logger.info(`Maintenance mode enabled for environment ${process.env.NODE_ENV}`)
     })
+
+    if (inDevelopment || inTest) {
+      // Vite 5 dropped its CommonJS Node API, hence the dynamic import
+      const { createServer } = await import('vite')
+      const vite = await createServer()
+      await vite.listen()
+      logger.info(`Vite dev server serving the client on port ${PORT}`)
+    }
   })
   .catch((e) => {
     process.exitCode = 1

@@ -1,5 +1,5 @@
 const logger = require('@utils/logger')
-const { isValidJob } = require('@root/utils/validators')
+const { isValidJob } = require('@utils/jobValidators')
 const db = require('../models/index')
 const { activateJob, deactivateJob } = require('../scripts/cronjobs')
 const { chooseScript } = require('../scripts/chooseAutomatedScript')

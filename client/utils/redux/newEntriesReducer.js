@@ -1,6 +1,6 @@
-import callBuilder from '../apiConnection'
+import moment from 'moment'
 
-const moment = require('moment')
+import callBuilder from '../apiConnection'
 
 const initialState = {
   rawData: '',

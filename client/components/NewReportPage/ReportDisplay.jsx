@@ -5,10 +5,8 @@ import { Button, Icon, Popup, Table } from 'semantic-ui-react'
 import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
 import { parseCSV } from 'Utilities/inputParser'
 
-import './reportDisplay.css'
-
-const { commify } = require('Root/utils/commify')
-const {
+import { commify } from 'Root/utils/commify'
+import {
   isValidStudentId,
   isValidGrade,
   isValidCreditAmount,
@@ -17,7 +15,9 @@ const {
   isFutureDate,
   isPastDate,
   isDateObject
-} = require('Root/utils/validators')
+} from 'Root/utils/validators'
+
+import './reportDisplay.css'
 
 const validStyle = {
   background: '#d2f3db'

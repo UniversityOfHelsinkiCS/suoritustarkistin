@@ -30,9 +30,9 @@
     "cypress:run": "npx cypress run --headless",
     "cypress:interactive": "npx cypress open --e2e -P ./",
     "test:integration": "node --test 'server/**/*.test.js'",
-    "build": "webpack",
+    "build": "APP_ENV=$NODE_ENV vite build",
     "start:dev": "nodemon index.js",
-    "test:build": "webpack --mode production",
+    "test:build": "APP_ENV=$NODE_ENV vite build",
     "test:clean": "docker compose -f docker-compose.e2e.yml rm -vf && docker compose -f docker-compose.e2e.yml build",
     "e2e:compose": "docker compose -f docker-compose.e2e.yml -f docker-compose.e2e.local.yml",
     "e2e:up": "npm run e2e:compose -- up -d --wait",
@@ -41,29 +41,18 @@
     "cli": "node ./server/scripts/fixCompletionDates.js"
   },
   "dependencies": {
-    "@babel/core": "7.18.13",
-    "@babel/polyfill": "7.12.1",
-    "@babel/preset-env": "7.18.10",
-    "@babel/preset-react": "7.18.6",
     "@sentry/node": "6.19.7",
     "@sentry/react": "6.19.7",
+    "@vitejs/plugin-react": "6.0.4",
     "axios": "1.18.1",
-    "babel-loader": "8.2.5",
-    "css-loader": "5.2.7",
-    "csv-string": "4.1.1",
     "dotenv": "17.4.2",
     "express": "4.20.0",
     "faker": "5.5.3",
-    "file-loader": "6.2.0",
-    "html-webpack-plugin": "3.2.0",
-    "html-webpack-template": "6.2.0",
     "lodash": "4.18.1",
-    "mini-css-extract-plugin": "1.6.2",
     "module-alias": "2.3.4",
     "moment": "2.30.1",
     "node-cron": "2.0.3",
     "nodemailer": "9.0.3",
-    "optimize-css-assets-webpack-plugin": "6.0.1",
     "pg": "8.22.0",
     "pg-hstore": "2.3.4",
     "react": "16.14.0",
@@ -80,8 +69,7 @@
     "umzug": "2.3.0",
     "unfuck-utf8-headers-middleware": "1.0.1",
     "uuid": "14.0.1",
-    "webpack": "4.47.0",
-    "webpack-cli": "4.10.0",
+    "vite": "8.1.5",
     "winston": "3.19.0",
     "winston-gelf-transporter": "1.0.2",
     "winston-loki": "6.1.5"
@@ -92,15 +80,15 @@
     "nodemon": "3.1.14",
     "npm-run-all": "4.1.5",
     "oxfmt": "0.60.0",
-    "oxlint": "1.75.0",
-    "webpack-dev-middleware": "5.3.4",
-    "webpack-hot-middleware": "2.25.2"
+    "oxlint": "1.75.0"
   },
   "nodemonConfig": {
     "ignore": [
       "dist/*",
       "client/*",
-      "cypress/*"
+      "cypress/*",
+      "index.html",
+      "vite.config.mjs"
     ]
   },
   "engines": {

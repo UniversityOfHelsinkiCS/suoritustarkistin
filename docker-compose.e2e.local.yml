@@ -21,8 +21,8 @@ services:
       - ./:/usr/src/app
       - node_modules:/usr/src/app/node_modules
     healthcheck:
-      # webpack-dev-middleware holds requests until the bundle is built, so a
-      # 200 here means the app is genuinely ready to serve, not just listening.
+      # 8001 is the Vite dev server, which express starts last (it listens on
+      # 8002 itself), so a 200 here means the whole stack is up, not just express.
       test:
         - CMD
         - node

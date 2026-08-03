@@ -185,6 +185,12 @@ const getCourseUnitEnrolments = async (code) => {
       return endDate >= twoMonthsAgo
     })
 
+    const enrolments = (realisations) => realisations.reduce((sum, r) => sum + (r.enrollments || []).length, 0)
+
+    logger.info({
+      message: `Sisu enrolments for ${code}: kept ${filteredData.length}/${data.length} realisations, ${enrolments(filteredData)}/${enrolments(data)} enrolments (activityPeriod cutoff ${twoMonthsAgo.toISOString().slice(0, 10)})`
+    })
+
     return filteredData
   } catch (e) {
     handleImporterApiErrors(e)

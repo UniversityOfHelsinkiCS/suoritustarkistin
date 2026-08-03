@@ -12,15 +12,17 @@ const root = fileURLToPath(new URL('.', import.meta.url))
 const APP_ENV = process.env.APP_ENV || process.env.NODE_ENV || 'development'
 const BASE_PATH = process.env.BASE_PATH || '/'
 
-// In dev and test Vite owns the published port (8000 / 8001) and express sits
-// one port above it; see server/index.js.
 const PORT = Number(process.env.NODE_ENV === 'test' ? 8001 : process.env.PORT || 8000)
+
+process.env.VITE_SENTRY_RELEASE = process.env.VITE_SENTRY_RELEASE || 'unknown'
+process.env.VITE_BUILT_AT = new Date().toISOString()
 
 export default defineConfig({
   root,
   base: BASE_PATH,
   publicDir: false,
   plugins: [react()],
+  define: { 'process.env.NODE_ENV': JSON.stringify(APP_ENV) },
   resolve: {
     alias: [
       { find: /^Utilities\//, replacement: `${root}client/utils/` },
@@ -28,21 +30,6 @@ export default defineConfig({
       { find: /^Assets\//, replacement: `${root}client/assets/` },
       { find: /^Root\//, replacement: root }
     ]
-  },
-  /**
-   * TODO: this whole block only exists to keep the webpack DefinePlugin contract
-   * alive. Idiomatic Vite exposes build-time values on import.meta.env, so the
-   * client would read import.meta.env.MODE / VITE_SENTRY_RELEASE / VITE_BUILT_AT
-   * and __BASE_PATH__ would become import.meta.env.BASE_URL, which Vite already
-   * derives from `base`. Touches ~12 client files plus the BASE_PATH build args.
-   */
-  define: {
-    __BASE_PATH__: JSON.stringify(BASE_PATH),
-    'process.env.NODE_ENV': JSON.stringify(APP_ENV),
-    'process.env.SENTRY_RELEASE': JSON.stringify(process.env.SENTRY_RELEASE || 'unknown'),
-    'process.env.BUILT_AT': JSON.stringify(new Date().toISOString()),
-    // parity with the old DefinePlugin, which replaced the whole process.env object
-    'process.env': '{}'
   },
   server: {
     host: true, // bind 0.0.0.0 inside docker
@@ -67,7 +54,8 @@ export default defineConfig({
      */
     cssMinify: false,
     rollupOptions: {
-      // sentry-release.sh uploads ./dist/main.js
+      // A stable, unhashed name so the sourcemaps the production workflow uploads
+      // to Sentry keep matching the bundle across deploys
       output: { entryFileNames: 'main.js' }
     }
   }

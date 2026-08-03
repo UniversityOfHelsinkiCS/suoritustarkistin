@@ -10,9 +10,6 @@
       "version": "16.14.0"
     }
   },
-  "globals": {
-    "__BASE_PATH__": "readonly"
-  },
   // node_modules and dist come from .gitignore, which oxlint reads by default
   "ignorePatterns": ["**/migrations"],
   "rules": {

@@ -14,7 +14,7 @@ export default () => {
 
   const crashBackend = async () => {
     try {
-      await axios.get(`${__BASE_PATH__}api/sandbox`)
+      await axios.get(`${import.meta.env.BASE_URL}api/sandbox`)
     } catch {
       setMessage('Backend exploded successfully')
     }
@@ -33,7 +33,7 @@ export default () => {
         </Message>
       )}
       {process.env.NODE_ENV !== 'development' ? (
-        <Header size="medium">Frontend built at {process.env.BUILT_AT || 'unknown'}</Header>
+        <Header size="medium">Frontend built at {import.meta.env.VITE_BUILT_AT || 'unknown'}</Header>
       ) : null}
       <Button size="huge" basic color="red" content="Chaos Monkey" icon="bomb" onClick={() => setCrash(true)} />
       <Button size="huge" basic color="red" content="Chaos Monkey backend" icon="bomb" onClick={crashBackend} />

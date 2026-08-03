@@ -11,18 +11,18 @@ import store from 'Utilities/store'
 import App from 'Components/App'
 import ErrorBoundary from 'Components/ErrorBoundary'
 
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
+if (process.env.NODE_ENV === 'production')
   Sentry.init({
     dsn: 'https://35563bad2b5b658db22d8791133c7ae0@toska.it.helsinki.fi/16',
     environment: process.env.NODE_ENV,
-    release: process.env.SENTRY_RELEASE,
+    release: import.meta.env.VITE_SENTRY_RELEASE,
     normalizeDepth: 10
   })
 
 const refresh = () =>
   render(
     <Provider store={store}>
-      <BrowserRouter basename={__BASE_PATH__}>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <ErrorBoundary>
           <App />
         </ErrorBoundary>

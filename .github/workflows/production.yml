@@ -25,6 +25,7 @@ jobs:
           build-args: |
             BASE_PATH=/suoritustarkistin/
             NODE_ENV=production
+            VITE_SENTRY_RELEASE=${{ github.sha }}
 
       - name: Push to version helsinki
         uses: redhat-actions/push-to-registry@v3
@@ -53,6 +54,8 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: suotar
         with:
+          # must match VITE_SENTRY_RELEASE baked into the image above
+          version: ${{ github.sha }}
           environment: production
           set_commits: 'skip'
           sourcemaps: ./app

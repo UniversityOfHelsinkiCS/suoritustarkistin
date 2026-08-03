@@ -5,10 +5,10 @@ export default () => (
   <div className="footer">
     <div style={{ margin: '25px', float: 'left' }}>
       Contact support: <a href="mailto:grp-toska@helsinki.fi">grp-toska@helsinki.fi</a>
-      {process.env.NODE_ENV !== 'development' && process.env.BUILT_AT ? (
+      {process.env.NODE_ENV !== 'development' && import.meta.env.VITE_BUILT_AT ? (
         <>
           <br />
-          <span style={{ opacity: 0.4 }}>Built {process.env.BUILT_AT}</span>
+          <span style={{ opacity: 0.4 }}>Built {import.meta.env.VITE_BUILT_AT}</span>
         </>
       ) : null}
     </div>

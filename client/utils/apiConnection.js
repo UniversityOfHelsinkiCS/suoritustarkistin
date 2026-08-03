@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { getHeaders } from 'Utilities/fakeShibboleth'
-import { inProduction } from 'Utilities/common'
+import { getHeaders } from '@client/utils/fakeShibboleth'
+import { inProduction } from '@client/utils/common'
 
 /**
  * ApiConnection simplifies redux usage

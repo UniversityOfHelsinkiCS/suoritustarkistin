@@ -1,4 +1,4 @@
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { bscThesisEntryFactory } = require('../models/factory')
 const {

@@ -1,14 +1,14 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
-import ProtectedRoute from 'Components/ProtectedRoute'
-import ApiChecks from 'Components/ApiChecks'
-import NewReportPage from 'Components/NewReportPage'
-import ReportsPage from 'Components/ReportsPage'
-import CoursesPage from 'Components/CoursesPage'
-import UsersPage from 'Components/UsersPage'
-import AutomatedReportsPage from 'Components/AutomatedReportsPage'
-import UnauthorizedPage from 'Components/UnauthorizedPage'
-import SandboxPage from 'Components/SandboxPage'
+import ProtectedRoute from '@client/components/ProtectedRoute'
+import ApiChecks from '@client/components/ApiChecks'
+import NewReportPage from '@client/components/NewReportPage'
+import ReportsPage from '@client/components/ReportsPage'
+import CoursesPage from '@client/components/CoursesPage'
+import UsersPage from '@client/components/UsersPage'
+import AutomatedReportsPage from '@client/components/AutomatedReportsPage'
+import UnauthorizedPage from '@client/components/UnauthorizedPage'
+import SandboxPage from '@client/components/SandboxPage'
 
 // HACK to make component full page width or narrow
 const Wrap = ({ childComponent: ChildComponent, narrow }) => (

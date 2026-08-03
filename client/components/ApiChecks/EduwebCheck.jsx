@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Input, Header, Form } from 'semantic-ui-react'
-import { checkEduWeb } from 'Utilities/redux/apiCheckReducer'
-import EduwebInstance from 'Components/ApiChecks/EduwebInstance'
+import { checkEduWeb } from '@client/utils/redux/apiCheckReducer'
+import EduwebInstance from '@client/components/ApiChecks/EduwebInstance'
 
 export default () => {
   const dispatch = useDispatch()

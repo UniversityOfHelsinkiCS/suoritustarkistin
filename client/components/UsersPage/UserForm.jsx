@@ -3,9 +3,9 @@ import { Button, Checkbox, Form, Input, Message, Segment } from 'semantic-ui-rea
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
 
-import { createUser, editUserAction, fetchUser } from 'Utilities/redux/usersReducer'
-import { getAllCoursesAction } from 'Utilities/redux/coursesReducer'
-import { isValidEmailAddress } from 'Root/utils/validators'
+import { createUser, editUserAction, fetchUser } from '@client/utils/redux/usersReducer'
+import { getAllCoursesAction } from '@client/utils/redux/coursesReducer'
+import { isValidEmailAddress } from '@shared/validators'
 
 const INITIAL_FORM_DATA = {
   email: '',

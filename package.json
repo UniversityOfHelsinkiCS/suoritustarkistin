@@ -95,10 +95,7 @@
     "node": ">=24 <25"
   },
   "_moduleAliases": {
-    "@root": ".",
-    "@controllers": "server/controllers",
-    "@utils": "server/utils",
-    "@models": "server/models",
-    "@services": "server/services"
+    "@server": "server",
+    "@shared": "utils"
   }
 }

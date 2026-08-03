@@ -1,5 +1,5 @@
 const cron = require('node-cron')
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { chooseScript } = require('./chooseAutomatedScript')
 const refreshEntriesCron = require('./refreshEntryCron')

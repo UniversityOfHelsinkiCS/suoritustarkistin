@@ -5,7 +5,7 @@ const moment = require('moment')
 const { flatMap } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
 
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { identicalCompletionFound } = require('../utils/earlierCompletions')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')

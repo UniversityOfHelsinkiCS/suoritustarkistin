@@ -1,4 +1,4 @@
-const common = require('@root/utils/common')
+const common = require('@shared/common')
 const { v4: uuidv4 } = require('uuid')
 
 const SHIBBOLETH_HEADERS = [

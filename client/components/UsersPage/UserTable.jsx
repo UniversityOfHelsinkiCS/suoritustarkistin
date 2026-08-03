@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Grid, Header, Icon, Segment } from 'semantic-ui-react'
 
-import User from 'Components/UsersPage/User'
-import { sortedItems } from 'Utilities/common'
+import User from '@client/components/UsersPage/User'
+import { sortedItems } from '@client/utils/common'
 
 export default () => {
   const [sorter, setSorter] = useState('name')

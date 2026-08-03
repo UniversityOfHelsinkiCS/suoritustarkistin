@@ -1,5 +1,5 @@
-const db = require('@models/index')
-const logger = require('@utils/logger')
+const db = require('@server/models/index')
+const logger = require('@server/utils/logger')
 const {
   OLD_BAI_CODE,
   OLD_BAI_INTERMEDIATE_CODE,
@@ -7,7 +7,7 @@ const {
   NEW_BAI_INTERMEDIATE_CODE,
   getBatchId,
   getMoocAttainmentDate
-} = require('@root/utils/common')
+} = require('@shared/common')
 const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')

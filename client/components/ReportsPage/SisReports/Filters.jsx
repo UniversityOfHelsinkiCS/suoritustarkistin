@@ -3,8 +3,8 @@ import { Form, Header, Input, Radio, Dropdown, Select } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { debounce } from 'lodash'
 
-import { toggleFilterAction, setFilterAction } from 'Utilities/redux/sisReportsReducer'
-import { getAllCoursesAction, getUsersCoursesAction } from 'Utilities/redux/coursesReducer'
+import { toggleFilterAction, setFilterAction } from '@client/utils/redux/sisReportsReducer'
+import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/coursesReducer'
 import { formatCoursesForSelection } from '../../NewReportPage/InputOptions'
 
 const STATE_OPTIONS = [

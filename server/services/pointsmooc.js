@@ -1,4 +1,4 @@
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const moocApi = require('../config/moocApi')
 
 const getCompletions = async (course, registeredIncluded = false) => {

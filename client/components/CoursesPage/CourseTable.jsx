@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Grid, Header, Segment } from 'semantic-ui-react'
 import * as _ from 'lodash'
 
-import CourseRow from 'Components/CoursesPage/CourseRow'
+import CourseRow from '@client/components/CoursesPage/CourseRow'
 
 export default () => {
   const courses = useSelector((state) => state.courses.data)

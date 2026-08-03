@@ -1,7 +1,7 @@
 import React from 'react'
 import { Message } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearMessageAction } from 'Utilities/redux/messageReducer'
+import { clearMessageAction } from '@client/utils/redux/messageReducer'
 
 export default () => {
   const dispatch = useDispatch()

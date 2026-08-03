@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button, Icon, Message, Segment, Table } from 'semantic-ui-react'
 import moment from 'moment'
 
-import Notification from 'Components/Message'
-import { EOAI_CODES, EOAI_NAMEMAP } from 'Root/utils/common'
+import Notification from '@client/components/Message'
+import { EOAI_CODES, EOAI_NAMEMAP } from '@shared/common'
 import {
   getAllEnrollmentLimboEntriesAction,
   handleEntryDeletionAction,
   refreshEnrollmentsAction
-} from 'Utilities/redux/sisReportsReducer'
+} from '@client/utils/redux/sisReportsReducer'
 import Pagination from './Pagination'
 
 const getCourseCode = (rawEntry, course) => {

@@ -1,6 +1,6 @@
-const { sequelize, Sequelize } = require('@models')
+const { sequelize, Sequelize } = require('@server/models')
 const Umzug = require('umzug')
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 
 const DB_CONNECTION_RETRY_LIMIT = 60
 

@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Loader } from 'semantic-ui-react'
 import { useDropzone } from 'react-dropzone'
 
-import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { parseCSV } from 'Utilities/inputParser'
+import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import { parseCSV } from '@client/utils/inputParser'
 
 const baseStyle = {
   flex: 1,

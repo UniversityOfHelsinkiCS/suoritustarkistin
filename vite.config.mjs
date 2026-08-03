@@ -25,10 +25,9 @@ export default defineConfig({
   define: { 'process.env.NODE_ENV': JSON.stringify(APP_ENV) },
   resolve: {
     alias: [
-      { find: /^Utilities\//, replacement: `${root}client/utils/` },
-      { find: /^Components\//, replacement: `${root}client/components/` },
-      { find: /^Assets\//, replacement: `${root}client/assets/` },
-      { find: /^Root\//, replacement: root }
+      // Mirrors the _moduleAliases the server resolves through module-alias
+      { find: /^@client\//, replacement: `${root}client/` },
+      { find: /^@shared\//, replacement: `${root}utils/` }
     ]
   },
   server: {

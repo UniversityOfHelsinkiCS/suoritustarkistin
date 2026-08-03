@@ -5,14 +5,14 @@ import { withRouter } from 'react-router-dom'
 import moment from 'moment'
 import { Accordion, Button, Icon, Message, Segment, Popup } from 'semantic-ui-react'
 
-import Notification from 'Components/Message'
+import Notification from '@client/components/Message'
 import {
   openReport,
   refreshBatchStatus,
   getAllMoocSisReportsAction,
   getAllSisReportsAction,
   getOffsetForBatchAction
-} from 'Utilities/redux/sisReportsReducer'
+} from '@client/utils/redux/sisReportsReducer'
 import DeleteBatchButton from './DeleteBatchButton'
 import SendToSisButton from './SendToSisButton'
 import ReportStatus from './ReportStatus'

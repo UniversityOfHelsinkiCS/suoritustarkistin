@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { sendEntriesToSisAction } from 'Utilities/redux/sisReportsReducer'
+import { sendEntriesToSisAction } from '@client/utils/redux/sisReportsReducer'
 
 export default ({ idsToSend }) => {
   const { entries, extraEntries } = idsToSend

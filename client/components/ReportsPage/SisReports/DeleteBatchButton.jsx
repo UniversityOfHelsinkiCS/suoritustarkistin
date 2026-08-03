@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, Popup } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { handleBatchDeletionAction, openReport } from 'Utilities/redux/sisReportsReducer'
+import { handleBatchDeletionAction, openReport } from '@client/utils/redux/sisReportsReducer'
 
 export default ({ batchId }) => {
   const [open, setOpen] = useState(false)

@@ -1,4 +1,4 @@
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const { eduwebGet, getRegistrationsByInstance } = require('../services/eduweb')
 const { checkCompletions } = require('../services/pointsmooc')
 const { checkCompletions: checkNewMoocCompletions } = require('../services/newMooc')

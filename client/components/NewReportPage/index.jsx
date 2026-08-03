@@ -1,8 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-import InputSelector from 'Components/NewReportPage/InputSelector'
-import NewReportTable from 'Components/NewReportPage/NewReportTable'
+import InputSelector from '@client/components/NewReportPage/InputSelector'
+import NewReportTable from '@client/components/NewReportPage/NewReportTable'
 
 export default () => {
   const newRawEntries = useSelector((state) => state.newRawEntries)

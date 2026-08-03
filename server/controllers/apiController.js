@@ -1,5 +1,5 @@
-const logger = require('@utils/logger')
-const attainmentsToSisu = require('@utils/sendToSisu')
+const logger = require('@server/utils/logger')
+const attainmentsToSisu = require('@server/utils/sendToSisu')
 const db = require('../models/index')
 const { processManualEntry } = require('../scripts/processManualEntry')
 const {

@@ -1,6 +1,6 @@
 const { Op, col } = require('sequelize')
-const logger = require('@utils/logger')
-const { sendSentryMessage } = require('@utils/sentry')
+const logger = require('@server/utils/logger')
+const { sendSentryMessage } = require('@server/utils/sentry')
 const db = require('../models/index')
 const refreshEntries = require('./refreshEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')

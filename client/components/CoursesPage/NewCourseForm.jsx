@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
 import { Button, Form, Input, Segment, Popup, Icon, Checkbox } from 'semantic-ui-react'
-import { addCourseAction, getResponsiblesAction, resetResponsibles } from 'Utilities/redux/coursesReducer'
-import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from 'Root/utils/validators'
-import { gradeScales } from 'Root/utils/common'
+import { addCourseAction, getResponsiblesAction, resetResponsibles } from '@client/utils/redux/coursesReducer'
+import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
+import { gradeScales } from '@shared/common'
 
 const Help = ({ text }) => (
   <span style={{ marginLeft: '7px' }}>

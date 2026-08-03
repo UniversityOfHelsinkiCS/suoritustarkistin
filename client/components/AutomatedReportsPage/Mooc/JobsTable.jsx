@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Header, Loader, Segment, Table } from 'semantic-ui-react'
 import * as _ from 'lodash'
 
-import JobRow from 'Components/AutomatedReportsPage/Mooc/JobRow'
+import JobRow from '@client/components/AutomatedReportsPage/Mooc/JobRow'
 
 export default () => {
   const jobs = useSelector((state) => state.moocJobs)

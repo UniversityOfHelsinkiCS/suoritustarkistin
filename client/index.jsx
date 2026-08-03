@@ -3,13 +3,13 @@ import { render } from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import 'semantic-ui-css/semantic.min.css'
-import 'Assets/custom.css'
-import { setHeaders } from 'Utilities/fakeShibboleth'
+import '@client/assets/custom.css'
+import { setHeaders } from '@client/utils/fakeShibboleth'
 import * as Sentry from '@sentry/react'
 
-import store from 'Utilities/store'
-import App from 'Components/App'
-import ErrorBoundary from 'Components/ErrorBoundary'
+import store from '@client/utils/store'
+import App from '@client/components/App'
+import ErrorBoundary from '@client/components/ErrorBoundary'
 
 if (process.env.NODE_ENV === 'production')
   Sentry.init({

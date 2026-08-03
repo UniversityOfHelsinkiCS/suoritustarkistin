@@ -1,12 +1,6 @@
-const db = require('@models/index')
-const logger = require('@utils/logger')
-const {
-  getBatchId,
-  moocLanguageMap,
-  getMoocAttainmentDate,
-  ALL_EOAI_CODES,
-  NEW_EOAI_CODE
-} = require('@root/utils/common')
+const db = require('@server/models/index')
+const logger = require('@server/utils/logger')
+const { getBatchId, moocLanguageMap, getMoocAttainmentDate, ALL_EOAI_CODES, NEW_EOAI_CODE } = require('@shared/common')
 const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')

@@ -1,4 +1,4 @@
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { resolveUser } = require('../services/importer')
 const sendEmail = require('../utils/sendEmail')

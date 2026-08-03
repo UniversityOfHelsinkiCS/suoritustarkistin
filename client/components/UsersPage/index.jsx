@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Button, Modal } from 'semantic-ui-react'
 
-import Message from 'Components/Message'
-import UserTable from 'Components/UsersPage/UserTable'
-import UserForm from 'Components/UsersPage/UserForm'
-import { getAllUsersAction } from 'Utilities/redux/usersReducer'
+import Message from '@client/components/Message'
+import UserTable from '@client/components/UsersPage/UserTable'
+import UserForm from '@client/components/UsersPage/UserForm'
+import { getAllUsersAction } from '@client/utils/redux/usersReducer'
 
 export default () => {
   const dispatch = useDispatch()

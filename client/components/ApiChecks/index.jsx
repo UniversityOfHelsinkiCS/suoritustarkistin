@@ -2,9 +2,9 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Grid, Loader } from 'semantic-ui-react'
 
-import Message from 'Components/Message'
-import EduwebCheck from 'Components/ApiChecks/EduwebCheck'
-import MoocCheck from 'Components/ApiChecks/MoocCheck'
+import Message from '@client/components/Message'
+import EduwebCheck from '@client/components/ApiChecks/EduwebCheck'
+import MoocCheck from '@client/components/ApiChecks/MoocCheck'
 import NewMoocCheck from './NewMoocCheck'
 
 export default () => {

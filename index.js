@@ -1,3 +1,3 @@
 require('dotenv').config({ quiet: true })
 require('module-alias/register')
-require('@root/server')
+require('./server')

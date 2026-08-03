@@ -1,6 +1,6 @@
 const { flatten } = require('lodash')
-const logger = require('@utils/logger')
-const { getBatchId } = require('@root/utils/common')
+const logger = require('@server/utils/logger')
+const { getBatchId } = require('@shared/common')
 const db = require('../models/index')
 const { isValidStudentId, isValidGrade, isValidCreditAmount, isValidCourseCode } = require('../../utils/validators')
 const { processEntries } = require('./processEntries')

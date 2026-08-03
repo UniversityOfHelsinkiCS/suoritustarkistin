@@ -1,8 +1,8 @@
 /**
  * Stuff related to sending stuff to Sisu
  */
-const logger = require('@utils/logger')
-const { sendSentryMessage } = require('@utils/sentry')
+const logger = require('@server/utils/logger')
+const { sendSentryMessage } = require('@server/utils/sentry')
 const axios = require('axios')
 const moment = require('moment')
 const db = require('../models/index')

@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Header, Modal, Segment } from 'semantic-ui-react'
 
-import { deleteCourseAction } from 'Utilities/redux/coursesReducer'
+import { deleteCourseAction } from '@client/utils/redux/coursesReducer'
 
 const DeletionModal = ({ showForm, setShowForm, id }) => {
   const dispatch = useDispatch()

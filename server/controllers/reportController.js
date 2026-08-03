@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { checkEntries } = require('../scripts/checkSisEntries')
 const refreshEntries = require('../scripts/refreshEntries')

@@ -1,6 +1,6 @@
 const axios = require('axios')
 const https = require('https')
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 
 const eduwebGet = async (course) => {
   const { data } = await axios.get(`${process.env.EDUWEB_URL}${course}`, {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Icon, Menu, Tab } from 'semantic-ui-react'
-import RawOodiReports from 'Components/ReportsPage/OodiReports/RawOodiReports'
-import OodiReports from 'Components/ReportsPage/OodiReports/OodiReports'
-import SisReports from 'Components/ReportsPage/SisReports'
-import EnrolmentLimbo from 'Components/ReportsPage/EnrolmentLimbo'
-import { getAllOodiReportsAction, getUsersOodiReportsAction } from 'Utilities/redux/oodiReportsReducer'
-import { resetFiltersAction } from 'Utilities/redux/sisReportsReducer'
+import RawOodiReports from '@client/components/ReportsPage/OodiReports/RawOodiReports'
+import OodiReports from '@client/components/ReportsPage/OodiReports/OodiReports'
+import SisReports from '@client/components/ReportsPage/SisReports'
+import EnrolmentLimbo from '@client/components/ReportsPage/EnrolmentLimbo'
+import { getAllOodiReportsAction, getUsersOodiReportsAction } from '@client/utils/redux/oodiReportsReducer'
+import { resetFiltersAction } from '@client/utils/redux/sisReportsReducer'
 
 export default () => {
   const [activeTab, setActiveTab] = useState(0)

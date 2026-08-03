@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Modal } from 'semantic-ui-react'
 
-import NewCourseForm from 'Components/CoursesPage/NewCourseForm'
+import NewCourseForm from '@client/components/CoursesPage/NewCourseForm'
 
 export default () => {
   const [showForm, setShowForm] = useState(false)

@@ -1,13 +1,13 @@
 const Router = require('express')
-const { checkEduweb, checkMooc, checkNewMooc } = require('@controllers/apiCheckController')
-const { createEntries } = require('@controllers/apiController')
+const { checkEduweb, checkMooc, checkNewMooc } = require('@server/controllers/apiCheckController')
+const { createEntries } = require('@server/controllers/apiController')
 const {
   seedDatabaseForTests,
   seedTestCompletions,
   seedBachelorData,
   seedNoEntries,
   seedErilliskirjaus
-} = require('@controllers/cypressController')
+} = require('@server/controllers/cypressController')
 const {
   getCourses,
   getUsersCourses,
@@ -16,7 +16,7 @@ const {
   confirmDeletion,
   deleteCourse,
   getCourseResponsibles
-} = require('@controllers/courseController')
+} = require('@server/controllers/courseController')
 const {
   getUsers,
   getGraders,
@@ -25,14 +25,14 @@ const {
   editUser,
   fetchUserDetails,
   deleteUser
-} = require('@controllers/userController')
-const { getOodiReports, getUsersOodiReports } = require('@controllers/oodiReportController')
+} = require('@server/controllers/userController')
+const { getOodiReports, getUsersOodiReports } = require('@server/controllers/oodiReportController')
 const {
   addRawEntries,
   importStudents,
   notifyMissingEnrollment,
   importStudentsAttainments
-} = require('@controllers/rawEntryController')
+} = require('@server/controllers/rawEntryController')
 const {
   getAllSisReports,
   getAllSisMoocReports,
@@ -44,11 +44,11 @@ const {
   refreshSisStatus,
   refreshEnrollments,
   getOffset
-} = require('@controllers/reportController')
-const { addJob, getJobs, editJob, runJob, deleteJob } = require('@controllers/moocJobsController')
-const { login, logout } = require('@controllers/loginController')
+} = require('@server/controllers/reportController')
+const { addJob, getJobs, editJob, runJob, deleteJob } = require('@server/controllers/moocJobsController')
+const { login, logout } = require('@server/controllers/loginController')
 
-const { runJobs, dryRunJobs } = require('@controllers/cronController')
+const { runJobs, dryRunJobs } = require('@server/controllers/cronController')
 
 const {
   checkAdmin,

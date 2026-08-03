@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer')
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const { isEnabled, messageOptions, smtpOptions } = require('../config/email')
 
 /*

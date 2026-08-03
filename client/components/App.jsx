@@ -4,12 +4,12 @@ import { withRouter } from 'react-router-dom'
 import { Header } from 'semantic-ui-react'
 import * as Sentry from '@sentry/react'
 
-import NavBar from 'Components/NavBar'
-import Router from 'Components/Router'
-import Footer from 'Components/Footer'
-import MaintenanceView, { MaintenanceMessage } from 'Components/MaintenanceView'
-import { loginAction, pingAction } from 'Utilities/redux/userReducer'
-import { getStatus } from 'Utilities/redux/systemStatusReducer'
+import NavBar from '@client/components/NavBar'
+import Router from '@client/components/Router'
+import Footer from '@client/components/Footer'
+import MaintenanceView, { MaintenanceMessage } from '@client/components/MaintenanceView'
+import { loginAction, pingAction } from '@client/utils/redux/userReducer'
+import { getStatus } from '@client/utils/redux/systemStatusReducer'
 
 export default withRouter(({ history }) => {
   const dispatch = useDispatch()

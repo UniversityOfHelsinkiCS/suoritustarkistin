@@ -5,12 +5,12 @@ import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
-import { setNewRawEntriesAction, sendNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { getAllGradersAction, getUsersGradersAction } from 'Utilities/redux/gradersReducer'
-import { getAllCoursesAction, getUsersCoursesAction } from 'Utilities/redux/coursesReducer'
-import { isOneOfKandiCourses, isRegularExtraCourse } from 'Utilities/common'
-import { areValidNewRawEntries } from 'Root/utils/validators'
-import { isKandiExtraCourse } from 'Root/utils/common'
+import { setNewRawEntriesAction, sendNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import { getAllGradersAction, getUsersGradersAction } from '@client/utils/redux/gradersReducer'
+import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/coursesReducer'
+import { isOneOfKandiCourses, isRegularExtraCourse } from '@client/utils/common'
+import { areValidNewRawEntries } from '@shared/validators'
+import { isKandiExtraCourse } from '@shared/common'
 import ImportStudents from './ImportStudents'
 
 const styles = {

@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux'
 import { Button, Grid, Icon, Modal, Popup } from 'semantic-ui-react'
 import moment from 'moment'
 
-import UserForm from 'Components/UsersPage/UserForm'
-import { deleteUser, editUserAction } from 'Utilities/redux/usersReducer'
+import UserForm from '@client/components/UsersPage/UserForm'
+import { deleteUser, editUserAction } from '@client/utils/redux/usersReducer'
 
 export default ({ user }) => {
   const dispatch = useDispatch()

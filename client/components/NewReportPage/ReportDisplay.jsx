@@ -2,10 +2,10 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Icon, Popup, Table } from 'semantic-ui-react'
 
-import { setNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { parseCSV } from 'Utilities/inputParser'
+import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import { parseCSV } from '@client/utils/inputParser'
 
-import { commify } from 'Root/utils/commify'
+import { commify } from '@shared/commify'
 import {
   isValidStudentId,
   isValidGrade,
@@ -15,7 +15,7 @@ import {
   isFutureDate,
   isPastDate,
   isDateObject
-} from 'Root/utils/validators'
+} from '@shared/validators'
 
 import './reportDisplay.css'
 

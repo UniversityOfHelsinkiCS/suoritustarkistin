@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Dropdown } from 'semantic-ui-react'
-import { getHeaders, possibleUsers, setHeaders } from 'Utilities/fakeShibboleth'
-import { loginAction } from 'Utilities/redux/userReducer'
-import { inProduction } from 'Utilities/common'
+import { getHeaders, possibleUsers, setHeaders } from '@client/utils/fakeShibboleth'
+import { loginAction } from '@client/utils/redux/userReducer'
+import { inProduction } from '@client/utils/common'
 
 export default () => {
   const [employeeNumber, setEmployeenumber] = useState(getHeaders().employeeNumber)

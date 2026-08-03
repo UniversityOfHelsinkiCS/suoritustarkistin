@@ -1,8 +1,8 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Form, TextArea } from 'semantic-ui-react'
-import { setNewRawEntriesAction, resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
-import { isKandiExtraCourse } from 'Root/utils/common'
+import { setNewRawEntriesAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import { isKandiExtraCourse } from '@shared/common'
 
 const textAreaStyle = {
   padding: '20px'

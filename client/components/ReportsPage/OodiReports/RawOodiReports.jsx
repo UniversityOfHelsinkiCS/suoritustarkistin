@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Segment } from 'semantic-ui-react'
 
-import TabLoader from 'Components/ReportsPage/TabLoader'
+import TabLoader from '@client/components/ReportsPage/TabLoader'
 
 const Downloaded = () => (
   <div data-cy="report-downloaded" style={{ color: 'green' }}>

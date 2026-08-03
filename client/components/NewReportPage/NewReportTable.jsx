@@ -3,15 +3,15 @@ import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Table, Button, Popup, Segment, Header, Divider, Message, Icon } from 'semantic-ui-react'
-import NotificationMessage from 'Components/Message'
+import NotificationMessage from '@client/components/Message'
 
-import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from 'Utilities/redux/newRawEntriesReducer'
+import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import {
   handleBatchDeletionAction,
   sendEntriesToSisAction,
   openReport,
   sendMissingEnrollmentEmail
-} from 'Utilities/redux/sisReportsReducer'
+} from '@client/utils/redux/sisReportsReducer'
 
 const styles = {
   extraEntry: {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Form, Header, Input } from 'semantic-ui-react'
-import { checkMooc } from 'Utilities/redux/apiCheckReducer'
+import { checkMooc } from '@client/utils/redux/apiCheckReducer'
 import MoocInstance from './MoocInstance'
 
 export default () => {

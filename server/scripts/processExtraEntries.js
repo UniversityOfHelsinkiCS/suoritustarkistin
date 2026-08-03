@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 const moment = require('moment')
-const logger = require('@utils/logger')
+const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const {
   getEmployees,

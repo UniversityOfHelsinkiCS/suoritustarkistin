@@ -1,8 +1,8 @@
 /**
  * Insert common items here
  */
-import toscalogoColor from 'Assets/toscalogo_color.svg'
-import toscalogoGrayscale from 'Assets/toscalogo_grayscale.svg'
+import toscalogoColor from '@client/assets/toscalogo_color.svg'
+import toscalogoGrayscale from '@client/assets/toscalogo_grayscale.svg'
 
 export const images = {
   toska_color: toscalogoColor,
@@ -23,4 +23,4 @@ export const sortedItems = (items, sorter, reverse) => {
   return sorted
 }
 
-export * from 'Root/utils/common'
+export * from '@shared/common'

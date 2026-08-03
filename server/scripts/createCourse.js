@@ -1,5 +1,5 @@
-const logger = require('@utils/logger')
-const { isValidCourse } = require('@root/utils/validators')
+const logger = require('@server/utils/logger')
+const { isValidCourse } = require('@shared/validators')
 const db = require('../models/index')
 
 const createCourse = async (course) => {

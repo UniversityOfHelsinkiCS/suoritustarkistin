@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
-import { isDateObject, isValidDate, isValidOodiDate, isValidStudentId } from 'Root/utils/validators'
-import { KANDI_EXTRA_COURSES } from 'Root/utils/common'
+import { isDateObject, isValidDate, isValidOodiDate, isValidStudentId } from '@shared/validators'
+import { KANDI_EXTRA_COURSES } from '@shared/common'
 
 const SEPARATORS = [',', ';', '|', '\t']
 

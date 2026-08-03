@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Icon, Table } from 'semantic-ui-react'
 
-import { deleteJobAction, runJobAction } from 'Utilities/redux/moocJobsReducer'
-import EditJob from 'Components/AutomatedReportsPage/Mooc/EditJob'
+import { deleteJobAction, runJobAction } from '@client/utils/redux/moocJobsReducer'
+import EditJob from '@client/components/AutomatedReportsPage/Mooc/EditJob'
 
 export default ({ job, jobs }) => {
   const dispatch = useDispatch()

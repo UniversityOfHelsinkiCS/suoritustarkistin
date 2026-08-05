@@ -37,13 +37,14 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
     })
     if (!grader) throw new Error('Grader employee id does not exist.')
 
+    let entryCourse = course
     if (rawEntry.course) {
-      course = await db.courses.findOne({
+      entryCourse = await db.courses.findOne({
         where: {
           courseCode: rawEntry.course
         }
       })
-      if (!course) throw new Error(`Course with course code '${rawEntry.course}' can not be found in Suotar`)
+      if (!entryCourse) throw new Error(`Course with course code '${rawEntry.course}' can not be found in Suotar`)
     }
 
     return {
@@ -52,12 +53,12 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       email: rawEntry.email,
       batchId,
       grade: rawEntry.grade,
-      credits: rawEntry.credits ? rawEntry.credits : course.credits,
-      language: rawEntry.language ? rawEntry.language : course.language,
+      credits: rawEntry.credits ? rawEntry.credits : entryCourse.credits,
+      language: rawEntry.language ? rawEntry.language : entryCourse.language,
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,
       reporterId,
-      courseId: course.id
+      courseId: entryCourse.id
     }
   }
 

@@ -169,32 +169,39 @@ const getCourseUnitIds = async (codes) => {
   }
 }
 
-const getCourseUnitEnrolments = async (code) => {
+const activityPeriodCutoff = () => {
+  const now = new Date()
+  const twoMonthsAgo = new Date()
+  twoMonthsAgo.setMonth(now.getMonth() - 2)
+  return twoMonthsAgo
+}
+
+const isActiveRealisation = (item, cutoff) => {
+  if (!item.activityPeriod || !item.activityPeriod.endDate) return false
+  return new Date(item.activityPeriod.endDate) >= cutoff
+}
+
+const getAllCourseUnitEnrolments = async (code) => {
   try {
     const { data } = await api.get(`suotar/course-unit-enrolments/${code}`)
-
-    const now = new Date()
-    const twoMonthsAgo = new Date()
-    twoMonthsAgo.setMonth(now.getMonth() - 2)
-
-    const filteredData = data.filter((item) => {
-      if (!item.activityPeriod || !item.activityPeriod.endDate) {
-        return false
-      }
-      const endDate = new Date(item.activityPeriod.endDate)
-      return endDate >= twoMonthsAgo
-    })
-
-    const enrolments = (realisations) => realisations.reduce((sum, r) => sum + (r.enrollments || []).length, 0)
-
-    logger.info({
-      message: `Sisu enrolments for ${code}: kept ${filteredData.length}/${data.length} realisations, ${enrolments(filteredData)}/${enrolments(data)} enrolments (activityPeriod cutoff ${twoMonthsAgo.toISOString().slice(0, 10)})`
-    })
-
-    return filteredData
+    return data
   } catch (e) {
     handleImporterApiErrors(e)
   }
+}
+
+const getCourseUnitEnrolments = async (code) => {
+  const data = await getAllCourseUnitEnrolments(code)
+  const cutoff = activityPeriodCutoff()
+  const filteredData = data.filter((item) => isActiveRealisation(item, cutoff))
+
+  const enrolments = (realisations) => realisations.reduce((sum, r) => sum + (r.enrollments || []).length, 0)
+
+  logger.info({
+    message: `Sisu enrolments for ${code}: kept ${filteredData.length}/${data.length} realisations, ${enrolments(filteredData)}/${enrolments(data)} enrolments (activityPeriod cutoff ${cutoff.toISOString().slice(0, 10)})`
+  })
+
+  return filteredData
 }
 
 module.exports = {
@@ -212,6 +219,9 @@ module.exports = {
   getStudentsWithStudyRight,
   getAcceptorPersonsByCourseUnit,
   getCourseUnitIds,
+  getAllCourseUnitEnrolments,
+  activityPeriodCutoff,
+  isActiveRealisation,
   getMultipleStudyRightsByPersons,
   getCourseUnitEnrolments
 }

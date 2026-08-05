@@ -18,6 +18,12 @@ export const checkNewMooc = (courseCode) => {
   return callBuilder(route, prefix, 'get')
 }
 
+export const checkSisu = (courseCode) => {
+  const route = `/apicheck/sisu/${courseCode}`
+  const prefix = 'CHECK_SISU_API'
+  return callBuilder(route, prefix, 'get')
+}
+
 export default (state = {}, action) => {
   switch (action.type) {
     case 'CHECK_EDUWEB_API_SUCCESS':
@@ -77,6 +83,26 @@ export default (state = {}, action) => {
       return {
         ...state,
         newMooc: [],
+        pending: false,
+        error: true
+      }
+    case 'CHECK_SISU_API_SUCCESS':
+      return {
+        ...state,
+        sisu: action.response,
+        pending: false,
+        error: false
+      }
+    case 'CHECK_SISU_API_ATTEMPT':
+      return {
+        ...state,
+        pending: true,
+        error: false
+      }
+    case 'CHECK_SISU_API_FAILURE':
+      return {
+        ...state,
+        sisu: null,
         pending: false,
         error: true
       }

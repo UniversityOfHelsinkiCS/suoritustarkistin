@@ -1,5 +1,5 @@
 const Router = require('express')
-const { checkEduweb, checkMooc, checkNewMooc } = require('@server/controllers/apiCheckController')
+const { checkEduweb, checkMooc, checkNewMooc, checkSisu } = require('@server/controllers/apiCheckController')
 const { createEntries } = require('@server/controllers/apiController')
 const {
   seedDatabaseForTests,
@@ -126,6 +126,7 @@ router.delete('/jobs/:id', checkAdmin, deleteJob)
 router.get('/apicheck/eduweb/:id', checkAdmin, checkEduweb)
 router.get('/apicheck/mooc/:id', checkAdmin, checkMooc)
 router.get('/apicheck/newmooc/:id', checkAdmin, checkNewMooc)
+router.get('/apicheck/sisu/:id', checkAdmin, checkSisu)
 
 router.post('/create', checkToken, createEntries)
 

@@ -2,6 +2,7 @@ const logger = require('@server/utils/logger')
 const { eduwebGet, getRegistrationsByInstance } = require('../services/eduweb')
 const { checkCompletions } = require('../services/pointsmooc')
 const { checkCompletions: checkNewMoocCompletions } = require('../services/newMooc')
+const { getAllCourseUnitEnrolments, activityPeriodCutoff, isActiveRealisation } = require('../services/importer')
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
@@ -42,8 +43,28 @@ const checkNewMooc = async (req, res) => {
   }
 }
 
+// Returns realisations unfiltered, flagging the ones the mooc cron would drop,
+// so admins can see enrolments lost to the activityPeriod cutoff.
+const checkSisu = async (req, res) => {
+  try {
+    const data = await getAllCourseUnitEnrolments(req.params.id)
+    const cutoff = activityPeriodCutoff()
+
+    const realisations = data.map((item) => ({
+      activityPeriod: item.activityPeriod || null,
+      enrollments: item.enrollments || [],
+      droppedByCron: !isActiveRealisation(item, cutoff)
+    }))
+
+    return res.status(200).send({ cutoff: cutoff.toISOString().slice(0, 10), realisations })
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
 module.exports = {
   checkEduweb,
   checkMooc,
-  checkNewMooc
+  checkNewMooc,
+  checkSisu
 }

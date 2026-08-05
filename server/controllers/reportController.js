@@ -9,7 +9,7 @@ const { failedInSisuReport, missingEnrolmentReport } = require('../utils/emailFa
 const sendEmail = require('../utils/sendEmail')
 
 const { Op } = Sequelize
-const PAGE_SIZE = 15 // Batches, no single reports
+const PAGE_SIZE = 30 // Batches, no single reports
 
 const handleDatabaseError = (res, error) => {
   logger.error(error.message)
@@ -201,21 +201,20 @@ const getAllEnrollmentLimboEntries = async (req, res) => {
   try {
     const { offset } = req
     const query = {
-      [Op.or]: MISSING_ENROLLMENT_QUERY
+      [Op.and]: [{ [Op.or]: MISSING_ENROLLMENT_QUERY }, { '$extraEntry.id$': { [Op.eq]: null } }]
     }
-    const { rows } = await db.raw_entries.findAndCountAll({
+    const { rows, count } = await db.raw_entries.findAndCountAll({
       where: query,
       include: [...RAW_ENTRY_INCLUDES],
       order: [['createdAt', 'DESC']],
       raw: true,
       nest: true,
+      distinct: true,
       limit: PAGE_SIZE,
       offset
     })
-    const count = await db.raw_entries.getBatchCount(query)
 
-    const transformedRows = rows.map(transformRows).filter(({ entry }) => entry.type === 'ENTRY')
-    return res.status(200).send({ rows: transformedRows, offset, count: Number(count[0].count), limit: PAGE_SIZE })
+    return res.status(200).send({ rows: rows.map(transformRows), offset, count, limit: PAGE_SIZE })
   } catch (error) {
     handleDatabaseError(res, error)
   }

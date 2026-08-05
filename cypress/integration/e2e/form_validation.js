@@ -86,12 +86,10 @@ describe('Bachelor thesis form validation', () => {
       cy.login('grader').visit('')
       cy.get('[data-cy=copypaste-kandi]').click()
       cy.get('[data-cy=paste-field]').clear()
-      cy.get('[data-cy=course-selection]').click().children().contains('Kandidaatin tutkielma').click()
       cy.get('[data-cy=grader-selection]').click().children().contains('grader').click()
     })
 
     it('kandi tab should be visible', () => {
-      cy.get('[data-cy=course-selection] > [role=listbox]').children().should('have.length', 4)
       cy.get('[data-cy=course-selection]').contains('Kandidaatin tutkielma')
       cy.get('[data-cy=userguide]').contains('Reporting bachelor thesis completions through Suotar')
     })
@@ -101,6 +99,17 @@ describe('Bachelor thesis form validation', () => {
 
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 16)
       cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
+    })
+
+    it('emptying the paste field keeps the course pinned', () => {
+      // Emptying the paste field resets the whole form, courseId included. The kandi
+      // tab has to re-pin the thesis course instead of leaving the selection blank.
+      cy.get('[data-cy=paste-field]').type('011000002;5;;fi', { delay: 1 })
+      cy.get('[data-cy=paste-field]').clear()
+      cy.get('[data-cy=course-selection]').contains('Kandidaatin tutkielma')
+
+      cy.get('[data-cy=paste-field]').type('011000002;5;;fi', { delay: 1 })
+      cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 4)
     })
 
     it('no extras when completion in english or opt-out', () => {

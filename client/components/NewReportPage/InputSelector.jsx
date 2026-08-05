@@ -97,7 +97,7 @@ export default () => {
         activeIndex={activeIndex}
         onTabChange={(_, { activeIndex }) => {
           setActiveIndex(activeIndex)
-          dispatch(resetNewRawEntriesAction(graderId))
+          dispatch(resetNewRawEntriesAction({ graderId }))
           if (activeIndex === 2 && hasKandi) setDisplayBscUserGuide(true)
           else setDisplayBscUserGuide(false)
         }}

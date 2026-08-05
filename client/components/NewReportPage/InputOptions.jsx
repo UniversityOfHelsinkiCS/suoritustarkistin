@@ -10,7 +10,7 @@ import { getAllGradersAction, getUsersGradersAction } from '@client/utils/redux/
 import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/coursesReducer'
 import { isOneOfKandiCourses, isRegularExtraCourse } from '@client/utils/common'
 import { areValidNewRawEntries } from '@shared/validators'
-import { isKandiExtraCourse } from '@shared/common'
+import { isKandiExtraCourse, isThesisCourse } from '@shared/common'
 import ImportStudents from './ImportStudents'
 
 const styles = {
@@ -136,18 +136,17 @@ export default ({ kandi, extra, parseCSV }) => {
   }, [newRawEntries])
 
   useEffect(() => {
-    if (kandi && courses) {
-      const { courseCode, id: courseId } = courses.find(({ courseCode }) => courseCode === 'TKT20013')
-      const data = {
-        ...newRawEntries,
-        defaultCourse: courseCode,
-        data: null,
-        courseId
-      }
-      if (graders && graders.length === 1) data.graderId = graders[0].employeeId
-      dispatch(setNewRawEntriesAction(data))
+    if (!kandi || !courses) return
+
+    const thesisCourse = courses.find(isThesisCourse)
+    const data = {
+      ...newRawEntries,
+      defaultCourse: thesisCourse.courseCode,
+      courseId: thesisCourse.id
     }
-  }, [courses, kandi, graders])
+    if (graders && graders.length === 1) data.graderId = graders[0].employeeId
+    dispatch(setNewRawEntriesAction(data))
+  }, [courses, kandi, graders, dispatch])
 
   const handleGraderSelection = (e, data) => {
     dispatch(setNewRawEntriesAction({ ...newRawEntries, graderId: data.value }))
@@ -220,6 +219,7 @@ export default ({ kandi, extra, parseCSV }) => {
             search
             className="input"
             data-cy="course-selection"
+            disabled={kandi}
             onChange={handleCourseSelection}
             placeholder="Choose course"
             label="Choose course"

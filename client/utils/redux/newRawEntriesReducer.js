@@ -21,9 +21,10 @@ const initialState = {
 
 export const setNewRawEntriesAction = (rawEntries) => ({ type: 'SET_NEW_RAW_ENTRIES', payload: rawEntries })
 
-export const resetNewRawEntriesAction = (graderId = '') => ({
+// `keep` is for form state the reset must not clear, e.g. a course the tab pins.
+export const resetNewRawEntriesAction = ({ graderId = '', keep = {} }) => ({
   type: 'SET_NEW_RAW_ENTRIES',
-  payload: { ...initialState, graderId }
+  payload: { ...initialState, graderId, ...keep }
 })
 
 export const resetNewRawEntriesConfirmAction = () => ({

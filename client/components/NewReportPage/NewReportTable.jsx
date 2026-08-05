@@ -64,10 +64,10 @@ export default withRouter(({ rows, batchId, history }) => {
   useEffect(() => {
     if (sent && !pending && !(error || {}).genericError) {
       dispatch(openReport(batchId))
-      dispatch(resetNewRawEntriesAction(graderId))
+      dispatch(resetNewRawEntriesAction({ graderId }))
       history.push('/reports')
     }
-  }, [pending, error, sent])
+  }, [pending, error, sent, dispatch])
 
   useEffect(() => {
     window.onbeforeunload = () => '' // Display confirmation alert when tab is closed

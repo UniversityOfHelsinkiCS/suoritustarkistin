@@ -23,7 +23,11 @@ export default ({ kandi, parseCSV }) => {
 
   const handleDataChange = (event) => {
     let rawData = event.target.value
-    if (rawData === '') return dispatch(resetNewRawEntriesAction(newRawEntries.graderId))
+    if (rawData === '') {
+      const { graderId, courseId, defaultCourse } = newRawEntries
+      // The kandi tab always reports the thesis course, so clearing must not unpin it.
+      return dispatch(resetNewRawEntriesAction({ graderId, keep: kandi ? { courseId, defaultCourse } : {} }))
+    }
 
     if (rawData.includes("'")) {
       rawData.split('\n').forEach((row) => {

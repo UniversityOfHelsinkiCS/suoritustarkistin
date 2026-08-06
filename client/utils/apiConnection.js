@@ -8,7 +8,7 @@ import { inProduction } from '@client/utils/common'
 
 const getAxios = axios.create({ baseURL: `${import.meta.env.BASE_URL}api`, timeout: 120_000 })
 
-const callApi = async (url, method = 'get', data) => {
+export const callApi = async (url, method = 'get', data) => {
   const defaultHeaders = !inProduction ? getHeaders() : {}
   const headers = { ...defaultHeaders }
 

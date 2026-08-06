@@ -60,11 +60,31 @@ const {
   deleteBatch
 } = require('./permissions')
 const { paginateMiddleware, useFilters } = require('./middleware')
+const { sendSentryError } = require('./sentry')
 
 const router = Router()
 
-router.get('/sandbox', () => {
+// Sentry smoke tests, one per path an error can take to Sentry.
+// Thrown in a route: caught by setupExpressErrorHandler.
+router.get('/sandbox', checkAdmin, () => {
   throw new Error('Suotar exploded!')
+})
+
+// Rejected outside the request lifecycle: only reaches Sentry if init ran before
+// the rest of the app loaded, so this is what proves the instrument.js hoist.
+router.get('/sandbox/unhandled-rejection', checkAdmin, (req, res) => {
+  setTimeout(() => Promise.reject(new Error('Suotar exploded asynchronously!')), 0)
+  res.send('Unhandled rejection scheduled')
+})
+
+// Caught and reported by hand, the way the cron scripts and Sisu calls do it.
+router.get('/sandbox/captured-error', checkAdmin, (req, res) => {
+  try {
+    throw new Error('Suotar exploded, but politely!')
+  } catch (error) {
+    sendSentryError('Sandbox captured error', error, { user: req.user, source: 'sandbox' })
+  }
+  res.send('Error captured and sent to Sentry')
 })
 
 // Routes for seeding the test database

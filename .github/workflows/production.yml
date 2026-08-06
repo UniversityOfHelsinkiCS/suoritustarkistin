@@ -74,12 +74,6 @@ jobs:
           # bundle is served from /suoritustarkistin/main.js.
           sourcemaps: ./dist
           url_prefix: '~/suoritustarkistin'
-          # This dist is extracted from an image that has already been built and pushed,
-          # so injecting debug ids here would rewrite the bundle and its map while the
-          # deployed bundle stays as-is, leaving the uploaded map describing a file
-          # nobody serves. Matching stays release- and path-based.
-          # To adopt debug ids, inject during the image build instead (needs no token),
-          # then this can go back to the v3 default.
           inject: false
 
   report_success:

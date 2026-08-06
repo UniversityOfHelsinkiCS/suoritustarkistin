@@ -25,6 +25,8 @@ COPY . .
 
 RUN npm run build
 
+RUN npx --yes @sentry/cli@2.58.6 sourcemaps inject dist
+
 EXPOSE 7000
 
 CMD ["npm", "start"]

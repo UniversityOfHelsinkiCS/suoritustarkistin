@@ -2,7 +2,7 @@
  * Stuff related to sending stuff to Sisu
  */
 const logger = require('@server/utils/logger')
-const { sendSentryMessage } = require('@server/utils/sentry')
+const { sendSentryError } = require('@server/utils/sentry')
 const axios = require('axios')
 const moment = require('moment')
 const db = require('../models/index')
@@ -190,10 +190,10 @@ const attainmentsToSisu = async (model, { user, body }) => {
     const payload = JSON.stringify(data)
     const errorMessage = describeError(e)
     logger.error({ message: 'Error when sending entries to Sisu', errorMessage, payload })
-    sendSentryMessage('Sending entries to Sisu failed', user, { errorMessage, payload: data })
 
     if (!isValidSisuError(e.response)) {
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: user.name })
+      sendSentryError('Sending entries to Sisu failed', e, { user, errorMessage, payload: data })
       return [400, { message: (e.response && e.response.data) || e.message, genericError: true, user: user.name }]
     }
     const failedEntries = await writeErrorsToEntries(e.response, senderId, model)
@@ -217,7 +217,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
     } catch (e) {
       const err = describeError(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })
-      sendSentryMessage(`Sending entries to Sisu failed! (Round 2)`, user, { payload, errorMessage: err })
+      sendSentryError('Sending entries to Sisu failed (round two)', e, { user, payload, errorMessage: err })
       return [400, { message: 'No entries sent to Sisu' }]
     }
   }

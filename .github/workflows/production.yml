@@ -25,7 +25,7 @@ jobs:
           build-args: |
             BASE_PATH=/suoritustarkistin/
             NODE_ENV=production
-            VITE_SENTRY_RELEASE=${{ github.sha }}
+            SENTRY_RELEASE=${{ github.sha }}
 
       - name: Push to version helsinki
         uses: redhat-actions/push-to-registry@v3
@@ -44,22 +44,33 @@ jobs:
       - uses: actions/checkout@v7
       - name: Pull image and create a container
         run: docker create --name suotar quay.io/toska/suoritustarkistin:production
-      - name: Copy assets from the container
-        run: docker cp suotar:/opt/app-root/src ./app
+      - name: Copy the built client from the container
+        run: docker cp suotar:/opt/app-root/src/dist ./dist
       - name: Create Sentry release
-        uses: getsentry/action-release@v1
+        uses: getsentry/action-release@v3
         env:
           SENTRY_URL: ${{ secrets.SENTRY_URL }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: suotar
+          # Sourcemaps only exist for the client, which reports to its own project
+          SENTRY_PROJECT: suotar-frontend
         with:
-          # must match VITE_SENTRY_RELEASE baked into the image above
-          version: ${{ github.sha }}
+          # must match the SENTRY_RELEASE baked into the image above
+          release: ${{ github.sha }}
           environment: production
           set_commits: 'skip'
-          sourcemaps: ./app
-          url_prefix: '~/app'
+          # url_prefix must match the path the browser reports. BASE_PATH is
+          # /suoritustarkistin/ and vite.config.mjs pins the entry to main.js, so the
+          # bundle is served from /suoritustarkistin/main.js.
+          sourcemaps: ./dist
+          url_prefix: '~/suoritustarkistin'
+          # This dist is extracted from an image that has already been built and pushed,
+          # so injecting debug ids here would rewrite the bundle and its map while the
+          # deployed bundle stays as-is, leaving the uploaded map describing a file
+          # nobody serves. Matching stays release- and path-based.
+          # To adopt debug ids, inject during the image build instead (needs no token),
+          # then this can go back to the v3 default.
+          inject: false
 
   report_success:
     name: 'Report deployment success to Suotar-channel'

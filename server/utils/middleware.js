@@ -3,6 +3,7 @@ const Sentry = require('@sentry/node')
 const { inProduction } = require('./common')
 const db = require('../models/index')
 const sendNewUserEmail = require('./sendNewUserEmail')
+const { sendSentryError } = require('./sentry')
 
 const parseUser = async (req, res, next) => {
   if (req.headers.employeenumber) {
@@ -27,7 +28,10 @@ const parseUser = async (req, res, next) => {
       user.update({ lastLogin: new Date() })
       req.user = user
     } catch (error) {
+      // Swallowed on purpose so the request continues, but it leaves the user
+      // unauthenticated for reasons they cannot see, so it needs reporting.
       logger.error('Database error:', error)
+      sendSentryError('parseUser database error', error, { uid: req.headers.uid })
     }
   }
   next()
@@ -73,16 +77,18 @@ const errorMiddleware = (req, res, next) => {
       const errorMsg = body.error || ''
       const message = `Response ${originalUrl} failed with status code ${statusCode} - ${errorMsg}`
       logger.info({ originalUrl, body: JSON.stringify(body), method, query, message })
-      Sentry.withScope((scope) => {
-        scope.setUser(req.user ? req.user.get({ plain: true }) : null)
-        scope.setExtras({
-          originalUrl,
-          body: JSON.stringify(body),
-          method,
-          query
+
+      if (statusCode >= 500)
+        Sentry.withScope((scope) => {
+          scope.setUser(req.user ? req.user.get({ plain: true }) : null)
+          scope.setExtras({
+            originalUrl,
+            body: JSON.stringify(body),
+            method,
+            query
+          })
+          Sentry.captureMessage(message)
         })
-        Sentry.captureMessage(message)
-      })
     }
     oldEnd.apply(res, arguments)
   }

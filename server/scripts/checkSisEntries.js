@@ -5,6 +5,7 @@ const api = require('../config/importerApi')
 const { postRegistrations } = require('../services/pointsmooc')
 const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
 const { ALLOW_SEND_TO_MOOC } = require('../utils/common')
+const { sendSentryError } = require('../utils/sentry')
 
 function chunkArray(array, size) {
   const SIZE = size || 50
@@ -78,6 +79,7 @@ const checkEntries = async (entries, model) => {
         await new Promise((resolve) => setTimeout(resolve, waitMinutes * 60 * 1000))
       } else {
         logger.error({ message: 'Failed to check Sisu entries after 5 attempts' })
+        sendSentryError('Failed to check Sisu entries after 5 attempts', e, { model, entries: entries.length })
         return false
       }
     }
@@ -125,9 +127,10 @@ const registerChunks = async (chunks, poster) => {
     if (result === 'OK') {
       await markAsRegisteredToMooc(chunk)
     } else {
-      // fallback to single students
+      // fallback to single students. The chunk failure was already reported, so these
+      // retries opt out rather than raising an event per student.
       for (const entry of chunk) {
-        const result = await poster([entry])
+        const result = await poster([entry], { report: false })
         if (result === 'OK') {
           await markAsRegisteredToMooc([entry])
         }
@@ -178,6 +181,7 @@ const checkRegisteredForMooc = async () => {
     }
   } catch (error) {
     logger.error(`Suotar: checkRegisteredForMooc: Error in running Mooc registration check: ${error.message}`)
+    sendSentryError('checkRegisteredForMooc failed', error)
   }
 }
 
@@ -219,6 +223,7 @@ const checkRegisteredForNewMooc = async () => {
     }
   } catch (error) {
     logger.error(`Error in running new Mooc registration check: ${error.message}`)
+    sendSentryError('checkRegisteredForNewMooc failed', error)
   }
 }
 

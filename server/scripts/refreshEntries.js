@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 
 const { Op } = Sequelize
 const logger = require('@server/utils/logger')
-const { sendSentryMessage } = require('@server/utils/sentry')
+const { sendSentryError } = require('@server/utils/sentry')
 const moment = require('moment')
 const { processEntries } = require('./processEntries')
 const db = require('../models/index')
@@ -54,7 +54,7 @@ const refreshEntries = async (rawEntryIds) => {
   } catch (e) {
     transaction.rollback()
     logger.error({ message: `Refreshing entries failed ${e.toString()}` })
-    sendSentryMessage('Refreshing entries with missing enrolment failed', null, e)
+    sendSentryError('Refreshing entries with missing enrolment failed', e)
     throw e
   }
 }

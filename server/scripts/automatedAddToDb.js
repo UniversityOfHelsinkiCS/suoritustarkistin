@@ -1,5 +1,5 @@
 const logger = require('@server/utils/logger')
-const { sendSentryMessage } = require('@server/utils/sentry')
+const { sendSentryError } = require('@server/utils/sentry')
 const db = require('../models/index')
 const { processEntries } = require('./processEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
@@ -56,7 +56,8 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
       }
     })
     logger.error(`Error processing new completions: ${error.message}`)
-    sendSentryMessage(`Error processing new completions: ${error.message}`, null, error)
+    // Stable title: the message varies per failure, which would group each one separately
+    sendSentryError('Error processing new completions', error, { batchId })
     return { message: `Error processing new completions: ${error.message}` }
   }
 
@@ -64,7 +65,7 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
     const failed = (reason, error) => {
       const message = `Entries created, but sending them to Sisu failed: ${reason}`
       logger.error(message)
-      sendSentryMessage(message, null, error)
+      sendSentryError('Entries created, but sending them to Sisu failed', error, { reason })
       return { message }
     }
 

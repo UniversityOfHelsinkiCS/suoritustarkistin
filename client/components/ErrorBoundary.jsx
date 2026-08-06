@@ -1,5 +1,6 @@
 import React from 'react'
 import { Icon, Message, Segment } from 'semantic-ui-react'
+import * as Sentry from '@sentry/react'
 
 const ErrorView = ({ error }) => (
   <Segment textAlign="center" style={{ width: '100%', height: '100%' }}>
@@ -26,6 +27,12 @@ class ErrorBoundary extends React.Component {
 
   static getDerivedStateFromError(error) {
     return { error }
+  }
+
+  // Without this the boundary swallows the error: rendering the fallback below counts
+  // as handling it, so it never reaches window.onerror and never reaches Sentry.
+  componentDidCatch(error, info) {
+    Sentry.captureException(error, { contexts: { react: info } })
   }
 
   render() {

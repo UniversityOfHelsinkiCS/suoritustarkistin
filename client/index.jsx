@@ -11,9 +11,18 @@ import store from '@client/utils/store'
 import App from '@client/components/App'
 import ErrorBoundary from '@client/components/ErrorBoundary'
 
-if (process.env.NODE_ENV === 'production')
+/**
+ * The frontend reports to its own Sentry project, separate from the backend's, so a
+ * student's browser crash and a cron failure are not in the same inbox. A DSN is
+ * write-only and ships in the bundle regardless, so there is nothing to hide here.
+ *
+ * VITE_E2E is the explicit opt-out: the e2e image builds this bundle with
+ * NODE_ENV=production (config/test.Dockerfile), so the environment check alone would
+ * not tell a test run apart from the real thing.
+ */
+if (process.env.NODE_ENV === 'production' && !import.meta.env.VITE_E2E)
   Sentry.init({
-    dsn: 'https://35563bad2b5b658db22d8791133c7ae0@toska.it.helsinki.fi/16',
+    dsn: 'https://66080a276256201f8713622742a935f2@toska.it.helsinki.fi/33',
     environment: process.env.NODE_ENV,
     release: import.meta.env.VITE_SENTRY_RELEASE,
     normalizeDepth: 10

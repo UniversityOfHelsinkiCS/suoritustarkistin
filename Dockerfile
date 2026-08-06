@@ -8,10 +8,14 @@ ARG BASE_PATH
 ENV BASE_PATH=$BASE_PATH
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
-# Names the Sentry release the client reports; must match the release the
-# production workflow uploads sourcemaps to, or stack traces stay minified.
-ARG VITE_SENTRY_RELEASE
-ENV VITE_SENTRY_RELEASE=$VITE_SENTRY_RELEASE
+# Names the Sentry release both sides report; must match the release the production
+# workflow uploads sourcemaps to, or stack traces stay minified.
+ARG SENTRY_RELEASE
+# Read at runtime by server/instrument.js
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
+# Same value under the prefix Vite requires to expose it to the client bundle, where it
+# is baked in at build time rather than read at runtime
+ENV VITE_SENTRY_RELEASE=$SENTRY_RELEASE
 
 # Setup
 COPY package* ./

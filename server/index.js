@@ -33,12 +33,7 @@ process.on('unhandledRejection', (reason) => {
 initializeDatabaseConnection()
   .then(async () => {
     const app = express()
-    Sentry.init({
-      dsn: process.env.SENTRY_ADDR,
-      environment: process.env.NODE_ENV
-    })
 
-    app.use(Sentry.Handlers.requestHandler())
     app.use(express.json({ limit: '5mb' }))
     app.use(errorMiddleware)
 
@@ -60,8 +55,15 @@ initializeDatabaseConnection()
       const INDEX_PATH = path.resolve(DIST_PATH, 'index.html')
       app.use(express.static(DIST_PATH))
       app.get('*', (req, res) => res.sendFile(INDEX_PATH))
-      app.use(Sentry.Handlers.errorHandler())
     }
+
+    /**
+     * Reports errors thrown by the routes above, then hands them on. Must sit after
+     * every route and before the 500 handler at the bottom: that handler ends the
+     * request, so anything registered after it never runs.
+     */
+    Sentry.setupExpressErrorHandler(app)
+
     /**
      * Anything that reaches this point matched no route. In dev and test express
      * serves nothing but /api, so this is the end of the line for a mistyped or

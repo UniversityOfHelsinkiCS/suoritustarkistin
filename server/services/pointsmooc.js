@@ -1,5 +1,6 @@
 const logger = require('@server/utils/logger')
 const moocApi = require('../config/moocApi')
+const { sendSentryError } = require('../utils/sentry')
 
 const getCompletions = async (course, registeredIncluded = false) => {
   logger.info({ message: `Fetching completions for course ${course}` })
@@ -13,7 +14,7 @@ const getCompletions = async (course, registeredIncluded = false) => {
   return data
 }
 
-const postRegistrations = async (completionAndStudentIdList) => {
+const postRegistrations = async (completionAndStudentIdList, { report = true } = {}) => {
   try {
     logger.info({ message: 'Posting completion registrations to mooc' })
     const response = await moocApi.post(`/register-completions`, { completions: completionAndStudentIdList })
@@ -22,6 +23,12 @@ const postRegistrations = async (completionAndStudentIdList) => {
   } catch (error) {
     logger.error(error)
     logger.error(`Error in updating confirmed registrations. Error: ${error}`)
+    // Completions stay unmarked in mooc until someone intervenes. registerChunks opts
+    // out for its per-entry retries, which would otherwise be an event per student.
+    if (report)
+      sendSentryError('Posting completion registrations to mooc failed', error, {
+        completions: completionAndStudentIdList.length
+      })
   }
 }
 

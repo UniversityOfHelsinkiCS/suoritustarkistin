@@ -5,7 +5,10 @@ const logger = require('../utils/logger')
 
 const handleImporterApiErrors = (e) => {
   if (e.code === 'EAI_AGAIN') throw new Error('Network error. Reload the page and try again')
-  if (e.response.data.status === 404) throw new Error(e.response.data.message)
+  if (!e.response) throw new Error(`Importer request failed: ${e.code || e.message}`)
+
+  const { data } = e.response
+  if (data && data.status === 404) throw new Error(data.message)
   throw new Error(e.toString())
 }
 

@@ -88,18 +88,10 @@ const checkEntries = async (entries, model) => {
 
 const checkAllEntriesFromSisu = async () => {
   const entries = await db.entries.findAll({
-    where: {
-      registered: { [Sequelize.Op.not]: 'REGISTERED' },
-      errors: { [Sequelize.Op.eq]: null },
-      sent: { [Sequelize.Op.not]: null }
-    }
+    where: { registered: { [Sequelize.Op.not]: 'REGISTERED' } }
   })
   const extraEntries = await db.extra_entries.findAll({
-    where: {
-      registered: { [Sequelize.Op.not]: 'REGISTERED' },
-      errors: { [Sequelize.Op.eq]: null },
-      sent: { [Sequelize.Op.not]: null }
-    }
+    where: { registered: { [Sequelize.Op.not]: 'REGISTERED' } }
   })
   await checkEntries(entries, 'entries')
   await checkEntries(extraEntries, 'extra_entries')

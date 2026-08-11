@@ -98,7 +98,6 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
           })
         )
       }
-      disabled={report.every(({ entry }) => !entry.sent)}
       icon
     >
       <Icon name="refresh" /> Refresh from Sisu

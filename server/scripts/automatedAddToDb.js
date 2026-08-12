@@ -5,6 +5,15 @@ const { processEntries } = require('./processEntries')
 const attainmentsToSisu = require('../utils/sendToSisu')
 const { filterDuplicateMatches } = require('../utils/earlierCompletions')
 
+// Summarizes failure messages into a more compact, readable form
+const summarizeReasons = (failed) => {
+  const counts = failed.reduce((acc, { studentNumber, message }) => {
+    const reason = String(message).replace(new RegExp(studentNumber, 'g'), '<student>').replace(/\s+/g, ' ').trim()
+    return { ...acc, [reason]: (acc[reason] || 0) + 1 }
+  }, {})
+  return Object.entries(counts).map(([reason, amount]) => `${amount}x ${reason}`)
+}
+
 const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false) => {
   const matches = filterDuplicateMatches(allMatches)
 
@@ -28,15 +37,24 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
     const [failed, success] = await processEntries(newRawEntries, requireEnrollment)
 
     if (failed.length) {
-      logger.info({ message: `${failed.length} entries failed` })
+      logger.error({ message: `${failed.length} entries failed` })
       for (const failedEntry of failed) {
-        logger.info({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}` })
+        logger.error({ message: `Completion failed for ${failedEntry.studentNumber}: ${failedEntry.message}` })
         await db.raw_entries.destroy({
           where: {
             id: failedEntry.id
           }
         })
       }
+
+      sendSentryError('Completions dropped from job run', null, {
+        course: course.courseCode,
+        batchId,
+        failedAmount: failed.length,
+        totalAmount: newRawEntries.length,
+        reasons: summarizeReasons(failed),
+        studentNumbers: failed.map(({ studentNumber }) => studentNumber)
+      })
     }
 
     if (!success || !success.length) {

@@ -25,7 +25,7 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
 
   let entriesToSend
   try {
-    const newRawEntries = await db.raw_entries.bulkCreate(matches, transaction, { returning: true })
+    const newRawEntries = await db.raw_entries.bulkCreate(matches, { transaction, returning: true })
     logger.info({
       message: `${matches.length} new raw entries created`,
       amount: newRawEntries.length,
@@ -43,7 +43,8 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
         await db.raw_entries.destroy({
           where: {
             id: failedEntry.id
-          }
+          },
+          transaction
         })
       }
 
@@ -68,11 +69,6 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
     await transaction.commit()
   } catch (error) {
     await transaction.rollback()
-    await db.raw_entries.destroy({
-      where: {
-        batchId
-      }
-    })
     logger.error(`Error processing new completions: ${error.message}`)
     // Stable title: the message varies per failure, which would group each one separately
     sendSentryError('Error processing new completions', error, { batchId })

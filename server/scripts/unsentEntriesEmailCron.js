@@ -1,15 +1,13 @@
-const { getUnsentEntries } = require('../controllers/reportController')
+const { getUnsentBatchIds } = require('../controllers/reportController')
 const sendEmail = require('../utils/sendEmail')
 const { unsentEntriesTemplate } = require('../utils/emailFactory')
 
 const sendEmailAboutUnsentEntries = async () => {
   if (process.env.NODE_ENV !== 'production') return
 
-  const entries = await getUnsentEntries()
+  const batchIds = await getUnsentBatchIds()
 
-  if (!entries.length) return
-
-  const batchIds = [...new Set(entries.map((entry) => entry.rawEntry.batchId))]
+  if (!batchIds.length) return
 
   sendEmail({
     to: 'Toska <grp-toska@helsinki.fi>',

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Icon, Menu, Tab } from 'semantic-ui-react'
+import { Icon, Label, Menu, Tab } from 'semantic-ui-react'
 import RawOodiReports from '@client/components/ReportsPage/OodiReports/RawOodiReports'
 import OodiReports from '@client/components/ReportsPage/OodiReports/OodiReports'
 import SisReports from '@client/components/ReportsPage/SisReports'
 import EnrolmentLimbo from '@client/components/ReportsPage/EnrolmentLimbo'
+import UnsentEntries from '@client/components/ReportsPage/UnsentEntries'
 import { getAllOodiReportsAction, getUsersOodiReportsAction } from '@client/utils/redux/oodiReportsReducer'
 import { resetFiltersAction } from '@client/utils/redux/sisReportsReducer'
 
@@ -14,7 +15,7 @@ export default () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
   const reports = useSelector((state) => state.oodiReports)
-  const { mooc } = useSelector((state) => state.sisReports)
+  const { mooc, unsentBatchCount } = useSelector((state) => state.sisReports)
   const oodiEnabled = false
 
   useEffect(() => {
@@ -77,6 +78,24 @@ export default () => {
         render: () => (
           <Tab.Pane>
             <EnrolmentLimbo />
+          </Tab.Pane>
+        )
+      },
+      {
+        menuItem: (
+          <Menu.Item key="unsent" data-cy="sis-unsent-entries">
+            <Icon name="send" />
+            Unsent entries
+            {Boolean(unsentBatchCount) && (
+              <Label circular color="red">
+                {unsentBatchCount}
+              </Label>
+            )}
+          </Menu.Item>
+        ),
+        render: () => (
+          <Tab.Pane>
+            <UnsentEntries />
           </Tab.Pane>
         )
       }

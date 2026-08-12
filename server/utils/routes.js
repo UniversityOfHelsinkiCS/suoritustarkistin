@@ -37,6 +37,7 @@ const {
   getAllSisReports,
   getAllSisMoocReports,
   getAllEnrollmentLimboEntries,
+  getAllUnsentEntries,
   getUnsentBatchCount,
   deleteSingleSisEntry,
   deleteSisBatch,
@@ -120,11 +121,12 @@ router.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 
 router.get('/oodi_reports', checkAdmin, getOodiReports)
 
-router.use(['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo'], paginateMiddleware)
+router.use(['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo', '/unsent_entries'], paginateMiddleware)
 router.use(['/sis_reports', '/sis_mooc_reports'], useFilters)
 router.get('/sis_reports', checkGrader, getAllSisReports)
 router.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
 router.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
+router.get('/unsent_entries', checkAdmin, getAllUnsentEntries)
 router.get('/unsent_batch_count', checkAdmin, getUnsentBatchCount)
 router.delete('/sis_reports/:id', deleteSingleEntry, deleteSingleSisEntry)
 router.delete('/sis_reports/batch/:batchId', deleteBatch, deleteSisBatch)

@@ -32,6 +32,28 @@ const MISSING_ENROLLMENT_QUERY = [
 
 const NOT_SENT_QUERY = [{ '$entry.sent$': null }, { '$extraEntry.sent$': null }]
 
+const UNSENT_ENTRY_QUERY = {
+  [Op.or]: [
+    {
+      [Op.and]: [
+        { '$entry.id$': { [Op.not]: null } },
+        { '$entry.sent$': null },
+        { '$entry.registered$': 'NOT_REGISTERED' },
+        { '$entry.courseUnitId$': { [Op.not]: null } },
+        { '$entry.courseUnitRealisationId$': { [Op.not]: null } },
+        { '$entry.assessmentItemId$': { [Op.not]: null } }
+      ]
+    },
+    {
+      [Op.and]: [
+        { '$extraEntry.id$': { [Op.not]: null } },
+        { '$extraEntry.sent$': null },
+        { '$extraEntry.registered$': 'NOT_REGISTERED' }
+      ]
+    }
+  ]
+}
+
 const transformRows = (row) => {
   const { extraEntry, entry, ...rest } = row
   if (extraEntry.id) {
@@ -73,12 +95,11 @@ const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, g
 }
 
 /**
- * Get full batches of reports using pagination.
+ * Get full batches of reports using pagination. Callers that select batches by
+ * something other than the report filters pass their own query.
  */
-const getBaches = async ({ offset, moocReports = false, filters }) => {
-  const query = {
-    ...getFilters({ ...filters, isMooc: moocReports })
-  }
+const getBaches = async ({ offset, moocReports = false, filters, query }) => {
+  if (!query) query = { ...getFilters({ ...filters, isMooc: moocReports }) }
 
   // Get paginated distinct batch ids using limit and offset
   const batches = await db.raw_entries.findAll({
@@ -120,61 +141,35 @@ const getBaches = async ({ offset, moocReports = false, filters }) => {
   return { rows: rows.map(transformRows), count: Number(count[0].count) }
 }
 
-const getUnsentEntries = async () => {
-  const entries = await db.entries.findAll({
-    where: {
-      courseUnitId: { [Op.not]: null },
-      courseUnitRealisationId: { [Op.not]: null },
-      assessmentItemId: { [Op.not]: null },
-      sent: null
-    },
+const getUnsentBatchIds = async () => {
+  const batches = await db.raw_entries.findAll({
+    where: UNSENT_ENTRY_QUERY,
+    attributes: ['batchId'],
+    group: ['batchId'],
     include: [
-      {
-        model: db.raw_entries,
-        as: 'rawEntry',
-        include: [
-          {
-            model: db.courses,
-            as: 'course'
-          }
-        ]
-      }
+      { model: db.entries, as: 'entry', attributes: [] },
+      { model: db.extra_entries, as: 'extraEntry', attributes: [] }
     ],
-    nest: true,
     raw: true
   })
+  return batches.map(({ batchId }) => batchId)
+}
 
-  const extraEntries = await db.extra_entries.findAll({
-    where: {
-      sent: null
-    },
-    include: [
-      {
-        model: db.raw_entries,
-        as: 'rawEntry',
-        include: [
-          {
-            model: db.courses,
-            as: 'course'
-          }
-        ]
-      }
-    ],
-    nest: true,
-    raw: true
-  })
+const getAllUnsentEntries = async (req, res) => {
+  try {
+    const { offset } = req
+    const { rows, count } = await getBaches({ offset, query: UNSENT_ENTRY_QUERY })
 
-  return entries.concat(extraEntries)
+    return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
 }
 
 const getUnsentBatchCount = async (req, res) => {
-  const entries = await getUnsentEntries()
+  const [{ count }] = await db.raw_entries.getBatchCount(UNSENT_ENTRY_QUERY)
 
-  const rawEntryIds = entries.map(({ rawEntry }) => rawEntry.id)
-
-  const [{ count }] = await db.raw_entries.getBatchCount({ id: { [Op.in]: rawEntryIds } })
-
-  return res.send({ count })
+  return res.send({ count: Number(count) })
 }
 
 const getAllSisReports = async (req, res) => {
@@ -419,7 +414,8 @@ module.exports = {
   refreshEnrollments,
   getAllSisMoocReports,
   getAllEnrollmentLimboEntries,
-  getUnsentEntries,
+  getUnsentBatchIds,
+  getAllUnsentEntries,
   getUnsentBatchCount,
   getOffset
 }

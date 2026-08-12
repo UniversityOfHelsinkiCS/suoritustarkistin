@@ -30,6 +30,12 @@ export const getAllEnrollmentLimboEntriesAction = ({ offset = 0, limit }) => {
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
 
+export const getAllUnsentEntriesAction = ({ offset = 0, limit }) => {
+  const route = `/unsent_entries?${stringify({ offset, limit })}`
+  const prefix = 'GET_ALL_UNSENT_ENTRIES'
+  return callBuilder(route, prefix, 'get', { params: { offset, limit } })
+}
+
 export const getOffsetForBatchAction = (batchId) => {
   const route = `/sis_reports/offset/${batchId}`
   const prefix = 'GET_OFFSET'
@@ -121,6 +127,7 @@ const INITIAL_STATE = {
   reports: INITIAL_DATA,
   moocReports: INITIAL_DATA,
   enrolmentLimbo: INITIAL_DATA,
+  unsentEntries: INITIAL_DATA,
   unsentBatchCount: 0,
   openAccordions: [],
   pending: false,
@@ -161,6 +168,13 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         pending: false,
         error: false
       }
+    case 'GET_ALL_UNSENT_ENTRIES_SUCCESS':
+      return {
+        ...state,
+        unsentEntries: { ...action.response, reportsFetched: true },
+        pending: false,
+        error: false
+      }
     case 'GET_UNSENT_BATCH_COUNT_SUCCESS':
       return {
         ...state,
@@ -171,6 +185,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     case 'GET_ALL_SIS_REPORTS_ATTEMPT':
     case 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT':
     case 'GET_ALL_ENROLLMENT_LIMBO_ATTEMPT':
+    case 'GET_ALL_UNSENT_ENTRIES_ATTEMPT':
       return {
         ...state,
         pending: true,
@@ -180,6 +195,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     case 'GET_ALL_SIS_REPORTS_FAILURE':
     case 'GET_ALL_MOOC_SIS_REPORTS_FAILURE':
     case 'GET_ALL_ENROLLMENT_LIMBO_FAILURE':
+    case 'GET_ALL_UNSENT_ENTRIES_FAILURE':
       return {
         ...state,
         pending: false,

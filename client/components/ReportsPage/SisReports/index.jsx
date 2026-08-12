@@ -11,6 +11,7 @@ import {
   refreshBatchStatus,
   getAllMoocSisReportsAction,
   getAllSisReportsAction,
+  getAllUnsentEntriesAction,
   getOffsetForBatchAction
 } from '@client/utils/redux/sisReportsReducer'
 import DeleteBatchButton from './DeleteBatchButton'
@@ -213,28 +214,32 @@ const title = (batch) => {
   )
 }
 
-export default withRouter(({ mooc, match }) => {
+// Which slice of state.sisReports this instance renders, and how it is fetched. The
+// unsent variant is the same reports, narrowed to the batches still waiting to be
+// sent, so it reuses everything below rather than displaying a batch its own way.
+const getVariant = ({ mooc, unsent }) => {
+  if (unsent) return { key: 'unsentEntries', action: getAllUnsentEntriesAction }
+  if (mooc) return { key: 'moocReports', action: getAllMoocSisReportsAction }
+  return { key: 'reports', action: getAllSisReportsAction }
+}
+
+export default withRouter(({ mooc, unsent, match }) => {
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const batchLoading = useSelector((state) => state.sisReports.singleBatchPending)
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
 
-  const { rows, offset, reportsFetched } = useSelector((state) =>
-    mooc ? state.sisReports.moocReports : state.sisReports.reports
-  )
+  const { key, action } = getVariant({ mooc, unsent })
+
+  const { rows, offset, reportsFetched } = useSelector((state) => state.sisReports[key])
   const { pending, allowFetch } = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    const fetch = (mooc) => {
-      if (mooc) dispatch(getAllMoocSisReportsAction({ offset }))
-      else dispatch(getAllSisReportsAction({ offset }))
-    }
-
     const { activeBatch } = match.params
     // If we have batch id in url we need to wait
     // for correct offset before fetching batch
-    if (!reportsFetched && !pending && (!activeBatch || (activeBatch && allowFetch))) fetch(mooc)
-  }, [allowFetch, mooc, reportsFetched, pending])
+    if (!reportsFetched && !pending && (!activeBatch || (activeBatch && allowFetch))) dispatch(action({ offset }))
+  }, [allowFetch, mooc, unsent, reportsFetched, pending])
 
   useEffect(() => {
     // Fire fetch offset for batch in url
@@ -268,13 +273,11 @@ export default withRouter(({ mooc, match }) => {
       }
     })
 
-  const action = mooc ? getAllMoocSisReportsAction : getAllSisReportsAction
-  const key = mooc ? 'moocReports' : 'reports'
-
   return (
     <Segment loading={pending} basic>
       <Notification />
-      <Filters reduxKey={key} action={action} />
+      {/* The unsent tab is its own filter, the endpoint takes none. */}
+      {!unsent && <Filters reduxKey={key} action={action} />}
       {!rows.length && reportsFetched ? (
         <Message info>
           <Message.Header>No reports found</Message.Header>
@@ -282,7 +285,7 @@ export default withRouter(({ mooc, match }) => {
       ) : (
         <Accordion panels={panels} exclusive={false} data-cy="reports-list" fluid styled />
       )}
-      <Pagination reduxKey={key} action={action} />
+      <Pagination reduxKey={key} action={action} disableFilters={unsent} />
     </Segment>
   )
 })

@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require('uuid')
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { identicalCompletionFound } = require('../utils/earlierCompletions')
+const { FAILURE_REASONS } = require('../utils/failureReasons')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
 const {
   getEmployees,
@@ -88,6 +89,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
+          reason: FAILURE_REASONS.STUDENT_NOT_FOUND,
           message: 'Person with student number not found from Sisu'
         })
         return Promise.resolve()
@@ -98,6 +100,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
+          reason: FAILURE_REASONS.VERIFIER_NOT_FOUND,
           message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`
         })
         return Promise.resolve()
@@ -115,6 +118,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
             id: rawEntry.id,
             studentNumber: rawEntry.studentNumber,
             courseCode: course.courseCode,
+            reason: FAILURE_REASONS.MISSING_ENROLMENT,
             message: `Student ${rawEntry.studentNumber} has no enrolments for course ${course.courseCode}`
           })
         else {
@@ -137,6 +141,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
+          reason: FAILURE_REASONS.INVALID_CREDITS,
           message: `Invalid credit amount for course ${course.courseCode}, allowed credit range is from ${filteredEnrolment.credits.min} to ${filteredEnrolment.credits.max}`
         })
         return Promise.resolve()
@@ -158,6 +163,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
+          reason: FAILURE_REASONS.DUPLICATE_COMPLETION,
           message: `Identical completion found in Sisu for course ${course.courseCode}`
         })
         return Promise.resolve()
@@ -166,16 +172,15 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
       // Create here the acual attainments for Sisu
       const grade = mapGrades(gradeScales, filteredEnrolment.gradeScaleId, rawEntry)
       if (!grade) {
+        const availableGrades = gradeScales[filteredEnrolment.gradeScaleId]
+          .map(({ abbreviation }) => abbreviation.fi)
+          .join(', ')
         failed.push({
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
-          message: `
-                Invalid grade "${rawEntry.grade}" for course "${course.courseCode}".
-                Available grades are: ${gradeScales[filteredEnrolment.gradeScaleId].map(
-                  ({ abbreviation }) => abbreviation.fi
-                )}
-              `
+          reason: FAILURE_REASONS.INVALID_GRADE,
+          message: `Invalid grade "${rawEntry.grade}" for course "${course.courseCode}". Available grades are: ${availableGrades}`
         })
         return Promise.resolve()
       }
@@ -191,6 +196,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           id: rawEntry.id,
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
+          reason: FAILURE_REASONS.NO_VALID_ATTAINMENT_DATE,
           message: 'No valid attainment date for completion found'
         })
         return Promise.resolve()

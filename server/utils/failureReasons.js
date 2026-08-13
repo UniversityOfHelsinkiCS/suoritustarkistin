@@ -11,15 +11,21 @@ const FAILURE_REASONS = {
   INVALID_CREDITS: 'INVALID_CREDITS'
 }
 
-// Must be type 'info' | 'warn' | 'error'
+// valid severities for winston logger calls
+const SEVERITIES = {
+  INFO: 'info',
+  WARN: 'warn',
+  ERROR: 'error'
+}
+
 const FAILURE_SEVERITIES = {
-  [FAILURE_REASONS.MISSING_ENROLMENT]: 'info',
-  [FAILURE_REASONS.DUPLICATE_COMPLETION]: 'info',
-  [FAILURE_REASONS.STUDENT_NOT_FOUND]: 'error',
-  [FAILURE_REASONS.NO_VALID_ATTAINMENT_DATE]: 'error',
-  [FAILURE_REASONS.VERIFIER_NOT_FOUND]: 'error',
-  [FAILURE_REASONS.INVALID_GRADE]: 'error',
-  [FAILURE_REASONS.INVALID_CREDITS]: 'error'
+  [FAILURE_REASONS.MISSING_ENROLMENT]: SEVERITIES.INFO,
+  [FAILURE_REASONS.DUPLICATE_COMPLETION]: SEVERITIES.INFO,
+  [FAILURE_REASONS.STUDENT_NOT_FOUND]: SEVERITIES.ERROR,
+  [FAILURE_REASONS.NO_VALID_ATTAINMENT_DATE]: SEVERITIES.ERROR,
+  [FAILURE_REASONS.VERIFIER_NOT_FOUND]: SEVERITIES.ERROR,
+  [FAILURE_REASONS.INVALID_GRADE]: SEVERITIES.ERROR,
+  [FAILURE_REASONS.INVALID_CREDITS]: SEVERITIES.ERROR
 }
 
 // Counts per reason code, e.g. ['29x INVALID_GRADE', '2x STUDENT_NOT_FOUND']
@@ -31,6 +37,6 @@ const summarizeReasons = (failed) =>
 const failureMessage = ({ studentNumber, message }) => `Completion failed for ${studentNumber}: ${message}`
 
 // Unknown reasons are treated as errors
-const severityOf = ({ reason }) => FAILURE_SEVERITIES[reason] || 'error'
+const severityOf = ({ reason }) => FAILURE_SEVERITIES[reason] || SEVERITIES.ERROR
 
 module.exports = { FAILURE_REASONS, FAILURE_SEVERITIES, severityOf, summarizeReasons, failureMessage }

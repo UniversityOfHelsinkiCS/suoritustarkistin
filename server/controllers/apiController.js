@@ -16,6 +16,8 @@ const handleDatabaseError = (res, error) => {
 }
 
 const getGrader = async (uid) => {
+  if (!uid) return false
+
   const grader = await db.users.findOne({
     where: {
       uid
@@ -45,6 +47,11 @@ const parseEntry = async (entry) => {
 
 const createEntries = async (req, res) => {
   const { entries, senderUid } = req.body
+
+  if (!Array.isArray(entries) || !entries.length) {
+    return res.status(400).json({ error: 'Incorrect data' })
+  }
+
   const parsedEntries = await Promise.all(entries.map(parseEntry))
 
   const validationFailed = parsedEntries
@@ -54,6 +61,7 @@ const createEntries = async (req, res) => {
   if (validationFailed) return res.status(400).json({ error: 'Incorrect data' })
 
   const user = await getGrader(senderUid)
+  if (!user) return res.status(400).json({ error: 'Unknown sender' })
 
   const transaction = await db.sequelize.transaction()
   let result

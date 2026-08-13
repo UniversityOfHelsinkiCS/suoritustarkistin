@@ -30,7 +30,7 @@ const parseUser = async (req, res, next) => {
     } catch (error) {
       // Swallowed on purpose so the request continues, but it leaves the user
       // unauthenticated for reasons they cannot see, so it needs reporting.
-      logger.error('Database error:', error)
+      logger.error({ message: `Database error: ${error.message}`, stack: error.stack })
       sendSentryError('parseUser database error', error, { uid: req.headers.uid })
     }
   }

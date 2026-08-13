@@ -21,8 +21,11 @@ const postRegistrations = async (completionAndStudentIdList, { report = true } =
     logger.info({ message: `mooc-api response: ${response.statusText}` })
     return response.statusText
   } catch (error) {
-    logger.error(error)
-    logger.error(`Error in updating confirmed registrations. Error: ${error}`)
+    logger.error({
+      message: `Error in updating confirmed registrations: ${error.message}`,
+      status: error.response?.status,
+      data: error.response?.data
+    })
     // Completions stay unmarked in mooc until someone intervenes. registerChunks opts
     // out for its per-entry retries, which would otherwise be an event per student.
     if (report)

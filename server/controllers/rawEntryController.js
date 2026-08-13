@@ -71,8 +71,7 @@ const addRawEntries = async (req, res) => {
     logger.info({ message: 'Processing new completions failed', failed: result.failed })
     return res.status(400).json({ message: 'Processing new completions failed', failed: result.failed })
   } catch (error) {
-    logger.error(error)
-    logger.error(error.stack)
+    logger.error({ message: `Processing new completions failed: ${error.message}`, stack: error.stack })
     await transaction.rollback()
     handleDatabaseError(res, error)
   }

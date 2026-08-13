@@ -75,8 +75,7 @@ const createEntries = async (req, res) => {
     await transaction.commit()
     logger.info({ message: '[API] Report of new completions created successfully.' })
   } catch (error) {
-    logger.error(error)
-    logger.error(error.stack)
+    logger.error({ message: `[API] Processing new completions failed: ${error.message}`, stack: error.stack })
     await transaction.rollback()
     return handleDatabaseError(res, error)
   }
@@ -100,8 +99,10 @@ const createEntries = async (req, res) => {
       batchId: result.batchId
     })
   } catch (error) {
-    logger.error({ message: '[API] Entries created, but processing them afterwards failed', error: error.message })
-    logger.error(error.stack)
+    logger.error({
+      message: `[API] Entries created, but processing them afterwards failed: ${error.message}`,
+      stack: error.stack
+    })
     return res.status(500).json({ error: `Entries created, but sending them to Sisu failed: ${error.message}` })
   }
 }

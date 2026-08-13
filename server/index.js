@@ -127,5 +127,5 @@ initializeDatabaseConnection()
   })
   .catch((e) => {
     process.exitCode = 1
-    logger.error(e)
+    logger.error({ message: `Server startup failed: ${e.message}`, stack: e.stack })
   })

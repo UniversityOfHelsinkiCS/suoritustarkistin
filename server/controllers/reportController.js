@@ -370,7 +370,7 @@ const sendToSis = async (req, res) => {
     email(status !== 200 && !message?.genericError)
     if (status !== 200) return res.status(status).send(message)
   } catch (e) {
-    logger.error({ message: e.toString(), error: e })
+    logger.error({ message: `Sending attainments to Sisu failed: ${e.message}`, stack: e.stack })
   }
   const updatedWithRawEntries = await db.raw_entries.findAll({
     where: {

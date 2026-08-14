@@ -2,15 +2,8 @@ const logger = require('@server/utils/logger')
 const { isValidGrade, SIS_LANGUAGES } = require('@shared/validators')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@shared/common')
 const { getCompletions } = require('../services/newMooc')
-const { getEarlierAttainments, getCourseUnitEnrolments } = require('../services/importer')
-const { getRegistrations } = require('../services/eduweb')
-const {
-  fromSisuEnrolments,
-  fromEduwebRegistrations,
-  mergeRegistrations,
-  findByEmail,
-  isUnidentified
-} = require('../utils/moocRegistrations')
+const { getEarlierAttainments } = require('../services/importer')
+const { fetchRegistrationsFor, courseStudentPairs, findByEmail, isUnidentified } = require('../utils/moocRegistrations')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { sendSentryError } = require('../utils/sentry')
 const { automatedAddToDb } = require('./automatedAddToDb')
@@ -44,54 +37,10 @@ const defineGrade = (completion, course) => {
   return grade
 }
 
-const fetchRegistrationsFor = async (code) => {
-  const [sisu, eduweb] = await Promise.allSettled([getCourseUnitEnrolments(code), getRegistrations(code)])
-
-  if (sisu.status === 'rejected' && eduweb.status === 'rejected') {
-    throw new Error(
-      `No registrations available for ${code}: sisu failed with "${sisu.reason?.message}", eduweb failed with "${eduweb.reason?.message}"`
-    )
-  }
-
-  for (const [name, result] of [
-    ['sisu', sisu],
-    ['eduweb', eduweb]
-  ]) {
-    if (result.status === 'rejected')
-      logger.info({
-        message: `${code}: no registrations from ${name}, continuing without them: ${result.reason?.message}`
-      })
-  }
-
-  // Sisu first: it is the authority on student numbers, so it wins email collisions.
-  const registrations = mergeRegistrations([
-    { source: 'sisu', records: sisu.status === 'fulfilled' ? fromSisuEnrolments(sisu.value) : [] },
-    { source: 'eduweb', records: eduweb.status === 'fulfilled' ? fromEduwebRegistrations(eduweb.value) : [] }
-  ])
-
-  const { perSource, persons, emails, unidentified, collisions } = registrations.stats
-  const perSourceSummary = ({ records, emails: sourceEmails }) => (records ? `${records}/${sourceEmails}` : 'none')
-  logger.info({
-    message: `${code}: registrations sisu ${perSourceSummary(perSource.sisu)}, eduweb ${perSourceSummary(perSource.eduweb)} (rows/emails) -> ${persons} students, ${emails} emails${unidentified ? `, ${unidentified} without student number` : ''}`
-  })
-
-  for (const { email, keptStudentNumber, ignoredStudentNumber } of collisions)
-    logger.warn({
-      message: `${code}: email ${email} is claimed by both ${keptStudentNumber} and ${ignoredStudentNumber}, using ${keptStudentNumber}`
-    })
-
-  return registrations
-}
-
 const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false) => {
   try {
     const registrations = await fetchRegistrationsFor(course.courseCode)
     const completions = await getCompletions(job.slug || course.courseCode)
-
-    const courseStudentPairs = registrations.persons.map((person) => ({
-      courseCode: course.courseCode,
-      studentNumber: person.studentNumber
-    }))
 
     // A completion nobody claims is the failure mode worth seeing: the student
     // finished the course but none of their registered emails match the mooc
@@ -99,7 +48,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
     let unmatched = 0
     let unidentified = 0
 
-    const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
+    const earlierAttainments = await getEarlierAttainments(courseStudentPairs(registrations.persons, course.courseCode))
 
     const batchId = getBatchId(course.courseCode)
     const date = new Date()
@@ -174,10 +123,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
     const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
     return result
   } catch (error) {
-    logger.error({
-      message: `Error processing new completions for ${course.courseCode}: ${error.message}`,
-      stack: error.stack
-    })
+    logger.error({ message: `Error processing new completions for ${course.courseCode}: ${error.message}` })
     sendSentryError('Processing new mooc completions failed', error, { course: course.courseCode, jobId: job.id })
     return { message: error.message }
   }

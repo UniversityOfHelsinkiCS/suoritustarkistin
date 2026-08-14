@@ -40,6 +40,9 @@ const refresh = () =>
     document.getElementById('root')
   )
 
+// Tint the background in dev so a local tab is never mistaken for production.
+if (process.env.NODE_ENV === 'development') document.body.classList.add('dev-env')
+
 if (process.env.NODE_ENV === 'development' && !window.localStorage.getItem('runningCypressTests')) {
   const newUser = 'admin'
   const currentFakeUser = window.localStorage.getItem('fakeUser')

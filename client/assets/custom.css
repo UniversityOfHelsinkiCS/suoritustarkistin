@@ -1,3 +1,28 @@
+body.dev-env {
+  background: linear-gradient(
+    120deg,
+    #e3eefb,
+    #fafbfe,
+    #eae6f8,
+    #e3eefb,
+    #fafbfe,
+    #eae6f8,
+    #e3eefb
+  );
+  background-size: 200% 200%;
+  background-attachment: fixed;
+  animation: dev-env-drift 15s linear infinite;
+}
+
+@keyframes dev-env-drift {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 100% 100%;
+  }
+}
+
 .navbar {
   height: 5em;
   background-color: whitesmoke;

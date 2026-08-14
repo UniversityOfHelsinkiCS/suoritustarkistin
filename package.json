@@ -47,7 +47,7 @@
     "axios": "1.18.1",
     "dotenv": "17.4.2",
     "express": "4.22.2",
-    "faker": "5.5.3",
+    "@faker-js/faker": "5.5.3",
     "lodash": "4.18.1",
     "module-alias": "2.3.4",
     "moment": "2.30.1",

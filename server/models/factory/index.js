@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-const faker = require('faker')
+const { fakerFI: faker } = require('@faker-js/faker')
 const { getBatchId } = require('../../utils/common')
 const db = require('../index')
 
@@ -7,15 +7,16 @@ function rand(min, max) {
   return Math.round(Math.random() * (max - min) + min)
 }
 
-faker.locale = 'fi'
-
-faker.sisu = {}
-faker.sisu.person = () => `hy-hlo-${rand(100000, 999999)}`
-faker.sisu.courseUnitRealisation = () => `otm-${faker.datatype.uuid()}`
-faker.sisu.assessmentItem = () => `hy-${rand(100000, 999999)}-default-teaching-participation`
-faker.sisu.courseUnit = () => `hy-CU-${rand(100000, 999999)}-2021-08-01`
-faker.sisu.studyRight = () => `hy-opinoik-${rand(100000, 999999)}`
-faker.sisu.id = () => `hy-kur-${uuidv4()}`
+// Sisu-shaped identifiers. Locale comes from the fakerFI instance above, so there is
+// no locale to set here.
+const sisu = {
+  person: () => `hy-hlo-${rand(100000, 999999)}`,
+  courseUnitRealisation: () => `otm-${faker.string.uuid()}`,
+  assessmentItem: () => `hy-${rand(100000, 999999)}-default-teaching-participation`,
+  courseUnit: () => `hy-CU-${rand(100000, 999999)}-2021-08-01`,
+  studyRight: () => `hy-opinoik-${rand(100000, 999999)}`,
+  id: () => `hy-kur-${uuidv4()}`
+}
 
 const rawEntryFactory = async (courseCode, graderName, options) => {
   const grader = await db.users.findOne({
@@ -50,16 +51,16 @@ const entryFactory = async (courseCode, graderName, options) => {
   const rawEntry = await rawEntryFactory(courseCode, graderName, options ? options.rawEntry : {})
   const entryOptions = options ? options.entry : {}
   await db.entries.create({
-    id: faker.sisu.id(),
-    personId: faker.sisu.person(),
-    verifierPersonId: faker.sisu.person(),
-    courseUnitRealisationId: faker.sisu.courseUnitRealisation(),
-    courseUnitRealisationName: { fi: faker.name.jobTitle() },
-    assessmentItemId: faker.sisu.assessmentItem(),
+    id: sisu.id(),
+    personId: sisu.person(),
+    verifierPersonId: sisu.person(),
+    courseUnitRealisationId: sisu.courseUnitRealisation(),
+    courseUnitRealisationName: { fi: faker.person.jobTitle() },
+    assessmentItemId: sisu.assessmentItem(),
     completionDate: new Date(),
     sent: new Date(),
     completionLanguage: 'fi',
-    courseUnitId: faker.sisu.courseUnit(),
+    courseUnitId: sisu.courseUnit(),
     gradeScaleId: 'sis-0-5',
     gradeId: rawEntry.grade,
     rawEntryId: rawEntry.id,
@@ -82,13 +83,13 @@ const extraEntryFactory = async (courseCode, graderName, options) => {
   const rawEntry = await rawEntryFactory(courseCode, graderName, options ? options.rawEntry : {})
   const entryOptions = options ? options.entry : {}
   await db.extra_entries.create({
-    id: faker.sisu.id(),
-    personId: faker.sisu.person(),
-    studyRightId: faker.sisu.studyRight(),
-    verifierPersonId: faker.sisu.person(),
+    id: sisu.id(),
+    personId: sisu.person(),
+    studyRightId: sisu.studyRight(),
+    verifierPersonId: sisu.person(),
     completionDate: new Date(),
     completionLanguage: 'fi',
-    courseUnitId: faker.sisu.courseUnit(),
+    courseUnitId: sisu.courseUnit(),
     gradeScaleId: 'sis-hyl-hyv',
     gradeId: '1',
     rawEntryId: rawEntry.id,

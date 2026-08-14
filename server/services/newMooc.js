@@ -13,7 +13,7 @@ const getCompletions = async (course, registeredIncluded = false) => {
 
   if (!Array.isArray(data)) {
     throw new Error(
-      `Completions response for ${course} was not an array. This probably means that the course has been deleted from MOOC.`
+      `Completions response for ${course} was not an array. This probably means that the course could not found on MOOC.`
     )
   }
 

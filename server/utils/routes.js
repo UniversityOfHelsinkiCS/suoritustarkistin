@@ -2,13 +2,6 @@ const Router = require('express')
 const { checkEduweb, checkMooc, checkNewMooc, checkSisu } = require('@server/controllers/apiCheckController')
 const { createEntries } = require('@server/controllers/apiController')
 const {
-  seedDatabaseForTests,
-  seedTestCompletions,
-  seedBachelorData,
-  seedNoEntries,
-  seedErilliskirjaus
-} = require('@server/controllers/cypressController')
-const {
   getCourses,
   getUsersCourses,
   addCourse,
@@ -51,15 +44,8 @@ const { login, logout } = require('@server/controllers/loginController')
 
 const { runJobs, dryRunJobs } = require('@server/controllers/cronController')
 
-const {
-  checkAdmin,
-  checkIdMatch,
-  notInProduction,
-  deleteSingleEntry,
-  checkGrader,
-  checkToken,
-  deleteBatch
-} = require('./permissions')
+const { checkAdmin, checkIdMatch, deleteSingleEntry, checkGrader, checkToken, deleteBatch } = require('./permissions')
+const { inProduction } = require('./common')
 const { paginateMiddleware, useFilters } = require('./middleware')
 const { sendSentryError } = require('./sentry')
 
@@ -88,12 +74,24 @@ router.get('/sandbox/captured-error', checkAdmin, (req, res) => {
   res.send('Error captured and sent to Sentry')
 })
 
-// Routes for seeding the test database
-router.get('/seed/all', notInProduction, seedDatabaseForTests)
-router.get('/seed/no-entries', notInProduction, seedNoEntries)
-router.get('/seed/bsc_thesis', notInProduction, seedBachelorData)
-router.post('/seed/sis_completions', notInProduction, seedTestCompletions)
-router.post('/seed/erilliskirjaus', notInProduction, seedErilliskirjaus)
+// Routes for seeding the test database. Registered only outside production so the
+// test-only controller -- and the faker dependency it pulls in -- is never required
+// there, which is what lets faker stay a devDependency and out of the production image.
+if (!inProduction) {
+  const {
+    seedDatabaseForTests,
+    seedTestCompletions,
+    seedBachelorData,
+    seedNoEntries,
+    seedErilliskirjaus
+  } = require('@server/controllers/cypressController')
+
+  router.get('/seed/all', seedDatabaseForTests)
+  router.get('/seed/no-entries', seedNoEntries)
+  router.get('/seed/bsc_thesis', seedBachelorData)
+  router.post('/seed/sis_completions', seedTestCompletions)
+  router.post('/seed/erilliskirjaus', seedErilliskirjaus)
+}
 
 // Production routes
 router.post('/login', login)

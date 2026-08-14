@@ -1,5 +1,4 @@
 const logger = require('@server/utils/logger')
-const { inProduction } = require('./common')
 const db = require('../models/index')
 
 /**
@@ -39,15 +38,6 @@ const checkIdMatch = (req, res, next) =>
     next,
     (req) => req.user && Number(req.params.id) === req.user.id,
     'Unauthorized: User id mismatch'
-  )
-
-const notInProduction = (req, res, next) =>
-  permissionClass(
-    req,
-    res,
-    next,
-    () => !inProduction,
-    `Test-only route (${req.method} ${req.url}) was requested while in production mode.`
   )
 
 const deleteSingleEntry = (req, res, next) =>
@@ -99,7 +89,6 @@ module.exports = {
   checkAdmin,
   checkToken,
   checkIdMatch,
-  notInProduction,
   deleteSingleEntry,
   deleteBatch
 }

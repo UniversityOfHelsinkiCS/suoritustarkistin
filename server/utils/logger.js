@@ -1,8 +1,5 @@
-const os = require('os')
-
 const winston = require('winston')
 const LokiTransport = require('winston-loki')
-const { WinstonGelfTransporter } = require('winston-gelf-transporter')
 
 const { NODE_ENV } = process.env
 const { combine, timestamp, printf, splat } = winston.format
@@ -42,7 +39,7 @@ if (NODE_ENV === 'production') {
   // Safe stringify that handles circular references and errors
   const safeStringify = (obj) => {
     const seen = new WeakSet()
-    return JSON.stringify(obj, (key, value) => {
+    return JSON.stringify(obj, (_key, value) => {
       // Handle Error objects specifically
       if (value instanceof Error) {
         return {
@@ -75,20 +72,6 @@ if (NODE_ENV === 'production') {
     new LokiTransport({
       host: LOKI_HOST,
       labels: { app: 'suotar', environment: process.env.NODE_ENV || 'production' }
-    })
-  )
-
-  transports.push(
-    new WinstonGelfTransporter({
-      handleExceptions: true,
-      host: 'svm-116.cs.helsinki.fi',
-      port: 9503,
-      protocol: 'udp',
-      hostName: os.hostname(),
-      additional: {
-        app: 'suotar',
-        environment: 'production'
-      }
     })
   )
 }

@@ -1,10 +1,11 @@
 const logger = require('@server/utils/logger')
 const { isValidGrade, SIS_LANGUAGES } = require('@shared/validators')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate } = require('@shared/common')
-const { getRegistrations } = require('../services/eduweb')
 const { getCompletions } = require('../services/pointsmooc')
 const { getEarlierAttainments } = require('../services/importer')
+const { fetchRegistrationsFor, courseStudentPairs, findByEmail, isUnidentified } = require('../utils/moocRegistrations')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
+const { sendSentryError } = require('../utils/sentry')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
 const selectLanguage = (completion, course) => {
@@ -32,17 +33,16 @@ const defineGrade = (completion, course) => {
 
 const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) => {
   try {
-    const registrations = await getRegistrations(course.courseCode)
+    const registrations = await fetchRegistrationsFor(course.courseCode)
     const completions = await getCompletions(job.slug || course.courseCode)
 
-    const courseStudentPairs = registrations.reduce((pairs, registration) => {
-      if (registration && registration.onro) {
-        return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
-      }
-      return pairs
-    }, [])
+    // A completion nobody claims is the failure mode worth seeing: the student
+    // finished the course but none of their registered emails match the mooc
+    // account. Counted here because the matching loop below only sees hits.
+    let unmatched = 0
+    let unidentified = 0
 
-    const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
+    const earlierAttainments = await getEarlierAttainments(courseStudentPairs(registrations.persons, course.courseCode))
 
     const batchId = getBatchId(course.courseCode)
     const date = new Date()
@@ -55,13 +55,9 @@ const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) =
       }
 
       const language = selectLanguage(completion, course)
-      const registration = registrations.find(
-        (registration) =>
-          registration.email.toLowerCase() === completion.email.toLowerCase() ||
-          registration.mooc.toLowerCase() === completion.email.toLowerCase()
-      )
+      const registration = findByEmail(registrations, completion.email)
 
-      if (registration && registration.onro) {
+      if (registration) {
         const grade = defineGrade(completion, course)
 
         const attainmentDate = getMoocAttainmentDate({
@@ -76,16 +72,22 @@ const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) =
         }
 
         if (
-          !isImprovedGrade(earlierAttainments, registration.onro, grade, completion.completion_date, course.credits)
+          !isImprovedGrade(
+            earlierAttainments,
+            registration.studentNumber,
+            grade,
+            completion.completion_date,
+            course.credits
+          )
         ) {
           return matches
         }
 
-        if (matches.some((c) => c.studentNumber === registration.onro)) {
+        if (matches.some((c) => c.studentNumber === registration.studentNumber)) {
           return matches
         }
         return matches.concat({
-          studentNumber: registration.onro,
+          studentNumber: registration.studentNumber,
           batchId,
           grade,
           credits: course.credits,
@@ -98,19 +100,27 @@ const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) =
           moocCompletionId: completion.id
         })
       }
-      if (registration && !registration.onro)
+      if (isUnidentified(registrations, completion.email)) {
+        unidentified += 1
         logger.info({
-          message: `${course.courseCode}: Registration student number missing for ${registration.email}`
+          message: `${course.courseCode}: Registration student number missing for ${completion.email}`
         })
+      } else {
+        unmatched += 1
+      }
       return matches
     }, [])
 
     if (!matches) matches = []
+    logger.info({
+      message: `${course.courseCode}: ${completions.length} completions checked against ${registrations.persons.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}`
+    })
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
     const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
     return result
   } catch (error) {
-    logger.error(`Error processing new completions: ${error.message}`)
+    logger.error({ message: `Error processing new completions for ${course.courseCode}: ${error.message}` })
+    sendSentryError('Processing mooc completions failed', error, { course: course.courseCode, jobId: job.id })
     return { message: error.message }
   }
 }

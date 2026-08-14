@@ -20,7 +20,7 @@ ENV VITE_SENTRY_RELEASE=$SENTRY_RELEASE
 # Setup
 COPY package* ./
 COPY .npmrc ./
-RUN npm ci -f --omit-dev --ignore-scripts
+RUN npm ci --omit=dev --ignore-scripts
 COPY . .
 
 RUN npm run build

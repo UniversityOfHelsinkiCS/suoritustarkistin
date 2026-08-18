@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
 import * as Sentry from '@sentry/react'
 
@@ -12,26 +11,9 @@ import { loginAction, pingAction } from '@client/utils/redux/userReducer'
 import { getStatus } from '@client/utils/redux/systemStatusReducer'
 
 export default () => {
-  const navigate = useNavigate()
-  const location = useLocation()
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
   const systemStatus = useSelector((state) => state.systemStatus)
-  const [redirected, setRedirected] = useState(false)
-
-  useEffect(() => {
-    if (
-      user &&
-      user.data &&
-      user.data.isAdmin &&
-      !redirected &&
-      process.env.NODE_ENV === 'production' &&
-      location.pathname === '/suoritustarkistin'
-    ) {
-      setRedirected(true)
-      navigate('/reports')
-    }
-  }, [redirected, user, location, navigate])
 
   useEffect(() => {
     Sentry.setUser({ ...user.data })

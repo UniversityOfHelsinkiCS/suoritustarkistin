@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
-import { withRouter } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import { Accordion, Button, Icon, Message, Segment, Popup } from 'semantic-ui-react'
 
@@ -223,7 +223,8 @@ const getVariant = ({ mooc, unsent }) => {
   return { key: 'reports', action: getAllSisReportsAction }
 }
 
-export default withRouter(({ mooc, unsent, match }) => {
+export default ({ mooc, unsent }) => {
+  const { activeBatch } = useParams()
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const batchLoading = useSelector((state) => state.sisReports.singleBatchPending)
   const dispatch = useDispatch()
@@ -235,7 +236,6 @@ export default withRouter(({ mooc, unsent, match }) => {
   const { pending, allowFetch } = useSelector((state) => state.sisReports)
 
   useEffect(() => {
-    const { activeBatch } = match.params
     // If we have batch id in url we need to wait
     // for correct offset before fetching batch
     if (!reportsFetched && !pending && (!activeBatch || (activeBatch && allowFetch))) dispatch(action({ offset }))
@@ -243,8 +243,7 @@ export default withRouter(({ mooc, unsent, match }) => {
 
   useEffect(() => {
     // Fire fetch offset for batch in url
-    if (match && match.params && match.params.activeBatch && !reportsFetched && !pending) {
-      const { activeBatch } = match.params
+    if (activeBatch && !reportsFetched && !pending) {
       dispatch(openReport(activeBatch))
       dispatch(getOffsetForBatchAction(activeBatch))
     }
@@ -288,4 +287,4 @@ export default withRouter(({ mooc, unsent, match }) => {
       <Pagination reduxKey={key} action={action} disableFilters={unsent} />
     </Segment>
   )
-})
+}

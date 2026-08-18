@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import ProtectedRoute from '@client/components/ProtectedRoute'
 import ApiChecks from '@client/components/ApiChecks'
 import NewReportPage from '@client/components/NewReportPage'
@@ -11,23 +11,27 @@ import UnauthorizedPage from '@client/components/UnauthorizedPage'
 import SandboxPage from '@client/components/SandboxPage'
 
 // HACK to make component full page width or narrow
-const Wrap = ({ childComponent: ChildComponent, narrow }) => (
-  <div className={narrow ? `sitecontent-narrow` : 'sitecontent'}>
-    <ChildComponent />
-  </div>
+const Wrap = ({ children, narrow }) => <div className={narrow ? `sitecontent-narrow` : 'sitecontent'}>{children}</div>
+
+const protect = (Component, narrow) => (
+  <ProtectedRoute>
+    <Wrap narrow={narrow}>
+      <Component />
+    </Wrap>
+  </ProtectedRoute>
 )
 
 export default () => (
-  <Switch>
-    <ProtectedRoute exact path="/" component={Wrap} childComponent={NewReportPage} narrow />
-    <ProtectedRoute exact path="/reports" component={Wrap} childComponent={ReportsPage} narrow />
-    <ProtectedRoute exact path="/reports/sisu/:activeBatch" component={Wrap} childComponent={ReportsPage} narrow />
-    <ProtectedRoute exact path="/courses" component={Wrap} childComponent={CoursesPage} />
-    <ProtectedRoute exact path="/users" component={Wrap} childComponent={UsersPage} narrow />
-    <ProtectedRoute exact path="/automated-reports" component={Wrap} childComponent={AutomatedReportsPage} />
-    <ProtectedRoute exact path="/apichecks" component={Wrap} childComponent={ApiChecks} narrow />
-    <ProtectedRoute exact path="/sandbox" component={Wrap} childComponent={SandboxPage} narrow />
-    <Route exact path="/unauthorized" component={UnauthorizedPage} />
-    <Route path="*" render={() => <div>Page not found!</div>} />
-  </Switch>
+  <Routes>
+    <Route path="/" element={protect(NewReportPage, true)} />
+    <Route path="/reports" element={protect(ReportsPage, true)} />
+    <Route path="/reports/sisu/:activeBatch" element={protect(ReportsPage, true)} />
+    <Route path="/courses" element={protect(CoursesPage)} />
+    <Route path="/users" element={protect(UsersPage, true)} />
+    <Route path="/automated-reports" element={protect(AutomatedReportsPage)} />
+    <Route path="/apichecks" element={protect(ApiChecks, true)} />
+    <Route path="/sandbox" element={protect(SandboxPage, true)} />
+    <Route path="/unauthorized" element={<UnauthorizedPage />} />
+    <Route path="*" element={<div>Page not found!</div>} />
+  </Routes>
 )

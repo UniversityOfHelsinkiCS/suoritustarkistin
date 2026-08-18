@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { withRouter } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Header } from 'semantic-ui-react'
 import * as Sentry from '@sentry/react'
 
@@ -11,7 +11,9 @@ import MaintenanceView, { MaintenanceMessage } from '@client/components/Maintena
 import { loginAction, pingAction } from '@client/utils/redux/userReducer'
 import { getStatus } from '@client/utils/redux/systemStatusReducer'
 
-export default withRouter(({ history }) => {
+export default () => {
+  const navigate = useNavigate()
+  const location = useLocation()
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
   const systemStatus = useSelector((state) => state.systemStatus)
@@ -24,12 +26,12 @@ export default withRouter(({ history }) => {
       user.data.isAdmin &&
       !redirected &&
       process.env.NODE_ENV === 'production' &&
-      history.location.pathname === '/suoritustarkistin'
+      location.pathname === '/suoritustarkistin'
     ) {
       setRedirected(true)
-      history.push('/reports')
+      navigate('/reports')
     }
-  }, [redirected, user, history])
+  }, [redirected, user, location, navigate])
 
   useEffect(() => {
     Sentry.setUser({ ...user.data })
@@ -72,4 +74,4 @@ export default withRouter(({ history }) => {
       <Footer />
     </div>
   )
-})
+}

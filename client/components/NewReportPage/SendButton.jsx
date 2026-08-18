@@ -73,8 +73,6 @@ export default () => {
 
   const sendingDisabled = newRawEntries.sending || !areValidNewRawEntries(parseRawEntries(newRawEntries))
 
-  // Semantic's Popup took a `disabled` prop to suppress itself; MUI shows a tooltip
-  // whenever the title is non-empty, so the same condition is inverted here.
   const showTooltip =
     Boolean(newRawEntries.data) &&
     !areValidNewRawEntries(parseRawEntries(newRawEntries) || (newRawEntries.data && newRawEntries.data.length <= 100))
@@ -125,7 +123,6 @@ export default () => {
             : ''
         }
       >
-        {/* A disabled button fires no pointer events, so the tooltip needs a live wrapper */}
         <Box component="span" sx={{ display: 'inline-block' }}>
           <Button
             variant="contained"

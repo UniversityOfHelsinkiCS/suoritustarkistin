@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, AlertTitle, Autocomplete, Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
+import {
+  Alert,
+  AlertTitle,
+  Autocomplete,
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Stack,
+  TextField
+} from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
@@ -109,7 +119,6 @@ export default ({ close, user }) => {
           name="email"
           required
           error={Boolean(formData.email && !isValidEmailAddress(formData.email))}
-          // The specs type into this data-cy directly, so it belongs on the input
           slotProps={{ htmlInput: { 'data-cy': 'add-email', name: 'email' } }}
         />
         <TextField
@@ -120,7 +129,6 @@ export default ({ close, user }) => {
           name="uid"
           required
           disabled={editingCurrentUser}
-          // The specs type into this data-cy directly, so it belongs on the input
           slotProps={{ htmlInput: { 'data-cy': 'add-user-id', name: 'uid' } }}
         />
         <TextField
@@ -131,7 +139,6 @@ export default ({ close, user }) => {
           name="employeeId"
           required
           disabled={editingCurrentUser}
-          // The specs type into this data-cy directly, so it belongs on the input
           slotProps={{ htmlInput: { 'data-cy': 'add-employee-number', name: 'employeeId' } }}
         />
         {editingCurrentUser && (
@@ -146,7 +153,6 @@ export default ({ close, user }) => {
           onChange={handleFieldChange}
           name="name"
           required
-          // The specs type into this data-cy directly, so it belongs on the input
           slotProps={{ htmlInput: { 'data-cy': 'add-user-name', name: 'name' } }}
         />
         <FormControlLabel

@@ -11,10 +11,6 @@ import moment from 'moment'
 import UserForm from '@client/components/UsersPage/UserForm'
 import { deleteUser, editUserAction } from '@client/utils/redux/usersReducer'
 
-/**
- * Semantic's on="click" Popup held interactive content, which is a Popover in MUI.
- * All the role toggles and the delete confirmation share this shape.
- */
 const ConfirmPopover = ({ trigger, children }) => {
   const [anchor, setAnchor] = useState(null)
 

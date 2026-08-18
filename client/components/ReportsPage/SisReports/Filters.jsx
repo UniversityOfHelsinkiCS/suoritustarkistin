@@ -101,7 +101,6 @@ export default ({ reduxKey, action }) => {
           <Autocomplete
             data-cy="course-filter"
             size="small"
-            // 'All courses' is a real option, so clearing to null would leave no value
             disableClearable
             sx={{ minWidth: '24rem' }}
             options={courseOptions}

@@ -10,8 +10,6 @@ import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage 
 import { gradeScales } from '@shared/common'
 import Help from '@client/components/CoursesPage/Help'
 
-// Semantic showed validity as a check/times icon inside the input; data-cy stays on the
-// TextField root so the existing `[data-cy=...] input` selectors keep resolving.
 export const validityAdornment = (valid) => ({
   endAdornment: (
     <InputAdornment position="end">

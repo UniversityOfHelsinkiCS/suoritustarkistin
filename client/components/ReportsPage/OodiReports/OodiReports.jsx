@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Accordion, AccordionDetails, AccordionSummary, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow
+} from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import TabLoader from '@client/components/ReportsPage/TabLoader'
@@ -48,7 +57,6 @@ const reportTable = (report) => {
   )
 }
 
-// Semantic's celled tables drew column separators; MUI cells only draw a bottom border.
 const celledBorders = {
   '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
   '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
@@ -82,8 +90,6 @@ export default () => {
 
   if (manualReports.length === 0) return <div>NO REPORTS FOUND.</div>
 
-  // Semantic took a panels array with exclusive={false}; MUI composes each panel and
-  // is non-exclusive by default.
   return (
     <div>
       {manualReports.map((r, i) => (

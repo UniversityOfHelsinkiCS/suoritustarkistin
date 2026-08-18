@@ -237,8 +237,6 @@ export default ({ kandi, extra, parseCSV }) => {
             dateFormat="dd.MM.yyyy"
             selected={showingDate}
             onChange={(date) => handleDateSelection(date)}
-            // Rendering through a TextField is what keeps the picker looking like the
-            // other inputs; the old .date-picker class hand-copied Semantic's input styling.
             customInput={<TextField fullWidth label="Set date for completions" />}
           />
           {!kandi ? (

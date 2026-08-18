@@ -4,11 +4,6 @@ import react from '@vitejs/plugin-react'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
 
-/**
- * Vite forces process.env.NODE_ENV to 'production' for builds, which would erase
- * the staging environment. The npm scripts copy NODE_ENV into APP_ENV before
- * invoking Vite so 'staging' still reaches the client bundle.
- */
 const APP_ENV = process.env.APP_ENV || process.env.NODE_ENV || 'development'
 const BASE_PATH = process.env.BASE_PATH || '/'
 

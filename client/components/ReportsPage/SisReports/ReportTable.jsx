@@ -29,7 +29,6 @@ const detailsStyle = (open) => ({
   '& p': { m: '0.15em 0 0 0' }
 })
 
-// Semantic's tables drew column separators; MUI cells only draw a bottom border.
 const celledBorders = {
   '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
   '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
@@ -179,8 +178,6 @@ const EntryRows = ({ user, rawEntries }) => {
           <React.Fragment key={`row-${rawEntry.id}`}>
             <TableRow
               data-cy={`report-table-row-${rawEntry.studentNumber}`}
-              // Semantic marked filter matches with its own 'active' class; an explicit
-              // attribute keeps the highlight assertable without depending on styling.
               data-highlighted={Boolean(student && rawEntry.studentNumber.startsWith(student))}
               sx={student && rawEntry.studentNumber.startsWith(student) ? { outline: '2px solid #2185d0' } : null}
               style={getTableRowStyle(rawEntry.entry)}

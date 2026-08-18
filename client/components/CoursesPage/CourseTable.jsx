@@ -5,8 +5,6 @@ import * as _ from 'lodash'
 
 import CourseRow from '@client/components/CoursesPage/CourseRow'
 
-// Semantic laid this out as a 16-column celled Grid; the widths are carried over as
-// percentages so the columns keep their proportions.
 export const columnWidths = ['18.75%', '12.5%', '6.25%', '6.25%', '18.75%', '12.5%', '6.25%', '6.25%', '12.5%']
 
 const headers = [
@@ -34,8 +32,6 @@ export default () => {
         sx={{
           tableLayout: 'fixed',
           wordWrap: 'anywhere',
-          // MUI cells only draw a bottom border; Semantic's celled="internally" drew
-          // column separators too.
           '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
           '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
         }}

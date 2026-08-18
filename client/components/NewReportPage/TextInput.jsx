@@ -59,8 +59,6 @@ export default ({ kandi, parseCSV }) => {
         placeholder="Add the course completion information here, formatted as in the instructions above."
         value={newRawEntries.rawData}
         disabled={newRawEntries.sending}
-        // The specs type into this directly, so data-cy has to land on the textarea
-        // rather than the TextField root.
         slotProps={{ htmlInput: { 'data-cy': 'paste-field' } }}
       />
     </Box>

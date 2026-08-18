@@ -10,7 +10,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import { editCourseAction, getResponsiblesAction, resetResponsibles } from '@client/utils/redux/coursesReducer'
-import { isValidCourse } from '@shared/validators'
+import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
+import { gradeScales } from '@shared/common'
 import Help from '@client/components/CoursesPage/Help'
 import { validityAdornment } from '@client/components/CoursesPage/NewCourseForm'
 
@@ -60,6 +61,45 @@ export default ({ course, close: closeModal }) => {
           value={data.name}
           onChange={(e) => setData({ ...data, name: e.target.value })}
           slotProps={{ input: validityAdornment(Boolean(data.name)) }}
+        />
+        <TextField
+          required
+          label="Course code"
+          placeholder="TKT00000"
+          value={data.courseCode}
+          onChange={(e) => setData({ ...data, courseCode: e.target.value })}
+          slotProps={{ input: validityAdornment(isValidCourseCode(data.courseCode)) }}
+        />
+        <TextField
+          required
+          label="Language"
+          placeholder="fi"
+          value={data.language}
+          onChange={(e) => setData({ ...data, language: e.target.value })}
+          slotProps={{ input: validityAdornment(isValidLanguage(data.language)) }}
+        />
+        <TextField
+          data-cy="edit-course-credits"
+          required
+          label="Credit amount"
+          placeholder="5,0"
+          value={data.credits}
+          onChange={(e) => setData({ ...data, credits: e.target.value })}
+          slotProps={{ input: validityAdornment(isValidCreditAmount(data.credits)) }}
+        />
+        <Autocomplete
+          data-cy="edit-course-grade-scale"
+          options={gradeScales}
+          getOptionLabel={(option) => option.text}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          value={gradeScales.find((g) => g.value === data.gradeScale) || null}
+          onChange={(e, option) => setData({ ...data, gradeScale: option ? option.value : undefined })}
+          renderOption={(props, option) => (
+            <li {...props} key={option.key} data-cy={`grade-scale-option-${option.value}`}>
+              {option.text}
+            </li>
+          )}
+          renderInput={(params) => <TextField {...params} label="Grade scale" />}
         />
         <Autocomplete
           multiple

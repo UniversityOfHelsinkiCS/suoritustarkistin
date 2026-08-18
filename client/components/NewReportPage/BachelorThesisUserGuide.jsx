@@ -1,5 +1,10 @@
 import React from 'react'
-import { Header, Icon, List, Popup, Segment } from 'semantic-ui-react'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import Paper from '@mui/material/Paper'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import HelpIcon from '@mui/icons-material/Help'
 
 const instructionContainer = {
   padding: '1rem'
@@ -11,7 +16,8 @@ const detailedInstructions = {
 }
 
 const instruction = {
-  padding: '1rem'
+  margin: '0 0 0.2em 0',
+  fontWeight: 700
 }
 
 const code = {
@@ -30,51 +36,55 @@ const code2 = {
 
 const DetailedInstructions = () => (
   <div style={detailedInstructions}>
-    <Header>Detailed instructions</Header>
+    <Typography variant="h5" component="h1" gutterBottom>
+      Detailed instructions
+    </Typography>
     <List>
-      <List.Item>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Student number</p>
         Student numbers will be fetched from Sisu for reporting. Students not present in Sisu, cannot be given course
         completions.
-      </List.Item>
-      <List.Item>
+      </ListItem>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Grade</p>
         Each course has a pre-defined grade scale in Sisu. For most it is "0-5" or "Hyv.-Hyl.". Only grades within the
         grade scale of the course can be given.
-      </List.Item>
-      <List.Item>
+      </ListItem>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Credits</p>
         You can define the amount of credits for each student separately or use the course default credit amount.
-      </List.Item>
-      <List.Item>
+      </ListItem>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Language</p>
         Suotar supports three languages for course completions "fi", "en", "sv".
-      </List.Item>
-      <List.Item>
+      </ListItem>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Date of completion</p>
         You can add date separately for each student. Any date chosen from date-picker will apply to completions that do
         not have a separately set date for them. Please note that the course instance will be picked based automatically
         based on the completion date.
-      </List.Item>
-      <List.Item>
+      </ListItem>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Language of "Äidinkielinen viestintä"</p>
         "fi", "en", "sv". Use "x" to opt-out for student.
-      </List.Item>
-      <List.Item>
+      </ListItem>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Language of "Kypsyysnäyte"</p>
         "fi", "en", "sv". Use "x" to opt-out for student.
-      </List.Item>
-      <List.Item>
+      </ListItem>
+      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
         <p style={instruction}>Language of "Tutkimustiedonhaku"</p>
         "fi", "en", "sv". Use "x" to opt-out for student.
-      </List.Item>
+      </ListItem>
     </List>
   </div>
 )
 
 export default () => (
-  <Segment data-cy="userguide" style={instructionContainer}>
-    <Header as="h2">Reporting bachelor thesis completions through Suotar</Header>
+  <Paper variant="outlined" data-cy="userguide" style={instructionContainer}>
+    <Typography variant="h5" component="h2" gutterBottom>
+      Reporting bachelor thesis completions through Suotar
+    </Typography>
     <p>
       Suotar automates reporting completions for courses Äidinkielinen viestintä, Tutkimustiedonhaku and
       Kypsyysnäyte.The language of extra courses is defaulted to the language of bachelor thesis and can be controlled
@@ -83,19 +93,32 @@ export default () => (
       To opt-out reporting, an extra course use value "x".
     </p>
     <p>If a bachelor thesis is reported in English the language of extra courses have to be defined explicitly.</p>
-    <Header as="h3">
+    <Typography variant="h6" component="h3" sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
       Each completion should be its own line in the following format:
-      <span>
-        <Popup
-          on={['hover', 'click']}
-          pinned
-          trigger={<Icon style={{ marginLeft: '0.3em' }} name="question circle" size="large" />}
-          content={DetailedInstructions}
-        />
-      </span>
-    </Header>
+      <Tooltip
+        title={<DetailedInstructions />}
+        slotProps={{
+          tooltip: {
+            // The default tooltip type is 11px, unreadable for a panel of instructions
+            // rather than a one-line hint.
+            sx: {
+              maxWidth: 'none',
+              bgcolor: 'background.paper',
+              color: 'text.primary',
+              boxShadow: 3,
+              fontSize: '1rem',
+              p: 2
+            }
+          }
+        }}
+      >
+        <HelpIcon sx={{ ml: '0.3em' }} />
+      </Tooltip>
+    </Typography>
     <code style={code}>student number; grade; credits; bsc language; date; lang; lang; lang</code>
-    <Header as="h3">Examples of valid lines:</Header>
+    <Typography variant="h6" component="h3" sx={{ mt: 2 }}>
+      Examples of valid lines:
+    </Typography>
     <pre style={code2}>
       011000002;3
       <br />
@@ -108,5 +131,5 @@ export default () => (
       011110002;5;;fi;;x;;x
       <br />
     </pre>
-  </Segment>
+  </Paper>
 )

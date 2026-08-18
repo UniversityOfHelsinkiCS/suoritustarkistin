@@ -16,9 +16,11 @@ describe('Form validation', () => {
       })
       cy.get('#date-picker').clear().type('5.7.2019')
 
-      cy.get('[data-cy=grader-selection]').click().children().contains('grader').click()
+      cy.get('[data-cy=grader-selection] input').click()
+      cy.get('[role=listbox]').contains('grader').click()
 
-      cy.get('[data-cy=course-selection]').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
+      cy.get('[data-cy=course-selection] input').click()
+      cy.get('[role=listbox]').contains('Ohjelmoinnin perusteet (TKT10002)').click()
 
       cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
       cy.logout()
@@ -36,24 +38,20 @@ describe('Form validation', () => {
       })
       cy.get('#date-picker').clear().type('12.7.2020')
 
-      cy.get('[data-cy=grader-selection]').click().children().contains('grader').click()
+      cy.get('[data-cy=grader-selection] input').click()
+      cy.get('[role=listbox]').contains('grader').click()
       cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
-      cy.get('[data-cy=course-selection]')
-        .click()
-        .children()
-        .contains('Tietorakenteet ja algoritmit I (TKT200011)')
-        .click()
+      cy.get('[data-cy=course-selection] input').click()
+      cy.get('[role=listbox]').contains('Tietorakenteet ja algoritmit I (TKT200011)').click()
       cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled')
 
       // missing data
       cy.get('[data-cy=paste-field]').clear()
       cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
-      cy.get('[data-cy=course-selection]')
-        .click()
-        .children()
-        .contains('Tietorakenteet ja algoritmit I (TKT200011)')
-        .click()
-      cy.get('[data-cy=grader-selection]').click().children().contains('grader').click()
+      cy.get('[data-cy=course-selection] input').click()
+      cy.get('[role=listbox]').contains('Tietorakenteet ja algoritmit I (TKT200011)').click()
+      cy.get('[data-cy=grader-selection] input').click()
+      cy.get('[role=listbox]').contains('grader').click()
       cy.get('[data-cy=paste-field]').type('010000003;2;5;fi\n011000002;2;2,0\n011100009;2\n011110002;2;;fi', {
         delay: 1
       })
@@ -86,11 +84,12 @@ describe('Bachelor thesis form validation', () => {
       cy.login('grader').visit('')
       cy.get('[data-cy=copypaste-kandi]').click()
       cy.get('[data-cy=paste-field]').clear()
-      cy.get('[data-cy=grader-selection]').click().children().contains('grader').click()
+      cy.get('[data-cy=grader-selection] input').click()
+      cy.get('[role=listbox]').contains('grader').click()
     })
 
     it('kandi tab should be visible', () => {
-      cy.get('[data-cy=course-selection]').contains('Kandidaatin tutkielma')
+      cy.get('[data-cy=course-selection] input').should('contain.value', 'Kandidaatin tutkielma')
       cy.get('[data-cy=userguide]').contains('Reporting bachelor thesis completions through Suotar')
     })
 
@@ -106,7 +105,7 @@ describe('Bachelor thesis form validation', () => {
       // tab has to re-pin the thesis course instead of leaving the selection blank.
       cy.get('[data-cy=paste-field]').type('011000002;5;;fi', { delay: 1 })
       cy.get('[data-cy=paste-field]').clear()
-      cy.get('[data-cy=course-selection]').contains('Kandidaatin tutkielma')
+      cy.get('[data-cy=course-selection] input').should('contain.value', 'Kandidaatin tutkielma')
 
       cy.get('[data-cy=paste-field]').type('011000002;5;;fi', { delay: 1 })
       cy.get('[data-cy=new-report-table] > tbody').children().should('have.length', 4)

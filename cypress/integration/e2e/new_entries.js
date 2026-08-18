@@ -14,15 +14,12 @@ describe('New entries can be added correctly', function () {
       delay: 1
     })
     cy.get('#date-picker').clear().type('30.12.2020')
-    cy.get('[data-cy=grader-selection]')
-      .click()
-      .children()
-      .should('not.contain', 'admin')
-      .should('not.contain', 'user')
-      .contains('grader')
-      .click()
+    cy.get('[data-cy=grader-selection] input').click()
+    cy.get('[role=listbox]').should('not.contain', 'admin').should('not.contain', 'user')
+    cy.get('[role=listbox]').contains('grader').click()
 
-    cy.get('[data-cy=course-selection]').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
+    cy.get('[data-cy=course-selection] input').click()
+    cy.get('[role=listbox]').contains('Ohjelmoinnin perusteet (TKT10002)').click()
 
     cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
@@ -62,15 +59,12 @@ describe('New entries can be added correctly', function () {
       delay: 1
     })
     cy.get('#date-picker').clear().type('30.12.2020')
-    cy.get('[data-cy=grader-selection]')
-      .click()
-      .children()
-      .should('not.contain', 'admin')
-      .should('not.contain', 'user')
-      .contains('grader')
-      .click()
+    cy.get('[data-cy=grader-selection] input').click()
+    cy.get('[role=listbox]').should('not.contain', 'admin').should('not.contain', 'user')
+    cy.get('[role=listbox]').contains('grader').click()
 
-    cy.get('[data-cy=course-selection]').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
+    cy.get('[data-cy=course-selection] input').click()
+    cy.get('[role=listbox]').contains('Ohjelmoinnin perusteet (TKT10002)').click()
 
     cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
@@ -91,15 +85,12 @@ describe('New entries can be added correctly', function () {
       delay: 1
     })
     cy.get('#date-picker').clear().type('30.12.2020')
-    cy.get('[data-cy=grader-selection]')
-      .click()
-      .children()
-      .should('not.contain', 'admin')
-      .should('not.contain', 'user')
-      .contains('grader')
-      .click()
+    cy.get('[data-cy=grader-selection] input').click()
+    cy.get('[role=listbox]').should('not.contain', 'admin').should('not.contain', 'user')
+    cy.get('[role=listbox]').contains('grader').click()
 
-    cy.get('[data-cy=course-selection]').click().children().contains('Ohjelmoinnin jatkokurssi (TKT10003)').click()
+    cy.get('[data-cy=course-selection] input').click()
+    cy.get('[role=listbox]').contains('Ohjelmoinnin jatkokurssi (TKT10003)').click()
 
     cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 
@@ -133,15 +124,12 @@ describe('New extra entries can be added correctly', function () {
       delay: 1
     })
     cy.get('#date-picker').clear().type('30.12.2020')
-    cy.get('[data-cy=grader-selection]')
-      .click()
-      .children()
-      .should('not.contain', 'admin')
-      .should('not.contain', 'user')
-      .contains('grader')
-      .click()
+    cy.get('[data-cy=grader-selection] input').click()
+    cy.get('[role=listbox]').should('not.contain', 'admin').should('not.contain', 'user')
+    cy.get('[role=listbox]').contains('grader').click()
 
-    cy.get('[data-cy=course-selection]').click().children().contains('Versionhallinta (TKT21015)').click()
+    cy.get('[data-cy=course-selection] input').click()
+    cy.get('[role=listbox]').contains('Versionhallinta (TKT21015)').click()
 
     cy.get('[data-cy=confirm-sending-button]').should('not.be.disabled').click()
 

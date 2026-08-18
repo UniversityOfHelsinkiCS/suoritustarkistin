@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Loader } from 'semantic-ui-react'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useDropzone } from 'react-dropzone'
 
 import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
@@ -85,7 +85,7 @@ export default () => {
         <input {...getInputProps()} />
         <p>Drag a file here, or find it by clicking this box.</p>
         <p>One .csv, .txt, or .dat -ended file, under 5MB is accepted</p>
-        <Loader size="big" inline active={newRawEntries.sending} />
+        {newRawEntries.sending ? <CircularProgress size={40} /> : null}
       </div>
     </div>
   )

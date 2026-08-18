@@ -1,12 +1,9 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Form, TextArea } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
 import { setNewRawEntriesAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import { isKandiExtraCourse } from '@shared/common'
-
-const textAreaStyle = {
-  padding: '20px'
-}
 
 export default ({ kandi, parseCSV }) => {
   const dispatch = useDispatch()
@@ -54,15 +51,19 @@ export default ({ kandi, parseCSV }) => {
   }
 
   return (
-    <Form loading={newRawEntries.sending}>
-      <TextArea
-        data-cy="paste-field"
+    <Box sx={{ position: 'relative' }}>
+      <TextField
+        multiline
+        fullWidth
+        minRows={10}
         onChange={handleDataChange}
         placeholder="Add the course completion information here, formatted as in the instructions above."
-        rows={10}
         value={newRawEntries.rawData}
-        style={textAreaStyle}
+        disabled={newRawEntries.sending}
+        // The specs type into this directly, so data-cy has to land on the textarea
+        // rather than the TextField root.
+        slotProps={{ htmlInput: { 'data-cy': 'paste-field', style: { padding: '20px' } } }}
       />
-    </Form>
+    </Box>
   )
 }

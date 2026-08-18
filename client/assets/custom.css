@@ -1,3 +1,12 @@
+/*
+ * The app's root font size. semantic.min.css set this to 14px and the whole UI is
+ * sized against it, so it is pinned here to survive Semantic's removal. The MUI
+ * theme's typography.htmlFontSize must match.
+ */
+html {
+  font-size: 14px;
+}
+
 body.dev-env {
   background: linear-gradient(120deg, #e3eefb, #fafbfe, #eae6f8, #e3eefb, #fafbfe, #eae6f8, #e3eefb);
   background-size: 200% 200%;

@@ -301,7 +301,7 @@ const EntryCells = ({ entry, course, grader }) => {
       <TableCell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</TableCell>
       <TableCell>{grader ? grader.name : 'Grader not found'}</TableCell>
       <TableCell data-cy={`report-courseUnitRealisationName-${gradeId}`}>
-        <Box className="report-table-accordion" style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
+        <Box style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
           <Box
             data-cy="entry-accordion"
             onClick={() => setOpen(!open)}

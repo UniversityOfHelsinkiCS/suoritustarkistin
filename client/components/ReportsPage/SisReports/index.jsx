@@ -3,7 +3,17 @@ import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
-import { Accordion, AccordionDetails, AccordionSummary, Alert, AlertTitle, Box, Button, Stack, Tooltip } from '@mui/material'
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Stack,
+  Tooltip
+} from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
@@ -302,10 +312,7 @@ export default ({ mooc, unsent }) => {
               variant="outlined"
               sx={{ mb: 1, '&:before': { display: 'none' } }}
             >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                data-cy={panel.title.dataCy}
-              >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} data-cy={panel.title.dataCy}>
                 {panel.title.node}
               </AccordionSummary>
               <AccordionDetails>{panel.content}</AccordionDetails>

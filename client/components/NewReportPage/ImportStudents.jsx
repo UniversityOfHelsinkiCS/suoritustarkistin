@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Alert, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, MenuItem, Skeleton, Switch, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  MenuItem,
+  Skeleton,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Tooltip
+} from '@mui/material'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined'
@@ -37,7 +57,6 @@ const styles = {
   }
 }
 
-// Semantic's celled tables drew column separators; MUI cells only draw a bottom border.
 const celledBorders = {
   '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
   '& td:last-of-type, & th:last-of-type': { borderRight: 0 }

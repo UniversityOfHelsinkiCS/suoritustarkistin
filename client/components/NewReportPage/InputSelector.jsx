@@ -24,8 +24,6 @@ export default () => {
   const hasKandi = courses.some((course) => isThesisCourse(course))
   const hasErillisKirjaus = courses.some((course) => isRegularExtraCourse(course))
 
-  // Semantic's Tab took a panes=[{menuItem, render}] array; MUI has no equivalent, so the
-  // same array now drives a Tabs list and the panel is rendered below it by hand.
   const panes = [
     {
       key: 'copypaste',
@@ -93,9 +91,6 @@ export default () => {
       {!displayBscUserGuide ? <UserGuide /> : <BachelorThesisUserGuide />}
       <Message />
       <Paper variant="outlined" data-cy="input-form" sx={{ mt: 2 }}>
-        {/* Not scrollable: scrollable Tabs slide the selected tab into view and toggle
-            scroll buttons on click, which visibly shifts the row. There are at most four
-            tabs here. */}
         <Tabs value={activeIndex} onChange={handleTabChange}>
           {panes.map((pane) => (
             <Tab key={pane.key} data-cy={pane.key} icon={pane.icon} iconPosition="start" label={pane.label} />

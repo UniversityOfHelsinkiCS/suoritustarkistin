@@ -3,8 +3,6 @@ import * as _ from 'lodash'
 import moment from 'moment'
 import { Box, Chip } from '@mui/material'
 
-// Semantic's accordion title made its whole subtree bold, which is what separated the
-// status line from the lighter date beneath it.
 const styles = {
   success: {
     marginBottom: '0',
@@ -74,8 +72,6 @@ const ReportStatus = ({ batch }) => {
 
   return (
     <div style={{ marginTop: '6px' }}>
-      {/* The chips are taller than the status text, so a baseline row would leave the
-          text sitting low against them. */}
       <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
         {batchStatus()}
         {getErrorAmount()}

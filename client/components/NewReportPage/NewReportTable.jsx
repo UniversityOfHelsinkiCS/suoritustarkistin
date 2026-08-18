@@ -2,7 +2,22 @@ import moment from 'moment'
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Alert, Box, Button, Divider, Paper, Popover, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  Paper,
+  Popover,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography
+} from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
@@ -130,8 +145,6 @@ export default ({ rows, batchId }) => {
         </Button>
       )
 
-    // Semantic's on="click" Popup held an interactive button, so this is a Popover with
-    // its own anchor rather than a Tooltip.
     return (
       <>
         <Button

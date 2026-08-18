@@ -51,7 +51,6 @@ export default ({ realisation, index, active, setActive }) => {
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
-          // MUI paints a grey focus-visible background over the summary once clicked
           sx={{
             backgroundColor: '#2185d0',
             color: 'white',

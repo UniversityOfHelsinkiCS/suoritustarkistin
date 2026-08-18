@@ -15,7 +15,6 @@ export default () => {
     <>
       <Message />
       {pending ? <CircularProgress size={50} /> : null}
-      {/* Two columns, as the 8-of-16 Grid widths gave */}
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <EduwebCheck />

@@ -27,8 +27,6 @@ export default ({ job, close }) => {
     <Box component="form" sx={{ p: 1 }}>
       <Stack spacing={2}>
         <TextField
-          // The edit spec selects '[data-cy=edit-job-schedule] input', so unlike the
-          // add form this data-cy belongs on the root
           data-cy="edit-job-schedule"
           required
           label="Cron schedule"

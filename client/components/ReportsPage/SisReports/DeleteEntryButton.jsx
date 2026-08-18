@@ -25,8 +25,6 @@ export default ({ rawEntryId, batchId }) => {
         Delete
       </Button>
       <Popover
-        // Semantic tied the popup to the accordion being open; closing the report
-        // dismissed it.
         open={Boolean(anchor) && openAccordions.includes(batchId)}
         anchorEl={anchor}
         onClose={() => setAnchor(null)}

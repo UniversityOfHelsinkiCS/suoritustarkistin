@@ -1,6 +1,15 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import {
+  CircularProgress,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@mui/material'
 import * as _ from 'lodash'
 
 import JobRow from '@client/components/AutomatedReportsPage/Mooc/JobRow'
@@ -46,7 +55,6 @@ export default () => {
             <TableCell sx={{ width: '25%', fontWeight: 700 }}>Actions</TableCell>
           </TableRow>
         </TableHead>
-        {/* The rows used to sit inside Table.Header, which Semantic tolerated */}
         <TableBody>
           {sortedJobs.map((j) => (
             <JobRow job={j} jobs={jobs} key={j.id} />

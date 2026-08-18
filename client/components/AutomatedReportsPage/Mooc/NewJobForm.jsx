@@ -32,7 +32,6 @@ export default ({ close }) => {
           placeholder="* * * * *"
           value={data.schedule || ''}
           onChange={(e) => setData({ ...data, schedule: e.target.value })}
-          // The spec types into this data-cy directly, so it belongs on the input
           slotProps={{
             htmlInput: { 'data-cy': 'add-job-schedule' },
             input: {
@@ -105,7 +104,6 @@ export default ({ close }) => {
         <FormControlLabel
           control={
             <Checkbox
-              // The new-job form has always used the edit- prefix for this one
               data-cy="edit-job-completion-date"
               checked={Boolean(data.useManualCompletionDate)}
               onChange={(e) => setData({ ...data, useManualCompletionDate: e.target.checked })}

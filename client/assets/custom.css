@@ -2,6 +2,8 @@
  * The app's root font size. semantic.min.css used to set this and the whole UI is
  * sized against it, so it is pinned here now that Semantic is gone. The MUI theme's
  * typography.htmlFontSize must match.
+ *
+ * TODO: Maybe should get rid of this and go for a more idiomatic MUI approach later.
  */
 html {
   font-size: 14px;

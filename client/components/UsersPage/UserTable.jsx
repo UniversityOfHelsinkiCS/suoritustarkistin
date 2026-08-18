@@ -6,7 +6,6 @@ import SwapVertIcon from '@mui/icons-material/SwapVert'
 import User from '@client/components/UsersPage/User'
 import { sortedItems } from '@client/utils/common'
 
-// Semantic's celled Grid drew column separators; MUI cells only draw a bottom border.
 export const celledBorders = {
   '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
   '& td:last-of-type, & th:last-of-type': { borderRight: 0 }

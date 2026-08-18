@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Autocomplete from '@mui/material/Autocomplete'
-import Box from '@mui/material/Box'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import MenuItem from '@mui/material/MenuItem'
-import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import { Autocomplete, Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { debounce } from 'lodash'
 

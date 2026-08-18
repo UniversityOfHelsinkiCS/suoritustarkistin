@@ -1,5 +1,5 @@
 import React from 'react'
-import Tooltip from '@mui/material/Tooltip'
+import { Tooltip } from '@mui/material'
 import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined'
 
 // Shared by the new and edit course forms, which both had their own copy.

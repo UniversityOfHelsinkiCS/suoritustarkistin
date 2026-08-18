@@ -1,8 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import Stack from '@mui/material/Stack'
+import { Box, CircularProgress, Stack } from '@mui/material'
 
 import Message from '@client/components/Message'
 import EduwebCheck from '@client/components/ApiChecks/EduwebCheck'

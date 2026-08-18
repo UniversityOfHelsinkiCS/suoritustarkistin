@@ -1,9 +1,5 @@
 import React from 'react'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import Card from '@mui/material/Card'
-import Chip from '@mui/material/Chip'
+import { Accordion, AccordionDetails, AccordionSummary, Card, Chip } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export default ({ realisation, index, active, setActive }) => {

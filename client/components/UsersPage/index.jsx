@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
+import { Button, Dialog, DialogContent } from '@mui/material'
 
 import Message from '@client/components/Message'
 import UserTable from '@client/components/UsersPage/UserTable'

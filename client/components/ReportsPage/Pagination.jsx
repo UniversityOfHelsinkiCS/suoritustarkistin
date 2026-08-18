@@ -1,7 +1,5 @@
 import React from 'react'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import ButtonGroup from '@mui/material/ButtonGroup'
+import { Box, Button, ButtonGroup } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { useDispatch, useSelector } from 'react-redux'

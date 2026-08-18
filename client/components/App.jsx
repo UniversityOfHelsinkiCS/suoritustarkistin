@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Typography from '@mui/material/Typography'
+import { Typography } from '@mui/material'
 import * as Sentry from '@sentry/react'
 
 import NavBar from '@client/components/NavBar'

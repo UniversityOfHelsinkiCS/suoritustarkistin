@@ -1,9 +1,5 @@
 import React from 'react'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import Paper from '@mui/material/Paper'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
+import { List, ListItem, Paper, Tooltip, Typography } from '@mui/material'
 import HelpIcon from '@mui/icons-material/Help'
 
 const instructionContainer = {

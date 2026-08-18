@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import Card from '@mui/material/Card'
+import { Card } from '@mui/material'
 
 export default () => {
   const { mooc } = useSelector((state) => state.apiChecks)

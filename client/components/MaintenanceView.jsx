@@ -1,7 +1,5 @@
 import React from 'react'
-import Alert from '@mui/material/Alert'
-import AlertTitle from '@mui/material/AlertTitle'
-import Box from '@mui/material/Box'
+import { Alert, AlertTitle, Box } from '@mui/material'
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied'
 
 const styles = {

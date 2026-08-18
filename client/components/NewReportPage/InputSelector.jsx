@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import Paper from '@mui/material/Paper'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
+import { Paper, Tab, Tabs } from '@mui/material'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import { useSelector, useDispatch } from 'react-redux'

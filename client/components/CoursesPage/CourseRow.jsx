@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import Button from '@mui/material/Button'
-import TableCell from '@mui/material/TableCell'
-import TableRow from '@mui/material/TableRow'
+import { Button, TableCell, TableRow } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 
 import { confirmDeletionAction } from '@client/utils/redux/coursesReducer'

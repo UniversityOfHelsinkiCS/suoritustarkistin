@@ -1,9 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import Card from '@mui/material/Card'
+import { Accordion, AccordionDetails, AccordionSummary, Card } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export default ({ instance, active, setActive }) => {

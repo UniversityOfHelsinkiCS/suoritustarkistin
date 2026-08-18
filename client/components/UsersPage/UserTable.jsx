@@ -1,12 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import Paper from '@mui/material/Paper'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import SwapVertIcon from '@mui/icons-material/SwapVert'
 
 import User from '@client/components/UsersPage/User'

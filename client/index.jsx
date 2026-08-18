@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import 'semantic-ui-css/semantic.min.css'
@@ -28,16 +28,17 @@ if (process.env.NODE_ENV === 'production' && !import.meta.env.VITE_E2E)
     normalizeDepth: 10
   })
 
-const refresh = () =>
-  render(
+const root = createRoot(document.getElementById('root'))
+
+const render = () =>
+  root.render(
     <Provider store={store}>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <ErrorBoundary>
           <App />
         </ErrorBoundary>
       </BrowserRouter>
-    </Provider>,
-    document.getElementById('root')
+    </Provider>
   )
 
 // Tint the background in dev so a local tab is never mistaken for production.
@@ -57,4 +58,4 @@ if (process.env.NODE_ENV === 'development' && !window.localStorage.getItem('runn
   }
 }
 
-refresh()
+render()

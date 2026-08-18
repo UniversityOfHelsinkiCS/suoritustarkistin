@@ -283,7 +283,7 @@ export default ({ mooc, unsent }) => {
         key: `panel-${index}`,
         batchId: reportWithEntries[0].batchId,
         title: title(reportWithEntries),
-        content: reportContents(reportWithEntries, dispatch, user, openAccordions, batchLoading)
+        content: () => reportContents(reportWithEntries, dispatch, user, openAccordions, batchLoading)
       }
     })
     .filter(Boolean)
@@ -291,34 +291,33 @@ export default ({ mooc, unsent }) => {
   return (
     <Box sx={{ opacity: pending ? 0.5 : 1 }}>
       <Notification />
-      {/* The unsent tab is its own filter, the endpoint takes none. */}
       {!unsent && <Filters reduxKey={key} action={action} />}
       {!rows.length && reportsFetched ? (
         <Alert severity="info" sx={{ mt: 3 }}>
           <AlertTitle>No reports found</AlertTitle>
         </Alert>
       ) : (
-        // Semantic took a panels array with exclusive={false}; MUI composes each panel,
-        // and which ones are open stays driven by openAccordions in redux.
         <Box data-cy="reports-list" sx={{ mt: 3 }}>
-          {panels.map((panel) => (
-            <Accordion
-              key={panel.key}
-              expanded={openAccordions.includes(panel.batchId)}
-              onChange={() => dispatch(openReport(panel.batchId))}
-              // disableGutters stops MUI adding vertical margin when a panel expands;
-              // the spacing between rows is a constant instead.
-              disableGutters
-              elevation={0}
-              variant="outlined"
-              sx={{ mb: 1, '&:before': { display: 'none' } }}
-            >
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} data-cy={panel.title.dataCy}>
-                {panel.title.node}
-              </AccordionSummary>
-              <AccordionDetails>{panel.content}</AccordionDetails>
-            </Accordion>
-          ))}
+          {panels.map((panel) => {
+            const expanded = openAccordions.includes(panel.batchId)
+            return (
+              <Accordion
+                key={panel.key}
+                expanded={expanded}
+                onChange={() => dispatch(openReport(panel.batchId))}
+                disableGutters
+                TransitionProps={{ unmountOnExit: true }}
+                elevation={0}
+                variant="outlined"
+                sx={{ mb: 1, '&:before': { display: 'none' } }}
+              >
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} data-cy={panel.title.dataCy}>
+                  {panel.title.node}
+                </AccordionSummary>
+                <AccordionDetails>{expanded ? panel.content() : null}</AccordionDetails>
+              </Accordion>
+            )
+          })}
         </Box>
       )}
       <Pagination reduxKey={key} action={action} disableFilters={unsent} />

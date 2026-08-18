@@ -26,6 +26,15 @@ const PLACEHOLDER_COURSE = {
   credits: 'COURSE DELETED'
 }
 
+const detailsStyle = (open) => ({
+  padding: '0.75em 1em',
+  display: open ? 'block' : 'none',
+  overflowWrap: 'anywhere',
+  '& strong': { display: 'block', mt: '0.75em' },
+  '& strong:first-of-type': { mt: 0 },
+  '& p': { m: '0.15em 0 0 0' }
+})
+
 // Semantic's tables drew column separators; MUI cells only draw a bottom border.
 const celledBorders = {
   '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
@@ -258,7 +267,7 @@ const EntryCells = ({ entry, course, grader }) => {
   } = entry
 
   const entryAccordionContent = () => (
-    <Box data-cy="report-course-content" sx={{ padding: '0.75em 1em', display: open ? 'block' : 'none' }}>
+    <Box data-cy="report-course-content" sx={detailsStyle(open)}>
       <strong>Realisation name</strong>
       <p>{getSisUnitName(courseUnitRealisationName, completionLanguage) || null}</p>
       <strong>Course unit ID</strong>
@@ -277,7 +286,7 @@ const EntryCells = ({ entry, course, grader }) => {
   )
 
   const extraEntryAccordionContent = () => (
-    <Box data-cy="report-course-content" sx={{ padding: '0.75em 1em', display: open ? 'block' : 'none' }}>
+    <Box data-cy="report-course-content" sx={detailsStyle(open)}>
       <strong>Course unit ID</strong>
       <p>{courseUnitId || null}</p>
       <strong>Study right id</strong>
@@ -300,7 +309,7 @@ const EntryCells = ({ entry, course, grader }) => {
       <TableCell data-cy="report-completionLanguage">{completionLanguage || null}</TableCell>
       <TableCell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</TableCell>
       <TableCell>{grader ? grader.name : 'Grader not found'}</TableCell>
-      <TableCell data-cy={`report-courseUnitRealisationName-${gradeId}`}>
+      <TableCell data-cy={`report-courseUnitRealisationName-${gradeId}`} sx={{ width: '25%' }}>
         <Box style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
           <Box
             data-cy="entry-accordion"

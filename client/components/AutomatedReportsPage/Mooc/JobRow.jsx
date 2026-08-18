@@ -78,7 +78,9 @@ export default ({ job, jobs }) => {
       <TableCell>{getGraderName()}</TableCell>
       <TableCell>{job.slug}</TableCell>
       <TableCell align="center">{job.active ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</TableCell>
-      <TableCell>{job.useManualCompletionDate ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</TableCell>
+      <TableCell align="center">
+        {job.useManualCompletionDate ? <CheckIcon color="success" /> : <CloseIcon color="error" />}
+      </TableCell>
       <TableCell>
         <EditJob jobs={jobs} job={job} />
         <CreateReportButton />

@@ -1,6 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Grid, Loader } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
 
 import Message from '@client/components/Message'
 import EduwebCheck from '@client/components/ApiChecks/EduwebCheck'
@@ -14,21 +16,24 @@ export default () => {
   return (
     <>
       <Message />
-      <Loader size="big" active={pending} />
-      <Grid>
-        <Grid.Column width={8}>
+      {pending ? <CircularProgress size={50} /> : null}
+      {/* Two columns, as the 8-of-16 Grid widths gave */}
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <EduwebCheck />
-        </Grid.Column>
-        <Grid.Column width={8}>
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <MoocCheck />
-        </Grid.Column>
-        <Grid.Column width={8}>
+        </Box>
+      </Stack>
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <NewMoocCheck />
-        </Grid.Column>
-        <Grid.Column width={8}>
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <SisuCheck />
-        </Grid.Column>
-      </Grid>
+        </Box>
+      </Stack>
     </>
   )
 }

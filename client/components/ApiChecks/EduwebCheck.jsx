@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Input, Header, Form } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import SearchIcon from '@mui/icons-material/Search'
 import { checkEduWeb } from '@client/utils/redux/apiCheckReducer'
 import EduwebInstance from '@client/components/ApiChecks/EduwebInstance'
 
@@ -31,22 +36,29 @@ export default () => {
 
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
-      <Header>Eduweb check</Header>
-      <Form onSubmit={handleCheck} style={{ marginBottom: '100px' }}>
-        <Form.Field
-          control={Input}
+      <Typography variant="h6" component="h2" gutterBottom>
+        Eduweb check
+      </Typography>
+      <Box component="form" onSubmit={handleCheck} sx={{ mb: 4 }}>
+        <TextField
+          fullWidth
           label="Enter course code"
-          action={{
-            icon: 'search',
-            color: 'blue',
-            labelPosition: 'right',
-            content: 'Check'
-          }}
           value={data.course || ''}
           placeholder="TKT10002"
           onChange={(e) => setData({ course: e.target.value })}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button type="submit" variant="contained" startIcon={<SearchIcon />}>
+                    Check
+                  </Button>
+                </InputAdornment>
+              )
+            }
+          }}
         />
-      </Form>
+      </Box>
       {getInstanceCards(eduweb)}
     </div>
   )

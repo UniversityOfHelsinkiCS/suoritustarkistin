@@ -1,6 +1,10 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Accordion, Card } from 'semantic-ui-react'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Card from '@mui/material/Card'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export default ({ instance, active, setActive }) => {
   const { eduweb } = useSelector((state) => state.apiChecks)
@@ -31,20 +35,32 @@ export default ({ instance, active, setActive }) => {
   }
 
   return (
-    <Card fluid style={{ padding: '20px' }}>
+    <Card variant="outlined" sx={{ padding: '20px', mb: 2 }}>
       {getCardRow(instance, 'oodi_id')}
       {getCardRow(instance, 'url')}
       {getCardRow(instance, 'alkupvm')}
       {getCardRow(instance, 'loppupvm')}
-      <Accordion fluid styled style={{ marginTop: '20px' }}>
-        <Accordion.Title
-          style={{ backgroundColor: '#2185d0', color: 'white' }}
-          active={active === instance.url}
-          onClick={() => setActive(active === instance.url ? -1 : instance.url)}
+      <Accordion
+        disableGutters
+        elevation={0}
+        variant="outlined"
+        sx={{ mt: '20px' }}
+        expanded={active === instance.url}
+        onChange={() => setActive(active === instance.url ? -1 : instance.url)}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+          // MUI paints a grey focus-visible background over the summary once clicked
+          sx={{
+            backgroundColor: '#2185d0',
+            color: 'white',
+            '&.Mui-focusVisible': { backgroundColor: '#2185d0' },
+            '&:hover': { backgroundColor: '#1a6fb0' }
+          }}
         >
           Enrollments
-        </Accordion.Title>
-        <Accordion.Content active={active === instance.url}>{getEnrollments(instance.url)}</Accordion.Content>
+        </AccordionSummary>
+        <AccordionDetails>{getEnrollments(instance.url)}</AccordionDetails>
       </Accordion>
     </Card>
   )

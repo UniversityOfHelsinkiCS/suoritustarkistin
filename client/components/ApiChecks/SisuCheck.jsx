@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Input, Header, Form } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import SearchIcon from '@mui/icons-material/Search'
 import { checkSisu } from '@client/utils/redux/apiCheckReducer'
 import SisuInstance from '@client/components/ApiChecks/SisuInstance'
 
@@ -45,22 +50,29 @@ export default () => {
 
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
-      <Header>Sisu enrolment check</Header>
-      <Form onSubmit={handleCheck} style={{ marginBottom: '100px' }}>
-        <Form.Field
-          control={Input}
+      <Typography variant="h6" component="h2" gutterBottom>
+        Sisu enrolment check
+      </Typography>
+      <Box component="form" onSubmit={handleCheck} sx={{ mb: 4 }}>
+        <TextField
+          fullWidth
           label="Enter course code"
-          action={{
-            icon: 'search',
-            color: 'blue',
-            labelPosition: 'right',
-            content: 'Check'
-          }}
           value={data.course || ''}
           placeholder="TKT21027"
           onChange={(e) => setData({ course: e.target.value })}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button type="submit" variant="contained" startIcon={<SearchIcon />}>
+                    Check
+                  </Button>
+                </InputAdornment>
+              )
+            }
+          }}
         />
-      </Form>
+      </Box>
       {getRealisationCards()}
     </div>
   )

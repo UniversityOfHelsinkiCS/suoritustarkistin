@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Card } from 'semantic-ui-react'
+import Card from '@mui/material/Card'
 
 export default () => {
   const { newMooc } = useSelector((state) => state.apiChecks)
@@ -25,7 +25,7 @@ export default () => {
     if (newMooc.error || !Array.isArray(newMooc)) return 'Something went wrong'
 
     return (
-      <Card fluid style={{ padding: '20px' }}>
+      <Card variant="outlined" sx={{ padding: '20px' }}>
         {newMooc.map((s) => (
           <div key={s.id}>
             {getCardRow(s, 'user_id')}

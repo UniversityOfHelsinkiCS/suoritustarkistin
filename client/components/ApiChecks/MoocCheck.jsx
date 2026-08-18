@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Form, Header, Input } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import SearchIcon from '@mui/icons-material/Search'
 import { checkMooc } from '@client/utils/redux/apiCheckReducer'
 import MoocInstance from './MoocInstance'
 
@@ -15,22 +20,29 @@ export default () => {
 
   return (
     <div style={{ minHeight: '300px', padding: '50px 30px' }}>
-      <Header>Mooc check</Header>
-      <Form onSubmit={handleCheck} style={{ marginBottom: '60px' }}>
-        <Form.Field
-          control={Input}
+      <Typography variant="h6" component="h2" gutterBottom>
+        Mooc check
+      </Typography>
+      <Box component="form" onSubmit={handleCheck} sx={{ mb: 4 }}>
+        <TextField
+          fullWidth
           label="Enter course code or mooc-slug"
-          action={{
-            icon: 'search',
-            color: 'blue',
-            labelPosition: 'right',
-            content: 'Check'
-          }}
           value={data.course || ''}
           placeholder="TKT10002"
           onChange={(e) => setData({ course: e.target.value })}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button type="submit" variant="contained" startIcon={<SearchIcon />}>
+                    Check
+                  </Button>
+                </InputAdornment>
+              )
+            }
+          }}
         />
-      </Form>
+      </Box>
       <MoocInstance />
     </div>
   )

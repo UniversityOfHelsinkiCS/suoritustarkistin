@@ -1,6 +1,15 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Icon, Message, Segment, Table } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import Button from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import moment from 'moment'
 
 import Notification from '@client/components/Message'
@@ -30,8 +39,9 @@ const DeleteButton = ({ id }) => {
   const dispatch = useDispatch()
   return (
     <Button
+      variant="contained"
       data-cy={`report-entry-delete-button-${id}`}
-      color="red"
+      color="error"
       onClick={() => dispatch(handleEntryDeletionAction(id))}
     >
       Delete
@@ -42,8 +52,8 @@ const DeleteButton = ({ id }) => {
 const RefreshEnrollmentsButton = () => {
   const dispatch = useDispatch()
   return (
-    <Button onClick={() => dispatch(refreshEnrollmentsAction())} icon>
-      <Icon name="refresh" /> Refresh enrollments from Sisu
+    <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => dispatch(refreshEnrollmentsAction())}>
+      Refresh enrollments from Sisu
     </Button>
   )
 }
@@ -62,62 +72,60 @@ const EnrolmentLimbo = () => {
     <>
       <Notification />
       {!rows.length && !pending && reportsFetched ? (
-        <Message success>No completions without enrollment info!</Message>
+        <Alert severity="success">No completions without enrollment info!</Alert>
       ) : (
-        <Segment loading={pending}>
-          <Message style={{ maxWidth: 800 }} info>
-            <Message.Header>What is enrollment limbo?</Message.Header>
-            <Message.Content>
-              Here is listed all individual completions without an enrollment in Sisu. Refresh enrollments button will
-              check new enrollments from Sisu and create a new batch for entries with found enrollment. Refresh is done
-              automatically once a week.
-            </Message.Content>
-          </Message>
+        <Paper variant="outlined" sx={{ p: 2, opacity: pending ? 0.5 : 1 }}>
+          <Alert severity="info" sx={{ maxWidth: 800, mb: 2 }}>
+            <AlertTitle>What is enrollment limbo?</AlertTitle>
+            Here is listed all individual completions without an enrollment in Sisu. Refresh enrollments button will
+            check new enrollments from Sisu and create a new batch for entries with found enrollment. Refresh is done
+            automatically once a week.
+          </Alert>
           <RefreshEnrollmentsButton />
-          <Table>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Course code</Table.HeaderCell>
-                <Table.HeaderCell>Course name</Table.HeaderCell>
-                <Table.HeaderCell>Student number</Table.HeaderCell>
-                <Table.HeaderCell>Credits</Table.HeaderCell>
-                <Table.HeaderCell>Student ID</Table.HeaderCell>
-                <Table.HeaderCell>Completion date</Table.HeaderCell>
-                <Table.HeaderCell>Language</Table.HeaderCell>
-                <Table.HeaderCell>Date reported</Table.HeaderCell>
-                <Table.HeaderCell>Delete</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
+          <Table size="small" sx={{ mt: 2 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Course code</TableCell>
+                <TableCell>Course name</TableCell>
+                <TableCell>Student number</TableCell>
+                <TableCell>Credits</TableCell>
+                <TableCell>Student ID</TableCell>
+                <TableCell>Completion date</TableCell>
+                <TableCell>Language</TableCell>
+                <TableCell>Date reported</TableCell>
+                <TableCell>Delete</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {rows.map((rawEntry) => (
-                <Table.Row key={rawEntry.id}>
-                  <Table.Cell data-cy={`report-course-code-${rawEntry.id}`}>
+                <TableRow key={rawEntry.id}>
+                  <TableCell data-cy={`report-course-code-${rawEntry.id}`}>
                     {getCourseCode(rawEntry, rawEntry.course)}
-                  </Table.Cell>
-                  <Table.Cell data-cy={`report-course-name-${rawEntry.id}`}>
+                  </TableCell>
+                  <TableCell data-cy={`report-course-name-${rawEntry.id}`}>
                     {getCourseName(rawEntry, rawEntry.course)}
-                  </Table.Cell>
-                  <Table.Cell data-cy={`report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</Table.Cell>
-                  <Table.Cell data-cy={`report-credits-${rawEntry.id}`}>{rawEntry.credits}</Table.Cell>
-                  <Table.Cell data-cy={`report-personId-${rawEntry.id}`}>{rawEntry.entry.personId}</Table.Cell>
-                  <Table.Cell data-cy={`report-completionDate-${rawEntry.id}`}>
+                  </TableCell>
+                  <TableCell data-cy={`report-student-number-${rawEntry.id}`}>{rawEntry.studentNumber}</TableCell>
+                  <TableCell data-cy={`report-credits-${rawEntry.id}`}>{rawEntry.credits}</TableCell>
+                  <TableCell data-cy={`report-personId-${rawEntry.id}`}>{rawEntry.entry.personId}</TableCell>
+                  <TableCell data-cy={`report-completionDate-${rawEntry.id}`}>
                     {rawEntry.entry.completionDate ? moment(rawEntry.entry.completionDate).format('DD.MM.YYYY') : null}
-                  </Table.Cell>
-                  <Table.Cell data-cy={`report-completionLanguage-${rawEntry.id}`}>
+                  </TableCell>
+                  <TableCell data-cy={`report-completionLanguage-${rawEntry.id}`}>
                     {rawEntry.entry.completionLanguage ? rawEntry.entry.completionLanguage : null}
-                  </Table.Cell>
-                  <Table.Cell data-cy={`report-completionDate-${rawEntry.id}`}>
+                  </TableCell>
+                  <TableCell data-cy={`report-completionDate-${rawEntry.id}`}>
                     {moment(rawEntry.createdAt).format('DD.MM.YYYY')}
-                  </Table.Cell>
-                  <Table.Cell>
+                  </TableCell>
+                  <TableCell>
                     <DeleteButton id={rawEntry.id} />
-                  </Table.Cell>
-                </Table.Row>
+                  </TableCell>
+                </TableRow>
               ))}
-            </Table.Body>
+            </TableBody>
           </Table>
           <Pagination reduxKey="enrolmentLimbo" action={getAllEnrollmentLimboEntriesAction} disableFilters />
-        </Segment>
+        </Paper>
       )}
     </>
   )

@@ -1,6 +1,17 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Accordion, Icon, Popup, Table } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Tooltip from '@mui/material/Tooltip'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ArrowRightIcon from '@mui/icons-material/ArrowRight'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlined'
 import moment from 'moment'
 
 import { EOAI_CODES, EOAI_NAMEMAP } from '@shared/common'
@@ -13,6 +24,12 @@ const PLACEHOLDER_COURSE = {
   courseCode: 'COURSE DELETED',
   language: 'COURSE DELETED',
   credits: 'COURSE DELETED'
+}
+
+// Semantic's tables drew column separators; MUI cells only draw a bottom border.
+const celledBorders = {
+  '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
+  '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
 }
 
 const styles = {
@@ -43,27 +60,27 @@ export default ({ rows }) => {
 
   const includeDelete = rows.some((r) => allowDelete(user, r))
   return (
-    <Table compact className="report-table">
+    <Table size="small" className="report-table" sx={celledBorders}>
       <TableColumns allowDelete={includeDelete} />
-      <TableBody key={rows[0].batchId} user={user} rawEntries={rows} />
+      <EntryRows key={rows[0].batchId} user={user} rawEntries={rows} />
     </Table>
   )
 }
 
 const TableColumns = ({ allowDelete }) => (
-  <Table.Header>
-    <Table.Row>
-      <Table.HeaderCell>Student number</Table.HeaderCell>
-      <Table.HeaderCell>Student name</Table.HeaderCell>
-      <Table.HeaderCell>Credits</Table.HeaderCell>
-      <Table.HeaderCell>Grade</Table.HeaderCell>
-      <Table.HeaderCell>Completion date</Table.HeaderCell>
-      <Table.HeaderCell>Language</Table.HeaderCell>
-      <Table.HeaderCell>Date sent</Table.HeaderCell>
-      <Table.HeaderCell>Grader</Table.HeaderCell>
-      <Table.HeaderCell>Sisu details</Table.HeaderCell>
-      <Popup
-        content={
+  <TableHead>
+    <TableRow>
+      <TableCell>Student number</TableCell>
+      <TableCell>Student name</TableCell>
+      <TableCell>Credits</TableCell>
+      <TableCell>Grade</TableCell>
+      <TableCell>Completion date</TableCell>
+      <TableCell>Language</TableCell>
+      <TableCell>Date sent</TableCell>
+      <TableCell>Grader</TableCell>
+      <TableCell>Sisu details</TableCell>
+      <Tooltip
+        title={
           <div>
             <p>
               <strong>Suotar checks this status from Sisu once per day</strong>
@@ -78,15 +95,14 @@ const TableColumns = ({ allowDelete }) => (
             </p>
           </div>
         }
-        trigger={
-          <Table.HeaderCell>
-            In Sisu <Icon name="question circle outline" />
-          </Table.HeaderCell>
-        }
-      />
-      {allowDelete ? <Table.HeaderCell>Delete</Table.HeaderCell> : null}
-    </Table.Row>
-  </Table.Header>
+      >
+        <TableCell>
+          In Sisu <HelpOutlineIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />
+        </TableCell>
+      </Tooltip>
+      {allowDelete ? <TableCell>Delete</TableCell> : null}
+    </TableRow>
+  </TableHead>
 )
 
 const parseEntryError = (error) => {
@@ -108,9 +124,9 @@ const MinimalExpand = ({ title, content }) => {
   const [open, setOpen] = useState(false)
   return (
     <>
-      <span onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
-        {title} <Icon name={`triangle ${open ? 'down' : 'right'}`} />
-      </span>
+      <Box component="span" onClick={() => setOpen(!open)} sx={{ cursor: 'pointer' }}>
+        {title} {open ? <ArrowDropDownIcon fontSize="small" /> : <ArrowRightIcon fontSize="small" />}
+      </Box>
       {open ? <p>{content}</p> : null}
     </>
   )
@@ -149,75 +165,73 @@ const getGrade = (gradeScaleId, gradeId, language) => {
   return null
 }
 
-const TableBody = ({ user, rawEntries }) => {
+const EntryRows = ({ user, rawEntries }) => {
   const student = useSelector((state) => state.sisReports.filters.student)
 
   return (
-    <Table.Body data-cy="report-table">
+    <TableBody data-cy="report-table">
       {rawEntries.map((rawEntry) => {
         const course = rawEntry.course || PLACEHOLDER_COURSE
         return (
           <React.Fragment key={`row-${rawEntry.id}`}>
-            <Table.Row
+            <TableRow
               data-cy={`report-table-row-${rawEntry.studentNumber}`}
-              active={student && rawEntry.studentNumber.startsWith(student)}
+              // Semantic marked filter matches with its own 'active' class; an explicit
+              // attribute keeps the highlight assertable without depending on styling.
+              data-highlighted={Boolean(student && rawEntry.studentNumber.startsWith(student))}
+              sx={student && rawEntry.studentNumber.startsWith(student) ? { outline: '2px solid #2185d0' } : null}
               style={getTableRowStyle(rawEntry.entry)}
             >
-              <Table.Cell data-cy="report-student-number">{rawEntry.studentNumber}</Table.Cell>
-              <Table.Cell data-cy="report-student-name">{rawEntry.entry.studentName}</Table.Cell>
-              <Table.Cell data-cy="report-credits">{rawEntry.credits}</Table.Cell>
+              <TableCell data-cy="report-student-number">{rawEntry.studentNumber}</TableCell>
+              <TableCell data-cy="report-student-name">{rawEntry.entry.studentName}</TableCell>
+              <TableCell data-cy="report-credits">{rawEntry.credits}</TableCell>
               <EntryCells
                 entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }}
                 course={getCourseName(rawEntry, course)}
                 grader={rawEntry.grader}
               />
               {allowDelete(user, rawEntry) ? (
-                <Table.Cell>
+                <TableCell>
                   <DeleteEntryButton rawEntryId={rawEntry.id} batchId={rawEntry.batchId} />
-                </Table.Cell>
+                </TableCell>
               ) : null}
-            </Table.Row>
+            </TableRow>
             {rawEntry.entry.errors && (
-              <Table.Row>
-                <Table.Cell colSpan="15" error>
+              <TableRow>
+                <TableCell colSpan={15} sx={{ backgroundColor: '#fff6f6', color: '#9f3a38' }}>
                   <MinimalExpand
                     title={parseEntryError(rawEntry.entry.errors)}
                     content={`Full error: ${JSON.stringify(rawEntry.entry.errors)}`}
                   />
-                </Table.Cell>
-              </Table.Row>
+                </TableCell>
+              </TableRow>
             )}
           </React.Fragment>
         )
       })}
-    </Table.Body>
+    </TableBody>
   )
 }
 
 const getSisuStatusCell = (sent, errors, registered) => (
   <>
     {sent && errors && (
-      <Popup
-        content="Sending attainment to Sisu failed"
-        trigger={<Icon className="hoverable-item" name="close" color="red" />}
-      />
+      <Tooltip title="Sending attainment to Sisu failed">
+        <CloseIcon className="hoverable-item" color="error" fontSize="small" />
+      </Tooltip>
     )}
     {registered === 'PARTLY_REGISTERED' && (
-      <Popup
-        content="Attainment has been registered to Sisu as an partial attainment (osasuoritus)"
-        trigger={<Icon className="hoverable-item" name="checkmark" color="green" />}
-      />
+      <Tooltip title="Attainment has been registered to Sisu as an partial attainment (osasuoritus)">
+        <CheckIcon className="hoverable-item" color="success" fontSize="small" />
+      </Tooltip>
     )}
     {registered === 'REGISTERED' && (
-      <Popup
-        content="Attainment has been registered as a proper course completion"
-        trigger={
-          <div>
-            <Icon className="hoverable-item" name="checkmark" color="green" />
-            <Icon className="hoverable-item" name="checkmark" color="green" />
-          </div>
-        }
-      />
+      <Tooltip title="Attainment has been registered as a proper course completion">
+        <Box sx={{ display: 'inline-flex', flexWrap: 'nowrap' }}>
+          <CheckIcon className="hoverable-item" color="success" fontSize="small" />
+          <CheckIcon className="hoverable-item" color="success" fontSize="small" />
+        </Box>
+      </Tooltip>
     )}
   </>
 )
@@ -244,7 +258,7 @@ const EntryCells = ({ entry, course, grader }) => {
   } = entry
 
   const entryAccordionContent = () => (
-    <Accordion.Content data-cy="report-course-content" active={open} style={{ padding: '0.75em 1em' }}>
+    <Box data-cy="report-course-content" sx={{ padding: '0.75em 1em', display: open ? 'block' : 'none' }}>
       <strong>Realisation name</strong>
       <p>{getSisUnitName(courseUnitRealisationName, completionLanguage) || null}</p>
       <strong>Course unit ID</strong>
@@ -259,11 +273,11 @@ const EntryCells = ({ entry, course, grader }) => {
       <p>{verifierPersonId || null}</p>
       <strong>Grade scale of the course</strong>
       <p>{gradeScaleId || null}</p>
-    </Accordion.Content>
+    </Box>
   )
 
   const extraEntryAccordionContent = () => (
-    <Accordion.Content data-cy="report-course-content" active={open} style={{ padding: '0.75em 1em' }}>
+    <Box data-cy="report-course-content" sx={{ padding: '0.75em 1em', display: open ? 'block' : 'none' }}>
       <strong>Course unit ID</strong>
       <p>{courseUnitId || null}</p>
       <strong>Study right id</strong>
@@ -272,30 +286,34 @@ const EntryCells = ({ entry, course, grader }) => {
       <p>{verifierPersonId || null}</p>
       <strong>Grade scale of the course</strong>
       <p>{gradeScaleId || null}</p>
-    </Accordion.Content>
+    </Box>
   )
 
   return (
     <>
-      <Table.Cell data-cy="report-entry-grade">
+      <TableCell data-cy="report-entry-grade">
         {!missingEnrolment || type === 'EXTRA_ENTRY' ? getGrade(gradeScaleId, gradeId, completionLanguage) : gradeId}
-      </Table.Cell>
-      <Table.Cell data-cy="report-completionDate">
+      </TableCell>
+      <TableCell data-cy="report-completionDate">
         {completionDate ? moment(completionDate).format('DD.MM.YYYY') : null}
-      </Table.Cell>
-      <Table.Cell data-cy="report-completionLanguage">{completionLanguage || null}</Table.Cell>
-      <Table.Cell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</Table.Cell>
-      <Table.Cell>{grader ? grader.name : 'Grader not found'}</Table.Cell>
-      <Table.Cell data-cy={`report-courseUnitRealisationName-${gradeId}`}>
-        <Accordion className="report-table-accordion" style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
-          <Accordion.Title active data-cy="entry-accordion" onClick={() => setOpen(!open)}>
-            <Icon name={`caret ${open ? 'down' : 'right'}`} />
+      </TableCell>
+      <TableCell data-cy="report-completionLanguage">{completionLanguage || null}</TableCell>
+      <TableCell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</TableCell>
+      <TableCell>{grader ? grader.name : 'Grader not found'}</TableCell>
+      <TableCell data-cy={`report-courseUnitRealisationName-${gradeId}`}>
+        <Box className="report-table-accordion" style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
+          <Box
+            data-cy="entry-accordion"
+            onClick={() => setOpen(!open)}
+            sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          >
+            {open ? <ArrowDropDownIcon fontSize="small" /> : <ArrowRightIcon fontSize="small" />}
             {course}
-          </Accordion.Title>
+          </Box>
           {type === 'ENTRY' ? entryAccordionContent() : extraEntryAccordionContent()}
-        </Accordion>
-      </Table.Cell>
-      <Table.Cell data-cy="report-registered">{getSisuStatusCell(sent, errors, registered)}</Table.Cell>
+        </Box>
+      </TableCell>
+      <TableCell data-cy="report-registered">{getSisuStatusCell(sent, errors, registered)}</TableCell>
     </>
   )
 }

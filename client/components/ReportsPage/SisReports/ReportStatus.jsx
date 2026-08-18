@@ -1,24 +1,32 @@
 import React from 'react'
 import * as _ from 'lodash'
 import moment from 'moment'
-import { Label } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
 
+// Semantic's accordion title made its whole subtree bold, which is what separated the
+// status line from the lighter date beneath it.
 const styles = {
   success: {
     marginBottom: '0',
-    color: 'green'
+    color: 'green',
+    fontWeight: 700
   },
   missing: {
     marginBottom: '0',
-    color: 'orange'
+    color: 'orange',
+    fontWeight: 700
   },
   info: {
     marginBottom: '0',
-    color: 'gray'
+    marginTop: '2px',
+    color: 'rgba(0, 0, 0, 0.6)', // MUI's text.secondary
+    fontWeight: 400
   },
   error: {
     marginBottom: '0',
-    color: 'red'
+    color: 'red',
+    fontWeight: 700
   }
 }
 
@@ -34,16 +42,24 @@ const ReportStatus = ({ batch }) => {
 
   const getMissingEnrollment = () =>
     missingEnrollments ? (
-      <Label basic color="brown" pointing="left">
-        {missingEnrollments} MISSING ENROLLMENT
-      </Label>
+      <Chip
+        size="small"
+        variant="outlined"
+        color="warning"
+        sx={{ ml: 1 }}
+        label={`${missingEnrollments} MISSING ENROLLMENT`}
+      />
     ) : null
 
   const getErrorAmount = () =>
     amountOfErrors !== 0 ? (
-      <Label basic color="red" pointing="left">
-        {`CONTAINS ${amountOfErrors} ERROR(S)`}
-      </Label>
+      <Chip
+        size="small"
+        variant="outlined"
+        color="error"
+        sx={{ ml: 1 }}
+        label={`CONTAINS ${amountOfErrors} ERROR(S)`}
+      />
     ) : null
 
   const batchStatus = () => (
@@ -59,9 +75,13 @@ const ReportStatus = ({ batch }) => {
 
   return (
     <div style={{ marginTop: '6px' }}>
-      {batchStatus()}
-      {getErrorAmount()}
-      {getMissingEnrollment()}
+      {/* The chips are taller than the status text, so a baseline row would leave the
+          text sitting low against them. */}
+      <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+        {batchStatus()}
+        {getErrorAmount()}
+        {getMissingEnrollment()}
+      </Box>
       {getDateSent()}
     </div>
   )

@@ -99,14 +99,11 @@ export default () => (
         title={<DetailedInstructions />}
         slotProps={{
           tooltip: {
-            // The default tooltip type is 11px, unreadable for a panel of instructions
-            // rather than a one-line hint.
             sx: {
               maxWidth: 'none',
               bgcolor: 'background.paper',
               color: 'text.primary',
               boxShadow: 3,
-              fontSize: '1rem',
               p: 2
             }
           }

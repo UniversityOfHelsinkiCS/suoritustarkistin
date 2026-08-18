@@ -1,5 +1,9 @@
 import React from 'react'
-import { Button, Icon } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { useDispatch, useSelector } from 'react-redux'
 
 const styles = {
@@ -28,18 +32,16 @@ const Pagination = ({ reduxKey, action, disableFilters = false }) => {
   const fetch = (offset) => dispatch(action(getPayload(offset)))
 
   return (
-    <div style={styles}>
-      <Button.Group>
-        <Button disabled={offset === 0} labelPosition="left" onClick={() => fetch(offset - limit)} icon>
+    <Box sx={styles}>
+      <ButtonGroup variant="contained">
+        <Button disabled={offset === 0} startIcon={<ArrowBackIcon />} onClick={() => fetch(offset - limit)}>
           Newer
-          <Icon name="left arrow" />
         </Button>
-        <Button disabled={offset + limit >= count} onClick={() => fetch(offset + limit)} labelPosition="right" icon>
+        <Button disabled={offset + limit >= count} endIcon={<ArrowForwardIcon />} onClick={() => fetch(offset + limit)}>
           Older
-          <Icon name="right arrow" />
         </Button>
-      </Button.Group>
-    </div>
+      </ButtonGroup>
+    </Box>
   )
 }
 

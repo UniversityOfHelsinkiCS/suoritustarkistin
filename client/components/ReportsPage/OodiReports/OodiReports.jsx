@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Accordion, Table } from 'semantic-ui-react'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import TabLoader from '@client/components/ReportsPage/TabLoader'
 
@@ -10,56 +18,60 @@ const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>
 const LANGUAGES = { 1: 'fi', 2: 'sv', 6: 'en' }
 
 const reportTable = (report) => {
-  const TableBody = () => (
-    <Table.Body>
+  const Rows = () => (
+    <TableBody>
       {report.data.split('\n').map((rawLine, index) => {
         const line = rawLine.split('#')
         return (
-          <Table.Row key={`row-${index}`}>
-            <Table.Cell>{line[3]}</Table.Cell>
-            <Table.Cell>{line[4]}</Table.Cell>
-            <Table.Cell>{line[0]}</Table.Cell>
-            <Table.Cell>{line[7]}</Table.Cell>
-            <Table.Cell>{line[17]}</Table.Cell>
-            <Table.Cell>{LANGUAGES[line[2]]}</Table.Cell>
-            <Table.Cell>{line[5]}</Table.Cell>
-          </Table.Row>
+          <TableRow key={`row-${index}`}>
+            <TableCell>{line[3]}</TableCell>
+            <TableCell>{line[4]}</TableCell>
+            <TableCell>{line[0]}</TableCell>
+            <TableCell>{line[7]}</TableCell>
+            <TableCell>{line[17]}</TableCell>
+            <TableCell>{LANGUAGES[line[2]]}</TableCell>
+            <TableCell>{line[5]}</TableCell>
+          </TableRow>
         )
       })}
-    </Table.Body>
+    </TableBody>
   )
 
   return (
-    <Accordion.Content>
-      <Table celled striped>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Course code</Table.HeaderCell>
-            <Table.HeaderCell>Course name</Table.HeaderCell>
-            <Table.HeaderCell>Student number</Table.HeaderCell>
-            <Table.HeaderCell>Grade</Table.HeaderCell>
-            <Table.HeaderCell>Credits</Table.HeaderCell>
-            <Table.HeaderCell>Language</Table.HeaderCell>
-            <Table.HeaderCell>Completion date</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <TableBody />
-      </Table>
-    </Accordion.Content>
+    <Table size="small" sx={celledBorders}>
+      <TableHead>
+        <TableRow>
+          <TableCell>Course code</TableCell>
+          <TableCell>Course name</TableCell>
+          <TableCell>Student number</TableCell>
+          <TableCell>Grade</TableCell>
+          <TableCell>Credits</TableCell>
+          <TableCell>Language</TableCell>
+          <TableCell>Completion date</TableCell>
+        </TableRow>
+      </TableHead>
+      <Rows />
+    </Table>
   )
+}
+
+// Semantic's celled tables drew column separators; MUI cells only draw a bottom border.
+const celledBorders = {
+  '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
+  '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
 }
 
 const title = (report) => {
   const fileName = report.fileName.split('%')
   const timestamp = fileName[1].split('-')
   return (
-    <Accordion.Title>
+    <>
       {`${fileName[0]} - ${timestamp[0]} - ${timestamp[1].substring(0, 2)}:${timestamp[1].substring(
         2,
         4
       )}:${timestamp[1].substring(4, 6)}`}
       {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
-    </Accordion.Title>
+    </>
   )
 }
 
@@ -77,11 +89,16 @@ export default () => {
 
   if (manualReports.length === 0) return <div>NO REPORTS FOUND.</div>
 
-  const panels = manualReports.map((r, i) => ({
-    key: `panel-${i}`,
-    title: title(r),
-    content: reportTable(r)
-  }))
-
-  return <Accordion panels={panels} exclusive={false} fluid styled />
+  // Semantic took a panels array with exclusive={false}; MUI composes each panel and
+  // is non-exclusive by default.
+  return (
+    <div>
+      {manualReports.map((r, i) => (
+        <Accordion key={`panel-${i}`} disableGutters elevation={0} variant="outlined" sx={{ mb: 1 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>{title(r)}</AccordionSummary>
+          <AccordionDetails>{reportTable(r)}</AccordionDetails>
+        </Accordion>
+      ))}
+    </div>
+  )
 }

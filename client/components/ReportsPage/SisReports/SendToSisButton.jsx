@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { Button, Popup } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Popover from '@mui/material/Popover'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { sendEntriesToSisAction } from '@client/utils/redux/sisReportsReducer'
@@ -7,11 +9,11 @@ import { sendEntriesToSisAction } from '@client/utils/redux/sisReportsReducer'
 export default ({ idsToSend }) => {
   const { entries, extraEntries } = idsToSend
   const dispatch = useDispatch()
-  const [isOpen, setIsOpen] = useState(false)
+  const [anchor, setAnchor] = useState(null)
   const reports = useSelector((state) => state.sisReports)
 
   const sendNewEntries = () => {
-    setIsOpen(false)
+    setAnchor(null)
     dispatch(sendEntriesToSisAction(entries, extraEntries))
   }
 
@@ -21,30 +23,36 @@ export default ({ idsToSend }) => {
   if (!entries.length && !extraEntries.length) return null
 
   return (
-    <Popup
-      trigger={
-        <Button
-          positive
-          content="Send completions to Sisu"
-          loading={reports.pending}
-          disabled={reports.pending || (!entries.length && !extraEntries.length)}
-        />
-      }
-      open={isOpen}
-      onClose={() => setIsOpen(false)}
-      onOpen={() => setIsOpen(true)}
-      content={
-        <Button
-          positive
-          data-cy="sendButton"
-          onClick={sendNewEntries}
-          loading={reports.pending}
-          disabled={reports.pending || (!entries.length && !extraEntries)}
-          content={getConfirmMessage()}
-        />
-      }
-      on="click"
-      position="top center"
-    />
+    <>
+      <Button
+        variant="contained"
+        color="success"
+        loading={reports.pending}
+        disabled={reports.pending || (!entries.length && !extraEntries.length)}
+        onClick={(e) => setAnchor(e.currentTarget)}
+      >
+        Send completions to Sisu
+      </Button>
+      <Popover
+        open={Boolean(anchor)}
+        anchorEl={anchor}
+        onClose={() => setAnchor(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Box sx={{ p: 1 }}>
+          <Button
+            variant="contained"
+            color="success"
+            data-cy="sendButton"
+            onClick={sendNewEntries}
+            loading={reports.pending}
+            disabled={reports.pending || (!entries.length && !extraEntries)}
+          >
+            {getConfirmMessage()}
+          </Button>
+        </Box>
+      </Popover>
+    </>
   )
 }

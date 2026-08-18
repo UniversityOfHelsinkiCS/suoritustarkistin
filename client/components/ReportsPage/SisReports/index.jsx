@@ -3,7 +3,19 @@ import * as _ from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
-import { Accordion, Button, Icon, Message, Segment, Popup } from 'semantic-ui-react'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import RefreshIcon from '@mui/icons-material/Refresh'
 
 import Notification from '@client/components/Message'
 import {
@@ -23,9 +35,9 @@ import Filters from './Filters'
 import './reportStyles.css'
 
 const SisSuccessMessage = () => (
-  <Message success>
-    <Message.Header>Entries sent successfully to Sisu</Message.Header>
-  </Message>
+  <Alert severity="success" sx={{ mt: 2 }}>
+    Entries sent successfully to Sisu
+  </Alert>
 )
 
 const getCourseUnitRealisationSisuUrl = (realisation) => `
@@ -56,20 +68,21 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Button icon>
-          <Icon name="external" /> View attainments in Sisu
+        <Button variant="outlined" startIcon={<OpenInNewIcon />}>
+          View attainments in Sisu
         </Button>
       </a>
     ) : null
 
   const CopyBatchLinkButton = ({ batchId }) => (
     <Button
+      variant="outlined"
+      startIcon={<ContentCopyIcon />}
       onClick={() => {
         navigator.clipboard.writeText(getBatchLink(batchId))
       }}
-      icon
     >
-      <Icon name="copy" /> Copy link to report
+      Copy link to report
     </Button>
   )
 
@@ -83,8 +96,8 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
     }
 
     return (
-      <Button onClick={copyCsv(entries)}>
-        <Icon name="copy" /> Copy missing to csv
+      <Button variant="outlined" startIcon={<ContentCopyIcon />} onClick={copyCsv(entries)}>
+        Copy missing to csv
       </Button>
     )
   }
@@ -99,39 +112,36 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
           })
         )
       }
-      icon
+      variant="outlined"
+      startIcon={<RefreshIcon />}
     >
-      <Icon name="refresh" /> Refresh from Sisu
+      Refresh from Sisu
     </Button>
   )
 
-  return (
-    <Accordion.Content active={openAccordions.includes(report[0].batchId)}>
-      <Segment
-        loading={openAccordions.includes(report[0].batchId) && batchLoading}
-        style={{ margin: 0, padding: 0 }}
-        basic
-      >
-        <p>
-          Completions reported by{' '}
-          <strong>
-            {!report[0].reporter || report[0].batchId.startsWith('limbo') ? 'Suotar-bot' : report[0].reporter.name}
-          </strong>
-        </p>
-        {report[0].batchId.startsWith('limbo') ? (
-          <Message info>
-            <p>This report contains previously reported entries for which an enrollment has been found.</p>
-          </Message>
-        ) : null}
-        {!report[0].batchId.startsWith('limbo') && report.some(({ entry }) => entry.missingEnrolment) ? (
-          <Message info>
-            <p>
-              Completions with yellow background are missing enrollments and will not be sent to Sisu. When an
-              enrollment for the completion is found, the completion will be sent to Sisu.
-            </p>
-          </Message>
-        ) : null}
+  const loading = openAccordions.includes(report[0].batchId) && batchLoading
 
+  return (
+    <Box sx={{ margin: 0, padding: 0, opacity: loading ? 0.5 : 1 }}>
+      <p>
+        Completions reported by{' '}
+        <strong>
+          {!report[0].reporter || report[0].batchId.startsWith('limbo') ? 'Suotar-bot' : report[0].reporter.name}
+        </strong>
+      </p>
+      {report[0].batchId.startsWith('limbo') ? (
+        <Alert severity="info" sx={{ my: 1 }}>
+          This report contains previously reported entries for which an enrollment has been found.
+        </Alert>
+      ) : null}
+      {!report[0].batchId.startsWith('limbo') && report.some(({ entry }) => entry.missingEnrolment) ? (
+        <Alert severity="info" sx={{ my: 1 }}>
+          Completions with yellow background are missing enrollments and will not be sent to Sisu. When an enrollment
+          for the completion is found, the completion will be sent to Sisu.
+        </Alert>
+      ) : null}
+
+      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1, my: 1 }}>
         {user.adminMode && (
           <>
             <SendToSisButton
@@ -153,35 +163,35 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
         )}
         <CopyBatchLinkButton batchId={report[0].batchId} />
         {entriesMissingEnrollment.length > 0 && <CopyMissingCsvButton entries={entriesMissingEnrollment} />}
+      </Stack>
 
-        {batchSent && !reportContainsErrors && <SisSuccessMessage />}
+      {batchSent && !reportContainsErrors && <SisSuccessMessage />}
 
-        {
-          // Display accordion only when batch contains sent entries or entries with errors
-          !batchSent ? (
-            <ReportTable rows={report} allowDelete={user.adminMode && !batchSent} />
-          ) : (
-            <div data-cy={`entries-panel-${report[0].batchId}`}>
-              {entriesNotSentOrErroneous.length ? (
-                <div className="sis-report-table-container">
-                  <h4>Entries with errors or missing enrollment</h4>
-                  <ReportTable rows={entriesNotSentOrErroneous} allowDelete={user.adminMode} />
-                </div>
-              ) : null}
-              {entriesWithoutErrors.length && (
-                <div className="sis-report-table-container">
-                  {entriesNotSentOrErroneous.length ? <h4>Successfully sent entries</h4> : null}
-                  <ReportTable
-                    rows={entriesWithoutErrors}
-                    allowDelete={false} // Never allow delete for successfully sent entries
-                  />
-                </div>
-              )}
-            </div>
-          )
-        }
-      </Segment>
-    </Accordion.Content>
+      {
+        // Display accordion only when batch contains sent entries or entries with errors
+        !batchSent ? (
+          <ReportTable rows={report} allowDelete={user.adminMode && !batchSent} />
+        ) : (
+          <div data-cy={`entries-panel-${report[0].batchId}`}>
+            {entriesNotSentOrErroneous.length ? (
+              <div className="sis-report-table-container">
+                <h4>Entries with errors or missing enrollment</h4>
+                <ReportTable rows={entriesNotSentOrErroneous} allowDelete={user.adminMode} />
+              </div>
+            ) : null}
+            {entriesWithoutErrors.length && (
+              <div className="sis-report-table-container">
+                {entriesNotSentOrErroneous.length ? <h4>Successfully sent entries</h4> : null}
+                <ReportTable
+                  rows={entriesWithoutErrors}
+                  allowDelete={false} // Never allow delete for successfully sent entries
+                />
+              </div>
+            )}
+          </div>
+        )
+      }
+    </Box>
   )
 }
 
@@ -199,19 +209,21 @@ const title = (batch) => {
   const date = moment(batch[0].createdAt).format('DD.MM.YY - HH:mm:ss')
   const extras = extraCodes && extraCodes.length ? `+ ${extraCodes.length} others` : ''
   const titleString = batch[0].batchId.startsWith('limbo') ? batch[0].batchId : `${name} - ${code} ${extras} - ${date}`
-  return (
-    <Accordion.Title data-cy={`report-${code}`}>
-      {extraCodes.length ? (
-        <Popup
-          content={extraCodes.map((c, i) => `${extraNames[i] || name}  - ${c}`).join('\n') || 'aa'}
-          trigger={<span>{titleString}</span>}
-        />
-      ) : (
-        titleString
-      )}
-      <ReportStatus batch={batch} />
-    </Accordion.Title>
-  )
+  return {
+    dataCy: `report-${code}`,
+    node: (
+      <Box sx={{ color: 'text.secondary', fontWeight: 400 }}>
+        {extraCodes.length ? (
+          <Tooltip title={extraCodes.map((c, i) => `${extraNames[i] || name}  - ${c}`).join('\n') || 'aa'}>
+            <span>{titleString}</span>
+          </Tooltip>
+        ) : (
+          titleString
+        )}
+        <ReportStatus batch={batch} />
+      </Box>
+    )
+  }
 }
 
 // Which slice of state.sisReports this instance renders, and how it is fetched. The
@@ -266,25 +278,51 @@ export default ({ mooc, unsent }) => {
 
       return {
         key: `panel-${index}`,
+        batchId: reportWithEntries[0].batchId,
         title: title(reportWithEntries),
-        content: reportContents(reportWithEntries, dispatch, user, openAccordions, batchLoading),
-        onTitleClick: () => dispatch(openReport(reportWithEntries[0].batchId))
+        content: reportContents(reportWithEntries, dispatch, user, openAccordions, batchLoading)
       }
     })
+    .filter(Boolean)
 
   return (
-    <Segment loading={pending} basic>
+    <Box sx={{ opacity: pending ? 0.5 : 1 }}>
       <Notification />
       {/* The unsent tab is its own filter, the endpoint takes none. */}
       {!unsent && <Filters reduxKey={key} action={action} />}
       {!rows.length && reportsFetched ? (
-        <Message info>
-          <Message.Header>No reports found</Message.Header>
-        </Message>
+        <Alert severity="info">
+          <AlertTitle>No reports found</AlertTitle>
+        </Alert>
       ) : (
-        <Accordion panels={panels} exclusive={false} data-cy="reports-list" fluid styled />
+        // Semantic took a panels array with exclusive={false}; MUI composes each panel,
+        // and which ones are open stays driven by openAccordions in redux.
+        <Box data-cy="reports-list" sx={{ mt: 3 }}>
+          {panels.map((panel) => (
+            <Accordion
+              key={panel.key}
+              expanded={openAccordions.includes(panel.batchId)}
+              onChange={() => dispatch(openReport(panel.batchId))}
+              // disableGutters stops MUI adding vertical margin when a panel expands;
+              // the spacing between rows is a constant instead.
+              disableGutters
+              elevation={0}
+              variant="outlined"
+              sx={{ mb: 1, '&:before': { display: 'none' } }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                data-cy={panel.title.dataCy}
+                className="sis-report-table-accordion"
+              >
+                {panel.title.node}
+              </AccordionSummary>
+              <AccordionDetails>{panel.content}</AccordionDetails>
+            </Accordion>
+          ))}
+        </Box>
       )}
       <Pagination reduxKey={key} action={action} disableFilters={unsent} />
-    </Segment>
+    </Box>
   )
 }

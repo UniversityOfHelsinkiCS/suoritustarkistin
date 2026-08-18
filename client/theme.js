@@ -43,7 +43,11 @@ const theme = createTheme({
         root: { textTransform: 'none', fontSize: '1rem', minHeight: 64, paddingTop: 8, paddingBottom: 8 }
       }
     },
-    MuiTabs: { styleOverrides: { root: { minHeight: 64 } } }
+    MuiTabs: { styleOverrides: { root: { minHeight: 64 } } },
+    // MUI's tooltip type is 11px, which against the 14px root renders under 10px.
+    // Semantic's popups were body-sized, and several of these hold real explanations
+    // rather than one-word hints.
+    MuiTooltip: { styleOverrides: { tooltip: { fontSize: '1rem', padding: '0.6em 0.9em' } } }
   }
 })
 

@@ -291,7 +291,7 @@ export default ({ mooc, unsent }) => {
       {/* The unsent tab is its own filter, the endpoint takes none. */}
       {!unsent && <Filters reduxKey={key} action={action} />}
       {!rows.length && reportsFetched ? (
-        <Alert severity="info">
+        <Alert severity="info" sx={{ mt: 3 }}>
           <AlertTitle>No reports found</AlertTitle>
         </Alert>
       ) : (

@@ -1,10 +1,45 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Button, Grid, Icon, Modal, Popup } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
+import Popover from '@mui/material/Popover'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import Typography from '@mui/material/Typography'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import LoginIcon from '@mui/icons-material/Login'
 import moment from 'moment'
 
 import UserForm from '@client/components/UsersPage/UserForm'
 import { deleteUser, editUserAction } from '@client/utils/redux/usersReducer'
+
+/**
+ * Semantic's on="click" Popup held interactive content, which is a Popover in MUI.
+ * All the role toggles and the delete confirmation share this shape.
+ */
+const ConfirmPopover = ({ trigger, children }) => {
+  const [anchor, setAnchor] = useState(null)
+
+  return (
+    <>
+      {trigger((e) => setAnchor(e.currentTarget))}
+      <Popover
+        open={Boolean(anchor)}
+        anchorEl={anchor}
+        onClose={() => setAnchor(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Box sx={{ p: 2, maxWidth: 400 }}>{children(() => setAnchor(null))}</Box>
+      </Popover>
+    </>
+  )
+}
 
 export default ({ user }) => {
   const dispatch = useDispatch()
@@ -18,154 +53,117 @@ export default ({ user }) => {
     else window.location.href = '/'
   }
 
-  const grantAdmin = () => {
-    dispatch(editUserAction({ ...user, isAdmin: true }))
-  }
-
-  const removeAdmin = () => {
-    dispatch(editUserAction({ ...user, isAdmin: false }))
-  }
-
-  const grantGrader = () => {
-    dispatch(editUserAction({ ...user, isGrader: true }))
-  }
-
-  const removeGrader = () => {
-    dispatch(editUserAction({ ...user, isGrader: false }))
-  }
+  const setRole = (roleKey, value) => () => dispatch(editUserAction({ ...user, [roleKey]: value }))
 
   const handleDeleteUser = () => dispatch(deleteUser(user.id))
 
-  const GraderBadge = () =>
-    user.isGrader ? (
-      <Popup
-        trigger={<Icon data-cy={`${user.name}-is-grader`} name="check" color="green" size="large" />}
-        content={
-          <Button
-            data-cy="remove-grader-confirm"
-            color="red"
-            content="Remove grader role"
-            onClick={() => removeGrader()}
-          />
+  const RoleBadge = ({ roleKey, label }) => {
+    const granted = user[roleKey]
+    const cyName = roleKey === 'isGrader' ? 'grader' : 'admin'
+
+    return (
+      <ConfirmPopover
+        trigger={(open) =>
+          granted ? (
+            <CheckIcon
+              data-cy={`${user.name}-is-${cyName}`}
+              color="success"
+              onClick={open}
+              sx={{ cursor: 'pointer' }}
+            />
+          ) : (
+            <CloseIcon data-cy={`${user.name}-not-${cyName}`} color="error" onClick={open} sx={{ cursor: 'pointer' }} />
+          )
         }
-        on="click"
-        position="top center"
-      />
-    ) : (
-      <Popup
-        trigger={<Icon data-cy={`${user.name}-not-grader`} name="close" color="red" size="large" />}
-        content={
+      >
+        {(close) => (
           <Button
-            data-cy="grant-grader-confirm"
-            color="green"
-            content="Grant grader role"
-            onClick={() => grantGrader()}
-          />
-        }
-        on="click"
-        position="top center"
-      />
+            variant="contained"
+            data-cy={granted ? `remove-${cyName}-confirm` : `grant-${cyName}-confirm`}
+            color={granted ? 'error' : 'success'}
+            onClick={() => {
+              setRole(roleKey, !granted)()
+              close()
+            }}
+          >
+            {granted ? `Remove ${label} role` : `Grant ${label} role`}
+          </Button>
+        )}
+      </ConfirmPopover>
     )
-
-  const AdminBadge = () =>
-    user.isAdmin ? (
-      <Popup
-        trigger={<Icon data-cy={`${user.name}-is-admin`} name="check" color="green" size="large" />}
-        content={
-          <Button
-            data-cy="remove-admin-confirm"
-            color="red"
-            content="Remove admin role"
-            onClick={() => removeAdmin()}
-          />
-        }
-        on="click"
-        position="top center"
-      />
-    ) : (
-      <Popup
-        trigger={<Icon data-cy={`${user.name}-not-admin`} name="close" color="red" size="large" />}
-        content={
-          <Button data-cy="grant-admin-confirm" color="green" content="Grant admin role" onClick={() => grantAdmin()} />
-        }
-        on="click"
-        position="top center"
-      />
-    )
-
-  const DeleteUser = () => (
-    <Popup
-      trigger={
-        <Button data-cy={`${user.name}-delete`} icon="trash" color="red" size="large" content="Delete user" basic />
-      }
-      content={
-        <>
-          <p>
-            This does not delete the reports by the user. But{' '}
-            <strong>the reports will no longer have any mention of the user</strong>
-          </p>
-          <Button
-            data-cy="delete-user-confirm"
-            color="red"
-            content="Yes, delete the user"
-            size="massive"
-            onClick={() => handleDeleteUser()}
-          />
-        </>
-      }
-      on="click"
-      position="top center"
-    />
-  )
-
-  const EditUser = () => (
-    <Modal
-      trigger={
-        <Button
-          data-cy={`${user.name}-edit`}
-          icon="edit"
-          color="yellow"
-          size="large"
-          content="Edit user"
-          onClick={() => setShowForm(true)}
-          basic
-        />
-      }
-      basic
-      open={showForm}
-      onClose={() => setShowForm(false)}
-    >
-      <Modal.Content>
-        <UserForm user={user} close={() => setShowForm(false)} />
-      </Modal.Content>
-    </Modal>
-  )
+  }
 
   return (
-    <Grid.Row>
-      <Grid.Column width={4}>
+    <TableRow>
+      <TableCell>
         {user.name} ({user.uid})
-      </Grid.Column>
-      <Grid.Column textAlign="center">
-        <GraderBadge />
-      </Grid.Column>
-      <Grid.Column textAlign="center">
-        <AdminBadge />
-      </Grid.Column>
-      <Grid.Column textAlign="center" width={2}>
+      </TableCell>
+      <TableCell align="center">
+        <RoleBadge roleKey="isGrader" label="grader" />
+      </TableCell>
+      <TableCell align="center">
+        <RoleBadge roleKey="isAdmin" label="admin" />
+      </TableCell>
+      <TableCell align="center">
         {user.lastLogin ? (
           moment(user.lastLogin).format('DD.MM.YYYY')
         ) : (
           <span style={{ color: 'gray' }}>Not saved</span>
         )}
-      </Grid.Column>
-      <Grid.Column textAlign="center" width={6}>
-        <EditUser />
-        <DeleteUser />
-      </Grid.Column>
-      <Grid.Column>
-        <Icon onClick={logInAs} size="large" name="sign-in" style={{ cursor: 'pointer' }} />
-      </Grid.Column>
-    </Grid.Row>
+      </TableCell>
+      <TableCell align="center">
+        <Button
+          data-cy={`${user.name}-edit`}
+          variant="outlined"
+          color="warning"
+          startIcon={<EditIcon />}
+          onClick={() => setShowForm(true)}
+          sx={{ mr: 1 }}
+        >
+          Edit user
+        </Button>
+        <Dialog open={showForm} onClose={() => setShowForm(false)} maxWidth="md" fullWidth>
+          <DialogContent>
+            <UserForm user={user} close={() => setShowForm(false)} />
+          </DialogContent>
+        </Dialog>
+        <ConfirmPopover
+          trigger={(open) => (
+            <Button
+              data-cy={`${user.name}-delete`}
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={open}
+            >
+              Delete user
+            </Button>
+          )}
+        >
+          {(close) => (
+            <>
+              <Typography sx={{ mb: 1 }}>
+                This does not delete the reports by the user. But{' '}
+                <strong>the reports will no longer have any mention of the user</strong>
+              </Typography>
+              <Button
+                data-cy="delete-user-confirm"
+                variant="contained"
+                color="error"
+                onClick={() => {
+                  handleDeleteUser()
+                  close()
+                }}
+              >
+                Yes, delete the user
+              </Button>
+            </>
+          )}
+        </ConfirmPopover>
+      </TableCell>
+      <TableCell>
+        <LoginIcon onClick={logInAs} sx={{ cursor: 'pointer' }} />
+      </TableCell>
+    </TableRow>
   )
 }

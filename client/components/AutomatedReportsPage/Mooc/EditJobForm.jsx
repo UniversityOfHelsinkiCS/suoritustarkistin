@@ -1,7 +1,16 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
-import { Button, Checkbox, Form, Input, Segment } from 'semantic-ui-react'
+import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import InputAdornment from '@mui/material/InputAdornment'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
 
 import { editJobAction } from '@client/utils/redux/moocJobsReducer'
 import { isValidJob, isValidSchedule } from '@shared/validators'
@@ -22,81 +31,110 @@ export default ({ job, close }) => {
   }
 
   return (
-    <Segment>
-      <Form width={4}>
-        <Form.Field
+    <Box component="form" sx={{ p: 1 }}>
+      <Stack spacing={2}>
+        <TextField
+          // The edit spec selects '[data-cy=edit-job-schedule] input', so unlike the
+          // add form this data-cy belongs on the root
           data-cy="edit-job-schedule"
           required
-          control={Input}
           label="Cron schedule"
           placeholder="* * * * *"
           value={data.schedule || ''}
           onChange={(e) => setData({ ...data, schedule: e.target.value })}
-          error={false}
-          icon={isValidSchedule(data.schedule) ? 'check' : 'times'}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  {isValidSchedule(data.schedule) ? (
+                    <CheckIcon fontSize="small" color="success" />
+                  ) : (
+                    <CloseIcon fontSize="small" color="error" />
+                  )}
+                </InputAdornment>
+              )
+            }
+          }}
         />
-        <Form.Dropdown
+        <Autocomplete
           data-cy="edit-job-course"
-          selection
-          search
-          required
-          label="Course"
           options={courses.map((course) => ({
             key: course.id,
             value: course.id,
             text: `${course.name} (${course.courseCode})`
           }))}
-          value={data.courseId || null}
-          onChange={(e, d) => setData({ ...data, courseId: d.value })}
+          getOptionLabel={(option) => option.text}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          value={
+            courses
+              .map((course) => ({
+                key: course.id,
+                value: course.id,
+                text: `${course.name} (${course.courseCode})`
+              }))
+              .find((o) => o.value === data.courseId) || null
+          }
+          onChange={(e, option) => setData({ ...data, courseId: option ? option.value : null })}
+          renderInput={(params) => <TextField {...params} required label="Course" />}
         />
-        <Form.Dropdown
-          required
-          label="Grader"
-          search
-          selection
+        <Autocomplete
+          data-cy="edit-job-grader"
           options={_.sortBy(course.graders, 'name').map((grader) => ({
             key: grader.id,
             value: grader.id,
             text: grader.name
           }))}
-          onChange={(e, { value }) => setData({ ...data, graderId: value })}
-          data-cy="edit-job-grader"
+          getOptionLabel={(option) => option.text}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          value={
+            _.sortBy(course.graders, 'name')
+              .map((grader) => ({ key: grader.id, value: grader.id, text: grader.name }))
+              .find((o) => o.value === data.graderId) || null
+          }
+          onChange={(e, option) => setData({ ...data, graderId: option ? option.value : null })}
+          renderInput={(params) => <TextField {...params} required label="Grader" />}
         />
-        <Form.Field
+        <TextField
           data-cy="edit-job-slug"
-          required={false}
-          control={Input}
           label="Mooc API slug"
           value={data.slug || ''}
           onChange={(e) => setData({ ...data, slug: e.target.value })}
-          error={false}
         />
-        <Form.Field
-          data-cy="edit-job-active"
-          control={Checkbox}
+        <FormControlLabel
+          control={
+            <Checkbox
+              data-cy="edit-job-active"
+              checked={Boolean(data.active)}
+              onChange={(e) => setData({ ...data, active: e.target.checked })}
+            />
+          }
           label="Active"
-          checked={data.active}
-          onChange={(e, d) => setData({ ...data, active: d.checked })}
         />
-        <Form.Field
-          data-cy="edit-job-completion-date"
-          control={Checkbox}
+        <FormControlLabel
+          control={
+            <Checkbox
+              data-cy="edit-job-completion-date"
+              checked={Boolean(data.useManualCompletionDate)}
+              onChange={(e) => setData({ ...data, useManualCompletionDate: e.target.checked })}
+            />
+          }
           label="Use completion date, not registration attempt date"
-          checked={data.useManualCompletionDate}
-          onChange={(e, d) => setData({ ...data, useManualCompletionDate: d.checked })}
         />
-        <Form.Group>
-          <Form.Field negative control={Button} content="Cancel" onClick={() => close()} />
-          <Form.Field
+        <Stack direction="row" spacing={2}>
+          <Button variant="contained" color="error" onClick={() => close()}>
+            Cancel
+          </Button>
+          <Button
             data-cy="edit-job-confirm"
-            positive
-            control={Button}
-            content="Save"
+            variant="contained"
+            color="success"
             disabled={!isValidJob(data)}
             onClick={handleSubmit}
-          />
-        </Form.Group>
-      </Form>
-    </Segment>
+          >
+            Save
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   )
 }

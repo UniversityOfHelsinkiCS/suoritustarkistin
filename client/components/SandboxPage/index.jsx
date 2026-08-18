@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { callApi } from '@client/utils/apiConnection'
-import { Button, Grid, Header, Icon, Message, Segment } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import BugReportIcon from '@mui/icons-material/BugReport'
 
 export default () => {
   const [crash, setCrash] = useState(false)
@@ -41,84 +48,81 @@ export default () => {
   }
 
   return (
-    <Segment textAlign="center">
-      <Header size="large">Sandbox, playground for developers</Header>
+    <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+      <Typography variant="h5" component="h1" gutterBottom>
+        Sandbox, playground for developers
+      </Typography>
       {message && (
-        <Message style={{ maxWidth: 400, marginRight: 'auto', marginLeft: 'auto', textAlign: 'left' }} icon success>
-          <Icon name="bomb" />
-          <Message.Content>
-            <Message.Header>Backend sandbox</Message.Header>
-            {message}
-          </Message.Content>
-        </Message>
+        <Alert severity="success" sx={{ maxWidth: 400, marginRight: 'auto', marginLeft: 'auto', textAlign: 'left' }}>
+          <AlertTitle>Backend sandbox</AlertTitle>
+          {message}
+        </Alert>
       )}
       {process.env.NODE_ENV !== 'development' ? (
-        <Header size="medium">Frontend built at {import.meta.env.VITE_BUILT_AT || 'unknown'}</Header>
+        <Typography variant="h6" component="h2">
+          Frontend built at {import.meta.env.VITE_BUILT_AT || 'unknown'}
+        </Typography>
       ) : null}
       {/* Paired frontend/backend per row, one row per path an error takes to Sentry. */}
-      <Grid columns={2} stackable style={{ maxWidth: 800, margin: '0 auto' }}>
-        <Grid.Row style={{ paddingBottom: '1.5rem' }}>
-          <Grid.Column>
-            <Button
-              fluid
-              size="huge"
-              basic
-              color="red"
-              content="Chaos Monkey"
-              icon="bomb"
-              onClick={() => setCrash(true)}
-            />
-          </Grid.Column>
-          <Grid.Column>
-            <Button
-              fluid
-              size="huge"
-              basic
-              color="red"
-              content="Chaos Monkey backend"
-              icon="bomb"
-              onClick={crashBackend}
-            />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row style={{ paddingBottom: '1.5rem' }}>
-          <Grid.Column>
-            <Button
-              fluid
-              size="huge"
-              basic
-              color="orange"
-              content="Frontend unhandled rejection"
-              icon="bomb"
-              onClick={crashFrontendAsync}
-            />
-          </Grid.Column>
-          <Grid.Column>
-            <Button
-              fluid
-              size="huge"
-              basic
-              color="orange"
-              content="Backend unhandled rejection"
-              icon="bomb"
-              onClick={crashBackendAsync}
-            />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            <Button
-              fluid
-              size="huge"
-              basic
-              color="yellow"
-              content="Backend captured error"
-              icon="bug"
-              onClick={captureBackendError}
-            />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </Segment>
+      <Box sx={{ maxWidth: 800, margin: '0 auto' }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pb: '1.5rem' }}>
+          <Button
+            fullWidth
+            size="large"
+            variant="outlined"
+            color="error"
+            startIcon={<BugReportIcon />}
+            onClick={() => setCrash(true)}
+          >
+            Chaos Monkey
+          </Button>
+          <Button
+            fullWidth
+            size="large"
+            variant="outlined"
+            color="error"
+            startIcon={<BugReportIcon />}
+            onClick={crashBackend}
+          >
+            Chaos Monkey backend
+          </Button>
+        </Stack>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pb: '1.5rem' }}>
+          <Button
+            fullWidth
+            size="large"
+            variant="outlined"
+            color="warning"
+            startIcon={<BugReportIcon />}
+            onClick={crashFrontendAsync}
+          >
+            Frontend unhandled rejection
+          </Button>
+          <Button
+            fullWidth
+            size="large"
+            variant="outlined"
+            color="warning"
+            startIcon={<BugReportIcon />}
+            onClick={crashBackendAsync}
+          >
+            Backend unhandled rejection
+          </Button>
+        </Stack>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Button
+            fullWidth
+            size="large"
+            variant="outlined"
+            color="warning"
+            startIcon={<BugReportIcon />}
+            onClick={captureBackendError}
+          >
+            Backend captured error
+          </Button>
+          <Box sx={{ width: '100%' }} />
+        </Stack>
+      </Box>
+    </Paper>
   )
 }

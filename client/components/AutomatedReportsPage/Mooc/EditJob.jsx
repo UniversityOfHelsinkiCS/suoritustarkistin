@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { Button, Modal } from 'semantic-ui-react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
 
 import EditJobForm from '@client/components/AutomatedReportsPage/Mooc/EditJobForm'
 
@@ -9,20 +11,15 @@ export default ({ job, jobs }) => {
   const closeModal = () => setShowForm(false)
 
   return (
-    <Modal
-      trigger={
-        <Button data-cy="edit-job" disabled={jobs.pending} onClick={() => setShowForm(true)}>
-          Edit
-        </Button>
-      }
-      basic
-      open={showForm}
-      onClose={closeModal}
-      size="small"
-    >
-      <Modal.Content>
-        <EditJobForm job={job} close={closeModal} />
-      </Modal.Content>
-    </Modal>
+    <>
+      <Button variant="contained" data-cy="edit-job" disabled={jobs.pending} onClick={() => setShowForm(true)}>
+        Edit
+      </Button>
+      <Dialog open={showForm} onClose={closeModal} maxWidth="md" fullWidth>
+        <DialogContent>
+          <EditJobForm job={job} close={closeModal} />
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

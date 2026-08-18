@@ -35,7 +35,17 @@ export default () => {
 
   return (
     <TableContainer component={Paper} variant="outlined" sx={{ mt: 2 }}>
-      <Table size="small" sx={{ tableLayout: 'fixed', wordWrap: 'anywhere' }}>
+      <Table
+        size="small"
+        sx={{
+          tableLayout: 'fixed',
+          wordWrap: 'anywhere',
+          // MUI cells only draw a bottom border; Semantic's celled="internally" drew
+          // column separators too.
+          '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
+          '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
+        }}
+      >
         <TableHead>
           <TableRow>
             {headers.map((header, i) => (

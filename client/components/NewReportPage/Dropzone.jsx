@@ -63,7 +63,10 @@ export default () => {
     onDrop,
     multiple: false,
     maxSize: 5000000,
-    accept: '.csv, .txt, .dat'
+    accept: {
+      'text/csv': ['.csv'],
+      'text/plain': ['.txt', '.dat']
+    }
   })
 
   const style = useMemo(

@@ -1,5 +1,5 @@
 import { applyMiddleware, compose, createStore } from 'redux'
-import thunk from 'redux-thunk'
+import { thunk } from 'redux-thunk'
 import * as Sentry from '@sentry/react'
 
 import { inProduction } from '@client/utils/common'

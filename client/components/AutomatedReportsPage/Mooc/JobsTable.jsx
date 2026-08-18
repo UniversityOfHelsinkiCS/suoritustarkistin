@@ -1,6 +1,13 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Header, Loader, Segment, Table } from 'semantic-ui-react'
+import CircularProgress from '@mui/material/CircularProgress'
+import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 import * as _ from 'lodash'
 
 import JobRow from '@client/components/AutomatedReportsPage/Mooc/JobRow'
@@ -24,41 +31,35 @@ export default () => {
   )
 
   return (
-    <Segment>
-      <Loader size="big" active={jobs.pending} />
-      <Table celled data-cy="mooc-job-table">
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell width={1}>
-              <Header as="h4">Schedule</Header>
-            </Table.HeaderCell>
-            <Table.HeaderCell width={2}>
-              <Header as="h4">Course code</Header>
-            </Table.HeaderCell>
-            <Table.HeaderCell width={3}>
-              <Header as="h4">Course name</Header>
-            </Table.HeaderCell>
-            <Table.HeaderCell width={2}>
-              <Header as="h4">Grader</Header>
-            </Table.HeaderCell>
-            <Table.HeaderCell width={2}>
-              <Header as="h4">Slug</Header>
-            </Table.HeaderCell>
-            <Table.HeaderCell width={1}>
-              <Header as="h4">Active</Header>
-            </Table.HeaderCell>
-            <Table.HeaderCell width={1}>
-              <Header as="h4">Use manual completion date</Header>
-            </Table.HeaderCell>
-            <Table.HeaderCell width={4}>
-              <Header as="h4">Actions</Header>
-            </Table.HeaderCell>
-          </Table.Row>
+    <TableContainer component={Paper} variant="outlined" sx={{ mt: 2 }}>
+      {jobs.pending ? <CircularProgress size={40} sx={{ m: 2 }} /> : null}
+      <Table
+        data-cy="mooc-job-table"
+        size="small"
+        sx={{
+          '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
+          '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
+        }}
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ width: '6%', fontWeight: 700 }}>Schedule</TableCell>
+            <TableCell sx={{ width: '12%', fontWeight: 700 }}>Course code</TableCell>
+            <TableCell sx={{ width: '19%', fontWeight: 700 }}>Course name</TableCell>
+            <TableCell sx={{ width: '12%', fontWeight: 700 }}>Grader</TableCell>
+            <TableCell sx={{ width: '12%', fontWeight: 700 }}>Slug</TableCell>
+            <TableCell sx={{ width: '6%', fontWeight: 700 }}>Active</TableCell>
+            <TableCell sx={{ width: '6%', fontWeight: 700 }}>Use manual completion date</TableCell>
+            <TableCell sx={{ width: '25%', fontWeight: 700 }}>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        {/* The rows used to sit inside Table.Header, which Semantic tolerated */}
+        <TableBody>
           {sortedJobs.map((j) => (
             <JobRow job={j} jobs={jobs} key={j.id} />
           ))}
-        </Table.Header>
+        </TableBody>
       </Table>
-    </Segment>
+    </TableContainer>
   )
 }

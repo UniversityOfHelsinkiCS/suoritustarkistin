@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { Button, Modal } from 'semantic-ui-react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
 
 import NewJobForm from '@client/components/AutomatedReportsPage/Mooc/NewJobForm'
 
@@ -9,20 +11,15 @@ export default () => {
   const closeModal = () => setShowForm(false)
 
   return (
-    <Modal
-      trigger={
-        <Button data-cy="add-job-button" positive onClick={() => setShowForm(true)}>
-          Add new job
-        </Button>
-      }
-      basic
-      open={showForm}
-      onClose={closeModal}
-      size="small"
-    >
-      <Modal.Content>
-        <NewJobForm close={closeModal} />
-      </Modal.Content>
-    </Modal>
+    <>
+      <Button variant="contained" color="success" data-cy="add-job-button" onClick={() => setShowForm(true)}>
+        Add new job
+      </Button>
+      <Dialog open={showForm} onClose={closeModal} maxWidth="md" fullWidth>
+        <DialogContent>
+          <NewJobForm close={closeModal} />
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

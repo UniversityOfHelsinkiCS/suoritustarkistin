@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Checkbox, Form, Input, Message, Segment } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
 
@@ -16,10 +25,6 @@ const INITIAL_FORM_DATA = {
   isAdmin: false,
   courses: [],
   errors: {}
-}
-
-const styles = {
-  field: { margin: '.5rem 0rem' }
 }
 
 export default ({ close, user }) => {
@@ -95,122 +100,124 @@ export default ({ close, user }) => {
   const editingCurrentUser = user && (currentUser.employeeId === user.employeeId || currentUser.uid === user.uid)
 
   return (
-    <Segment style={{ width: '50em' }}>
+    <Box component="form" sx={{ p: 1, opacity: data.pending || courses.pending ? 0.5 : 1 }}>
       {message ? (
-        <Message error>
-          <Message.Header>Failed to fetch user</Message.Header>
-          <p>{message}</p>
-        </Message>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          <AlertTitle>Failed to fetch user</AlertTitle>
+          {message}
+        </Alert>
       ) : null}
 
-      <Form width={4} loading={data.pending || courses.pending}>
-        <Form.Field
-          style={styles.field}
-          data-cy="add-email"
-          control={Input}
+      <Stack spacing={2}>
+        <TextField
           label="Email"
           placeholder="Email"
           value={formData.email}
           onChange={handleFieldChange}
           name="email"
-          error={Boolean(formData.email && !isValidEmailAddress(formData.email))}
           required
+          error={Boolean(formData.email && !isValidEmailAddress(formData.email))}
+          // The specs type into this data-cy directly, so it belongs on the input
+          slotProps={{ htmlInput: { 'data-cy': 'add-email', name: 'email' } }}
         />
-        <Form.Field
-          style={styles.field}
-          data-cy="add-user-id"
-          control={Input}
+        <TextField
           label="AD account"
           placeholder="mluukkai"
-          disabled={editingCurrentUser}
           value={formData.uid}
           onChange={handleFieldChange}
-          error={false}
           name="uid"
           required
+          disabled={editingCurrentUser}
+          // The specs type into this data-cy directly, so it belongs on the input
+          slotProps={{ htmlInput: { 'data-cy': 'add-user-id', name: 'uid' } }}
         />
-        <Form.Field
-          style={styles.field}
-          data-cy="add-employee-number"
-          control={Input}
+        <TextField
           label="Employee number"
           placeholder="Employee number"
-          disabled={editingCurrentUser}
           value={formData.employeeId}
           onChange={handleFieldChange}
-          error={false}
           name="employeeId"
           required
+          disabled={editingCurrentUser}
+          // The specs type into this data-cy directly, so it belongs on the input
+          slotProps={{ htmlInput: { 'data-cy': 'add-employee-number', name: 'employeeId' } }}
         />
         {editingCurrentUser && (
           <p style={{ color: 'gray', fontWeight: 'bold' }}>
             AD account and employee number of the currently logged in user cannot be changed
           </p>
         )}
-        <Form.Field
-          style={styles.field}
-          data-cy="add-user-name"
-          control={Input}
+        <TextField
           label="Full name"
           placeholder="Name"
           value={formData.name}
           onChange={handleFieldChange}
-          error={false}
           name="name"
           required
+          // The specs type into this data-cy directly, so it belongs on the input
+          slotProps={{ htmlInput: { 'data-cy': 'add-user-name', name: 'name' } }}
         />
-        <Form.Field
-          data-cy="check-is-grader"
-          style={styles.field}
-          control={Checkbox}
+        <FormControlLabel
+          control={
+            <Checkbox
+              data-cy="check-is-grader"
+              checked={Boolean(formData.isGrader)}
+              onChange={(e) => setFormData({ ...formData, isGrader: e.target.checked })}
+            />
+          }
           label="Is grader"
-          checked={formData.isGrader}
-          onChange={(e, d) => {
-            setFormData({ ...formData, isGrader: d.checked })
-          }}
         />
-        <Form.Field
-          data-cy="check-is-admin"
-          control={Checkbox}
+        <FormControlLabel
+          control={
+            <Checkbox
+              data-cy="check-is-admin"
+              checked={Boolean(formData.isAdmin)}
+              onChange={(e) => setFormData({ ...formData, isAdmin: e.target.checked })}
+            />
+          }
           label="Is admin"
-          checked={formData.isAdmin}
-          onChange={(e, d) => {
-            setFormData({ ...formData, isAdmin: d.checked })
-          }}
         />
-        <Form.Dropdown
-          data-cy="add-course"
-          search
-          label="Add courses for user (optional)"
-          options={courseOptions}
-          value={formData.courses}
-          onChange={(e, d) => setFormData({ ...formData, courses: d.value })}
+        <Autocomplete
           multiple
-          selection
+          data-cy="add-course"
+          options={courseOptions}
+          getOptionLabel={(option) => option.text}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          value={courseOptions.filter((o) => (formData.courses || []).includes(o.value))}
+          onChange={(e, options) => setFormData({ ...formData, courses: options.map((o) => o.value) })}
+          renderOption={(props, option) => (
+            <li {...props} key={option.key} data-cy={`course-option-${option.coursecode}`}>
+              {option.text}
+            </li>
+          )}
+          renderInput={(params) => <TextField {...params} label="Add courses for user (optional)" />}
         />
-        <Form.Field
-          style={styles.field}
-          data-cy="add-user-fetch"
-          control={Button}
-          content="Fetch user details"
-          onClick={handleFetchUser}
-          disabled={!(formData.uid || formData.email || formData.employeeId)}
-          icon="refresh"
-          color="blue"
-          basic
-        />
-        <Form.Group>
-          <Form.Field negative control={Button} content="Cancel" onClick={close} />
-          <Form.Field
+        <Box>
+          <Button
+            data-cy="add-user-fetch"
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={handleFetchUser}
+            disabled={!(formData.uid || formData.email || formData.employeeId)}
+          >
+            Fetch user details
+          </Button>
+        </Box>
+        <Stack direction="row" spacing={2}>
+          <Button variant="contained" color="error" onClick={close}>
+            Cancel
+          </Button>
+          <Button
             data-cy="add-user-confirm"
-            positive
-            control={Button}
-            content={user ? 'Edit user' : 'Add user'}
+            variant="contained"
+            color="success"
             disabled={!validate() || data.pending}
             onClick={handleSubmit}
-          />
-        </Form.Group>
-      </Form>
-    </Segment>
+          >
+            {user ? 'Edit user' : 'Add user'}
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   )
 }

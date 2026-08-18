@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Button, Modal } from 'semantic-ui-react'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
 
 import Message from '@client/components/Message'
 import UserTable from '@client/components/UsersPage/UserTable'
@@ -9,7 +11,7 @@ import { getAllUsersAction } from '@client/utils/redux/usersReducer'
 
 export default () => {
   const dispatch = useDispatch()
-  const [showForm, setShowForm] = useState()
+  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     dispatch(getAllUsersAction())
@@ -17,20 +19,14 @@ export default () => {
 
   return (
     <>
-      <Modal
-        trigger={
-          <Button data-cy="add-user-button" positive onClick={() => setShowForm(true)}>
-            Add new user
-          </Button>
-        }
-        basic
-        open={showForm}
-        onClose={() => setShowForm(false)}
-      >
-        <Modal.Content>
+      <Button variant="contained" color="success" data-cy="add-user-button" onClick={() => setShowForm(true)}>
+        Add new user
+      </Button>
+      <Dialog open={showForm} onClose={() => setShowForm(false)} maxWidth="md" fullWidth>
+        <DialogContent>
           <UserForm close={() => setShowForm(false)} />
-        </Modal.Content>
-      </Modal>
+        </DialogContent>
+      </Dialog>
       <Message />
       <UserTable />
     </>

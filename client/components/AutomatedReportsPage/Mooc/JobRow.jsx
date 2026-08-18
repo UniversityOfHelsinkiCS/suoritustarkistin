@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Icon, Table } from 'semantic-ui-react'
+import Button from '@mui/material/Button'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
 
 import { deleteJobAction, runJobAction } from '@client/utils/redux/moocJobsReducer'
 import EditJob from '@client/components/AutomatedReportsPage/Mooc/EditJob'
@@ -26,65 +31,59 @@ export default ({ job, jobs }) => {
 
   const DeleteButton = () => (
     <Button
+      variant="contained"
+      color="error"
       data-cy={`delete-job-${course?.courseCode}`}
       disabled={jobs.pending}
       onClick={() => {
         setReally(true)
       }}
-      content="Delete"
-      negative
-    />
+    >
+      Delete
+    </Button>
   )
 
   const CreateReportButton = () => (
     <Button
+      variant="contained"
       data-cy={`create-report-${course?.courseCode}`}
       disabled={jobs.pending}
       onClick={() => dispatch(runJobAction(job.id))}
-      content="Create report"
-      color="blue"
-    />
+      sx={{ mx: 1 }}
+    >
+      Create report
+    </Button>
   )
 
   const Confirm = () => (
-    <Button.Group>
+    <ButtonGroup variant="contained">
       <Button
         data-cy="delete-job-cancel"
         onClick={() => {
           setReally(false)
         }}
-        content="Cancel"
-      />
-      <Button
-        data-cy="delete-job-confirm"
-        onClick={() => dispatch(deleteJobAction(job.id))}
-        content="Really delete"
-        positive
-      />
-    </Button.Group>
+      >
+        Cancel
+      </Button>
+      <Button data-cy="delete-job-confirm" color="success" onClick={() => dispatch(deleteJobAction(job.id))}>
+        Really delete
+      </Button>
+    </ButtonGroup>
   )
   return (
-    <Table.Row data-cy={`job-${course?.courseCode}`}>
-      <Table.Cell width={1}>{job.schedule}</Table.Cell>
-      <Table.Cell width={2}>{getCourseCode()}</Table.Cell>
-      <Table.Cell width={3}>{getCourseName()}</Table.Cell>
-      <Table.Cell width={2}>{getGraderName()}</Table.Cell>
-      <Table.Cell width={2}>{job.slug}</Table.Cell>
-      <Table.Cell textAlign="center" width={1}>
-        {job.active ? <Icon name="check" color="green" size="large" /> : <Icon name="close" color="red" size="large" />}
-      </Table.Cell>
-      <Table.Cell>
-        {job.useManualCompletionDate ? (
-          <Icon name="check" color="green" size="large" />
-        ) : (
-          <Icon name="close" color="red" size="large" />
-        )}
-      </Table.Cell>
-      <Table.Cell width={4}>
+    <TableRow data-cy={`job-${course?.courseCode}`}>
+      <TableCell>{job.schedule}</TableCell>
+      <TableCell>{getCourseCode()}</TableCell>
+      <TableCell>{getCourseName()}</TableCell>
+      <TableCell>{getGraderName()}</TableCell>
+      <TableCell>{job.slug}</TableCell>
+      <TableCell align="center">{job.active ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</TableCell>
+      <TableCell>{job.useManualCompletionDate ? <CheckIcon color="success" /> : <CloseIcon color="error" />}</TableCell>
+      <TableCell>
         <EditJob jobs={jobs} job={job} />
         <CreateReportButton />
         {really ? <Confirm /> : <DeleteButton />}
-      </Table.Cell>
-    </Table.Row>
+      </TableCell>
+    </TableRow>
   )
 }

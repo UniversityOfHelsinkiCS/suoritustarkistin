@@ -8,7 +8,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import { Alert, AlertTitle, Button, Paper, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import { EOAI_CODES, EOAI_NAMEMAP } from '@shared/common'
 import moment from 'moment'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Pagination from './Pagination'

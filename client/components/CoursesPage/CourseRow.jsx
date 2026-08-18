@@ -3,7 +3,7 @@ import EditCourse from '@client/components/CoursesPage/EditCourse'
 import { confirmDeletionAction } from '@client/utils/redux/coursesReducer'
 import CheckIcon from '@mui/icons-material/Check'
 import { Button, TableCell, TableRow } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 export default ({ course, graders }) => {

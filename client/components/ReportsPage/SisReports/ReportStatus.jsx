@@ -1,7 +1,6 @@
 import { Box, Chip } from '@mui/material'
 import * as _ from 'lodash'
 import moment from 'moment'
-import React from 'react'
 
 const styles = {
   success: {

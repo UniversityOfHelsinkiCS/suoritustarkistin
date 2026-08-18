@@ -10,7 +10,7 @@ import {
   TableHead,
   TableRow
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>

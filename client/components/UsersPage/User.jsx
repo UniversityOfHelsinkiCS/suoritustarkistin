@@ -7,7 +7,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import LoginIcon from '@mui/icons-material/Login'
 import { Box, Button, Dialog, DialogContent, Popover, TableCell, TableRow, Typography } from '@mui/material'
 import moment from 'moment'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 const ConfirmPopover = ({ trigger, children }) => {

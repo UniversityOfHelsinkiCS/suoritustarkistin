@@ -2,7 +2,6 @@ import EduwebCheck from '@client/components/ApiChecks/EduwebCheck'
 import MoocCheck from '@client/components/ApiChecks/MoocCheck'
 import Message from '@client/components/Message'
 import { Box, CircularProgress, Stack } from '@mui/material'
-import React from 'react'
 import { useSelector } from 'react-redux'
 
 import NewMoocCheck from './NewMoocCheck'

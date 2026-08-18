@@ -1,6 +1,5 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Accordion, AccordionDetails, AccordionSummary, Card } from '@mui/material'
-import React from 'react'
 import { useSelector } from 'react-redux'
 
 export default ({ instance, active, setActive }) => {

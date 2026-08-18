@@ -3,7 +3,7 @@ import { getHeaders, possibleUsers, setHeaders } from '@client/utils/fakeShibbol
 import { loginAction } from '@client/utils/redux/userReducer'
 import PeopleIcon from '@mui/icons-material/People'
 import { IconButton, Menu, MenuItem } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 export default () => {

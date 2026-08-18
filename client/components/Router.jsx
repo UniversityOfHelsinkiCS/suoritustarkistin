@@ -7,7 +7,6 @@ import ReportsPage from '@client/components/ReportsPage'
 import SandboxPage from '@client/components/SandboxPage'
 import UnauthorizedPage from '@client/components/UnauthorizedPage'
 import UsersPage from '@client/components/UsersPage'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 // HACK to make component full page width or narrow

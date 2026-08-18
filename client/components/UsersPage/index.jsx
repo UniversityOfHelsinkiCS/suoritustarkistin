@@ -3,7 +3,7 @@ import UserForm from '@client/components/UsersPage/UserForm'
 import UserTable from '@client/components/UsersPage/UserTable'
 import { getAllUsersAction } from '@client/utils/redux/usersReducer'
 import { Button, Dialog, DialogContent } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 export default () => {

@@ -7,7 +7,7 @@ import { Autocomplete, Box, Button, Checkbox, FormControlLabel, InputAdornment, 
 import { gradeScales } from '@shared/common'
 import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
 import * as _ from 'lodash'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 export const validityAdornment = (valid) => ({

@@ -2,7 +2,7 @@ import EduwebInstance from '@client/components/ApiChecks/EduwebInstance'
 import { checkEduWeb } from '@client/utils/redux/apiCheckReducer'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default () => {

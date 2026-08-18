@@ -1,6 +1,6 @@
 import EditCourseForm from '@client/components/CoursesPage/EditCourseForm'
 import { Button, Dialog, DialogContent } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 export default ({ course }) => {
   const [showForm, setShowForm] = useState(false)

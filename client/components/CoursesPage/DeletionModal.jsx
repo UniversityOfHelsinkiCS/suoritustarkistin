@@ -1,6 +1,5 @@
 import { deleteCourseAction } from '@client/utils/redux/coursesReducer'
 import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material'
-import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const DeletionModal = ({ showForm, setShowForm, id }) => {

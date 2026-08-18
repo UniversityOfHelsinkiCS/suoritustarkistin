@@ -1,7 +1,7 @@
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied'
 import { Alert, AlertTitle, Box } from '@mui/material'
 import * as Sentry from '@sentry/react'
-import React from 'react'
+import { Component } from 'react'
 
 const ErrorView = ({ error }) => (
   <Box sx={{ textAlign: 'center', width: '100%', height: '100%' }}>
@@ -18,7 +18,7 @@ const ErrorView = ({ error }) => (
   </Box>
 )
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
     this.state = { error: null }

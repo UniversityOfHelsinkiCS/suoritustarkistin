@@ -10,7 +10,6 @@ import {
   TableRow
 } from '@mui/material'
 import * as _ from 'lodash'
-import React from 'react'
 import { useSelector } from 'react-redux'
 
 export default () => {

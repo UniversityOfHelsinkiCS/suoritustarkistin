@@ -1,7 +1,7 @@
 import { checkMooc } from '@client/utils/redux/apiCheckReducer'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import MoocInstance from './MoocInstance'

@@ -1,6 +1,6 @@
 import EditJobForm from '@client/components/AutomatedReportsPage/Mooc/EditJobForm'
 import { Button, Dialog, DialogContent } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 export default ({ job, jobs }) => {
   const [showForm, setShowForm] = useState(false)

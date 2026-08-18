@@ -1,6 +1,5 @@
 import HelpIcon from '@mui/icons-material/Help'
 import { Paper, Tooltip, Typography } from '@mui/material'
-import React from 'react'
 
 import DetailedInstructions, { sharedInstructions } from './DetailedInstructions'
 

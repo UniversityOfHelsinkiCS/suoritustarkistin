@@ -9,7 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { isKandiExtraCourse, isThesisCourse } from '@shared/common'
 import { areValidNewRawEntries } from '@shared/validators'
 import * as _ from 'lodash'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import { useDispatch, useSelector } from 'react-redux'
 

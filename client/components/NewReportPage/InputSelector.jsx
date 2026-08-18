@@ -11,7 +11,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import { Paper, Tab, Tabs } from '@mui/material'
 import { isRegularExtraCourse, isThesisCourse } from '@shared/common'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 export default () => {

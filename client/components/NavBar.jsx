@@ -2,7 +2,7 @@ import FakeShibboMenu from '@client/components/fakeShibboMenu'
 import { images } from '@client/utils/common'
 import { activateAdminModeAction, disableAdminModeAction, logoutAction } from '@client/utils/redux/userReducer'
 import { AppBar, Box, Button, Switch, Toolbar, Typography } from '@mui/material'
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 

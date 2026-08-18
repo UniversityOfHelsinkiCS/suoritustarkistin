@@ -1,7 +1,6 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Box, Button, ButtonGroup } from '@mui/material'
-import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const styles = {

@@ -7,7 +7,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutlined'
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from '@mui/material'
 import { EOAI_CODES, EOAI_NAMEMAP } from '@shared/common'
 import moment from 'moment'
-import React, { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import DeleteEntryButton from './DeleteEntryButton'
@@ -175,7 +175,7 @@ const EntryRows = ({ user, rawEntries }) => {
       {rawEntries.map((rawEntry) => {
         const course = rawEntry.course || PLACEHOLDER_COURSE
         return (
-          <React.Fragment key={`row-${rawEntry.id}`}>
+          <Fragment key={`row-${rawEntry.id}`}>
             <TableRow
               data-cy={`report-table-row-${rawEntry.studentNumber}`}
               data-highlighted={Boolean(student && rawEntry.studentNumber.startsWith(student))}
@@ -206,7 +206,7 @@ const EntryRows = ({ user, rawEntries }) => {
                 </TableCell>
               </TableRow>
             )}
-          </React.Fragment>
+          </Fragment>
         )
       })}
     </TableBody>

@@ -1,7 +1,6 @@
 import { setNewRawEntriesAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import { Box, TextField } from '@mui/material'
 import { isKandiExtraCourse } from '@shared/common'
-import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default ({ kandi, parseCSV }) => {

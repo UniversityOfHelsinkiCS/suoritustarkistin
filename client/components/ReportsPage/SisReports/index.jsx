@@ -24,7 +24,7 @@ import {
 } from '@mui/material'
 import * as _ from 'lodash'
 import moment from 'moment'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 

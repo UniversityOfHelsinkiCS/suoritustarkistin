@@ -6,7 +6,7 @@ import { getStatus } from '@client/utils/redux/systemStatusReducer'
 import { loginAction, pingAction } from '@client/utils/redux/userReducer'
 import { Typography } from '@mui/material'
 import * as Sentry from '@sentry/react'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default () => {

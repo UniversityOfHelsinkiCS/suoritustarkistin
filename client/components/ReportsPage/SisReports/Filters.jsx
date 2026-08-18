@@ -2,7 +2,7 @@ import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/
 import { toggleFilterAction, setFilterAction } from '@client/utils/redux/sisReportsReducer'
 import { Autocomplete, Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material'
 import { debounce } from 'lodash'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { formatCoursesForSelection } from '../../NewReportPage/InputOptions'

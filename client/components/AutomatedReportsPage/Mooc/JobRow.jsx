@@ -3,7 +3,7 @@ import { deleteJobAction, runJobAction } from '@client/utils/redux/moocJobsReduc
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import { Button, ButtonGroup, TableCell, TableRow } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default ({ job, jobs }) => {

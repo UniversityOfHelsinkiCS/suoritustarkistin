@@ -1,5 +1,4 @@
 import { List, ListItem, Typography } from '@mui/material'
-import React from 'react'
 
 const container = {
   textAlign: 'left',

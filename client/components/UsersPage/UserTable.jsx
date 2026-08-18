@@ -2,7 +2,7 @@ import User from '@client/components/UsersPage/User'
 import { sortedItems } from '@client/utils/common'
 import SwapVertIcon from '@mui/icons-material/SwapVert'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 export const celledBorders = {

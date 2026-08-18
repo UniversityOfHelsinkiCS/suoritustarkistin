@@ -1,7 +1,7 @@
 import { parseCSV } from '@client/utils/inputParser'
 import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import { CircularProgress } from '@mui/material'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useDispatch, useSelector } from 'react-redux'
 

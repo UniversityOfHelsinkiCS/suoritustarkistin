@@ -4,7 +4,7 @@ import Message from '@client/components/Message'
 import { getAllCoursesAction } from '@client/utils/redux/coursesReducer'
 import { getAllGradersAction } from '@client/utils/redux/gradersReducer'
 import { getAllJobsAction } from '@client/utils/redux/moocJobsReducer'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
 export default () => {

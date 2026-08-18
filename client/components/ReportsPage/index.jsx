@@ -10,7 +10,7 @@ import SendIcon from '@mui/icons-material/Send'
 import SyncIcon from '@mui/icons-material/Sync'
 import TaskIcon from '@mui/icons-material/Task'
 import { Box, Paper, Tab, Tabs } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default () => {

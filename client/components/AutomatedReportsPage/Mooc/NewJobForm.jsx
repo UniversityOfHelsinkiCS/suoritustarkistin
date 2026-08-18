@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { Autocomplete, Box, Button, Checkbox, FormControlLabel, InputAdornment, Stack, TextField } from '@mui/material'
 import { isValidJob, isValidSchedule } from '@shared/validators'
 import * as _ from 'lodash'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 export default ({ close }) => {

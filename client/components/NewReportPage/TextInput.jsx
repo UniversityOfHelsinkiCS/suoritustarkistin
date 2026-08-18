@@ -62,7 +62,7 @@ export default ({ kandi, parseCSV }) => {
         disabled={newRawEntries.sending}
         // The specs type into this directly, so data-cy has to land on the textarea
         // rather than the TextField root.
-        slotProps={{ htmlInput: { 'data-cy': 'paste-field', style: { padding: '20px' } } }}
+        slotProps={{ htmlInput: { 'data-cy': 'paste-field' } }}
       />
     </Box>
   )

@@ -6,14 +6,19 @@ import { createTheme } from '@mui/material/styles'
  * re-invented in every migrated component.
  */
 const theme = createTheme({
+  typography: {
+    // Semantic's own stack, so type stays familiar once semantic.min.css is gone
+    fontFamily: "Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif"
+  },
   palette: {
     primary: { main: '#2185d0' }, // Semantic's blue, so the UI stays familiar
     error: { main: '#db2828' },
     success: { main: '#21ba45' }
   },
   components: {
-    MuiButton: { defaultProps: { variant: 'contained' } },
-    MuiTextField: { defaultProps: { size: 'small' } }
+    // No global defaultProps. Semantic's look is flat and low-contrast, so a
+    // blanket variant here quietly restyles every screen at once.
+    MuiButton: { styleOverrides: { root: { textTransform: 'none' } } }
   }
 })
 

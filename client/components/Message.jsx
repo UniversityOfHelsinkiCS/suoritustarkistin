@@ -1,5 +1,6 @@
 import React from 'react'
-import { Message } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearMessageAction } from '@client/utils/redux/messageReducer'
 
@@ -7,23 +8,25 @@ export default () => {
   const dispatch = useDispatch()
   const message = useSelector((state) => state.message)
 
-  const resolveColor = (type) => {
-    if (!type) return 'blue'
-    if (type === 'neutral') return 'grey'
-    if (type === 'positive') return 'green'
-    if (type === 'negative') return 'red'
-    return type
+  const resolveSeverity = (type) => {
+    if (!type) return 'info'
+    if (type === 'neutral') return 'info'
+    if (type === 'positive') return 'success'
+    if (type === 'negative') return 'error'
+    // Alert only accepts error/warning/info/success, so anything else must not pass through
+    return 'info'
   }
 
   if (!message) return null
 
   return (
-    <Message
+    <Alert
       data-cy={`${message.type}-message`}
-      color={resolveColor(message.type)}
-      onDismiss={() => dispatch(clearMessageAction())}
-      header={message.header}
-      content={message.content}
-    />
+      severity={resolveSeverity(message.type)}
+      onClose={() => dispatch(clearMessageAction())}
+    >
+      {message.header ? <AlertTitle>{message.header}</AlertTitle> : null}
+      {message.content}
+    </Alert>
   )
 }

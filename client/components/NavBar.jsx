@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Label, Menu, Radio } from 'semantic-ui-react'
+import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Switch from '@mui/material/Switch'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { activateAdminModeAction, disableAdminModeAction, logoutAction } from '@client/utils/redux/userReducer'
@@ -40,147 +45,165 @@ export default () => {
     if (window.location.pathname !== '/reports') dispatch(getAllSisReportsAction({ offset, limit }))
   }
 
-  const handleItemClick = (e, { name }) => (name === 'logo' ? setActiveItem('') : setActiveItem(name))
+  // Semantic's Menu.Item passed the name through its onClick; with plain buttons it is
+  // simpler to bind the name at the call site.
+  const handleItemClick = (name) => () => setActiveItem(name === 'logo' ? '' : name)
 
-  const getAdminButton = () => (
-    <Menu.Item>
-      <span style={{ fontSize: '0.85em', marginRight: '5px' }}>Admin-mode:</span>
-      <Radio data-cy="adminmode-enable" toggle checked={user.adminMode} onClick={handleAdminModeToggle} />
-    </Menu.Item>
-  )
+  // Semantic's menu items are flat, full-height and separated by a hairline border,
+  // with a light grey wash on the active one. This reproduces that.
+  const itemStyle = (name) => ({
+    color: 'rgba(0, 0, 0, 0.87)',
+    fontSize: '1.2rem',
+    fontWeight: 400,
+    borderRadius: 0,
+    px: '1.15em',
+    alignSelf: 'stretch',
+    borderLeft: '1px solid rgba(34, 36, 38, 0.1)',
+    backgroundColor: activeItem === name ? 'rgba(0, 0, 0, 0.05)' : 'transparent',
+    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.03)' }
+  })
 
-  const getSandboxButton = () => (
-    <Menu.Item
-      data-cy="nav-sandbox"
-      as={Link}
-      to="/sandbox"
-      name="sandbox"
-      active={activeItem === 'sandbox'}
-      onClick={handleItemClick}
-    >
-      Sandbox
-    </Menu.Item>
-  )
-
-  const CoursesButton = () => (
-    <Menu.Item
-      data-cy="nav-courses"
-      as={Link}
-      to="/courses"
-      name="courses"
-      active={activeItem === 'courses'}
-      onClick={handleItemClick}
-    >
-      Edit courses
-    </Menu.Item>
-  )
-
-  const UsersButton = () => (
-    <Menu.Item
-      data-cy="nav-users"
-      as={Link}
-      to="/users"
-      name="users"
-      active={activeItem === 'users'}
-      onClick={handleItemClick}
-    >
-      Edit users
-    </Menu.Item>
-  )
-
-  const AutomatedReportsButton = () => (
-    <Menu.Item
-      data-cy="nav-automated-reports"
-      as={Link}
-      to="/automated-reports"
-      name="automated-reports"
-      active={activeItem === 'automated-reports'}
-      onClick={handleItemClick}
-    >
-      Automated reports
-    </Menu.Item>
-  )
-
-  const ApiChecks = () => (
-    <Menu.Item
-      data-cy="nav-apichecks"
-      as={Link}
-      to="/apichecks"
-      name="apichecks"
-      active={activeItem === 'apichecks'}
-      onClick={handleItemClick}
-    >
-      API Checks
-    </Menu.Item>
-  )
+  // A nav link that is not available to this user stays visible but is a real disabled
+  // button rather than a link, so it cannot be navigated to by any means.
+  const NavButton = ({ name, to, dataCy, disabled, children }) =>
+    disabled ? (
+      <Button data-cy={dataCy} disabled sx={itemStyle(name)}>
+        {children}
+      </Button>
+    ) : (
+      <Button data-cy={dataCy} component={Link} to={to} onClick={handleItemClick(name)} sx={itemStyle(name)}>
+        {children}
+      </Button>
+    )
 
   const handleUnhijack = () => {
     window.localStorage.removeItem('adminLoggedInAs')
     window.location.reload()
   }
 
-  const unHijackButton = () => (
-    <Menu.Item data-cy="sign-in-as" onClick={handleUnhijack}>
-      <Label color="green" horizontal>
-        Unhijack
-      </Label>
-    </Menu.Item>
-  )
-
   if (!user) return null
+
+  const noPermissions = !user.isAdmin && !user.isGrader
+
   return (
-    <Menu size="huge" style={STAGING ? { backgroundColor: '#ffeaed' } : {}} stackable fluid>
-      <Menu.Item
-        style={{ fontSize: 'xx-large', padding: '0.5em' }}
-        as={Link}
-        to="/"
-        name="logo"
-        onClick={handleItemClick}
-      >
-        <img src={images.toska_color} style={{ marginRight: '1em' }} alt="tosca" /> SUOTAR
-        {STAGING ? <span style={{ fontSize: '2rem' }}>-staging</span> : null}
-      </Menu.Item>
+    <AppBar
+      position="static"
+      color="default"
+      elevation={0}
+      sx={{
+        backgroundColor: STAGING ? '#ffeaed' : '#fff',
+        borderBottom: '1px solid rgba(34, 36, 38, 0.15)'
+      }}
+    >
+      <Toolbar disableGutters sx={{ minHeight: '5em', flexWrap: 'wrap', px: 0 }}>
+        <Button
+          component={Link}
+          to="/"
+          onClick={handleItemClick('logo')}
+          disableRipple
+          sx={{
+            color: 'rgba(0, 0, 0, 0.87)',
+            fontSize: 'xx-large',
+            px: '0.5em',
+            alignSelf: 'stretch',
+            borderRadius: 0,
+            '&:hover': { backgroundColor: 'transparent' }
+          }}
+        >
+          <img src={images.toska_color} style={{ marginRight: '0.5em', height: '2.2rem' }} alt="tosca" /> SUOTAR
+          {STAGING ? (
+            <Typography component="span" sx={{ fontSize: '2rem' }}>
+              -staging
+            </Typography>
+          ) : null}
+        </Button>
 
-      <Menu.Item
-        disabled={!user.isAdmin && !user.isGrader}
-        data-cy="nav-new-report"
-        position="right"
-        as={Link}
-        to="/"
-        name="newReport"
-        active={activeItem === 'newReport'}
-        onClick={handleItemClick}
-      >
-        New report
-      </Menu.Item>
+        <Box sx={{ flexGrow: 1 }} />
 
-      <Menu.Item
-        disabled={!user.isAdmin && !user.isGrader}
-        data-cy="nav-reports"
-        as={Link}
-        to="/reports"
-        name="reports"
-        active={activeItem === 'reports'}
-        onClick={handleItemClick}
-      >
-        View reports{' '}
-        {Boolean(user.adminMode && unsentBatchCount) && (
-          <Label circular color="red">
-            {unsentBatchCount}
-          </Label>
+        <NavButton name="newReport" to="/" dataCy="nav-new-report" disabled={noPermissions}>
+          New report
+        </NavButton>
+
+        <NavButton name="reports" to="/reports" dataCy="nav-reports" disabled={noPermissions}>
+          View reports
+          {Boolean(user.adminMode && unsentBatchCount) && (
+            <Box
+              component="span"
+              sx={{
+                ml: '0.6em',
+                px: '0.65em',
+                py: '0.5em',
+                minWidth: '2em',
+                display: 'inline-block',
+                textAlign: 'center',
+                borderRadius: '500rem',
+                backgroundColor: '#db2828',
+                color: '#fff',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                lineHeight: 1
+              }}
+            >
+              {unsentBatchCount}
+            </Box>
+          )}
+        </NavButton>
+
+        {user.adminMode ? (
+          <NavButton name="automated-reports" to="/automated-reports" dataCy="nav-automated-reports">
+            Automated reports
+          </NavButton>
+        ) : null}
+        {user.adminMode ? (
+          <NavButton name="apichecks" to="/apichecks" dataCy="nav-apichecks">
+            API Checks
+          </NavButton>
+        ) : null}
+        {user.adminMode ? (
+          <NavButton name="courses" to="/courses" dataCy="nav-courses">
+            Edit courses
+          </NavButton>
+        ) : null}
+        {user.adminMode ? (
+          <NavButton name="users" to="/users" dataCy="nav-users">
+            Edit users
+          </NavButton>
+        ) : null}
+        {user.adminMode ? (
+          <NavButton name="sandbox" to="/sandbox" dataCy="nav-sandbox">
+            Sandbox
+          </NavButton>
+        ) : null}
+
+        {user.isAdmin ? (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              alignSelf: 'stretch',
+              px: '1.15em',
+              borderLeft: '1px solid rgba(34, 36, 38, 0.1)'
+            }}
+          >
+            <Typography component="span" sx={{ fontSize: '1rem', color: 'rgba(0, 0, 0, 0.87)', mr: '5px' }}>
+              Admin-mode:
+            </Typography>
+            <Switch data-cy="adminmode-enable" checked={Boolean(user.adminMode)} onChange={handleAdminModeToggle} />
+          </Box>
+        ) : null}
+
+        {window.localStorage.getItem('adminLoggedInAs') ? (
+          <Button data-cy="sign-in-as" variant="contained" color="success" onClick={handleUnhijack} sx={{ mx: 1 }}>
+            Unhijack
+          </Button>
+        ) : (
+          <FakeShibboMenu />
         )}
-      </Menu.Item>
-      {user.adminMode ? <AutomatedReportsButton /> : null}
-      {user.adminMode ? <ApiChecks /> : null}
-      {user.adminMode ? <CoursesButton /> : null}
-      {user.adminMode ? <UsersButton /> : null}
-      {user.adminMode ? getSandboxButton() : null}
-      {user.isAdmin ? getAdminButton() : null}
 
-      {window.localStorage.getItem('adminLoggedInAs') ? unHijackButton() : <FakeShibboMenu />}
-      <Menu.Item data-cy="nav-logout" name="log-out" onClick={handleLogout}>
-        Log out
-      </Menu.Item>
-    </Menu>
+        <Button data-cy="nav-logout" onClick={handleLogout} sx={itemStyle('log-out')}>
+          Log out
+        </Button>
+      </Toolbar>
+    </AppBar>
   )
 }

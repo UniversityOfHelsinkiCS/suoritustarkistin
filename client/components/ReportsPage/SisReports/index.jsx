@@ -24,7 +24,7 @@ import {
 } from '@mui/material'
 import * as _ from 'lodash'
 import moment from 'moment'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
@@ -55,7 +55,7 @@ const getBatchLink = (id) => {
   return `http://localhost:8000/reports/sisu/${id}`
 }
 
-const reportContents = (report, dispatch, user, openAccordions, batchLoading) => {
+const reportContents = (report, dispatch, user, loading) => {
   if (!report) return null
 
   const batchSent = report.some(({ entry }) => entry.sent)
@@ -121,8 +121,6 @@ const reportContents = (report, dispatch, user, openAccordions, batchLoading) =>
       Refresh from Sisu
     </Button>
   )
-
-  const loading = openAccordions.includes(report[0].batchId) && batchLoading
 
   return (
     <Box sx={{ margin: 0, padding: 0, opacity: loading ? 0.5 : 1 }}>
@@ -264,29 +262,33 @@ export default ({ mooc, unsent }) => {
     }
   }, [])
 
-  const batchedReports = Object.values(_.groupBy(rows, 'batchId'))
+  const panels = useMemo(
+    () =>
+      Object.values(_.groupBy(rows, 'batchId'))
+        .filter((report) => {
+          if (mooc || user.isAdmin) return true
+          const notSentWithValidEntries = report.every(
+            (row) => row.entry && !row.entry.missingEnrolment && !row.entry.sent
+          )
+          return !notSentWithValidEntries
+        })
+        .map((report, index) => {
+          const reportWithEntries = [...report].sort((a, b) => {
+            if (!a.entry.missingEnrolment && !b.entry.missingEnrolment) return a.entry.type.localeCompare(b.entry.type)
+            return a.entry.missingEnrolment - b.entry.missingEnrolment
+          })
+          if (!reportWithEntries.length) return null
 
-  const panels = batchedReports
-    .filter((report) => {
-      if (mooc || user.isAdmin) return true
-      const notSentWithValidEntries = report.every((row) => row.entry && !row.entry.missingEnrolment && !row.entry.sent)
-      return !notSentWithValidEntries
-    })
-    .map((report, index) => {
-      const reportWithEntries = report.sort((a, b) => {
-        if (!a.entry.missingEnrolment && !b.entry.missingEnrolment) return a.entry.type.localeCompare(b.entry.type)
-        return a.entry.missingEnrolment - b.entry.missingEnrolment
-      })
-      if (!reportWithEntries || !reportWithEntries.length) return null
-
-      return {
-        key: `panel-${index}`,
-        batchId: reportWithEntries[0].batchId,
-        title: title(reportWithEntries),
-        content: () => reportContents(reportWithEntries, dispatch, user, openAccordions, batchLoading)
-      }
-    })
-    .filter(Boolean)
+          return {
+            key: `panel-${index}`,
+            batchId: reportWithEntries[0].batchId,
+            title: title(reportWithEntries),
+            content: (loading) => reportContents(reportWithEntries, dispatch, user, loading)
+          }
+        })
+        .filter(Boolean),
+    [rows, user, mooc, dispatch]
+  )
 
   return (
     <Box sx={{ opacity: pending ? 0.5 : 1 }}>
@@ -306,15 +308,19 @@ export default ({ mooc, unsent }) => {
                 expanded={expanded}
                 onChange={() => dispatch(openReport(panel.batchId))}
                 disableGutters
-                TransitionProps={{ unmountOnExit: true }}
+                slotProps={{ transition: { unmountOnExit: true, timeout: 0 } }}
                 elevation={0}
                 variant="outlined"
-                sx={{ mb: 1, '&:before': { display: 'none' } }}
+                sx={{
+                  mb: 1,
+                  '&:before': { display: 'none' },
+                  '& .MuiAccordionSummary-expandIconWrapper': { transition: 'none' }
+                }}
               >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} data-cy={panel.title.dataCy}>
                   {panel.title.node}
                 </AccordionSummary>
-                <AccordionDetails>{expanded ? panel.content() : null}</AccordionDetails>
+                <AccordionDetails>{expanded ? panel.content(batchLoading) : null}</AccordionDetails>
               </Accordion>
             )
           })}

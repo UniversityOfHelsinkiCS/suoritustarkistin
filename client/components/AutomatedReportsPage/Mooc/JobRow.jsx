@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Button, ButtonGroup, TableCell, TableRow } from '@mui/material'
+import EditJob from '@client/components/AutomatedReportsPage/Mooc/EditJob'
+import { deleteJobAction, runJobAction } from '@client/utils/redux/moocJobsReducer'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-
-import { deleteJobAction, runJobAction } from '@client/utils/redux/moocJobsReducer'
-import EditJob from '@client/components/AutomatedReportsPage/Mooc/EditJob'
+import { Button, ButtonGroup, TableCell, TableRow } from '@mui/material'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default ({ job, jobs }) => {
   const dispatch = useDispatch()

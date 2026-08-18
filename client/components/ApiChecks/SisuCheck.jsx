@@ -1,9 +1,9 @@
+import SisuInstance from '@client/components/ApiChecks/SisuInstance'
+import { checkSisu } from '@client/utils/redux/apiCheckReducer'
+import SearchIcon from '@mui/icons-material/Search'
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
-import { checkSisu } from '@client/utils/redux/apiCheckReducer'
-import SisuInstance from '@client/components/ApiChecks/SisuInstance'
 
 export default () => {
   const dispatch = useDispatch()

@@ -1,5 +1,4 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import JobRow from '@client/components/AutomatedReportsPage/Mooc/JobRow'
 import {
   CircularProgress,
   Paper,
@@ -11,8 +10,8 @@ import {
   TableRow
 } from '@mui/material'
 import * as _ from 'lodash'
-
-import JobRow from '@client/components/AutomatedReportsPage/Mooc/JobRow'
+import React from 'react'
+import { useSelector } from 'react-redux'
 
 export default () => {
   const jobs = useSelector((state) => state.moocJobs)

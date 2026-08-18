@@ -1,7 +1,7 @@
-import React from 'react'
-import { Alert, AlertTitle, Box } from '@mui/material'
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied'
+import { Alert, AlertTitle, Box } from '@mui/material'
 import * as Sentry from '@sentry/react'
+import React from 'react'
 
 const ErrorView = ({ error }) => (
   <Box sx={{ textAlign: 'center', width: '100%', height: '100%' }}>

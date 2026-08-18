@@ -1,17 +1,17 @@
 import { combineReducers } from 'redux'
 
-import user from './userReducer'
-import oodiReports from './oodiReportsReducer'
-import sisReports from './sisReportsReducer'
+import apiChecks from './apiCheckReducer'
 import courses from './coursesReducer'
 import graders from './gradersReducer'
-import newRawEntries from './newRawEntriesReducer'
-import newEntries from './newEntriesReducer'
 import message from './messageReducer'
-import users from './usersReducer'
 import moocJobs from './moocJobsReducer'
+import newEntries from './newEntriesReducer'
+import newRawEntries from './newRawEntriesReducer'
+import oodiReports from './oodiReportsReducer'
+import sisReports from './sisReportsReducer'
 import systemStatus from './systemStatusReducer'
-import apiChecks from './apiCheckReducer'
+import user from './userReducer'
+import users from './usersReducer'
 
 export default combineReducers({
   user,

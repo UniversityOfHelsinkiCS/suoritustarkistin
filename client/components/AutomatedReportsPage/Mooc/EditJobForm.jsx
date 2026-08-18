@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import * as _ from 'lodash'
-import { Autocomplete, Box, Button, Checkbox, FormControlLabel, InputAdornment, Stack, TextField } from '@mui/material'
+import { editJobAction } from '@client/utils/redux/moocJobsReducer'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-
-import { editJobAction } from '@client/utils/redux/moocJobsReducer'
+import { Autocomplete, Box, Button, Checkbox, FormControlLabel, InputAdornment, Stack, TextField } from '@mui/material'
 import { isValidJob, isValidSchedule } from '@shared/validators'
+import * as _ from 'lodash'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default ({ job, close }) => {
   const dispatch = useDispatch()

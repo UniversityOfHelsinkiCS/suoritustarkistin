@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import * as _ from 'lodash'
-import { Autocomplete, Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import { editCourseAction, getResponsiblesAction, resetResponsibles } from '@client/utils/redux/coursesReducer'
-import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
-import { gradeScales } from '@shared/common'
 import Help from '@client/components/CoursesPage/Help'
 import { validityAdornment } from '@client/components/CoursesPage/NewCourseForm'
+import { editCourseAction, getResponsiblesAction, resetResponsibles } from '@client/utils/redux/coursesReducer'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import { Autocomplete, Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
+import { gradeScales } from '@shared/common'
+import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
+import * as _ from 'lodash'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default ({ course, close: closeModal }) => {
   const dispatch = useDispatch()

@@ -1,9 +1,8 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import CourseRow from '@client/components/CoursesPage/CourseRow'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import * as _ from 'lodash'
-
-import CourseRow from '@client/components/CoursesPage/CourseRow'
+import React from 'react'
+import { useSelector } from 'react-redux'
 
 export const columnWidths = ['18.75%', '12.5%', '6.25%', '6.25%', '18.75%', '12.5%', '6.25%', '6.25%', '12.5%']
 

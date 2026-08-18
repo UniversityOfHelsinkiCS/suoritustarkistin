@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Typography } from '@mui/material'
-import * as Sentry from '@sentry/react'
-
-import NavBar from '@client/components/NavBar'
-import Router from '@client/components/Router'
 import Footer from '@client/components/Footer'
 import MaintenanceView, { MaintenanceMessage } from '@client/components/MaintenanceView'
-import { loginAction, pingAction } from '@client/utils/redux/userReducer'
+import NavBar from '@client/components/NavBar'
+import Router from '@client/components/Router'
 import { getStatus } from '@client/utils/redux/systemStatusReducer'
+import { loginAction, pingAction } from '@client/utils/redux/userReducer'
+import { Typography } from '@mui/material'
+import * as Sentry from '@sentry/react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default () => {
   const dispatch = useDispatch()

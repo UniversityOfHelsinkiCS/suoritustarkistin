@@ -1,7 +1,15 @@
-import moment from 'moment'
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import NotificationMessage from '@client/components/Message'
+import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import {
+  handleBatchDeletionAction,
+  sendEntriesToSisAction,
+  openReport,
+  sendMissingEnrollmentEmail
+} from '@client/utils/redux/sisReportsReducer'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import SaveIcon from '@mui/icons-material/Save'
+import SendIcon from '@mui/icons-material/Send'
 import {
   Alert,
   Box,
@@ -18,19 +26,10 @@ import {
   Tooltip,
   Typography
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import SaveIcon from '@mui/icons-material/Save'
-import SendIcon from '@mui/icons-material/Send'
-import NotificationMessage from '@client/components/Message'
-
-import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
-import {
-  handleBatchDeletionAction,
-  sendEntriesToSisAction,
-  openReport,
-  sendMissingEnrollmentEmail
-} from '@client/utils/redux/sisReportsReducer'
+import moment from 'moment'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 const styles = {
   extraEntry: {

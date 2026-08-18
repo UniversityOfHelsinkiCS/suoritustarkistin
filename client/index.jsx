@@ -1,17 +1,17 @@
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import { ThemeProvider } from '@mui/material/styles'
-import { CssBaseline } from '@mui/material'
-import '@client/assets/custom.css'
-import { setHeaders } from '@client/utils/fakeShibboleth'
-import * as Sentry from '@sentry/react'
-
-import store from '@client/utils/store'
-import theme from '@client/theme'
 import App from '@client/components/App'
 import ErrorBoundary from '@client/components/ErrorBoundary'
+import theme from '@client/theme'
+import { setHeaders } from '@client/utils/fakeShibboleth'
+import store from '@client/utils/store'
+import { CssBaseline } from '@mui/material'
+
+import '@client/assets/custom.css'
+import { ThemeProvider } from '@mui/material/styles'
+import * as Sentry from '@sentry/react'
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import { Provider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
 
 /**
  * The frontend reports to its own Sentry project, separate from the backend's, so a

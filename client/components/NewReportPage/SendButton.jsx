@@ -1,10 +1,9 @@
+import { sendNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, Tooltip, Typography } from '@mui/material'
+import { areValidNewRawEntries } from '@shared/validators'
+import * as _ from 'lodash'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, Tooltip, Typography } from '@mui/material'
-import * as _ from 'lodash'
-
-import { sendNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
-import { areValidNewRawEntries } from '@shared/validators'
 
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries

@@ -1,14 +1,14 @@
+import ApiChecks from '@client/components/ApiChecks'
+import AutomatedReportsPage from '@client/components/AutomatedReportsPage'
+import CoursesPage from '@client/components/CoursesPage'
+import NewReportPage from '@client/components/NewReportPage'
+import ProtectedRoute from '@client/components/ProtectedRoute'
+import ReportsPage from '@client/components/ReportsPage'
+import SandboxPage from '@client/components/SandboxPage'
+import UnauthorizedPage from '@client/components/UnauthorizedPage'
+import UsersPage from '@client/components/UsersPage'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import ProtectedRoute from '@client/components/ProtectedRoute'
-import ApiChecks from '@client/components/ApiChecks'
-import NewReportPage from '@client/components/NewReportPage'
-import ReportsPage from '@client/components/ReportsPage'
-import CoursesPage from '@client/components/CoursesPage'
-import UsersPage from '@client/components/UsersPage'
-import AutomatedReportsPage from '@client/components/AutomatedReportsPage'
-import UnauthorizedPage from '@client/components/UnauthorizedPage'
-import SandboxPage from '@client/components/SandboxPage'
 
 // HACK to make component full page width or narrow
 const Wrap = ({ children, narrow }) => <div className={narrow ? `sitecontent-narrow` : 'sitecontent'}>{children}</div>

@@ -1,8 +1,8 @@
+import { setNewRawEntriesAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import { Box, TextField } from '@mui/material'
+import { isKandiExtraCourse } from '@shared/common'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, TextField } from '@mui/material'
-import { setNewRawEntriesAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
-import { isKandiExtraCourse } from '@shared/common'
 
 export default ({ kandi, parseCSV }) => {
   const dispatch = useDispatch()

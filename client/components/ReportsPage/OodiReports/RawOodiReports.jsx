@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { Paper } from '@mui/material'
-
 import TabLoader from '@client/components/ReportsPage/TabLoader'
+import { Paper } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
 const Downloaded = () => (
   <div data-cy="report-downloaded" style={{ color: 'green' }}>

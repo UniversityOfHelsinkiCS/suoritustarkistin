@@ -1,15 +1,14 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { Box, Button, Dialog, DialogContent, Popover, TableCell, TableRow, Typography } from '@mui/material'
+import UserForm from '@client/components/UsersPage/UserForm'
+import { deleteUser, editUserAction } from '@client/utils/redux/usersReducer'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import LoginIcon from '@mui/icons-material/Login'
+import { Box, Button, Dialog, DialogContent, Popover, TableCell, TableRow, Typography } from '@mui/material'
 import moment from 'moment'
-
-import UserForm from '@client/components/UsersPage/UserForm'
-import { deleteUser, editUserAction } from '@client/utils/redux/usersReducer'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 const ConfirmPopover = ({ trigger, children }) => {
   const [anchor, setAnchor] = useState(null)

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import * as _ from 'lodash'
-import { Autocomplete, Box, Button, Checkbox, FormControlLabel, InputAdornment, Stack, TextField } from '@mui/material'
+import Help from '@client/components/CoursesPage/Help'
+import { addCourseAction, getResponsiblesAction, resetResponsibles } from '@client/utils/redux/coursesReducer'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import { addCourseAction, getResponsiblesAction, resetResponsibles } from '@client/utils/redux/coursesReducer'
-import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
+import { Autocomplete, Box, Button, Checkbox, FormControlLabel, InputAdornment, Stack, TextField } from '@mui/material'
 import { gradeScales } from '@shared/common'
-import Help from '@client/components/CoursesPage/Help'
+import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
+import * as _ from 'lodash'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 export const validityAdornment = (valid) => ({
   endAdornment: (

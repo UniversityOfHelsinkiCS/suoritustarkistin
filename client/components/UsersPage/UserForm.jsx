@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { getAllCoursesAction } from '@client/utils/redux/coursesReducer'
+import { createUser, editUserAction, fetchUser } from '@client/utils/redux/usersReducer'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import {
   Alert,
   AlertTitle,
@@ -10,13 +12,10 @@ import {
   Stack,
   TextField
 } from '@mui/material'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import { useDispatch, useSelector } from 'react-redux'
-import * as _ from 'lodash'
-
-import { createUser, editUserAction, fetchUser } from '@client/utils/redux/usersReducer'
-import { getAllCoursesAction } from '@client/utils/redux/coursesReducer'
 import { isValidEmailAddress } from '@shared/validators'
+import * as _ from 'lodash'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 const INITIAL_FORM_DATA = {
   email: '',

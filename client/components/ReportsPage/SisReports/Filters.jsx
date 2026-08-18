@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Autocomplete, Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material'
-import { useDispatch, useSelector } from 'react-redux'
-import { debounce } from 'lodash'
-
-import { toggleFilterAction, setFilterAction } from '@client/utils/redux/sisReportsReducer'
 import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/coursesReducer'
+import { toggleFilterAction, setFilterAction } from '@client/utils/redux/sisReportsReducer'
+import { Autocomplete, Box, FormControlLabel, MenuItem, Stack, Switch, TextField, Typography } from '@mui/material'
+import { debounce } from 'lodash'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
 import { formatCoursesForSelection } from '../../NewReportPage/InputOptions'
 
 const STATE_OPTIONS = [

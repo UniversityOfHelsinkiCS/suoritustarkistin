@@ -1,7 +1,7 @@
+import { Alert, Paper } from '@mui/material'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
-import { Alert, Paper } from '@mui/material'
 
 export default () => {
   const user = useSelector((state) => state.user)

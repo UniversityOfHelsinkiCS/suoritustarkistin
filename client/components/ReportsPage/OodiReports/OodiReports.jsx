@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import TabLoader from '@client/components/ReportsPage/TabLoader'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
   Accordion,
   AccordionDetails,
@@ -10,9 +10,8 @@ import {
   TableHead,
   TableRow
 } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-
-import TabLoader from '@client/components/ReportsPage/TabLoader'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 const Downloaded = () => <div style={{ color: 'green' }}>DOWNLOADED</div>
 const NotDownloaded = () => <div style={{ color: 'red' }}>NOT DOWNLOADED</div>

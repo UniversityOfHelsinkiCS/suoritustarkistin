@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { Button, Dialog, DialogContent } from '@mui/material'
-
 import NewJobForm from '@client/components/AutomatedReportsPage/Mooc/NewJobForm'
+import { Button, Dialog, DialogContent } from '@mui/material'
+import React, { useState } from 'react'
 
 export default () => {
   const [showForm, setShowForm] = useState(false)

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
 import { callApi } from '@client/utils/apiConnection'
-import { Alert, AlertTitle, Box, Button, Paper, Stack, Typography } from '@mui/material'
 import BugReportIcon from '@mui/icons-material/BugReport'
+import { Alert, AlertTitle, Box, Button, Paper, Stack, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
 export default () => {
   const [crash, setCrash] = useState(false)

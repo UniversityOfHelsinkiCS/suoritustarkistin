@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { isOneOfKandiCourses, isRegularExtraCourse } from '@client/utils/common'
+import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/coursesReducer'
+import { getAllGradersAction, getUsersGradersAction } from '@client/utils/redux/gradersReducer'
+import { setNewRawEntriesAction, sendNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import { Alert, Autocomplete, Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
-import * as _ from 'lodash'
-import DatePicker from 'react-datepicker'
+
 import 'react-datepicker/dist/react-datepicker.css'
 
-import { setNewRawEntriesAction, sendNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
-import { getAllGradersAction, getUsersGradersAction } from '@client/utils/redux/gradersReducer'
-import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/coursesReducer'
-import { isOneOfKandiCourses, isRegularExtraCourse } from '@client/utils/common'
-import { areValidNewRawEntries } from '@shared/validators'
 import { isKandiExtraCourse, isThesisCourse } from '@shared/common'
+import { areValidNewRawEntries } from '@shared/validators'
+import * as _ from 'lodash'
+import React, { useEffect, useState } from 'react'
+import DatePicker from 'react-datepicker'
+import { useDispatch, useSelector } from 'react-redux'
+
 import ImportStudents from './ImportStudents'
 
 const styles = {

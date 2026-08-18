@@ -1,6 +1,6 @@
-import React from 'react'
-import { Tooltip } from '@mui/material'
 import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined'
+import { Tooltip } from '@mui/material'
+import React from 'react'
 
 const Help = ({ text }) => (
   <Tooltip title={text}>

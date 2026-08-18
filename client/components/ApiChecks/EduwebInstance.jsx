@@ -1,7 +1,7 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Accordion, AccordionDetails, AccordionSummary, Card } from '@mui/material'
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Accordion, AccordionDetails, AccordionSummary, Card } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export default ({ instance, active, setActive }) => {
   const { eduweb } = useSelector((state) => state.apiChecks)

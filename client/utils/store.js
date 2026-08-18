@@ -1,10 +1,9 @@
+import { handleRequest } from '@client/utils/apiConnection'
+import { inProduction } from '@client/utils/common'
+import combinedReducers from '@client/utils/redux'
+import * as Sentry from '@sentry/react'
 import { applyMiddleware, compose, createStore } from 'redux'
 import { thunk } from 'redux-thunk'
-import * as Sentry from '@sentry/react'
-
-import { inProduction } from '@client/utils/common'
-import { handleRequest } from '@client/utils/apiConnection'
-import combinedReducers from '@client/utils/redux'
 
 const sentryReduxEnhancer = Sentry.createReduxEnhancer({})
 

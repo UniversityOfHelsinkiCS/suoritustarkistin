@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { Button, Dialog, DialogContent } from '@mui/material'
-
 import NewCourseForm from '@client/components/CoursesPage/NewCourseForm'
+import { Button, Dialog, DialogContent } from '@mui/material'
+import React, { useState } from 'react'
 
 export default () => {
   const [showForm, setShowForm] = useState(false)

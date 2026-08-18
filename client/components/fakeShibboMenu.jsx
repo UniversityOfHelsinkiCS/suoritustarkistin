@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { IconButton, Menu, MenuItem } from '@mui/material'
-import PeopleIcon from '@mui/icons-material/People'
+import { inProduction } from '@client/utils/common'
 import { getHeaders, possibleUsers, setHeaders } from '@client/utils/fakeShibboleth'
 import { loginAction } from '@client/utils/redux/userReducer'
-import { inProduction } from '@client/utils/common'
+import PeopleIcon from '@mui/icons-material/People'
+import { IconButton, Menu, MenuItem } from '@mui/material'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 export default () => {
   const [employeeNumber, setEmployeenumber] = useState(getHeaders().employeeNumber)

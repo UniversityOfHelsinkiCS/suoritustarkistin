@@ -1,8 +1,7 @@
+import { deleteCourseAction } from '@client/utils/redux/coursesReducer'
+import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material'
-
-import { deleteCourseAction } from '@client/utils/redux/coursesReducer'
 
 const DeletionModal = ({ showForm, setShowForm, id }) => {
   const dispatch = useDispatch()

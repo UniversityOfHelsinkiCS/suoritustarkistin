@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
-import { Box, Button, Popover, Typography } from '@mui/material'
-import { useDispatch, useSelector } from 'react-redux'
-
 import { handleEntryDeletionAction } from '@client/utils/redux/sisReportsReducer'
+import { Box, Button, Popover, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default ({ rawEntryId, batchId }) => {
   const [anchor, setAnchor] = useState(null)

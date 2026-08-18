@@ -1,6 +1,6 @@
-import React from 'react'
-import { Accordion, AccordionDetails, AccordionSummary, Card, Chip } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Accordion, AccordionDetails, AccordionSummary, Card, Chip } from '@mui/material'
+import React from 'react'
 
 export default ({ realisation, index, active, setActive }) => {
   const { activityPeriod, enrollments, droppedByCron } = realisation

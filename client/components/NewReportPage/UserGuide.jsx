@@ -1,20 +1,19 @@
 import React from 'react'
-import { List, ListItem, Paper, Tooltip, Typography } from '@mui/material'
+import { Paper, Tooltip, Typography } from '@mui/material'
 import HelpIcon from '@mui/icons-material/Help'
+import DetailedInstructions, { sharedInstructions } from './DetailedInstructions'
 
 const instructionContainer = {
   padding: '1rem'
 }
 
-const detailedInstructions = {
-  textAlign: 'left',
-  width: '60em'
-}
-
-const instruction = {
-  margin: '0 0 0.2em 0',
-  fontWeight: 700
-}
+const instructions = [
+  ...sharedInstructions,
+  {
+    title: 'Course code',
+    body: 'You can select course for the entry by providing the course code in csv or by using the course dropdown below. The course dropdown selection is used for all entries that do not have the course code included in csv.'
+  }
+]
 
 const code = {
   fontSize: '1rem',
@@ -30,45 +29,6 @@ const code2 = {
   fontSize: '0.93rem'
 }
 
-const DetailedInstructions = () => (
-  <div style={detailedInstructions}>
-    <Typography variant="h5" component="h1" gutterBottom>
-      Detailed instructions
-    </Typography>
-    <List>
-      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
-        <p style={instruction}>Student number</p>
-        Student numbers will be fetched from Sisu for reporting. Students not present in Sisu, cannot be given course
-        completions.
-      </ListItem>
-      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
-        <p style={instruction}>Grade</p>
-        Each course has a pre-defined grade scale in Sisu. For most it is "0-5" or "Hyv.-Hyl.". Only grades within the
-        grade scale of the course can be given.
-      </ListItem>
-      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
-        <p style={instruction}>Credits</p>
-        You can define the amount of credits for each student separately or use the course default credit amount.
-      </ListItem>
-      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
-        <p style={instruction}>Language</p>
-        Suotar supports three languages for course completions "fi", "en", "sv".
-      </ListItem>
-      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
-        <p style={instruction}>Date of completion</p>
-        You can add date separately for each student. Any date chosen from date-picker will apply to completions that do
-        not have a separately set date for them. Please note that the course instance will be picked automatically based
-        on the completion date.
-      </ListItem>
-      <ListItem sx={{ display: 'block', px: 0, py: 0.5 }}>
-        <p style={instruction}>Course code</p>
-        You can select course for the entry by providing the course code in csv or by using the course dropdown below.
-        The course dropdown selection is used for all entries that do not have the course code included in csv.
-      </ListItem>
-    </List>
-  </div>
-)
-
 export default () => (
   <Paper variant="outlined" data-cy="userguide" style={instructionContainer}>
     <Typography variant="h5" component="h2" gutterBottom>
@@ -82,7 +42,7 @@ export default () => (
     <Typography variant="h6" component="h3" sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
       Each completion should be its own line in the following format:{' '}
       <Tooltip
-        title={<DetailedInstructions />}
+        title={<DetailedInstructions instructions={instructions} />}
         slotProps={{
           tooltip: {
             sx: {

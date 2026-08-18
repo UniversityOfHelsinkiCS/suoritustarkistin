@@ -2,12 +2,15 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 import 'semantic-ui-css/semantic.min.css'
 import '@client/assets/custom.css'
 import { setHeaders } from '@client/utils/fakeShibboleth'
 import * as Sentry from '@sentry/react'
 
 import store from '@client/utils/store'
+import theme from '@client/theme'
 import App from '@client/components/App'
 import ErrorBoundary from '@client/components/ErrorBoundary'
 
@@ -32,13 +35,16 @@ const root = createRoot(document.getElementById('root'))
 
 const render = () =>
   root.render(
-    <Provider store={store}>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-      </BrowserRouter>
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Provider store={store}>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        </BrowserRouter>
+      </Provider>
+    </ThemeProvider>
   )
 
 // Tint the background in dev so a local tab is never mistaken for production.

@@ -41,6 +41,10 @@
     "cli": "node ./server/scripts/fixCompletionDates.js"
   },
   "dependencies": {
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@mui/icons-material": "9.3.1",
+    "@mui/material": "9.3.1",
     "@sentry/node": "10.69.0",
     "@sentry/react": "10.69.0",
     "@vitejs/plugin-react": "6.0.5",

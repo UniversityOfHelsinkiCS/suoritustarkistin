@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import CircularProgress from '@mui/material/CircularProgress'
+import { CircularProgress } from '@mui/material'
 import { useDropzone } from 'react-dropzone'
 
 import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'

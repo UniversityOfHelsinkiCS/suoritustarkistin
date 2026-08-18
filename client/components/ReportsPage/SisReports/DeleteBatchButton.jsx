@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Popover from '@mui/material/Popover'
-import Typography from '@mui/material/Typography'
+import { Box, Button, Popover, Typography } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { handleBatchDeletionAction, openReport } from '@client/utils/redux/sisReportsReducer'

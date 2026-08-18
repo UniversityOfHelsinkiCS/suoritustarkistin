@@ -1,6 +1,5 @@
 import React from 'react'
-import Alert from '@mui/material/Alert'
-import AlertTitle from '@mui/material/AlertTitle'
+import { Alert, AlertTitle } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearMessageAction } from '@client/utils/redux/messageReducer'
 

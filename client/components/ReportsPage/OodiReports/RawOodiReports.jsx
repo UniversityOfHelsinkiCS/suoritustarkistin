@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Paper from '@mui/material/Paper'
+import { Paper } from '@mui/material'
 
 import TabLoader from '@client/components/ReportsPage/TabLoader'
 

@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
+import { Button, Dialog, DialogContent } from '@mui/material'
 
 import NewJobForm from '@client/components/AutomatedReportsPage/Mooc/NewJobForm'
 

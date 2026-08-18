@@ -1,8 +1,7 @@
 import React from 'react'
 import * as _ from 'lodash'
 import moment from 'moment'
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
+import { Box, Chip } from '@mui/material'
 
 // Semantic's accordion title made its whole subtree bold, which is what separated the
 // status line from the lighter date beneath it.

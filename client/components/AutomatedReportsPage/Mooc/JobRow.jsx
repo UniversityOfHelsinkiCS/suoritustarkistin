@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Button from '@mui/material/Button'
-import ButtonGroup from '@mui/material/ButtonGroup'
-import TableCell from '@mui/material/TableCell'
-import TableRow from '@mui/material/TableRow'
+import { Button, ButtonGroup, TableCell, TableRow } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 

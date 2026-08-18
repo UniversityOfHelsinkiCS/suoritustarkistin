@@ -1,7 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
+import { Box, TextField } from '@mui/material'
 import { setNewRawEntriesAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import { isKandiExtraCourse } from '@shared/common'
 

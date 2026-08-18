@@ -1,10 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import Typography from '@mui/material/Typography'
+import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material'
 
 import { deleteCourseAction } from '@client/utils/redux/coursesReducer'
 

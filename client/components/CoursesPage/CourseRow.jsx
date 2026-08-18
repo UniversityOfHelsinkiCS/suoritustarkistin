@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Button, Grid, Icon } from 'semantic-ui-react'
+import Button from '@mui/material/Button'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import CheckIcon from '@mui/icons-material/Check'
 
 import { confirmDeletionAction } from '@client/utils/redux/coursesReducer'
 import EditCourse from '@client/components/CoursesPage/EditCourse'
@@ -21,29 +24,28 @@ export default ({ course, graders }) => {
   }
 
   return (
-    <Grid.Row>
-      <Grid.Column width={3}>{course.name}</Grid.Column>
-      <Grid.Column width={2}>{course.courseCode}</Grid.Column>
-      <Grid.Column width={1}>{course.language}</Grid.Column>
-      <Grid.Column width={1}>{course.credits}</Grid.Column>
-      <Grid.Column width={3}>{getGradersNames()}</Grid.Column>
-      <Grid.Column width={2}>{course.gradeScale}</Grid.Column>
-      <Grid.Column textAlign="center" width={1}>
-        {course.useAsExtra ? <Icon name="check" color="green" size="large" /> : null}
-      </Grid.Column>
-      <Grid.Column textAlign="center" width={1}>
-        {course.isNewMooc ? <Icon name="check" color="green" size="large" /> : null}
-      </Grid.Column>
-      <Grid.Column width={2}>
+    <TableRow>
+      <TableCell>{course.name}</TableCell>
+      <TableCell>{course.courseCode}</TableCell>
+      <TableCell>{course.language}</TableCell>
+      <TableCell>{course.credits}</TableCell>
+      <TableCell>{getGradersNames()}</TableCell>
+      <TableCell>{course.gradeScale}</TableCell>
+      <TableCell align="center">{course.useAsExtra ? <CheckIcon color="success" /> : null}</TableCell>
+      <TableCell align="center">{course.isNewMooc ? <CheckIcon color="success" /> : null}</TableCell>
+      <TableCell>
         <EditCourse course={course} />
         <Button
-          color="red"
+          variant="contained"
+          color="error"
           data-cy="delete-course-button"
           onClick={() => confirmDeletion(course.id)}
-          content="Delete"
-        />
+          sx={{ ml: 1 }}
+        >
+          Delete
+        </Button>
         {showForm && <DeletionModal id={course.id} showForm={showForm} setShowForm={setShowForm} />}
-      </Grid.Column>
-    </Grid.Row>
+      </TableCell>
+    </TableRow>
   )
 }

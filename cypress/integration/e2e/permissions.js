@@ -53,11 +53,11 @@ describe('Permissions', () => {
   it('Grader can see themselves and no-one else as graders', () => {
     cy.login('grader')
     cy.visit('/')
-    cy.get('[data-cy=grader-selection]').click()
-    cy.get('span').contains('grader')
-    cy.get('span').contains('secondGrader').should('not.exist')
-    cy.get('span').contains('admin').should('not.exist')
-    cy.get('span').contains('regular').should('not.exist')
+    cy.get('[data-cy=grader-selection] input').click()
+    cy.get('[role=listbox]').should('contain', 'grader')
+    cy.get('[role=listbox]').should('not.contain', 'secondGrader')
+    cy.get('[role=listbox]').should('not.contain', 'admin')
+    cy.get('[role=listbox]').should('not.contain', 'regular')
     cy.logout()
   })
 

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Checkbox, Select, Form, Button, Message } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import * as _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -17,7 +24,8 @@ const styles = {
   sendButton: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: '1.5rem'
   },
   info: {
     marginTop: '1rem'
@@ -198,62 +206,67 @@ export default ({ kandi, extra, parseCSV }) => {
     )
   }
 
+  const graderOptions = formatGradersForSelection(graders)
+
   return (
     <>
       <ImportStudents isOpen={importIsOpen} setIsOpen={setImportIsOpen} importRows={importRows} />
-      <Form style={styles.form}>
-        <Form.Group widths="equal">
-          <Form.Field
-            control={Select}
-            search
-            className="input"
+      <Box sx={styles.form}>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="flex-start">
+          <Autocomplete
+            fullWidth
+            autoHighlight
+            blurOnSelect
             data-cy="grader-selection"
-            placeholder="Choose grader"
-            label="Choose grader"
-            onChange={handleGraderSelection}
-            value={newRawEntries.graderId}
-            options={formatGradersForSelection(graders)}
+            options={graderOptions}
+            getOptionLabel={(option) => option.text}
+            isOptionEqualToValue={(option, value) => option.value === value.value}
+            value={graderOptions.find((o) => o.value === newRawEntries.graderId) || null}
+            onChange={(e, option) => handleGraderSelection(e, { value: option ? option.value : undefined })}
+            renderInput={(params) => <TextField {...params} label="Choose grader" />}
           />
-          <Form.Field
-            control={Select}
-            search
-            className="input"
+          <Autocomplete
+            fullWidth
+            autoHighlight
+            blurOnSelect
             data-cy="course-selection"
             disabled={kandi}
-            onChange={handleCourseSelection}
-            placeholder="Choose course"
-            label="Choose course"
-            value={newRawEntries.courseId}
             options={courseOptions}
+            getOptionLabel={(option) => option.text}
+            isOptionEqualToValue={(option, value) => option.value === value.value}
+            value={courseOptions.find((o) => o.value === newRawEntries.courseId) || null}
+            onChange={(e, option) => handleCourseSelection(e, { value: option ? option.value : undefined })}
+            renderInput={(params) => <TextField {...params} label="Choose course" />}
           />
-          <Form.Field>
-            <label>Set date for completions</label>
-            <DatePicker
-              id="date-picker"
-              className="date-picker"
-              autoComplete="off"
-              style={{ height: '20px', width: '100%' }}
-              dateFormat="dd.MM.yyyy"
-              selected={showingDate}
-              onChange={(date) => handleDateSelection(date)}
-            />
-          </Form.Field>
+          <DatePicker
+            id="date-picker"
+            autoComplete="off"
+            dateFormat="dd.MM.yyyy"
+            selected={showingDate}
+            onChange={(date) => handleDateSelection(date)}
+            // Rendering through a TextField is what keeps the picker looking like the
+            // other inputs; the old .date-picker class hand-copied Semantic's input styling.
+            customInput={<TextField fullWidth label="Set date for completions" />}
+          />
           {!kandi ? (
-            <Form.Field
-              className="default-grade"
-              control={Checkbox}
-              data-cy="default-grade-election"
-              onChange={handleDefaultGradeSelection}
-              checked={defaultGrade}
+            <FormControlLabel
+              sx={{ whiteSpace: 'nowrap', mt: 1 }}
+              control={
+                <Checkbox
+                  data-cy="default-grade-election"
+                  onChange={handleDefaultGradeSelection}
+                  checked={defaultGrade}
+                />
+              }
               label="Give all students grade 'Hyv.'"
             />
           ) : null}
-        </Form.Group>
-      </Form>
+        </Stack>
+      </Box>
       <div style={styles.sendButton}>
         {
           !extra ? (
-            <Button disabled={!newRawEntries.defaultCourse} color="blue" onClick={() => setImportIsOpen(true)}>
+            <Button variant="contained" disabled={!newRawEntries.defaultCourse} onClick={() => setImportIsOpen(true)}>
               Import students
             </Button>
           ) : (
@@ -261,9 +274,10 @@ export default ({ kandi, extra, parseCSV }) => {
           ) // Add empty element to align send button to right with justify-content space-between
         }
         <Button
+          variant="contained"
+          color="success"
           disabled={newRawEntries.sending || !newRawEntries.data || !isValid}
           data-cy="confirm-sending-button"
-          color="green"
           onClick={sendRawEntries}
         >
           Create report
@@ -271,7 +285,7 @@ export default ({ kandi, extra, parseCSV }) => {
       </div>
       <div style={styles.info}>Remember to report completions for the correct academic year (1.8. – 31.7.)</div>
       {newRawEntries.data && newRawEntries.data.some((entry) => entry.duplicate) && (
-        <Message negative>There are duplicate entries.</Message>
+        <Alert severity="error">There are duplicate entries.</Alert>
       )}
     </>
   )

@@ -1,6 +1,15 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Icon, Popup, Table } from 'semantic-ui-react'
+import IconButton from '@mui/material/IconButton'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Tooltip from '@mui/material/Tooltip'
+import BlockIcon from '@mui/icons-material/Block'
+import DeleteIcon from '@mui/icons-material/Delete'
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
 
 import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import { parseCSV } from '@client/utils/inputParser'
@@ -33,102 +42,102 @@ const invalidStyle = {
 
 const getCourseCell = (course) => {
   if (course.courseCode) {
-    return <Table.Cell style={validStyle}>{`${course.name} (${course.courseCode})`}</Table.Cell>
+    return <TableCell style={validStyle}>{`${course.name} (${course.courseCode})`}</TableCell>
   }
   if (course) {
-    return <Table.Cell style={invalidStyle}>{course}</Table.Cell>
+    return <TableCell style={invalidStyle}>{course}</TableCell>
   }
-  return <Table.Cell />
+  return <TableCell />
 }
 
 const getStudentIdCell = (studentId, duplicate) => {
   if (duplicate) {
     return (
-      <Table.Cell style={invalidStyle}>
-        <Icon name="ban" />
+      <TableCell style={invalidStyle}>
+        <BlockIcon fontSize="small" />
         {studentId} DUPLICATE!
-      </Table.Cell>
+      </TableCell>
     )
   }
   if (isValidStudentId(studentId)) {
-    return <Table.Cell style={validStyle}>{studentId}</Table.Cell>
+    return <TableCell style={validStyle}>{studentId}</TableCell>
   }
   return (
-    <Table.Cell style={invalidStyle}>
-      <Icon name="ban" />
+    <TableCell style={invalidStyle}>
+      <BlockIcon fontSize="small" />
       {studentId}
-    </Table.Cell>
+    </TableCell>
   )
 }
 
 const getGradeCell = (grade, defaultGrade) => {
   if (grade) {
     if (isValidGrade(grade)) {
-      return <Table.Cell style={validStyle}>{grade}</Table.Cell>
+      return <TableCell style={validStyle}>{grade}</TableCell>
     }
     return (
-      <Table.Cell style={invalidStyle}>
-        <Icon name="ban" />
+      <TableCell style={invalidStyle}>
+        <BlockIcon fontSize="small" />
         {grade}
-      </Table.Cell>
+      </TableCell>
     )
   }
   if (!grade && defaultGrade) {
-    return <Table.Cell style={validStyle}>Hyv.</Table.Cell>
+    return <TableCell style={validStyle}>Hyv.</TableCell>
   }
 
   return (
-    <Table.Cell style={invalidStyle}>
-      <Icon name="ban" />
+    <TableCell style={invalidStyle}>
+      <BlockIcon fontSize="small" />
       Add grade
-    </Table.Cell>
+    </TableCell>
   )
 }
 
 const getCreditCell = (credits, course) => {
   if (credits) {
     if (isValidCreditAmount(credits)) {
-      return <Table.Cell style={validStyle}>{commify(credits)}</Table.Cell>
+      return <TableCell style={validStyle}>{commify(credits)}</TableCell>
     }
     return (
-      <Table.Cell style={invalidStyle}>
-        <Icon name="ban" />
+      <TableCell style={invalidStyle}>
+        <BlockIcon fontSize="small" />
         {credits}
-      </Table.Cell>
+      </TableCell>
     )
   }
   if (course && course.credits) {
-    return <Table.Cell style={validStyle}>{course.credits}</Table.Cell>
+    return <TableCell style={validStyle}>{course.credits}</TableCell>
   }
 
-  return <Table.Cell />
+  return <TableCell />
 }
 
 const getLanguageCell = (language, course) => {
   if (language) {
     if (isValidLanguage(language)) {
-      return <Table.Cell style={validStyle}>{language}</Table.Cell>
+      return <TableCell style={validStyle}>{language}</TableCell>
     }
     return (
-      <Table.Cell style={invalidStyle}>
-        <Icon name="ban" />
+      <TableCell style={invalidStyle}>
+        <BlockIcon fontSize="small" />
         {language}
-      </Table.Cell>
+      </TableCell>
     )
   }
   if (course && course.language) {
-    return <Table.Cell style={validStyle}>{course.language}</Table.Cell>
+    return <TableCell style={validStyle}>{course.language}</TableCell>
   }
-  return <Table.Cell />
+  return <TableCell />
 }
 
 const getGraderCell = (graderId, graders) => {
   const grader = graders.find((g) => g.employeeId === graderId)
   if (grader) {
-    return <Table.Cell style={validStyle}>{grader.name}</Table.Cell>
+    return <TableCell style={validStyle}>{grader.name}</TableCell>
   }
 
-  return <Table.Cell />
+  return <TableCell />
 }
 
 const getDateCell = (date) => {
@@ -137,16 +146,10 @@ const getDateCell = (date) => {
     const future = isFutureDate(date)
     if (past || future) {
       return (
-        <Popup
-          trigger={
-            <Table.Cell style={warningStyle}>
-              <Icon name="exclamation" />
-              {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
-            </Table.Cell>
-          }
-          mouseEnterDelay={300}
-          mouseLeaveDelay={500}
-          content={
+        <Tooltip
+          enterDelay={300}
+          leaveDelay={500}
+          title={
             future ? (
               <p>
                 Completion date <strong>set to future</strong>, check that it is correct. Adding completions to this
@@ -159,30 +162,35 @@ const getDateCell = (date) => {
               </p>
             )
           }
-        />
+        >
+          <TableCell style={warningStyle}>
+            <PriorityHighIcon fontSize="small" />
+            {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
+          </TableCell>
+        </Tooltip>
       )
     }
     if (isValidDate(date)) {
       return (
-        <Table.Cell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</Table.Cell>
+        <TableCell style={validStyle}>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</TableCell>
       )
     }
     if (isDateObject(date)) {
       return (
-        <Table.Cell style={invalidStyle}>
-          <Icon name="ban" />
+        <TableCell style={invalidStyle}>
+          <BlockIcon fontSize="small" />
           {`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}
-        </Table.Cell>
+        </TableCell>
       )
     }
     return (
-      <Table.Cell style={invalidStyle}>
-        <Icon name="ban" />
+      <TableCell style={invalidStyle}>
+        <BlockIcon fontSize="small" />
         {date}
-      </Table.Cell>
+      </TableCell>
     )
   }
-  return <Table.Cell />
+  return <TableCell />
 }
 
 const getErrorCell = (newRawEntries, studentId, courseCode) => {
@@ -193,22 +201,24 @@ const getErrorCell = (newRawEntries, studentId, courseCode) => {
 
     if (failedRow) {
       return (
-        <Table.Cell style={invalidStyle}>
-          <Icon name="ban" />
+        <TableCell style={invalidStyle}>
+          <BlockIcon fontSize="small" />
           {failedRow.message}
-        </Table.Cell>
+        </TableCell>
       )
     }
-    return <Table.Cell />
+    return <TableCell />
   }
 
   return null
 }
 
 const getDeletionCell = (index, handleRowDeletion) => (
-  <Table.Cell style={validStyle}>
-    <Button style={{ width: '100%' }} icon="trash" onClick={() => handleRowDeletion(index)} />
-  </Table.Cell>
+  <TableCell style={validStyle}>
+    <IconButton aria-label="Remove from report" onClick={() => handleRowDeletion(index)}>
+      <DeleteIcon />
+    </IconButton>
+  </TableCell>
 )
 
 const validCourse = (course, courses) => courses.find((c) => c.courseCode === course)
@@ -245,7 +255,7 @@ export default ({ allowDelete = true, kandi }) => {
     const course = getCourse(row, courses, defaultCourse)
 
     return (
-      <Table.Row key={row.studentId + index} className={kandi && row.isExtra ? 'extra-entry' : ''}>
+      <TableRow key={row.studentId + index} className={kandi && row.isExtra ? 'extra-entry' : ''}>
         {getCourseCell(course)}
         {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
         {getGradeCell(row.grade, defaultGrade)}
@@ -255,26 +265,33 @@ export default ({ allowDelete = true, kandi }) => {
         {getDateCell(row.attainmentDate || date)}
         {getErrorCell(newRawEntries, row.studentId, course.courseCode)}
         {allowDelete ? getDeletionCell(index, handleRowDeletion) : null}
-      </Table.Row>
+      </TableRow>
     )
   })
 
   return (
-    <Table celled data-cy="new-report-table" basic compact>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>Course</Table.HeaderCell>
-          <Table.HeaderCell>Student number</Table.HeaderCell>
-          <Table.HeaderCell>Grade</Table.HeaderCell>
-          <Table.HeaderCell>Credits (op)</Table.HeaderCell>
-          <Table.HeaderCell>Language</Table.HeaderCell>
-          <Table.HeaderCell>Grader</Table.HeaderCell>
-          <Table.HeaderCell>Completion date</Table.HeaderCell>
-          {newRawEntries.failed && <Table.HeaderCell>Errors</Table.HeaderCell>}
-          {allowDelete ? <Table.HeaderCell>Remove from report</Table.HeaderCell> : null}
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>{reportRows}</Table.Body>
+    <Table
+      size="small"
+      data-cy="new-report-table"
+      sx={{
+        '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
+        '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
+      }}
+    >
+      <TableHead>
+        <TableRow>
+          <TableCell>Course</TableCell>
+          <TableCell>Student number</TableCell>
+          <TableCell>Grade</TableCell>
+          <TableCell>Credits (op)</TableCell>
+          <TableCell>Language</TableCell>
+          <TableCell>Grader</TableCell>
+          <TableCell>Completion date</TableCell>
+          {newRawEntries.failed && <TableCell>Errors</TableCell>}
+          {allowDelete ? <TableCell>Remove from report</TableCell> : null}
+        </TableRow>
+      </TableHead>
+      <TableBody>{reportRows}</TableBody>
     </Table>
   )
 }

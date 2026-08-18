@@ -2,7 +2,24 @@ import moment from 'moment'
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Table, Button, Popup, Segment, Header, Divider, Message, Icon } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
+import Popover from '@mui/material/Popover'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import SaveIcon from '@mui/icons-material/Save'
+import SendIcon from '@mui/icons-material/Send'
 import NotificationMessage from '@client/components/Message'
 
 import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
@@ -57,6 +74,7 @@ export default ({ rows, batchId }) => {
   const graderId = useSelector((state) => state.newRawEntries.graderId)
   const graders = useSelector((state) => state.graders.data)
   const [sent, setSent] = useState(false)
+  const [confirmAnchor, setConfirmAnchor] = useState(null)
   const onlyMissingEnrollments = rows.every(({ entry }) => entry.type === 'ENTRY' && entry.missingEnrolment)
   const dateHasChanged = rows.some(
     ({ entry, attainmentDate }) => !moment(attainmentDate).isSame(moment(entry.completionDate), 'day')
@@ -114,50 +132,66 @@ export default ({ rows, batchId }) => {
     if (onlyMissingEnrollments)
       return (
         <Button
-          icon="save"
-          content="Approve"
+          variant="contained"
+          color="success"
+          startIcon={<SaveIcon />}
           onClick={send}
           disabled={pending}
           data-cy="confirm-entries-send-missing-enrolment"
-          positive
-        />
+        >
+          Approve
+        </Button>
       )
 
+    // Semantic's on="click" Popup held an interactive button, so this is a Popover with
+    // its own anchor rather than a Tooltip.
     return (
-      <Popup
-        trigger={<Button icon="send" content="Approve" disabled={pending} data-cy="confirm-entries-send" positive />}
-        content={
-          <Button
-            positive
-            data-cy="confirm-entries-send-confirm"
-            onClick={send}
-            content={`Are you sure? Sending ${
-              entriesToSisu.entries.length + entriesToSisu.extraEntries.length
-            } completion(s) to Sisu`}
-          />
-        }
-        on="click"
-        position="top center"
-      />
+      <>
+        <Button
+          variant="contained"
+          color="success"
+          startIcon={<SendIcon />}
+          disabled={pending}
+          data-cy="confirm-entries-send"
+          onClick={(e) => setConfirmAnchor(e.currentTarget)}
+        >
+          Approve
+        </Button>
+        <Popover
+          open={Boolean(confirmAnchor)}
+          anchorEl={confirmAnchor}
+          onClose={() => setConfirmAnchor(null)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Box sx={{ p: 1 }}>
+            <Button variant="contained" color="success" data-cy="confirm-entries-send-confirm" onClick={send}>
+              {`Are you sure? Sending ${
+                entriesToSisu.entries.length + entriesToSisu.extraEntries.length
+              } completion(s) to Sisu`}
+            </Button>
+          </Box>
+        </Popover>
+      </>
     )
   }
 
   const MissingEnrollmentsInfo = () =>
     onlyMissingEnrollments ? (
-      <Message style={styles.missingEnrolmentInfo} warning>
+      <Alert severity="warning" sx={styles.missingEnrolmentInfo}>
         The report contains only completions with missing enrollments and nothing will be sent to Sisu.
         <br />
         When a student enrolls to the course the completion will be sent automatically to Sisu.
-      </Message>
+      </Alert>
     ) : null
 
   const ChangedDateInfo = () =>
     dateHasChanged ? (
-      <Message style={styles.missingEnrolmentInfo} warning>
+      <Alert severity="warning" sx={styles.missingEnrolmentInfo}>
         One or more completion date has been changed to match the study right in the enrollment.
         <br />
         The changed dates are marked with a pencil icon. Please check the new dates before approving.
-      </Message>
+      </Alert>
     ) : null
 
   const CompletionDate = ({ attainmentDate, completionDate }) =>
@@ -165,12 +199,13 @@ export default ({ rows, batchId }) => {
       <div style={styles.completionDate}>
         <span>{moment(completionDate).format('DD.MM.YYYY')}</span>
         {!moment(attainmentDate).isSame(moment(completionDate), 'day') ? (
-          <Popup
-            content={`Completion date is adjusted automatically to match the study right in the enrollment. Original completion date was ${moment(
+          <Tooltip
+            title={`Completion date is adjusted automatically to match the study right in the enrollment. Original completion date was ${moment(
               attainmentDate
             ).format('DD.MM.YYYY')}`}
-            trigger={<Icon name="pencil alternate" circular />}
-          />
+          >
+            <EditIcon fontSize="small" />
+          </Tooltip>
         ) : null}
       </div>
     ) : null
@@ -181,9 +216,11 @@ export default ({ rows, batchId }) => {
   }
 
   return (
-    <Segment>
-      <Segment basic>
-        <Header as="h3">Check and approve the entries</Header>
+    <Paper variant="outlined" sx={{ p: 2 }}>
+      <Box>
+        <Typography variant="h6" component="h3" gutterBottom>
+          Check and approve the entries
+        </Typography>
         <p>After approving, the completions will be sent to Sisu.</p>
         <Divider />
         <p>
@@ -192,65 +229,73 @@ export default ({ rows, batchId }) => {
         </p>
         <MissingEnrollmentsInfo />
         <ChangedDateInfo />
-      </Segment>
+      </Box>
       {sent && error ? (
-        <Segment basic>
+        <Box>
           <NotificationMessage />
-        </Segment>
+        </Box>
       ) : null}
-      <Segment loading={pending} basic>
-        <Table compact celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Student number</Table.HeaderCell>
-              <Table.HeaderCell>Student name</Table.HeaderCell>
-              <Table.HeaderCell>Grade</Table.HeaderCell>
-              <Table.HeaderCell>Completion date</Table.HeaderCell>
-              <Table.HeaderCell>Language</Table.HeaderCell>
-              <Table.HeaderCell>Grader</Table.HeaderCell>
-              <Table.HeaderCell>Credits</Table.HeaderCell>
-              <Table.HeaderCell>Course name</Table.HeaderCell>
-              <Table.HeaderCell>Course realisation name</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body data-cy="confirm-entries-table">
+      <Box sx={{ opacity: pending ? 0.5 : 1 }}>
+        <Table
+          size="small"
+          sx={{
+            '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
+            '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
+          }}
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell>Student number</TableCell>
+              <TableCell>Student name</TableCell>
+              <TableCell>Grade</TableCell>
+              <TableCell>Completion date</TableCell>
+              <TableCell>Language</TableCell>
+              <TableCell>Grader</TableCell>
+              <TableCell>Credits</TableCell>
+              <TableCell>Course name</TableCell>
+              <TableCell>Course realisation name</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody data-cy="confirm-entries-table">
             {rows.map(({ entry, ...rawEntry }) => (
-              <Table.Row
+              <TableRow
                 key={entry.id}
-                warning={entry.missingEnrolment}
+                sx={entry.missingEnrolment ? { backgroundColor: '#fffaf3' } : null}
                 style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}
               >
-                <Table.Cell>{rawEntry.studentNumber}</Table.Cell>
-                <Table.Cell>{entry.studentName}</Table.Cell>
-                <Table.Cell>
+                <TableCell>{rawEntry.studentNumber}</TableCell>
+                <TableCell>{entry.studentName}</TableCell>
+                <TableCell>
                   {!entry.missingEnrolment || entry.type === 'EXTRA_ENTRY'
                     ? getGrade(entry.gradeScaleId, entry.gradeId, entry.completionLanguage)
                     : rawEntry.grade}
-                </Table.Cell>
-                <Table.Cell>
+                </TableCell>
+                <TableCell>
                   <CompletionDate attainmentDate={rawEntry.attainmentDate} completionDate={entry.completionDate} />
-                </Table.Cell>
-                <Table.Cell>{rawEntry.language}</Table.Cell>
-                <Table.Cell>{getGraderName(rawEntry.graderId, graders)}</Table.Cell>
-                <Table.Cell>{rawEntry.credits}</Table.Cell>
-                <Table.Cell>{rawEntry.course.name}</Table.Cell>
-                <Table.Cell>{getCourseUnitRealisationName(entry)}</Table.Cell>
-              </Table.Row>
+                </TableCell>
+                <TableCell>{rawEntry.language}</TableCell>
+                <TableCell>{getGraderName(rawEntry.graderId, graders)}</TableCell>
+                <TableCell>{rawEntry.credits}</TableCell>
+                <TableCell>{rawEntry.course.name}</TableCell>
+                <TableCell>{getCourseUnitRealisationName(entry)}</TableCell>
+              </TableRow>
             ))}
-          </Table.Body>
+          </TableBody>
         </Table>
-      </Segment>
-      <Segment basic>
+      </Box>
+      <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
         <SendButton />
         <Button
-          icon="trash"
-          content="Cancel"
+          variant="contained"
+          color="error"
+          startIcon={<DeleteIcon />}
           disabled={pending}
           onClick={revert}
           data-cy="confirm-entries-cancel"
-          negative
-        />
-      </Segment>
-    </Segment>
+        >
+          Cancel
+        </Button>
+      </Stack>
+    </Paper>
   )
 }

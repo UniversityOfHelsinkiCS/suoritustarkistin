@@ -19,11 +19,11 @@ describe('User management', () => {
     cy.get('[data-cy=add-user-confirm]').click()
 
     cy.visit('/')
-    cy.get('[data-cy=grader-selection]').click()
-    cy.get('span').contains('grader')
-    cy.get('span').contains('secondGrader')
-    cy.get('span').contains('admin').should('not.exist')
-    cy.get('span').contains('regular').should('not.exist')
+    cy.get('[data-cy=grader-selection] input').click()
+    cy.get('[role=listbox]').should('contain', 'grader')
+    cy.get('[role=listbox]').should('contain', 'secondGrader')
+    cy.get('[role=listbox]').should('not.contain', 'admin')
+    cy.get('[role=listbox]').should('not.contain', 'regular')
     cy.logout()
   })
 

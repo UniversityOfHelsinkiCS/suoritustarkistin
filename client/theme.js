@@ -15,7 +15,15 @@ const theme = createTheme({
      * every MUI rem resolves against 14px instead of the 16px it assumes and the
      * whole type scale renders ~12% small.
      */
-    htmlFontSize: 14
+    htmlFontSize: 14,
+    // Semantic's .ui.header is 700 across the board; MUI's headings are 400-500, which
+    // reads noticeably lighter for the section titles this app uses them for.
+    h1: { fontWeight: 700 },
+    h2: { fontWeight: 700 },
+    h3: { fontWeight: 700 },
+    h4: { fontWeight: 700 },
+    h5: { fontWeight: 700 },
+    h6: { fontWeight: 700 }
   },
   palette: {
     // Semantic's palette, so the UI stays familiar. contrastText is explicit
@@ -27,7 +35,15 @@ const theme = createTheme({
   components: {
     // No global defaultProps. Semantic's look is flat and low-contrast, so a
     // blanket variant here quietly restyles every screen at once.
-    MuiButton: { styleOverrides: { root: { textTransform: 'none' } } }
+    MuiButton: { styleOverrides: { root: { textTransform: 'none' } } },
+    // MUI gives a Tab a 72px min-height as soon as it has an icon; Semantic's tabs
+    // were the height of their text.
+    MuiTab: {
+      styleOverrides: {
+        root: { textTransform: 'none', fontSize: '1rem', minHeight: 64, paddingTop: 8, paddingBottom: 8 }
+      }
+    },
+    MuiTabs: { styleOverrides: { root: { minHeight: 64 } } }
   }
 })
 

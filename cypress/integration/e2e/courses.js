@@ -48,10 +48,13 @@ describe('Creating and assigning courses work', function () {
     cy.get('[data-cy=add-course-confirm]').should('be.disabled')
 
     // Graders and grade scales can be added but are not required
-    cy.get('[data-cy=add-course-grader]').click().children().contains('grader').click()
+    // The Autocomplete listbox renders in a portal, so the options are not descendants
+    // of the control and each one carries its own data-cy instead.
+    cy.get('[data-cy=add-course-grader] input').click()
+    cy.get('[data-cy=grader-option-grader]').click()
 
-    cy.get('[data-cy=add-course-grade-scale]').click()
-    cy.get('span').contains('sis-0-5').click()
+    cy.get('[data-cy=add-course-grade-scale] input').click()
+    cy.get('[data-cy=grade-scale-option-sis-0-5]').click()
 
     cy.logout()
   })

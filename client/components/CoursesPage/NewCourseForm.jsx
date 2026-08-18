@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as _ from 'lodash'
-import { Button, Form, Input, Segment, Popup, Icon, Checkbox } from 'semantic-ui-react'
+import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import InputAdornment from '@mui/material/InputAdornment'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import { addCourseAction, getResponsiblesAction, resetResponsibles } from '@client/utils/redux/coursesReducer'
 import { isValidCourse, isValidCourseCode, isValidCreditAmount, isValidLanguage } from '@shared/validators'
 import { gradeScales } from '@shared/common'
+import Help from '@client/components/CoursesPage/Help'
 
-const Help = ({ text }) => (
-  <span style={{ marginLeft: '7px' }}>
-    <Popup content={text} trigger={<Icon name="help" circular />} />
-  </span>
-)
+// Semantic showed validity as a check/times icon inside the input; data-cy stays on the
+// TextField root so the existing `[data-cy=...] input` selectors keep resolving.
+export const validityAdornment = (valid) => ({
+  endAdornment: (
+    <InputAdornment position="end">
+      {valid ? <CheckIcon fontSize="small" color="success" /> : <CloseIcon fontSize="small" color="error" />}
+    </InputAdornment>
+  )
+})
 
 export default ({ close: closeModal }) => {
   const dispatch = useDispatch()
@@ -40,116 +55,134 @@ export default ({ close: closeModal }) => {
     close()
   }
 
+  const graderOptions = _.sortBy(graders, 'name').map((grader) => ({
+    key: grader.id,
+    value: grader.id,
+    text: grader.name
+  }))
+
   return (
-    <Segment style={{ width: '50em' }}>
-      <Form width={4} loading={courseData.pending}>
-        <Form.Field
+    <Box component="form" sx={{ p: 1 }}>
+      <Stack spacing={2}>
+        <TextField
           data-cy="add-course-name"
           required
-          control={Input}
           label="Course name"
           placeholder="Basics of creating a course"
           value={data.name || ''}
           onChange={(e) => setData({ ...data, name: e.target.value })}
-          error={false}
-          icon={data.name ? 'check' : 'times'}
+          slotProps={{ input: validityAdornment(Boolean(data.name)) }}
         />
-        <Form.Field
+        <TextField
           data-cy="add-course-code"
           required
-          control={Input}
           label="Course code"
           placeholder="TKT00000"
           value={data.courseCode || ''}
           onChange={(e) => setData({ ...data, courseCode: e.target.value })}
-          icon={isValidCourseCode(data.courseCode) ? 'check' : 'times'}
+          slotProps={{ input: validityAdornment(isValidCourseCode(data.courseCode)) }}
         />
-        <Form.Field
+        <TextField
           data-cy="add-course-language"
           required
-          control={Input}
           label="Language"
           placeholder="fi"
           value={data.language || ''}
           onChange={(e) => setData({ ...data, language: e.target.value })}
-          icon={isValidLanguage(data.language) ? 'check' : 'times'}
+          slotProps={{ input: validityAdornment(isValidLanguage(data.language)) }}
         />
-        <Form.Field
+        <TextField
           data-cy="add-course-credits"
           required
-          control={Input}
           label="Credit amount"
           placeholder="5,0"
           value={data.credits || ''}
           onChange={(e) => setData({ ...data, credits: e.target.value })}
-          icon={isValidCreditAmount(data.credits) ? 'check' : 'times'}
+          slotProps={{ input: validityAdornment(isValidCreditAmount(data.credits)) }}
         />
-        <Form.Dropdown
+        <Autocomplete
           data-cy="add-course-grade-scale"
-          label="Grade scale"
-          selection
           options={gradeScales}
-          value={data.gradeScale}
-          onChange={(e, { value }) => setData({ ...data, gradeScale: value })}
+          getOptionLabel={(option) => option.text}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          value={gradeScales.find((g) => g.value === data.gradeScale) || null}
+          onChange={(e, option) => setData({ ...data, gradeScale: option ? option.value : undefined })}
+          renderOption={(props, option) => (
+            <li {...props} key={option.key} data-cy={`grade-scale-option-${option.value}`}>
+              {option.text}
+            </li>
+          )}
+          renderInput={(params) => <TextField {...params} label="Grade scale" />}
         />
-        <Form.Dropdown
-          data-cy="add-course-grader"
-          label="Grader"
-          options={_.sortBy(graders, 'name').map((grader) => ({
-            key: grader.id,
-            value: grader.id,
-            text: grader.name
-          }))}
-          value={data.graders}
-          onChange={(e, d) => setData({ ...data, graders: d.value })}
-          search
+        <Autocomplete
           multiple
-          selection
+          data-cy="add-course-grader"
+          options={graderOptions}
+          getOptionLabel={(option) => option.text}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          value={graderOptions.filter((o) => (data.graders || []).includes(o.value))}
+          onChange={(e, options) => setData({ ...data, graders: options.map((o) => o.value) })}
+          renderOption={(props, option) => (
+            <li {...props} key={option.key} data-cy={`grader-option-${option.text}`}>
+              {option.text}
+            </li>
+          )}
+          renderInput={(params) => <TextField {...params} label="Grader" />}
         />
-        <Form.Field
-          data-cy="fetch-graders"
-          control={Button}
-          disabled={!isValidCourseCode(data.courseCode)}
-          onClick={() => dispatch(getResponsiblesAction(data.courseCode))}
-          content="Fetch course graders"
-          icon="refresh"
-          color="blue"
-          basic
-        />
-        <Form.Field
+        <Box>
+          <Button
+            data-cy="fetch-graders"
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            disabled={!isValidCourseCode(data.courseCode)}
+            onClick={() => dispatch(getResponsiblesAction(data.courseCode))}
+          >
+            Fetch course graders
+          </Button>
+        </Box>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={Boolean(data.useAsExtra)}
+              onChange={(e) => setData({ ...data, useAsExtra: e.target.checked })}
+            />
+          }
           label={
-            <label>
+            <>
               Use as erilliskirjaus
               <Help text='Select this only if course is used as "erilliskirjaus" together with bachelors thesis' />
-            </label>
+            </>
           }
-          control={Checkbox}
-          value={data.useAsExtra}
-          onChange={(e, d) => setData({ ...data, useAsExtra: d.checked })}
         />
-        <Form.Field
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={Boolean(data.isNewMooc)}
+              onChange={(e) => setData({ ...data, isNewMooc: e.target.checked })}
+            />
+          }
           label={
-            <label>
+            <>
               Use new mooc platform
               <Help text="Select if course is a mooc course running on courses.mooc.fi" />
-            </label>
+            </>
           }
-          control={Checkbox}
-          checked={data.isNewMooc}
-          onChange={(e, d) => setData({ ...data, isNewMooc: d.checked })}
         />
-        <Form.Group>
-          <Form.Field negative control={Button} content="Cancel" onClick={() => close()} />
-          <Form.Field
+        <Stack direction="row" spacing={2}>
+          <Button variant="contained" color="error" onClick={() => close()}>
+            Cancel
+          </Button>
+          <Button
             data-cy="add-course-confirm"
-            positive
-            control={Button}
-            content="Add Course"
+            variant="contained"
+            color="success"
             disabled={!isValidCourse(data)}
             onClick={handleSubmit}
-          />
-        </Form.Group>
-      </Form>
-    </Segment>
+          >
+            Add Course
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   )
 }

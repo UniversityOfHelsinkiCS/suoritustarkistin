@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Header } from 'semantic-ui-react'
+import Typography from '@mui/material/Typography'
 import * as Sentry from '@sentry/react'
 
 import NavBar from '@client/components/NavBar'
@@ -49,7 +49,9 @@ export default () => {
   if (user.error && user.errorCode === 1)
     return (
       <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
-        <Header as="h1">This service is for employees only.</Header>
+        <Typography variant="h4" component="h1" gutterBottom>
+          This service is for employees only.
+        </Typography>
         <span>To use the service, you need to have an employee number.</span>
       </div>
     )

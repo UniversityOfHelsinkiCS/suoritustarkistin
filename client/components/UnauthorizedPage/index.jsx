@@ -1,7 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
-import { Message, Segment } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import Paper from '@mui/material/Paper'
 
 export default () => {
   const user = useSelector((state) => state.user)
@@ -12,8 +13,8 @@ export default () => {
   }
 
   return (
-    <Segment>
-      <Message error>
+    <Paper variant="outlined" sx={{ p: 2 }}>
+      <Alert severity="error">
         Your account has been created. Before you can start using the service, your account must be approved manually by
         one of SUOTAR's administrators.
         <br />
@@ -23,7 +24,7 @@ export default () => {
         <a target="_blank" rel="noopener noreferrer" href="mailto:grp-toska@helsinki.fi">
           grp-toska@helsinki.fi
         </a>
-      </Message>
-    </Segment>
+      </Alert>
+    </Paper>
   )
 }

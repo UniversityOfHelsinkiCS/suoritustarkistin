@@ -40,12 +40,8 @@ export default () => {
     if (window.location.pathname !== '/reports') dispatch(getAllSisReportsAction({ offset, limit }))
   }
 
-  // Semantic's Menu.Item passed the name through its onClick; with plain buttons it is
-  // simpler to bind the name at the call site.
   const handleItemClick = (name) => () => setActiveItem(name === 'logo' ? '' : name)
 
-  // Semantic's menu items are flat, full-height and separated by a hairline border,
-  // with a light grey wash on the active one. This reproduces that.
   const itemStyle = (name) => ({
     color: 'rgba(0, 0, 0, 0.87)',
     fontSize: '1.2rem',
@@ -105,7 +101,7 @@ export default () => {
             '&:hover': { backgroundColor: 'transparent' }
           }}
         >
-          <img src={images.toska_color} style={{ marginRight: '0.5em', height: '2.2rem' }} alt="tosca" /> SUOTAR
+          <img src={images.toska_color} style={{ marginRight: '0.7em', height: '3rem' }} alt="tosca" /> SUOTAR
           {STAGING ? (
             <Typography component="span" sx={{ fontSize: '2rem' }}>
               -staging

@@ -40,18 +40,6 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     sourcemap: true,
-    /**
-     * lightningcss (Vite's default) rejects semantic-ui-css 2.5.0's invalid
-     * `[data-tooltip]:after .header` selectors, and the only other minifier Vite
-     * accepts is esbuild, which Vite 8 no longer ships. Skipping CSS minification
-     * costs almost nothing: the bulk is semantic.min.css, already minified.
-     *
-     * TODO: delete this line when semantic-ui-css goes away with the MUI migration.
-     * The invalid selectors are the only reason minification is off; verify by
-     * removing it and running a production build, which fails loudly if anything
-     * still trips lightningcss.
-     */
-    cssMinify: false,
     rollupOptions: {
       // A stable, unhashed name so the sourcemaps the production workflow uploads
       // to Sentry keep matching the bundle across deploys

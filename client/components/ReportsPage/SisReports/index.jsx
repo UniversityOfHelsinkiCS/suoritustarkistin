@@ -313,7 +313,6 @@ export default ({ mooc, unsent }) => {
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 data-cy={panel.title.dataCy}
-                className="sis-report-table-accordion"
               >
                 {panel.title.node}
               </AccordionSummary>

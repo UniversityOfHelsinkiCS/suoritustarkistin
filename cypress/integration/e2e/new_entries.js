@@ -41,7 +41,6 @@ describe('New entries can be added correctly', function () {
     cy.get('[data-cy=report-TKT10002]').should('not.contain', 'ERROR(S)')
     cy.get('[data-cy=report-TKT10002]').should('not.contain', 'MISSING ENROLLMENT')
 
-    cy.get('[data-cy=report-TKT10002]').click()
     cy.get('[data-cy=report-student-number]').should('contain', '014979622')
     cy.get('[data-cy=report-sent]')
       .invoke('text')

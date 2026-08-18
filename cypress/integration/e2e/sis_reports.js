@@ -9,7 +9,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=nav-reports]').click()
 
     cy.get('[data-cy=sis-reports-tab]').click()
-    cy.get('[data-cy=report-table]').its('length').should('eq', 7)
+    cy.get('[data-cy=reports-list]').children().should('have.length', 7)
 
     cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()
     cy.get('[data-cy=entry-accordion]').should('contain', 'Ohjelmoinnin perusteet (TKT10002)')
@@ -37,11 +37,11 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=nav-reports]').click()
 
     cy.get('[data-cy=sis-reports-tab]').click()
-    cy.get('[data-cy=report-table]').its('length').should('eq', 4)
+    cy.get('[data-cy=reports-list]').children().should('have.length', 4)
     cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet')
 
     cy.get('[data-cy=adminmode-enable]').click().wait(500)
-    cy.get('[data-cy=report-table]').its('length').should('eq', 7)
+    cy.get('[data-cy=reports-list]').children().should('have.length', 7)
   })
 
   it('Reports can be filtered by course', () => {
@@ -55,7 +55,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=course-filter] input').click()
     cy.get('[role=listbox]').contains('Ohjelmoinnin perusteet (TKT10002)').click()
 
-    cy.get('[data-cy=report-table]').its('length').should('eq', 1)
+    cy.get('[data-cy=reports-list]').children().should('have.length', 1)
 
     cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()
     cy.get('[data-cy=entry-accordion]').should('contain', 'Ohjelmoinnin perusteet (TKT10002)')
@@ -73,7 +73,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.contains('No reports found')
 
     cy.get('[data-cy=student-filter] input').clear().type('011111111').wait(500)
-    cy.get('[data-cy=report-table]').its('length').should('eq', 7)
+    cy.get('[data-cy=reports-list]').children().should('have.length', 7)
 
     cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()
     cy.get('[data-cy=report-table-row-011111111]').should('have.attr', 'data-highlighted', 'true')

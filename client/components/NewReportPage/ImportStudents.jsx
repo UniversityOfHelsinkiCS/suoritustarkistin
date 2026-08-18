@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Icon,
-  Modal,
-  Table,
-  Segment,
-  Button,
-  Message,
-  Dropdown,
-  Popup,
-  Placeholder,
-  Label,
-  Checkbox
-} from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Skeleton from '@mui/material/Skeleton'
+import Switch from '@mui/material/Switch'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ArrowRightIcon from '@mui/icons-material/ArrowRight'
+import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined'
 import moment from 'moment'
 import { importStudentsAction, importStudentsAttainments } from '../../utils/redux/newRawEntriesReducer'
 
@@ -44,6 +53,12 @@ const styles = {
   label: {
     margin: '0.125rem'
   }
+}
+
+// Semantic's celled tables drew column separators; MUI cells only draw a bottom border.
+const celledBorders = {
+  '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
+  '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
 }
 
 const GRADES = {
@@ -103,9 +118,13 @@ const renderAttainments = ({ attainments: attainmentsForStudent }) => {
     const date = moment(attainmentDate).format('DD.MM.YYYY')
     const gradeString = getGradeString()
     return (
-      <Label key={`${personId}${gradeString}${date}`} color={state === 'FAILED' ? 'red' : 'green'} style={styles.label}>
-        {gradeString}, {date}
-      </Label>
+      <Chip
+        key={`${personId}${gradeString}${date}`}
+        size="small"
+        color={state === 'FAILED' ? 'error' : 'success'}
+        sx={styles.label}
+        label={`${gradeString}, ${date}`}
+      />
     )
   })
 
@@ -113,7 +132,7 @@ const renderAttainments = ({ attainments: attainmentsForStudent }) => {
   return [...new Map(earlierAttainments.map(({ key, ...item }) => [key, { ...item, key }])).values()]
 }
 
-const Accordion = ({
+const ExpandableRow = ({
   rows,
   title,
   get,
@@ -126,22 +145,22 @@ const Accordion = ({
 }) => {
   const [open, setOpen] = useState(false)
 
-  const openAccordion = () => {
+  const toggleOpen = () => {
     if (!open) fetchAttainments(rows.map(({ person }) => person.studentNumber))
     setOpen(!open)
   }
 
   return (
     <>
-      <Table.Row>
-        <Table.Cell>
-          <span onClick={openAccordion} style={{ cursor: 'pointer' }}>
-            <Icon name={`triangle ${open ? 'down' : 'right'}`} />
+      <TableRow>
+        <TableCell>
+          <Box component="span" onClick={toggleOpen} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            {open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
             {title}
-          </span>
-        </Table.Cell>
-        <Table.Cell />
-      </Table.Row>
+          </Box>
+        </TableCell>
+        <TableCell />
+      </TableRow>
       {open ? (
         <>
           {rows
@@ -156,27 +175,32 @@ const Accordion = ({
               )
             )
             .map(({ person, id }) => (
-              <Table.Row key={id}>
-                <Table.Cell style={styles.tdPadded}>
-                  <Dropdown
-                    placeholder="Grade"
-                    options={GRADES[gradeScale]}
-                    style={styles.dropdown}
-                    value={get(person.studentNumber)}
-                    onChange={(_, data) => set(data, person, date)}
-                    selection
-                    compact
-                    clearable
-                  />
-                  <span>{`${person.lastName}, ${person.firstNames} (${person.studentNumber})`}</span>
-                </Table.Cell>
-                <Table.Cell width={5}>
+              <TableRow key={id}>
+                <TableCell style={styles.tdPadded}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <TextField
+                      select
+                      size="small"
+                      label="Grade"
+                      sx={{ ...styles.dropdown, minWidth: '8rem' }}
+                      value={get(person.studentNumber)}
+                      onChange={(e) => set({ value: e.target.value }, person, date)}
+                    >
+                      {GRADES[gradeScale].map((g) => (
+                        <MenuItem key={g.key} value={g.value} data-cy={`grade-option-${g.value}`}>
+                          {g.text}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    <span>{`${person.lastName}, ${person.firstNames} (${person.studentNumber})`}</span>
+                  </Box>
+                </TableCell>
+                <TableCell>
                   {allAttainments.pending &&
                   !allAttainments.data.find((a) => a.studentNumber === person.studentNumber) ? (
-                    <Placeholder>
-                      <Placeholder.Line length="very long" />
-                      <Placeholder.Line length="long" />
-                    </Placeholder>
+                    <>
+                      <Skeleton variant="text" width="100%" />
+                    </>
                   ) : (
                     renderAttainments(
                       allAttainments.data
@@ -186,8 +210,8 @@ const Accordion = ({
                         : { attainments: [] }
                     )
                   )}
-                </Table.Cell>
-              </Table.Row>
+                </TableCell>
+              </TableRow>
             ))}
         </>
       ) : null}
@@ -246,37 +270,37 @@ export default ({ isOpen, setIsOpen, importRows }) => {
   }
 
   return (
-    <Modal open={isOpen} size="large" onClose={close}>
-      <Modal.Header>Select students to import</Modal.Header>
+    <Dialog open={isOpen} maxWidth="lg" fullWidth onClose={close}>
+      <DialogTitle>Select students to import</DialogTitle>
       {confirm ? (
         <SummaryTable rows={grades} />
       ) : (
-        <Modal.Content>
-          {error ? <Message error>Failed to fetch enrollments.</Message> : null}
-          <Segment loading={pending} style={styles.table} basic>
+        <DialogContent>
+          {error ? <Alert severity="error">Failed to fetch enrollments.</Alert> : null}
+          <Box sx={{ ...styles.table, opacity: pending ? 0.5 : 1 }}>
             {data.length || pending ? (
               <>
-                <Message info>Select students by selecting a grade for each student to import.</Message>
-                <Checkbox
+                <Alert severity="info">Select students by selecting a grade for each student to import.</Alert>
+                <FormControlLabel
+                  control={
+                    <Switch onChange={(e) => setHideWithAttainment(e.target.checked)} checked={hideWithAttainment} />
+                  }
                   label="Hide students with earlier completion"
-                  onChange={(_, { checked }) => setHideWithAttainment(checked)}
-                  checked={hideWithAttainment}
-                  toggle
                 />
-                <Table compact celled>
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.HeaderCell>Students</Table.HeaderCell>
-                      <Table.HeaderCell>Earlier completions</Table.HeaderCell>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
+                <Table size="small" sx={celledBorders}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Students</TableCell>
+                      <TableCell>Earlier completions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
                     {data
                       .sort((a, b) => moment(b.activityPeriod.startDate).diff(moment(a.activityPeriod.startDate)))
                       .map((r) => {
                         const title = getTitle(r)
                         return (
-                          <Accordion
+                          <ExpandableRow
                             title={title}
                             rows={r.enrollments}
                             gradeScale={r.gradeScaleId}
@@ -297,29 +321,31 @@ export default ({ isOpen, setIsOpen, importRows }) => {
                           />
                         )
                       })}
-                  </Table.Body>
+                  </TableBody>
                 </Table>
               </>
             ) : (
-              <Message info>{`No enrollments found for course ${defaultCourse}`}</Message>
+              <Alert severity="info">{`No enrollments found for course ${defaultCourse}`}</Alert>
             )}
-          </Segment>
-        </Modal.Content>
+          </Box>
+        </DialogContent>
       )}
 
-      <Modal.Actions>
+      <DialogActions>
         <Button
+          variant="contained"
+          color="error"
           onClick={() => {
             if (confirm) return setConfirm(false)
             close()
           }}
           disabled={pending}
-          negative
         >
           Cancel
         </Button>
         <Button
-          positive
+          variant="contained"
+          color="success"
           onClick={() => {
             if (!confirm) return setConfirm(true)
             importRows(grades)
@@ -329,37 +355,36 @@ export default ({ isOpen, setIsOpen, importRows }) => {
         >
           {!confirm ? 'Import' : 'Confirm'}
         </Button>
-      </Modal.Actions>
-    </Modal>
+      </DialogActions>
+    </Dialog>
   )
 }
 
 const SummaryTable = ({ rows }) => (
-  <Table style={styles.confirmTable} compact celled>
-    <Table.Header>
-      <Table.Row>
-        <Table.HeaderCell>Student</Table.HeaderCell>
-        <Table.HeaderCell>Grade</Table.HeaderCell>
-        <Table.HeaderCell style={styles.dateHeader}>
+  <Table sx={{ ...styles.confirmTable, ...celledBorders }} size="small">
+    <TableHead>
+      <TableRow>
+        <TableCell>Student</TableCell>
+        <TableCell>Grade</TableCell>
+        <TableCell style={styles.dateHeader}>
           Date
-          <Popup
-            content="Completion date is added automatically if importing students from an exam"
-            trigger={<Icon name="help" size="small" circular />}
-          />
-        </Table.HeaderCell>
-      </Table.Row>
-    </Table.Header>
-    <Table.Body>
+          <Tooltip title="Completion date is added automatically if importing students from an exam">
+            <HelpOutlinedIcon fontSize="small" />
+          </Tooltip>
+        </TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
       {Object.keys(rows).map((key) => {
         const { name, grade, date } = rows[key]
         return (
-          <Table.Row key={name}>
-            <Table.Cell>{`${name} (${key})`}</Table.Cell>
-            <Table.Cell>{grade}</Table.Cell>
-            <Table.Cell>{date}</Table.Cell>
-          </Table.Row>
+          <TableRow key={name}>
+            <TableCell>{`${name} (${key})`}</TableCell>
+            <TableCell>{grade}</TableCell>
+            <TableCell>{date}</TableCell>
+          </TableRow>
         )
       })}
-    </Table.Body>
+    </TableBody>
   </Table>
 )

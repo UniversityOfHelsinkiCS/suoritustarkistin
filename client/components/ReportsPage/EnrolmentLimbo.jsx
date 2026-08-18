@@ -58,7 +58,7 @@ const EnrolmentLimbo = () => {
 
   useEffect(() => {
     if (!reportsFetched && !pending) dispatch(getAllEnrollmentLimboEntriesAction(offset))
-  })
+  }, [reportsFetched, pending])
 
   return (
     <>

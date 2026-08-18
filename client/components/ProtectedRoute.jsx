@@ -1,31 +1,17 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Redirect, Route } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
+const ProtectedRoute = ({ children }) => {
+  const location = useLocation()
   const user = useSelector((state) => state.user)
   const hasPermissions = user.data.isAdmin || user.data.isGrader
 
-  return (
-    <Route
-      {...rest}
-      render={(props) => {
-        if (hasPermissions) {
-          return <Component {...rest} {...props} />
-        }
-        return (
-          <Redirect
-            to={{
-              pathname: '/unauthorized',
-              state: {
-                from: props.location
-              }
-            }}
-          />
-        )
-      }}
-    />
-  )
+  if (!hasPermissions) {
+    return <Navigate to="/unauthorized" state={{ from: location }} replace />
+  }
+
+  return children
 }
 
 export default ProtectedRoute

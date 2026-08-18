@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { Message, Segment } from 'semantic-ui-react'
 
 export default () => {
@@ -8,16 +8,7 @@ export default () => {
 
   // Mainly for development purposes:
   if (user.data.isAdmin || user.data.isGrader) {
-    return (
-      <Redirect
-        to={{
-          pathname: '/',
-          state: {
-            from: '/unauthorized'
-          }
-        }}
-      />
-    )
+    return <Navigate to="/" state={{ from: '/unauthorized' }} replace />
   }
 
   return (

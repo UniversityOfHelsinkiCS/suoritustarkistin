@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { useState, useEffect } from 'react'
-import { withRouter } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Table, Button, Popup, Segment, Header, Divider, Message, Icon } from 'semantic-ui-react'
 import NotificationMessage from '@client/components/Message'
@@ -50,7 +50,8 @@ const getGraderName = (graderId, graders) => {
   return name
 }
 
-export default withRouter(({ rows, batchId, history }) => {
+export default ({ rows, batchId }) => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const { pending, error } = useSelector((state) => state.sisReports)
   const graderId = useSelector((state) => state.newRawEntries.graderId)
@@ -65,7 +66,7 @@ export default withRouter(({ rows, batchId, history }) => {
     if (sent && !pending && !(error || {}).genericError) {
       dispatch(openReport(batchId))
       dispatch(resetNewRawEntriesAction({ graderId }))
-      history.push('/reports')
+      navigate('/reports')
     }
   }, [pending, error, sent, dispatch])
 
@@ -252,4 +253,4 @@ export default withRouter(({ rows, batchId, history }) => {
       </Segment>
     </Segment>
   )
-})
+}

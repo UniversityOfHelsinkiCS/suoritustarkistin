@@ -52,7 +52,8 @@ describe('SIS Reports -page shows data correctly', () => {
 
     cy.get('[data-cy=sis-reports-tab]').click()
 
-    cy.get('[data-cy=course-filter]').click().children().contains('Ohjelmoinnin perusteet (TKT10002)').click()
+    cy.get('[data-cy=course-filter] input').click()
+    cy.get('[role=listbox]').contains('Ohjelmoinnin perusteet (TKT10002)').click()
 
     cy.get('[data-cy=report-table]').its('length').should('eq', 1)
 
@@ -75,7 +76,7 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=report-table]').its('length').should('eq', 7)
 
     cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet').click()
-    cy.get('[data-cy=report-table-row-011111111]').should('have.class', 'active')
+    cy.get('[data-cy=report-table-row-011111111]').should('have.attr', 'data-highlighted', 'true')
   })
 })
 

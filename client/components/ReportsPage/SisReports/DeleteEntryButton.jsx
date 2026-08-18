@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
-import { Button, Popup } from 'semantic-ui-react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Popover from '@mui/material/Popover'
+import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { handleEntryDeletionAction } from '@client/utils/redux/sisReportsReducer'
 
 export default ({ rawEntryId, batchId }) => {
-  const [open, setOpen] = useState(false)
+  const [anchor, setAnchor] = useState(null)
   const dispatch = useDispatch()
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
 
@@ -14,39 +17,44 @@ export default ({ rawEntryId, batchId }) => {
   }
 
   return (
-    <Popup
-      open={open && openAccordions.includes(batchId)}
-      trigger={
-        <Button
-          negative
-          content="Delete"
-          data-cy="report-delete-entry-button"
-          disabled={!batchId}
-          onClick={() => setOpen(true)}
-        />
-      }
-      onUnmount={() => setOpen(false)}
-      hideOnScroll
-      content={
-        <div className="delete-popup">
-          <p>
+    <>
+      <Button
+        variant="contained"
+        color="error"
+        data-cy="report-delete-entry-button"
+        disabled={!batchId}
+        onClick={(e) => setAnchor(e.currentTarget)}
+      >
+        Delete
+      </Button>
+      <Popover
+        // Semantic tied the popup to the accordion being open; closing the report
+        // dismissed it.
+        open={Boolean(anchor) && openAccordions.includes(batchId)}
+        anchorEl={anchor}
+        onClose={() => setAnchor(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Box className="delete-popup" sx={{ p: 2 }}>
+          <Typography>
             <strong>Are you sure?</strong>
-          </p>
-          <p style={{ padding: '5px 2px' }}>
+          </Typography>
+          <Typography sx={{ padding: '5px 2px' }}>
             Please note that deleting the completion here, will not affect completions already sent to SIS.
-          </p>
+          </Typography>
           <Button
-            style={{ margin: '5px 2px' }}
-            negative
+            sx={{ margin: '5px 2px' }}
+            variant="contained"
+            color="error"
             data-cy="report-delete-entry-confirm"
             onClick={deleteEntry}
             disabled={!rawEntryId}
-            content="Yes, delete completions"
-          />
-        </div>
-      }
-      on="click"
-      position="top center"
-    />
+          >
+            Yes, delete completions
+          </Button>
+        </Box>
+      </Popover>
+    </>
   )
 }

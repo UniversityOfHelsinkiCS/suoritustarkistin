@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Segment } from 'semantic-ui-react'
+import Paper from '@mui/material/Paper'
 
 import TabLoader from '@client/components/ReportsPage/TabLoader'
 
@@ -30,12 +30,12 @@ export default ({ reports }) => {
   return (
     <div data-cy="raw-oodi-reports">
       {reports.data.map((report) => (
-        <Segment key={report.id}>
+        <Paper variant="outlined" key={report.id} sx={{ p: 2, mb: 1 }}>
           <div>
             {report.fileName} {report.lastDownloaded ? <Downloaded /> : <NotDownloaded />}
           </div>
           {reportLines(report)}
-        </Segment>
+        </Paper>
       ))}
     </div>
   )

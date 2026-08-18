@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Header, Input, Radio, Dropdown, Select } from 'semantic-ui-react'
+import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useDispatch, useSelector } from 'react-redux'
 import { debounce } from 'lodash'
 
@@ -58,58 +65,61 @@ export default ({ reduxKey, action }) => {
 
   return (
     <>
-      <Header as="h3">Include reports with:</Header>
-      <Form>
-        <Form.Group style={{ alignItems: 'center' }}>
-          <Form.Field
-            control={Radio}
+      <Typography variant="h6" component="h3" gutterBottom>
+        Include reports with:
+      </Typography>
+      <Box component="form">
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+          <FormControlLabel
+            control={<Switch checked={Boolean(filters.errors)} onChange={() => toggle('errors')} />}
             label="Contains errors"
-            checked={filters.errors}
-            onChange={() => toggle('errors')}
-            toggle
           />
-          <Form.Field
-            control={Radio}
+          <FormControlLabel
+            control={<Switch checked={Boolean(filters.noEnrollment)} onChange={() => toggle('noEnrollment')} />}
             label="Missing enrollments"
-            checked={filters.noEnrollment}
-            onChange={() => toggle('noEnrollment')}
-            toggle
           />
-          <Form.Field
-            control={Radio}
+          <FormControlLabel
+            control={<Switch checked={Boolean(filters.notSent)} onChange={() => toggle('notSent')} />}
             label="Not sent to Sisu"
-            checked={filters.notSent}
-            onChange={() => toggle('notSent')}
-            toggle
           />
-          <Form.Field
-            control={Dropdown}
+          <TextField
+            select
+            size="small"
             label="Attainment status"
+            sx={{ minWidth: '16rem' }}
             value={filters.status || 'ALL'}
-            options={STATE_OPTIONS}
-            onChange={(_, data) => set('status', data.value)}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Field
+            onChange={(e) => set('status', e.target.value)}
+          >
+            {STATE_OPTIONS.map((o) => (
+              <MenuItem key={o.key} value={o.value} data-cy={`status-option-${o.value}`}>
+                {o.text}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Stack>
+        <Stack direction="row" spacing={2} sx={{ mt: 2, flexWrap: 'wrap' }}>
+          <TextField
             data-cy="student-filter"
-            control={Input}
+            size="small"
             label="Filter by student number"
-            value={filters.search}
+            defaultValue={filters.search}
             onChange={(event) => debouncedSet('student', event.target.value)}
           />
-          <Form.Field
+          <Autocomplete
             data-cy="course-filter"
-            control={Select}
-            search
-            label="Filter by course"
-            value={filters.course}
+            size="small"
+            // 'All courses' is a real option, so clearing to null would leave no value
+            disableClearable
+            sx={{ minWidth: '24rem' }}
             options={courseOptions}
-            onChange={(_, { value: courseId }) => set('course', courseId)}
+            getOptionLabel={(option) => option.text}
+            isOptionEqualToValue={(option, value) => option.value === value.value}
+            value={courseOptions.find((o) => o.value === filters.course) || courseOptions[0]}
+            onChange={(_, option) => set('course', option ? option.value : '')}
+            renderInput={(params) => <TextField {...params} label="Filter by course" />}
           />
-        </Form.Group>
-        <Form.Group />
-      </Form>
+        </Stack>
+      </Box>
     </>
   )
 }

@@ -59,7 +59,7 @@
     "pg": "8.22.0",
     "pg-hstore": "2.3.4",
     "react": "19.2.8",
-    "react-datepicker": "8.10.0",
+    "react-datepicker": "9.1.0",
     "react-dom": "19.2.8",
     "react-dropzone": "14.4.1",
     "react-redux": "9.3.0",

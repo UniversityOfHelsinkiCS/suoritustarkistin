@@ -1,36 +1,35 @@
 import React from 'react'
-import { Icon, Message, Segment } from 'semantic-ui-react'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import Box from '@mui/material/Box'
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied'
 
 const styles = {
   staffMessage: { width: '50%', marginLeft: 'auto', marginRight: 'auto' },
   fullPageMessage: { maxWidth: 800, marginLeft: 'auto', marginRight: 'auto' },
-  fullPageContainer: { width: '100%', minHeight: '1000px', paddingTop: '3rem' }
+  fullPageContainer: { width: '100%', minHeight: '1000px', paddingTop: '3rem', textAlign: 'center' }
 }
 
 // Full page notice
 const MaintenanceView = () => (
-  <Segment textAlign="center" style={styles.fullPageContainer}>
-    <Message style={styles.fullPageMessage} size="large" error>
-      <Message.Header>Suotar is under construction</Message.Header>
-      <Message.Content>
-        <Icon name="meh outline" color="#91332b" size="massive" style={{ margin: '2rem' }} />
-        <b>
-          <p>Suotar is currently under construction, we will be back when Sisu is our master.</p>
-          <p>Hope to see you again in June 202x</p>
-        </b>
-      </Message.Content>
-    </Message>
-  </Segment>
+  <Box sx={styles.fullPageContainer}>
+    <Alert severity="error" icon={false} sx={styles.fullPageMessage}>
+      <AlertTitle>Suotar is under construction</AlertTitle>
+      <SentimentDissatisfiedIcon sx={{ margin: '2rem', fontSize: '8rem', color: '#91332b' }} />
+      <b>
+        <p>Suotar is currently under construction, we will be back when Sisu is our master.</p>
+        <p>Hope to see you again in June 202x</p>
+      </b>
+    </Alert>
+  </Box>
 )
 
 // Smaller message for admins
 export const MaintenanceMessage = () => (
-  <Message size="large" style={styles.staffMessage} error>
-    <Message.Header>Maintenance mode active</Message.Header>
-    <Message.Content>
-      <p>Suotar is currently in maintenance mode and only admins are allowed to use Suotar.</p>
-    </Message.Content>
-  </Message>
+  <Alert severity="error" sx={styles.staffMessage}>
+    <AlertTitle>Maintenance mode active</AlertTitle>
+    <p>Suotar is currently in maintenance mode and only admins are allowed to use Suotar.</p>
+  </Alert>
 )
 
 export default MaintenanceView

@@ -2,7 +2,8 @@ const { checkRegisteredForMooc } = require('../scripts/checkSisEntries')
 const { runJob: runCronJob } = require('../scripts/cronjobs')
 
 const dryRunJobs = async (req, res) => {
-  if (req.query.token !== process.env.CRON_TOKEN) {
+  const { CRON_TOKEN } = process.env
+  if (!CRON_TOKEN || req.query.token !== CRON_TOKEN) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
@@ -12,7 +13,8 @@ const dryRunJobs = async (req, res) => {
 }
 
 const runJobs = async (req, res) => {
-  if (req.query.token !== process.env.CRON_TOKEN) {
+  const { CRON_TOKEN } = process.env
+  if (!CRON_TOKEN || req.query.token !== CRON_TOKEN) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 

@@ -54,7 +54,7 @@ initializeDatabaseConnection()
       const DIST_PATH = path.resolve(__dirname, '../dist')
       const INDEX_PATH = path.resolve(DIST_PATH, 'index.html')
       app.use(express.static(DIST_PATH))
-      app.get('*', (req, res) => res.sendFile(INDEX_PATH))
+      app.get('/{*splat}', (req, res) => res.sendFile(INDEX_PATH))
     }
 
     /**
@@ -67,7 +67,7 @@ initializeDatabaseConnection()
     /**
      * Anything that reaches this point matched no route. In dev and test express
      * serves nothing but /api, so this is the end of the line for a mistyped or
-     * parameterless api path; in production app.get('*') has already answered
+     * parameterless api path; in production app.get('/{*splat}') has already answered
      * every GET, so only unmatched non-GETs land here.
      */
     app.use((_req, res) => res.status(404).send({ error: 'Not found' }))

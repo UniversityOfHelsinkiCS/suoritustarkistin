@@ -104,7 +104,7 @@ router.get('/courses', checkAdmin, getCourses)
 router.post('/courses', checkAdmin, addCourse)
 router.put('/courses/:id', checkAdmin, editCourse)
 router.get('/courses/:id/confirm_deletion', checkAdmin, confirmDeletion)
-router.delete('/courses/:id/', checkAdmin, deleteCourse)
+router.delete('/courses/:id', checkAdmin, deleteCourse)
 router.get('/courses/:courseCode/responsibles', checkAdmin, getCourseResponsibles)
 
 router.get('/users', checkAdmin, getUsers)

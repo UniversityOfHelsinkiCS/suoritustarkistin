@@ -3,6 +3,12 @@ import { Box, TextField } from '@mui/material'
 import { isKandiExtraCourse } from '@shared/common'
 import { useDispatch, useSelector } from 'react-redux'
 
+const INPUT_ROWS = 10
+const ROW_HEIGHT = 23
+const VERTICAL_PADDING = 33
+
+export const INPUT_HEIGHT = `${INPUT_ROWS * ROW_HEIGHT + VERTICAL_PADDING}px`
+
 export default ({ kandi, parseCSV }) => {
   const dispatch = useDispatch()
   const newRawEntries = useSelector((state) => state.newRawEntries)
@@ -53,7 +59,9 @@ export default ({ kandi, parseCSV }) => {
       <TextField
         multiline
         fullWidth
-        minRows={10}
+        minRows={INPUT_ROWS}
+        // required to prevent layout shift on tab change
+        sx={{ '& .MuiInputBase-root': { minHeight: INPUT_HEIGHT } }}
         onChange={handleDataChange}
         placeholder="Add the course completion information here, formatted as in the instructions above."
         value={newRawEntries.rawData}

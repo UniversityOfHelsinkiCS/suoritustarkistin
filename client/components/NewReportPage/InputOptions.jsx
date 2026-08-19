@@ -20,7 +20,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: '1.5rem'
+    marginTop: '1rem'
   },
   info: {
     marginTop: '1rem'
@@ -212,6 +212,7 @@ export default ({ kandi, extra, parseCSV }) => {
             fullWidth
             autoHighlight
             blurOnSelect
+            size="small"
             data-cy="grader-selection"
             options={graderOptions}
             getOptionLabel={(option) => option.text}
@@ -224,6 +225,7 @@ export default ({ kandi, extra, parseCSV }) => {
             fullWidth
             autoHighlight
             blurOnSelect
+            size="small"
             data-cy="course-selection"
             disabled={kandi}
             options={courseOptions}
@@ -233,19 +235,22 @@ export default ({ kandi, extra, parseCSV }) => {
             onChange={(e, option) => handleCourseSelection(e, { value: option ? option.value : undefined })}
             renderInput={(params) => <TextField {...params} label="Choose course" />}
           />
-          <DatePicker
-            id="date-picker"
-            autoComplete="off"
-            dateFormat="dd.MM.yyyy"
-            selected={showingDate}
-            onChange={(date) => handleDateSelection(date)}
-            customInput={<TextField fullWidth label="Set date for completions" />}
-          />
+          <Box sx={{ width: '100%' }}>
+            <DatePicker
+              id="date-picker"
+              autoComplete="off"
+              dateFormat="dd.MM.yyyy"
+              selected={showingDate}
+              onChange={(date) => handleDateSelection(date)}
+              customInput={<TextField fullWidth size="small" label="Set date for completions" />}
+            />
+          </Box>
           {!kandi ? (
             <FormControlLabel
-              sx={{ whiteSpace: 'nowrap', mt: 1 }}
+              sx={{ whiteSpace: 'nowrap' }}
               control={
                 <Checkbox
+                  size="small"
                   data-cy="default-grade-election"
                   onChange={handleDefaultGradeSelection}
                   checked={defaultGrade}

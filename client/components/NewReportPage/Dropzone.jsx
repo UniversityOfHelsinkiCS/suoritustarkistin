@@ -1,3 +1,4 @@
+import { INPUT_HEIGHT } from '@client/components/NewReportPage/TextInput'
 import { parseCSV } from '@client/utils/inputParser'
 import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import { CircularProgress } from '@mui/material'
@@ -8,7 +9,8 @@ import { useDispatch, useSelector } from 'react-redux'
 const baseStyle = {
   flex: 1,
   display: 'flex',
-  minHeight: '218px',
+  boxSizing: 'border-box',
+  minHeight: INPUT_HEIGHT,
   flexDirection: 'column',
   alignItems: 'center',
   verticalAlign: 'center',

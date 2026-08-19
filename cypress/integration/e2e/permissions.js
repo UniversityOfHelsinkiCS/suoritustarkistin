@@ -111,7 +111,7 @@ describe('Permissions', () => {
       },
       failOnStatusCode: false
     }).then((response) => {
-      expect(response.status).to.eq(500)
+      expect(response.status).to.eq(401)
     })
     cy.logout()
   })

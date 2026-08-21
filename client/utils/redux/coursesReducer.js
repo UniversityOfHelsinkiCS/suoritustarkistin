@@ -144,12 +144,14 @@ export default (state = { data: [], unsent: 0, pending: false }, action) => {
     case 'CONFIRM_DELETION_ATTEMPT':
       return {
         ...state,
+        unsent: 0,
         pending: true,
         error: false
       }
     case 'CONFIRM_DELETION_FAILURE':
       return {
         ...state,
+        unsent: 0,
         pending: false,
         error: true
       }

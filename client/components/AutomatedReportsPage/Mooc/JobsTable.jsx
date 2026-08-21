@@ -1,64 +1,58 @@
-import JobRow from '@client/components/AutomatedReportsPage/Mooc/JobRow'
-import {
-  CircularProgress,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow
-} from '@mui/material'
-import * as _ from 'lodash'
+import JobActions from '@client/components/AutomatedReportsPage/Mooc/JobActions'
+import DataTable, { BooleanIcon } from '@client/components/DataTable'
 import { useSelector } from 'react-redux'
 
+const columns = [
+  { key: 'schedule', header: 'Schedule', width: '8%', sortable: true },
+  { key: 'courseCode', header: 'Course code', width: '8%', sortable: true },
+  { key: 'courseName', header: 'Course name', width: '20%', sortable: true },
+  { key: 'graderName', header: 'Grader', width: '12%', sortable: true },
+  { key: 'slug', header: 'Slug', width: '12%', sortable: true },
+  {
+    key: 'active',
+    header: 'Active',
+    width: '8%',
+    align: 'center',
+    sortable: true,
+    render: (job) => <BooleanIcon value={job.active} />
+  },
+  {
+    key: 'useManualCompletionDate',
+    header: 'Use manual completion date',
+    width: '8%',
+    align: 'center',
+    sortable: true,
+    render: (job) => <BooleanIcon value={job.useManualCompletionDate} />
+  },
+  { key: 'actions', header: 'Actions', width: '18%', align: 'center', render: (job) => <JobActions job={job} /> }
+]
+
 export default () => {
-  const jobs = useSelector((state) => state.moocJobs)
+  const jobs = useSelector((state) => state.moocJobs.data)
   const courses = useSelector((state) => state.courses.data)
+  const graders = useSelector((state) => state.graders.data)
 
-  if (!jobs || !jobs.data) return null
-
-  const sortedJobs = _.orderBy(
-    jobs.data,
-    [
-      'active',
-      (job) => {
-        const course = courses?.find((c) => c.id === job.courseId)
-        return course?.name?.toLowerCase() || ''
-      }
-    ],
-    ['desc', 'asc']
-  )
+  const rows = jobs.map((job) => {
+    const course = courses.find((c) => c.id === job.courseId)
+    return {
+      ...job,
+      courseCode: course?.courseCode,
+      courseName: course?.name,
+      graderName: graders.find((grader) => grader.id === job.graderId)?.name
+    }
+  })
 
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ mt: 2 }}>
-      {jobs.pending ? <CircularProgress size={40} sx={{ m: 2 }} /> : null}
-      <Table
-        data-cy="mooc-job-table"
-        size="small"
-        sx={{
-          '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
-          '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
-        }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ width: '6%', fontWeight: 700 }}>Schedule</TableCell>
-            <TableCell sx={{ width: '12%', fontWeight: 700 }}>Course code</TableCell>
-            <TableCell sx={{ width: '19%', fontWeight: 700 }}>Course name</TableCell>
-            <TableCell sx={{ width: '12%', fontWeight: 700 }}>Grader</TableCell>
-            <TableCell sx={{ width: '12%', fontWeight: 700 }}>Slug</TableCell>
-            <TableCell sx={{ width: '6%', fontWeight: 700 }}>Active</TableCell>
-            <TableCell sx={{ width: '6%', fontWeight: 700 }}>Use manual completion date</TableCell>
-            <TableCell sx={{ width: '25%', fontWeight: 700 }}>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedJobs.map((j) => (
-            <JobRow job={j} jobs={jobs} key={j.id} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <DataTable
+      data-cy="mooc-job-table"
+      columns={columns}
+      rows={rows}
+      rowKey={(job) => job.id}
+      rowProps={(job) => ({ 'data-cy': `job-${job.courseCode}` })}
+      defaultSort={[
+        { key: 'active', direction: 'desc' },
+        { key: 'courseName', direction: 'asc' }
+      ]}
+    />
   )
 }

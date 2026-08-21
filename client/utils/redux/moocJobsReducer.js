@@ -41,20 +41,17 @@ export default (state = { data: [] }, action) => {
       return {
         ...state,
         data: action.response,
-        pending: false,
         error: false
       }
     case 'GET_ALL_JOBS_ATTEMPT':
       return {
         ...state,
-        pending: true,
         error: false
       }
     case 'GET_ALL_JOBS_FAILURE':
       return {
         ...state,
         data: [],
-        pending: false,
         error: true
       }
     case 'ADD_JOB_SUCCESS':

@@ -1,72 +1,56 @@
-import User from '@client/components/UsersPage/User'
-import { sortedItems } from '@client/utils/common'
-import SwapVertIcon from '@mui/icons-material/SwapVert'
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { useState } from 'react'
+import DataTable from '@client/components/DataTable'
+import RoleToggle from '@client/components/UsersPage/RoleToggle'
+import UserActions from '@client/components/UsersPage/UserActions'
+import { Box } from '@mui/material'
+import moment from 'moment'
 import { useSelector } from 'react-redux'
 
-export const celledBorders = {
-  '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
-  '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
-}
+const columns = [
+  { key: 'name', header: 'Name (uid)', width: '30%', sortable: true, render: (user) => `${user.name} (${user.uid})` },
+  {
+    key: 'isGrader',
+    header: 'Grader',
+    width: '10%',
+    align: 'center',
+    sortable: true,
+    render: (user) => <RoleToggle user={user} roleKey="isGrader" label="grader" />
+  },
+  {
+    key: 'isAdmin',
+    header: 'Admin',
+    width: '10%',
+    align: 'center',
+    sortable: true,
+    render: (user) => <RoleToggle user={user} roleKey="isAdmin" label="admin" />
+  },
+  {
+    key: 'lastLogin',
+    header: 'Last login',
+    width: '15%',
+    align: 'center',
+    sortable: true,
+    render: (user) =>
+      user.lastLogin ? (
+        moment(user.lastLogin).format('DD.MM.YYYY')
+      ) : (
+        <Box component="span" sx={{ color: 'gray' }}>
+          Not saved
+        </Box>
+      )
+  },
+  { key: 'actions', header: 'Actions', width: '20%', align: 'center', render: (user) => <UserActions user={user} /> }
+]
 
 export default () => {
-  const [sorter, setSorter] = useState('name')
-  const [reverse, setReverse] = useState(false)
   const users = useSelector((state) => state.users.data)
 
-  if (!users) return null
-
-  const getCustomHeader = ({ name, field, sortable = true, width, align }) => {
-    const sortHandler = sortable
-      ? () => {
-          if (sorter === field) {
-            setReverse(!reverse)
-          } else {
-            setReverse(false)
-            setSorter(field)
-          }
-        }
-      : undefined
-
-    return (
-      <TableCell
-        align={align}
-        onClick={sortHandler}
-        sx={{ width, fontWeight: 700, cursor: sortable ? 'pointer' : 'default' }}
-      >
-        {name} {sortable && <SwapVertIcon fontSize="small" sx={{ verticalAlign: 'middle' }} />}
-      </TableCell>
-    )
-  }
-
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ mt: 2 }}>
-      <Table data-cy="user-grid" size="small" sx={{ wordWrap: 'anywhere', ...celledBorders }}>
-        <TableHead>
-          <TableRow>
-            {getCustomHeader({ name: 'Name (uid)', field: 'name', width: '25%' })}
-            {getCustomHeader({ name: 'Grader', field: 'isGrader', align: 'center' })}
-            {getCustomHeader({ name: 'Admin', field: 'isAdmin', align: 'center' })}
-            {getCustomHeader({
-              name: 'Last login',
-              field: 'lastLogin',
-              sortable: false,
-              align: 'center',
-              width: '12%'
-            })}
-            <TableCell align="center" sx={{ width: '37%', fontWeight: 700 }}>
-              Edit
-            </TableCell>
-            <TableCell />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedItems(users, sorter, reverse).map((u) => (
-            <User user={u} key={u.id} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <DataTable
+      data-cy="user-grid"
+      columns={columns}
+      rows={users}
+      rowKey={(user) => user.id}
+      defaultSort={[{ key: 'name', direction: 'asc' }]}
+    />
   )
 }

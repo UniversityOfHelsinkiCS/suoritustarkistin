@@ -1,3 +1,4 @@
+import { celledBorders } from '@client/components/tableStyles'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined'
@@ -56,11 +57,6 @@ const styles = {
   label: {
     margin: '0.125rem'
   }
-}
-
-const celledBorders = {
-  '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
-  '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
 }
 
 const GRADES = {

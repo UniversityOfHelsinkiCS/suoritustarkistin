@@ -1,4 +1,5 @@
 import NotificationMessage from '@client/components/Message'
+import { celledBorders } from '@client/components/tableStyles'
 import { resetNewRawEntriesConfirmAction, resetNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import {
   handleBatchDeletionAction,
@@ -243,13 +244,7 @@ export default ({ rows, batchId }) => {
         </Box>
       ) : null}
       <Box sx={{ opacity: pending ? 0.5 : 1 }}>
-        <Table
-          size="small"
-          sx={{
-            '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
-            '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
-          }}
-        >
+        <Table size="small" sx={celledBorders}>
           <TableHead>
             <TableRow>
               <TableCell>Student number</TableCell>

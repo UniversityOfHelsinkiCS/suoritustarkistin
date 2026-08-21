@@ -27,8 +27,9 @@ body.dev-env {
 
 .sitecontent {
   min-height: calc(100vh - 11em);
-  margin: 2rem;
-  padding: 2rem 0;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .sitecontent-narrow {

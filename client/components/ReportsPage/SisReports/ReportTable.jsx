@@ -1,3 +1,4 @@
+import { celledBorders } from '@client/components/tableStyles'
 import sisuErrorMessages from '@client/utils/sisuErrorMessages.json'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
@@ -28,11 +29,6 @@ const detailsStyle = (open) => ({
   '& strong:first-of-type': { mt: 0 },
   '& p': { m: '0.15em 0 0 0' }
 })
-
-const celledBorders = {
-  '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
-  '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
-}
 
 const styles = {
   extraEntry: { backgroundColor: '#F8FCFF' },

@@ -1,54 +1,50 @@
-import CourseRow from '@client/components/CoursesPage/CourseRow'
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import * as _ from 'lodash'
+import CourseActions from '@client/components/CoursesPage/CourseActions'
+import DataTable, { BooleanIcon } from '@client/components/DataTable'
 import { useSelector } from 'react-redux'
 
-export const columnWidths = ['18.75%', '12.5%', '6.25%', '6.25%', '18.75%', '12.5%', '6.25%', '6.25%', '12.5%']
+const graderNames = (course) => (course.graders || []).map((grader) => grader.name).join(', ')
 
-const headers = [
-  'Name',
-  'Course code',
-  'Language',
-  'Credit amount',
-  'Graders',
-  'Grade scale',
-  'Extra completions',
-  'New Mooc Course',
-  ''
+const columns = [
+  { key: 'name', header: 'Name', width: '18.75%', sortable: true },
+  { key: 'courseCode', header: 'Course code', width: '9%', sortable: true },
+  { key: 'language', header: 'Language', width: '7%', sortable: true },
+  { key: 'credits', header: 'Credits', width: '7%', sortable: true },
+  { key: 'graders', header: 'Graders', width: '18.75%', sortable: true, sortValue: graderNames, render: graderNames },
+  { key: 'gradeScale', header: 'Grade scale', width: '8%', sortable: true },
+  {
+    key: 'useAsExtra',
+    header: 'Extra completions',
+    width: '8%',
+    align: 'center',
+    sortable: true,
+    render: (course) => <BooleanIcon value={course.useAsExtra} />
+  },
+  {
+    key: 'isNewMooc',
+    header: 'New Mooc Course',
+    width: '8%',
+    align: 'center',
+    sortable: true,
+    render: (course) => <BooleanIcon value={course.isNewMooc} />
+  },
+  {
+    key: 'actions',
+    header: 'Actions',
+    width: '10%',
+    align: 'center',
+    render: (course) => <CourseActions course={course} />
+  }
 ]
 
 export default () => {
   const courses = useSelector((state) => state.courses.data)
-  const graders = useSelector((state) => state.graders.data)
-
-  if (!courses) return null
 
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ mt: 2 }}>
-      <Table
-        size="small"
-        sx={{
-          tableLayout: 'fixed',
-          wordWrap: 'anywhere',
-          '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
-          '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
-        }}
-      >
-        <TableHead>
-          <TableRow>
-            {headers.map((header, i) => (
-              <TableCell key={header || 'actions'} sx={{ width: columnWidths[i], fontWeight: 700 }}>
-                {header}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {_.sortBy(courses, 'name').map((c) => (
-            <CourseRow course={c} graders={graders} key={c.id} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <DataTable
+      columns={columns}
+      rows={courses}
+      rowKey={(course) => course.id}
+      defaultSort={[{ key: 'name', direction: 'asc' }]}
+    />
   )
 }

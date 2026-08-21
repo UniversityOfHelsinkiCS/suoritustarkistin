@@ -1,3 +1,4 @@
+import { celledBorders } from '@client/components/tableStyles'
 import { parseCSV } from '@client/utils/inputParser'
 import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
 import BlockIcon from '@mui/icons-material/Block'
@@ -261,14 +262,7 @@ export default ({ allowDelete = true, kandi }) => {
   })
 
   return (
-    <Table
-      size="small"
-      data-cy="new-report-table"
-      sx={{
-        '& td, & th': { borderRight: '1px solid rgba(34, 36, 38, 0.1)' },
-        '& td:last-of-type, & th:last-of-type': { borderRight: 0 }
-      }}
-    >
+    <Table size="small" data-cy="new-report-table" sx={celledBorders}>
       <TableHead>
         <TableRow>
           <TableCell>Course</TableCell>

@@ -1,10 +1,11 @@
 const db = require('@server/models/index')
 const logger = require('@server/utils/logger')
 const { getBatchId, moocLanguageMap, getMoocAttainmentDate, ALL_EOAI_CODES, NEW_EOAI_CODE } = require('@shared/common')
-const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainments } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
+const { fetchRegistrationsFor, courseStudentPairs, findByEmail, isUnidentified } = require('../utils/moocRegistrations')
 const { isImprovedGrade } = require('../utils/earlierCompletions')
+const { sendSentryError } = require('../utils/sentry')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
 const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
@@ -23,25 +24,22 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
       include: [{ model: db.courses, as: 'course' }]
     })
 
-    const rawRegistrations = await getRegistrations(NEW_EOAI_CODE)
+    const registrations = await fetchRegistrationsFor(NEW_EOAI_CODE)
     const rawCompletions = await getCompletions('elements-of-ai')
 
-    // There are so many completions and registrations for EOAI-courses
-    // that some cleaning should be done first, based on existing data
-    const registrations = rawRegistrations.filter((registration) => {
-      const earlierCredit = credits.find((credit) => credit.studentId === registration.onro)
-      const earlierEntry = rawEntries.find((entry) => entry.studentNumber === registration.onro)
-      return !earlierCredit && !earlierEntry
-    })
+    // There are so many completions and registrations for EOAI-courses that some cleaning
+    // should be done first, based on existing data. Checked again in the matching loop:
+    // dropping a student here only keeps them out of the importer request, their emails
+    // still resolve through findByEmail.
+    const handled = new Set(
+      credits.map((credit) => credit.studentId).concat(rawEntries.map((entry) => entry.studentNumber))
+    )
+    const pending = registrations.persons.filter(({ studentNumber }) => !handled.has(studentNumber))
 
-    const courseStudentPairs = registrations.reduce((pairs, registration) => {
-      if (registration && registration.onro) {
-        return pairs.concat({ courseCode: NEW_EOAI_CODE, studentNumber: registration.onro })
-      }
-      return pairs
-    }, [])
+    let unmatched = 0
+    let unidentified = 0
 
-    const earlierAttainments = await getEarlierAttainments(courseStudentPairs)
+    const earlierAttainments = await getEarlierAttainments(courseStudentPairs(pending, NEW_EOAI_CODE))
 
     const completions = rawCompletions.filter((completion) => {
       const earlierCredit = credits.find(
@@ -64,27 +62,27 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
 
       const language = moocLanguageMap[completion.completion_language]
 
-      const registration = registrations.find(
-        (registration) =>
-          registration.email.toLowerCase() === completion.email.toLowerCase() ||
-          registration.mooc.toLowerCase() === completion.email.toLowerCase()
-      )
+      const registration = findByEmail(registrations, completion.email)
 
-      if (registration && registration.onro) {
+      if (registration) {
+        if (handled.has(registration.studentNumber)) {
+          return matches
+        }
+
         const attainmentDate = getMoocAttainmentDate({
           registrationAttemptDate: completion.completion_registration_attempt_date,
           completionDate: completion.completion_date,
           today: date
         })
 
-        if (!isImprovedGrade(earlierAttainments, registration.onro, 'Hyv.', attainmentDate, course.credits)) {
+        if (!isImprovedGrade(earlierAttainments, registration.studentNumber, 'Hyv.', attainmentDate, course.credits)) {
           return matches
         }
-        if (matches.some((c) => c.studentNumber === registration.onro)) {
+        if (matches.some((c) => c.studentNumber === registration.studentNumber)) {
           return matches
         }
         return matches.concat({
-          studentNumber: registration.onro,
+          studentNumber: registration.studentNumber,
           batchId,
           grade: 'Hyv.',
           credits: course.credits,
@@ -97,20 +95,28 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
           moocCompletionId: completion.id
         })
       }
-      if (registration && !registration.onro)
+      if (isUnidentified(registrations, completion.email)) {
+        unidentified += 1
         logger.info({
-          message: `${course.courseCode}: Registration student number missing for ${registration.email}`
+          message: `${NEW_EOAI_CODE}: Registration student number missing for ${completion.email}`
         })
+      } else {
+        unmatched += 1
+      }
       return matches
     }, [])
 
     if (!matches) matches = []
-    logger.info(`${NEW_EOAI_CODE}: Found ${matches.length} new completions.`)
+    logger.info({
+      message: `${NEW_EOAI_CODE}: ${completions.length} completions checked against ${pending.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}`
+    })
+    logger.info({ message: `${NEW_EOAI_CODE}: Found ${matches.length} new completions.` })
 
     const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
     return result
   } catch (error) {
-    logger.error(`Error processing new completions: ${error.message}`)
+    logger.error({ message: `Error processing new completions for ${NEW_EOAI_CODE}: ${error.message}` })
+    sendSentryError('Processing eoai completions failed', error, { course: NEW_EOAI_CODE })
     return { message: error.message }
   }
 }

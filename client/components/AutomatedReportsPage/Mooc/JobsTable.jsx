@@ -1,9 +1,16 @@
 import JobActions from '@client/components/AutomatedReportsPage/Mooc/JobActions'
 import DataTable, { BooleanIcon } from '@client/components/DataTable'
+import { earliestRun } from '@shared/cronSchedule'
 import { useSelector } from 'react-redux'
 
 const columns = [
-  { key: 'schedule', header: 'Schedule', width: '8%', sortable: true },
+  {
+    key: 'schedule',
+    header: 'Schedule',
+    width: '8%',
+    sortable: true,
+    sortValue: (job) => earliestRun(job.schedule)
+  },
   { key: 'courseCode', header: 'Course code', width: '8%', sortable: true },
   { key: 'courseName', header: 'Course name', width: '20%', sortable: true },
   { key: 'graderName', header: 'Grader', width: '12%', sortable: true },
@@ -13,7 +20,6 @@ const columns = [
     header: 'Active',
     width: '8%',
     align: 'center',
-    sortable: true,
     render: (job) => <BooleanIcon value={job.active} />
   },
   {
@@ -49,10 +55,8 @@ export default () => {
       rows={rows}
       rowKey={(job) => job.id}
       rowProps={(job) => ({ 'data-cy': `job-${job.courseCode}` })}
-      defaultSort={[
-        { key: 'active', direction: 'desc' },
-        { key: 'courseName', direction: 'asc' }
-      ]}
+      primarySort={[{ key: 'active', direction: 'desc' }]}
+      defaultSort={[{ key: 'courseName', direction: 'asc' }]}
     />
   )
 }

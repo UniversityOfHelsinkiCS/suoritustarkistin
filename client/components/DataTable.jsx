@@ -52,7 +52,7 @@ export const RowActions = ({ children }) => (
   </Stack>
 )
 
-export default ({ columns, rows, rowKey, rowProps, defaultSort = [], 'data-cy': dataCy }) => {
+export default ({ columns, rows, rowKey, rowProps, primarySort = [], defaultSort = [], 'data-cy': dataCy }) => {
   const [sort, setSort] = useState(defaultSort)
   const [active] = sort
 
@@ -91,7 +91,7 @@ export default ({ columns, rows, rowKey, rowProps, defaultSort = [], 'data-cy': 
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortRows(rows || [], sort, columns).map((row) => (
+          {sortRows(rows || [], [...primarySort, ...sort], columns).map((row) => (
             <TableRow hover key={rowKey(row)} {...(rowProps ? rowProps(row) : null)}>
               {columns.map((column) => (
                 <TableCell

@@ -64,3 +64,25 @@ export const validate = (expression) => {
     field.split(',').every((item) => item !== '' && isValidItem(item, specs[index]))
   )
 }
+
+const earliestValue = (field, spec) =>
+  Math.min(
+    ...field.split(',').map((item) => {
+      const [range] = item.split('/')
+      return range === '*' ? spec.min : parseValue(range.split('-')[0], spec)
+    })
+  )
+
+export const earliestRun = (expression) => {
+  if (!validate(expression)) return null
+
+  const fields = expression.trim().split(/\s+/)
+  const specs = fields.length === 5 ? CRON_FIELDS.slice(1) : CRON_FIELDS
+  const values = fields.map((field, index) => earliestValue(field, specs[index]))
+  const [second, minute, hour, dayOfMonth, month, dayOfWeek] = fields.length === 5 ? [0, ...values] : values
+
+  const timeOfDay = (hour * 60 + minute) * 60 + second
+  const dayOfPeriod = month * 1e4 + dayOfMonth * 1e2 + (dayOfWeek % 7)
+
+  return timeOfDay * 1e6 + dayOfPeriod
+}

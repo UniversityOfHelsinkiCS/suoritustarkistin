@@ -58,7 +58,7 @@ export default (state = null, action) => {
       if (action.error && action.error.genericError) {
         const content = action.error.message.message || action.error.message
         return {
-          header: 'Sending entires to Sisu failed',
+          header: 'Sending entries to Sisu failed',
           type: 'negative',
           content
         }

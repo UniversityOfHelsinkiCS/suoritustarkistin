@@ -68,6 +68,59 @@ const getGraderName = (graderId, graders) => {
   return name
 }
 
+const SendButton = ({ onlyMissingEnrollments, pending, send, confirmAnchor, setConfirmAnchor, sendCount }) => {
+  if (onlyMissingEnrollments)
+    return (
+      <Button
+        variant="contained"
+        color="success"
+        startIcon={<SaveIcon />}
+        onClick={send}
+        disabled={pending}
+        loading={pending}
+        data-cy="confirm-entries-send-missing-enrolment"
+      >
+        Approve
+      </Button>
+    )
+
+  return (
+    <>
+      <Button
+        variant="contained"
+        color="success"
+        startIcon={<SendIcon />}
+        disabled={pending}
+        loading={pending}
+        data-cy="confirm-entries-send"
+        onClick={(e) => setConfirmAnchor(e.currentTarget)}
+      >
+        Approve
+      </Button>
+      <Popover
+        open={Boolean(confirmAnchor)}
+        anchorEl={confirmAnchor}
+        onClose={() => setConfirmAnchor(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Box sx={{ p: 1 }}>
+          <Button
+            variant="contained"
+            color="success"
+            data-cy="confirm-entries-send-confirm"
+            onClick={send}
+            loading={pending}
+            disabled={pending}
+          >
+            {`Are you sure? Sending ${sendCount} completion(s) to Sisu`}
+          </Button>
+        </Box>
+      </Popover>
+    </>
+  )
+}
+
 export default ({ rows, batchId }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -114,6 +167,7 @@ export default ({ rows, batchId }) => {
   }
 
   const send = async () => {
+    setConfirmAnchor(null)
     const { entries, extraEntries } = rows
       .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
       .reduce(
@@ -127,52 +181,6 @@ export default ({ rows, batchId }) => {
     if (entries.length || extraEntries.length) await dispatch(sendEntriesToSisAction(entries, extraEntries))
     else dispatch(sendMissingEnrollmentEmail(batchId))
     setSent(true)
-  }
-
-  const SendButton = () => {
-    if (onlyMissingEnrollments)
-      return (
-        <Button
-          variant="contained"
-          color="success"
-          startIcon={<SaveIcon />}
-          onClick={send}
-          disabled={pending}
-          data-cy="confirm-entries-send-missing-enrolment"
-        >
-          Approve
-        </Button>
-      )
-
-    return (
-      <>
-        <Button
-          variant="contained"
-          color="success"
-          startIcon={<SendIcon />}
-          disabled={pending}
-          data-cy="confirm-entries-send"
-          onClick={(e) => setConfirmAnchor(e.currentTarget)}
-        >
-          Approve
-        </Button>
-        <Popover
-          open={Boolean(confirmAnchor)}
-          anchorEl={confirmAnchor}
-          onClose={() => setConfirmAnchor(null)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Box sx={{ p: 1 }}>
-            <Button variant="contained" color="success" data-cy="confirm-entries-send-confirm" onClick={send}>
-              {`Are you sure? Sending ${
-                entriesToSisu.entries.length + entriesToSisu.extraEntries.length
-              } completion(s) to Sisu`}
-            </Button>
-          </Box>
-        </Popover>
-      </>
-    )
   }
 
   const MissingEnrollmentsInfo = () =>
@@ -283,7 +291,14 @@ export default ({ rows, batchId }) => {
         </Table>
       </Box>
       <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-        <SendButton />
+        <SendButton
+          onlyMissingEnrollments={onlyMissingEnrollments}
+          pending={pending}
+          send={send}
+          confirmAnchor={confirmAnchor}
+          setConfirmAnchor={setConfirmAnchor}
+          sendCount={entriesToSisu.entries.length + entriesToSisu.extraEntries.length}
+        />
         <Button
           variant="contained"
           color="error"

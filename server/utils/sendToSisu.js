@@ -35,6 +35,15 @@ const API = process.env.POST_IMPORTER_DB_API_URL
 const describeError = (e) =>
   e.response ? JSON.stringify(e.response.data || null) : JSON.stringify({ message: e.message, code: e.code })
 
+const DUPLICATE_ATTAINMENT = /duplicate key value violates unique constraint "attainment_pkey"/
+
+const genericErrorMessage = (e) => {
+  const body = e.response ? JSON.stringify(e.response.data || '') : ''
+  if (DUPLICATE_ATTAINMENT.test(body))
+    return 'These completions are already registered in Sisu. Use "Refresh from Sisu" to update their status.'
+  return e.response ? `Sisu responded with status ${e.response.status}` : e.message
+}
+
 // If the error is coming from Sisu
 // it contains keys failingIds and violations
 const isValidSisuError = (response) => {
@@ -160,20 +169,31 @@ const attainmentsToSisu = async (model, { user, body }) => {
       payload: JSON.stringify(data)
     })
     if (ALLOW_SEND_TO_SISU) await API.post(url, data)
-    else logger.info(`Dry run, would send to Sisu: ${JSON.stringify(data)}`)
+    else {
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      logger.info(`Dry run, would send to Sisu: ${JSON.stringify(data)}`)
+    }
     await updateSuccess(model, modelIds, senderId)
     logger.info({ message: 'All entries sent successfully to Sisu', successAmount: data.length, sentToSisu: true, uid })
   }
 
-  const id = model === 'entries' ? entryIds : extraEntryIds
-  const rawData = await db[model].findAll({
+  const requestedIds = model === 'entries' ? entryIds : extraEntryIds
+  const requested = await db[model].findAll({
     where: {
-      id
+      id: requestedIds
     },
     include: ['rawEntry'],
     raw: true,
     nest: true
   })
+
+  const rawData = requested.filter(({ sent, errors }) => !sent || errors)
+  const alreadySent = requested.length - rawData.length
+  if (alreadySent)
+    logger.info({ message: 'Skipping entries already sent to Sisu', skippedAmount: alreadySent, user: user.name })
+  if (!rawData.length) return [200, { message: 'success' }]
+
+  const id = rawData.map((entry) => entry.id)
 
   const acceptors =
     model === 'entries'
@@ -194,7 +214,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
     if (!isValidSisuError(e.response)) {
       logger.error({ message: 'Sending entries to Sisu failed, got an error not from Sisu', user: user.name })
       sendSentryError('Sending entries to Sisu failed', e, { user, errorMessage, payload: data })
-      return [400, { message: (e.response && e.response.data) || e.message, genericError: true, user: user.name }]
+      return [400, { message: genericErrorMessage(e), genericError: true, user: user.name }]
     }
     const failedEntries = await writeErrorsToEntries(e.response, senderId, model)
     logger.error({ message: 'Some entries failed in Sisu', failedAmount: failedEntries.length, user: user.name })

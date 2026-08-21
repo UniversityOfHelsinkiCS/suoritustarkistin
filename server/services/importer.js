@@ -3,6 +3,8 @@ const _ = require('lodash')
 const api = require('../config/importerApi')
 const logger = require('../utils/logger')
 
+const IMPORTER_POST_RETRY_LIMIT = 3
+
 const handleImporterApiErrors = (e) => {
   if (e.code === 'EAI_AGAIN') throw new Error('Network error. Reload the page and try again')
   if (!e.response) throw new Error(`Importer request failed: ${e.code || e.message}`)
@@ -12,11 +14,27 @@ const handleImporterApiErrors = (e) => {
   throw new Error(e.toString())
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const postWithRetry = async (url, chunk) => {
+  for (let attempt = 1; attempt <= IMPORTER_POST_RETRY_LIMIT; attempt++) {
+    try {
+      return await api.post(url, chunk)
+    } catch (e) {
+      if (e.response || attempt === IMPORTER_POST_RETRY_LIMIT) throw e
+      logger.info({
+        message: `Importer request to ${url} failed (${e.code || e.message}). Attempt ${attempt} of ${IMPORTER_POST_RETRY_LIMIT}`
+      })
+      await sleep(attempt * 1000)
+    }
+  }
+}
+
 const chunkifyApi = async (data, url, size = 10) => {
   let allData = []
   const chunks = _.chunk(data, size)
   for (const chunk of chunks) {
-    const res = await api.post(url, chunk)
+    const res = await postWithRetry(url, chunk)
     allData = _.concat(allData, res.data)
   }
   return allData

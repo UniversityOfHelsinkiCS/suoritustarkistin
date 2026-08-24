@@ -1,9 +1,10 @@
 /**
  * Mooc registrations come from two sources, Sisu (via importer) and eduweb, and neither
- * is authoritative: a course may exist in one, the other, or both. The only link from a
- * completion back to a student is the email address, and each source knows a different
- * set of addresses for the same person. So rather than pick a source we collapse both
- * into one `person` record per student number holding every known address:
+ * is authoritative: a course may exist in one, the other, or both. Eduweb will become
+ * deprecated in the near(ish) fututre. The only link from a completion back to a student
+ * is the email address, and each source knows a different set of addresses for the same
+ * person. So rather than pick a source we collapse both into one `person` record per student
+ * number holding every known address:
  *
  *   { studentNumber: '014123456', emails: ['matti@helsinki.fi', 'matti@gmail.com'] }
  *

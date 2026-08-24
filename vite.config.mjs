@@ -30,7 +30,7 @@ export default defineConfig({
     host: true, // bind 0.0.0.0 inside docker
     port: PORT,
     strictPort: true,
-    proxy: { '/api': `http://localhost:${PORT + 1}` }
+    proxy: { '^/api(/|$)': `http://localhost:${PORT + 1}` }
   },
   build: {
     outDir: 'dist',

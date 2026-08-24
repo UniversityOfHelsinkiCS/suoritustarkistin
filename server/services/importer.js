@@ -30,8 +30,9 @@ const postWithRetry = async (url, chunk) => {
   }
 }
 
-const chunkifyApi = async (data, url, size = 10) => {
+const chunkifyApi = async (data, url) => {
   let allData = []
+  const size = 10
   const chunks = _.chunk(data, size)
   for (const chunk of chunks) {
     const res = await postWithRetry(url, chunk)
@@ -110,7 +111,7 @@ async function resolveUser(formData) {
 
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
- * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads.
+ * The data must be fetched in chunks of 10, since importer-api cannot handle bigger payloads.
  */
 const getEarlierAttainments = async (data) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
@@ -124,7 +125,7 @@ const getEarlierAttainments = async (data) => {
 
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
- * The data must be fetched in chunks of 50, since importer-api cannot handle bigger payloads.
+ * The data must be fetched in chunks of 10, since importer-api cannot handle bigger payloads.
  */
 const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })

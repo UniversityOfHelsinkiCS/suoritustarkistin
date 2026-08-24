@@ -42,8 +42,6 @@ const {
 const { addJob, getJobs, editJob, runJob, deleteJob } = require('@server/controllers/moocJobsController')
 const { login, logout } = require('@server/controllers/loginController')
 
-const { runJobs, dryRunJobs } = require('@server/controllers/cronController')
-
 const { checkAdmin, checkIdMatch, deleteSingleEntry, checkGrader, checkToken, deleteBatch } = require('./permissions')
 const { inProduction } = require('./common')
 const { paginateMiddleware, useFilters } = require('./middleware')
@@ -96,9 +94,6 @@ if (!inProduction) {
 // Production routes
 router.post('/login', login)
 router.post('/logout', logout)
-
-router.get('/cron/dryrun', dryRunJobs)
-router.get('/cron', runJobs)
 
 router.post('/create', checkToken, createEntries)
 

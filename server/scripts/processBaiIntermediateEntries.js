@@ -9,16 +9,18 @@ const { automatedAddToDb } = require('./automatedAddToDb')
 
 const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu) => {
   try {
+    const courseCodes = [course.courseCode, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE]
+
     const rawCredits = await db.credits.findAll({
       where: {
-        courseId: [course.courseCode, OLD_BAI_INTERMEDIATE_CODE, OLD_BAI_CODE]
+        courseId: courseCodes
       },
       raw: true
     })
 
     const rawEntries = await db.raw_entries.findAll({
       where: {
-        '$course.courseCode$': [course.courseCode, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE]
+        '$course.courseCode$': courseCodes
       },
       include: [{ model: db.courses, as: 'course' }]
     })
@@ -27,107 +29,82 @@ const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu
     const registeredIncluded = true
     const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
-    // If a completion with same or more credits if found, the new
-    // completion won't replace it
-    const completions = rawCompletions.filter((completion) => {
-      if (Number(completion.tier) <= 1) return false
-
-      const previousCredits = rawCredits.filter(
+    const alreadyHandled = (completion) =>
+      rawCredits.some(
         (credit) => credit.completionId === completion.id || credit.moocId === completion.user_upstream_id
-      )
-      const previousEntries = rawEntries.filter(
+      ) ||
+      rawEntries.some(
         (entry) => entry.moocCompletionId === completion.id || entry.moocUserId === completion.user_upstream_id
       )
 
-      return previousCredits.length === 0 && previousEntries.length === 0
+    const completions = rawCompletions.filter((completion) => {
+      if (Number(completion.tier) <= 1) return false
+      return !alreadyHandled(completion)
     })
 
-    const intermediateStudentPairs = registrations.reduce((pairs, registration) => {
-      if (registration && registration.onro) {
-        return pairs.concat({ courseCode: course.courseCode, studentNumber: registration.onro })
-      }
-      return pairs
-    }, [])
+    const studentPairsFor = (courseCode) =>
+      registrations
+        .filter((registration) => registration && registration.onro)
+        .map((registration) => ({ courseCode, studentNumber: registration.onro }))
 
-    const oldBaiCourseStudentPairs = registrations.reduce((pairs, registration) => {
-      if (registration && registration.onro) {
-        return pairs.concat({ courseCode: OLD_BAI_CODE, studentNumber: registration.onro })
-      }
-      return pairs
-    }, [])
-
-    const oldIntermediateCourseStudentPairs = registrations.reduce((pairs, registration) => {
-      if (registration && registration.onro) {
-        return pairs.concat({ courseCode: OLD_BAI_INTERMEDIATE_CODE, studentNumber: registration.onro })
-      }
-      return pairs
-    }, [])
-
-    // Fetch the earlier attainments for the new course code that is used after 1.9.2021
-    const intermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(intermediateStudentPairs)
-
-    // Fetch the earlier attainments for the course code that was used before Sisu
-    const oldBaiAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(oldBaiCourseStudentPairs)
-
-    // Fetch the earlier attainments for the course code that was used temporarily in summer 2021
-    const oldIntermediateAttainments = await getEarlierAttainmentsWithoutSubstituteCourses(
-      oldIntermediateCourseStudentPairs
-    )
-
-    // Combine these to be all the earlier attainments for the same course
-    const earlierAttainments = intermediateAttainments.concat(oldBaiAttainments).concat(oldIntermediateAttainments)
+    const earlierAttainments = (
+      await Promise.all(
+        courseCodes.map((courseCode) => getEarlierAttainmentsWithoutSubstituteCourses(studentPairsFor(courseCode)))
+      )
+    ).flat()
 
     const batchId = getBatchId(course.courseCode)
-    const date = new Date()
+    const today = new Date()
 
-    let matches = await completions.reduce(async (matchesPromise, completion) => {
-      const matches = await matchesPromise
+    const matchesEmail = (registration, email) =>
+      registration.email.toLowerCase() === email.toLowerCase() ||
+      registration.mooc.toLowerCase() === email.toLowerCase()
 
-      const registration = registrations.find(
-        (registration) =>
-          registration.email.toLowerCase() === completion.email.toLowerCase() ||
-          registration.mooc.toLowerCase() === completion.email.toLowerCase()
-      )
-      if (registration && registration.onro) {
-        const attainmentDate = getMoocAttainmentDate({
-          registrationAttemptDate: completion.completion_registration_attempt_date,
-          completionDate: completion.completion_date,
-          today: date
-        })
+    const toRawEntry = (completion, registration, attainmentDate) => ({
+      studentNumber: registration.onro,
+      batchId,
+      grade: 'Hyv.',
+      credits: 1,
+      language: 'en',
+      attainmentDate,
+      graderId: grader.id,
+      reporterId: null,
+      courseId: course.id,
+      moocUserId: completion.user_upstream_id,
+      moocCompletionId: completion.id
+    })
 
-        if (await earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {
-          logger.info({ message: `Earlier attainment found for student ${registration.onro}` })
-          return matches
-        }
-        if (matches.some((c) => c.studentNumber === registration.onro)) {
-          return matches
-        }
-        return matches.concat({
-          studentNumber: registration.onro,
-          batchId,
-          grade: 'Hyv.',
-          credits: 1,
-          language: 'en',
-          attainmentDate,
-          graderId: grader.id,
-          reporterId: null,
-          courseId: course.id,
-          moocUserId: completion.user_upstream_id,
-          moocCompletionId: completion.id
-        })
-      }
-      if (registration && !registration.onro)
+    const matches = []
+    for (const completion of completions) {
+      const registration = registrations.find((registration) => matchesEmail(registration, completion.email))
+      if (!registration) continue
+
+      if (!registration.onro) {
         logger.info({
           message: `${course.courseCode}: Registration student number missing for ${registration.email}`
         })
-      return matches
-    }, [])
+        continue
+      }
 
-    if (!matches) matches = []
+      const attainmentDate = getMoocAttainmentDate({
+        registrationAttemptDate: completion.completion_registration_attempt_date,
+        completionDate: completion.completion_date,
+        today
+      })
+
+      if (earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {
+        logger.info({ message: `Earlier attainment found for student ${registration.onro}` })
+        continue
+      }
+
+      if (matches.some((match) => match.studentNumber === registration.onro)) continue
+
+      matches.push(toRawEntry(completion, registration, attainmentDate))
+    }
+
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
 
-    const result = await automatedAddToDb(matches, course, batchId, sendToSisu)
-    return result
+    return await automatedAddToDb(matches, course, batchId, sendToSisu)
   } catch (error) {
     logger.error(`Error processing new completions: ${error.message}`)
     return { message: error.message }

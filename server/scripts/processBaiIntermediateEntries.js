@@ -38,7 +38,7 @@ const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu
       )
 
     const completions = rawCompletions.filter((completion) => {
-      if (Number(completion.tier) <= 1) return false
+      if (![2, 3].includes(Number(completion.tier))) return false
       return !alreadyHandled(completion)
     })
 

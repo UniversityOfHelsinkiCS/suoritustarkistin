@@ -47,7 +47,7 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
 
     // Pre-filter the completions to avoid overloading importer with thousands of completions
     const completions = rawCompletions.filter((completion) => {
-      if (!completion.tier === Number(3)) return false
+      if (Number(completion.tier) !== 3) return false
 
       const previousCredits = rawCredits.filter(
         (credit) => credit.completionId === completion.id || credit.moocId === completion.user_upstream_id

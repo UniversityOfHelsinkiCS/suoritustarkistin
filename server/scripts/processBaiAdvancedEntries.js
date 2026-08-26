@@ -8,11 +8,11 @@ const {
   getBatchId,
   getMoocAttainmentDate
 } = require('@shared/common')
-const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
 const { passedAttainmentFound } = require('../utils/earlierCompletions')
+const { fetchRegistrationsFor, courseStudentPairs, findByEmail, isUnidentified } = require('../utils/moocRegistrations')
 
 const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) => {
   logger.info({ message: `Processing BAI Advanced entries for course: ${course.courseCode}` })
@@ -43,7 +43,7 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
 
     const registeredIncluded = true
 
-    const registrations = await getRegistrations(course.courseCode)
+    const registrations = await fetchRegistrationsFor(course.courseCode)
     const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
     const isSameCompletion = (entry, completion) =>
@@ -72,16 +72,13 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
         .map((entry) => entry.studentNumber)
         .concat(rawCredits.filter((credit) => credit.tier === 3).map((credit) => credit.studentId))
     )
-    const pending = registrations.filter(
-      (registration) => registration && registration.onro && !handled.has(registration.onro)
-    )
-
-    const studentPairsFor = (courseCode) =>
-      pending.map((registration) => ({ courseCode, studentNumber: registration.onro }))
+    const pending = registrations.persons.filter(({ studentNumber }) => !handled.has(studentNumber))
 
     const attainmentsForCodes = (codes) =>
       Promise.all(
-        codes.map((courseCode) => getEarlierAttainmentsWithoutSubstituteCourses(studentPairsFor(courseCode)))
+        codes.map((courseCode) =>
+          getEarlierAttainmentsWithoutSubstituteCourses(courseStudentPairs(pending, courseCode))
+        )
       ).then((lists) => lists.flat())
 
     const advancedAttainments = await attainmentsForCodes(advancedCodes)
@@ -90,12 +87,8 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
     const batchId = getBatchId(course.courseCode)
     const today = new Date()
 
-    const matchesEmail = (registration, email) =>
-      registration.email.toLowerCase() === email.toLowerCase() ||
-      registration.mooc.toLowerCase() === email.toLowerCase()
-
-    const toRawEntry = (completion, registration, attainmentDate) => ({
-      studentNumber: registration.onro,
+    const toRawEntry = (completion, studentNumber, attainmentDate) => ({
+      studentNumber,
       batchId,
       grade: 'Hyv.',
       credits: 1,
@@ -108,19 +101,26 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
       moocCompletionId: completion.id
     })
 
+    let unmatched = 0
+    let unidentified = 0
+
     const matches = []
     for (const completion of completions) {
-      const registration = registrations.find((registration) => matchesEmail(registration, completion.email))
-      if (!registration) continue
+      const registration = findByEmail(registrations, completion.email)
 
-      if (!registration.onro) {
-        logger.info({
-          message: `${course.courseCode}: Registration student number missing for ${registration.email}`
-        })
+      if (!registration) {
+        if (isUnidentified(registrations, completion.email)) {
+          unidentified += 1
+          logger.info({
+            message: `${course.courseCode}: Registration student number missing for ${completion.email}`
+          })
+        } else {
+          unmatched += 1
+        }
         continue
       }
 
-      const studentNumber = registration.onro
+      const { studentNumber } = registration
       if (handled.has(studentNumber)) continue
 
       const attainmentDate = getMoocAttainmentDate({
@@ -140,11 +140,11 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
 
       if (matches.some((match) => match.studentNumber === studentNumber)) continue
 
-      matches.push(toRawEntry(completion, registration, attainmentDate))
+      matches.push(toRawEntry(completion, studentNumber, attainmentDate))
     }
 
     logger.info({
-      message: `${course.courseCode}: ${completions.length} completions checked against ${pending.length} students`
+      message: `${course.courseCode}: ${completions.length} completions checked against ${pending.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}`
     })
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
 

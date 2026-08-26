@@ -10,12 +10,12 @@ const {
 } = require('@shared/common')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
-const { automatedAddToDb } = require('./automatedAddToDb')
 const { passedAttainmentFound } = require('../utils/earlierCompletions')
 const { fetchRegistrationsFor, courseStudentPairs, findByEmail, isUnidentified } = require('../utils/moocRegistrations')
+const { sendSentryError } = require('../utils/sentry')
+const { automatedAddToDb } = require('./automatedAddToDb')
 
-const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) => {
-  logger.info({ message: `Processing BAI Advanced entries for course: ${course.courseCode}` })
+const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu = false) => {
   try {
     const rawCredits = await db.credits.findAll({
       where: {
@@ -150,7 +150,11 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
 
     return await automatedAddToDb(matches, course, batchId, sendToSisu)
   } catch (error) {
-    logger.error(`Error processing new completions: ${error.message}`)
+    logger.error({ message: `Error processing new completions for ${course.courseCode}: ${error.message}` })
+    sendSentryError('Processing bai advanced completions failed', error, {
+      course: course.courseCode,
+      jobId: job.id
+    })
     return { message: error.message }
   }
 }

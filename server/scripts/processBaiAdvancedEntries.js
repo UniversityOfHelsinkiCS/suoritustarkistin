@@ -12,7 +12,7 @@ const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
 const { automatedAddToDb } = require('./automatedAddToDb')
-const { advancedFound } = require('../utils/earlierCompletions')
+const { passedAttainmentFound } = require('../utils/earlierCompletions')
 
 const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) => {
   logger.info({ message: `Processing BAI Advanced entries for course: ${course.courseCode}` })
@@ -72,12 +72,13 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
         .filter((registration) => registration && registration.onro)
         .map((registration) => ({ courseCode, studentNumber: registration.onro }))
 
-    const [oldBaiAttainments, oldAdvancedAttainments, newAdvancedAttainments] = await Promise.all(
-      [OLD_BAI_CODE, OLD_BAI_ADVANCED_CODE, course.courseCode].map((courseCode) =>
-        getEarlierAttainmentsWithoutSubstituteCourses(studentPairsFor(courseCode))
-      )
-    )
-    const advancedAttainments = oldAdvancedAttainments.concat(newAdvancedAttainments)
+    const attainmentsForCodes = (codes) =>
+      Promise.all(
+        codes.map((courseCode) => getEarlierAttainmentsWithoutSubstituteCourses(studentPairsFor(courseCode)))
+      ).then((lists) => lists.flat())
+
+    const advancedAttainments = await attainmentsForCodes(advancedCodes)
+    const oldBaiAttainments = await attainmentsForCodes([OLD_BAI_CODE])
 
     const batchId = getBatchId(course.courseCode)
     const today = new Date()
@@ -112,18 +113,24 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
         continue
       }
 
+      const studentNumber = registration.onro
+
       const attainmentDate = getMoocAttainmentDate({
         registrationAttemptDate: completion.completion_registration_attempt_date,
         completionDate: completion.completion_date,
         today
       })
 
-      if (advancedFound(advancedAttainments, oldBaiAttainments, registration.onro, attainmentDate)) {
-        logger.info({ message: `Earlier attainment found for student ${registration.onro}` })
+      const holdsAdvanced =
+        passedAttainmentFound({ attainments: advancedAttainments, studentNumber, minCredits: 1 }) ||
+        passedAttainmentFound({ attainments: oldBaiAttainments, studentNumber, minCredits: 2 })
+
+      if (holdsAdvanced) {
+        logger.info({ message: `Earlier attainment found for student ${studentNumber}` })
         continue
       }
 
-      if (matches.some((match) => match.studentNumber === registration.onro)) continue
+      if (matches.some((match) => match.studentNumber === studentNumber)) continue
 
       matches.push(toRawEntry(completion, registration, attainmentDate))
     }

@@ -108,72 +108,14 @@ const identicalCompletionFound = (allEarlierAttainments, studentNumber, courseCo
   )
 }
 
-const earlierBaiCompletionFound = (allEarlierAttainments, studentNumber, completionDate) => {
-  if (!allEarlierAttainments) return false
-  const studentsAttainments = allEarlierAttainments.filter((a) => a.studentNumber === studentNumber)
+const passedAttainmentFound = ({ attainments, studentNumber, minCredits }) => {
+  if (!attainments) return false
 
-  // Map student's earlier attainments for old and new intermediate BAI
-  const earlierAttainments =
-    studentsAttainments && studentsAttainments.length
-      ? studentsAttainments.reduce((attainments, pair) => attainments.concat(pair.attainments), [])
-      : undefined
+  const studentAttainments = attainments
+    .filter((a) => a.studentNumber === studentNumber)
+    .reduce((all, pair) => all.concat(pair.attainments), [])
 
-  // No earlier completions for old or new BAI, Intermediate can be given
-  if (!earlierAttainments) return false
-
-  const formattedDate = moment(completionDate).format('YYYY-MM-DD')
-
-  // Intermediate level already completed, no Intermediate credit can be given
-  if (
-    earlierAttainments.some(
-      (a) =>
-        Number(a.credits) >= 1 &&
-        moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate &&
-        a.grade.passed &&
-        !a.misregistration
-    )
-  )
-    return true
-
-  return false
-}
-
-const advancedFound = (advancedAttainments, oldBaiAttainments, studentNumber, completionDate) => {
-  const advancedStudent = advancedAttainments.find((a) => a.studentNumber === studentNumber)
-  const earlierAdvancedAttainments = advancedStudent ? advancedStudent.attainments : undefined
-
-  const formattedDate = moment(completionDate).format('YYYY-MM-DD')
-
-  // Earlier completion for Advanced course, no credit can be given
-  if (
-    earlierAdvancedAttainments &&
-    earlierAdvancedAttainments.some(
-      (a) =>
-        a.grade.passed &&
-        moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate &&
-        a.credits >= 1 &&
-        !a.misregistration
-    )
-  )
-    return true
-
-  const baiStudent = oldBaiAttainments.find((a) => a.studentNumber === studentNumber)
-  const earlierBaiAttainments = baiStudent ? baiStudent.attainments : undefined
-
-  // Earlier 2 credit completion for old Building AI -course, no new credits can be given
-  if (
-    earlierBaiAttainments &&
-    earlierBaiAttainments.some(
-      (a) =>
-        a.grade.passed &&
-        moment(a.attainmentDate).format('YYYY-MM-DD') >= formattedDate &&
-        a.credits >= 2 &&
-        !a.misregistration
-    )
-  )
-    return true
-
-  return false
+  return studentAttainments.some((a) => a.grade.passed && Number(a.credits) >= minCredits && !a.misregistration)
 }
 
 const filterDuplicateMatches = (matches) => {
@@ -190,7 +132,6 @@ const filterDuplicateMatches = (matches) => {
 module.exports = {
   isImprovedGrade,
   identicalCompletionFound,
-  earlierBaiCompletionFound,
-  advancedFound,
+  passedAttainmentFound,
   filterDuplicateMatches
 }

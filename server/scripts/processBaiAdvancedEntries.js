@@ -41,9 +41,8 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu = f
       include: [{ model: db.courses, as: 'course' }]
     })
 
-    const registeredIncluded = true
-
     const registrations = await fetchRegistrationsFor(course.courseCode)
+    const registeredIncluded = true
     const rawCompletions = await getCompletions(job.slug || course.courseCode, registeredIncluded)
 
     const isSameCompletion = (entry, completion) =>

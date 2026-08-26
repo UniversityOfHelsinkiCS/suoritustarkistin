@@ -5,9 +5,10 @@ const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/i
 const { getCompletions } = require('../services/pointsmooc')
 const { passedAttainmentFound } = require('../utils/earlierCompletions')
 const { fetchRegistrationsFor, courseStudentPairs, findByEmail, isUnidentified } = require('../utils/moocRegistrations')
+const { sendSentryError } = require('../utils/sentry')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
-const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu) => {
+const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu = false) => {
   try {
     const courseCodes = [course.courseCode, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CODE]
 
@@ -117,7 +118,11 @@ const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu
 
     return await automatedAddToDb(matches, course, batchId, sendToSisu)
   } catch (error) {
-    logger.error(`Error processing new completions: ${error.message}`)
+    logger.error({ message: `Error processing new completions for ${course.courseCode}: ${error.message}` })
+    sendSentryError('Processing bai intermediate completions failed', error, {
+      course: course.courseCode,
+      jobId: job.id
+    })
     return { message: error.message }
   }
 }

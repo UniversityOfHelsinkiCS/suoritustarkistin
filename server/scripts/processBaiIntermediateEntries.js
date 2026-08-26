@@ -4,7 +4,7 @@ const { getBatchId, getMoocAttainmentDate, OLD_BAI_CODE, OLD_BAI_INTERMEDIATE_CO
 const { getRegistrations } = require('../services/eduweb')
 const { getEarlierAttainmentsWithoutSubstituteCourses } = require('../services/importer')
 const { getCompletions } = require('../services/pointsmooc')
-const { earlierBaiCompletionFound } = require('../utils/earlierCompletions')
+const { passedAttainmentFound } = require('../utils/earlierCompletions')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
 const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu) => {
@@ -86,18 +86,20 @@ const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu
         continue
       }
 
+      const studentNumber = registration.onro
+
       const attainmentDate = getMoocAttainmentDate({
         registrationAttemptDate: completion.completion_registration_attempt_date,
         completionDate: completion.completion_date,
         today
       })
 
-      if (earlierBaiCompletionFound(earlierAttainments, registration.onro, attainmentDate)) {
-        logger.info({ message: `Earlier attainment found for student ${registration.onro}` })
+      if (passedAttainmentFound({ attainments: earlierAttainments, studentNumber, minCredits: 1 })) {
+        logger.info({ message: `Earlier attainment found for student ${studentNumber}` })
         continue
       }
 
-      if (matches.some((match) => match.studentNumber === registration.onro)) continue
+      if (matches.some((match) => match.studentNumber === studentNumber)) continue
 
       matches.push(toRawEntry(completion, registration, attainmentDate))
     }

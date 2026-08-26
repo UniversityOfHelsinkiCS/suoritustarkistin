@@ -49,7 +49,11 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
           failedAmount: failed.length,
           totalAmount: newRawEntries.length,
           reasons: summarizeReasons(errors),
-          messages: errors.map(failureMessage)
+          messages: errors.map(failureMessage),
+          rawEntries: errors.map(({ id }) => {
+            const rawEntry = newRawEntries.find((entry) => entry.id === id)
+            return rawEntry ? rawEntry.get({ plain: true }) : { id }
+          })
         })
     }
 

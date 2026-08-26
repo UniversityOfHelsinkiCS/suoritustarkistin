@@ -1,3 +1,4 @@
+import ScheduleConflictWarning from '@client/components/AutomatedReportsPage/Mooc/ScheduleConflictWarning'
 import { addJobAction } from '@client/utils/redux/moocJobsReducer'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
@@ -46,6 +47,7 @@ export default ({ close }) => {
             }
           }}
         />
+        <ScheduleConflictWarning schedule={data.schedule} />
         <Autocomplete
           data-cy="add-job-course"
           options={courses.map((course) => ({

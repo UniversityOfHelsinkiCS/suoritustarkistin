@@ -67,10 +67,17 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
       return hasIntermediate(completion) && !hasAdvanced(completion)
     })
 
+    const handled = new Set(
+      advancedRawEntries
+        .map((entry) => entry.studentNumber)
+        .concat(rawCredits.filter((credit) => credit.tier === 3).map((credit) => credit.studentId))
+    )
+    const pending = registrations.filter(
+      (registration) => registration && registration.onro && !handled.has(registration.onro)
+    )
+
     const studentPairsFor = (courseCode) =>
-      registrations
-        .filter((registration) => registration && registration.onro)
-        .map((registration) => ({ courseCode, studentNumber: registration.onro }))
+      pending.map((registration) => ({ courseCode, studentNumber: registration.onro }))
 
     const attainmentsForCodes = (codes) =>
       Promise.all(
@@ -114,6 +121,7 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
       }
 
       const studentNumber = registration.onro
+      if (handled.has(studentNumber)) continue
 
       const attainmentDate = getMoocAttainmentDate({
         registrationAttemptDate: completion.completion_registration_attempt_date,
@@ -135,6 +143,9 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu) =>
       matches.push(toRawEntry(completion, registration, attainmentDate))
     }
 
+    logger.info({
+      message: `${course.courseCode}: ${completions.length} completions checked against ${pending.length} students`
+    })
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
 
     return await automatedAddToDb(matches, course, batchId, sendToSisu)

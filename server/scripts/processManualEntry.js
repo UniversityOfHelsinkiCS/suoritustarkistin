@@ -21,14 +21,14 @@ const validateEntry = ({ studentId, grade, credits, language, course }) => {
   if (language && !LANGUAGES.includes(language)) {
     throw new Error(`'${language}' is not valid language`)
   }
-  if (course && !isValidCourseCode) {
-    throw new Error(`'${course}' is not a valid course in Suotar'`)
+  if (course && !isValidCourseCode(course)) {
+    throw new Error(`'${course}' is not a valid course in Suotar`)
   }
 }
 
 const processManualEntry = async ({ graderId, reporterId, courseId, date, data, isKandi }, transaction) => {
   const toRawEntry = async (rawEntry) => {
-    await validateEntry(rawEntry)
+    validateEntry(rawEntry)
 
     const grader = await db.users.findOne({
       where: {

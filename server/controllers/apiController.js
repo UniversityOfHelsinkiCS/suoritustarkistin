@@ -1,3 +1,4 @@
+const moment = require('moment')
 const logger = require('@server/utils/logger')
 const attainmentsToSisu = require('@server/utils/sendToSisu')
 const db = require('../models/index')
@@ -39,7 +40,7 @@ const parseEntry = async (entry) => {
     studentId: isValidStudentId(studentId) && studentId,
     grade: isValidGrade(grade) && grade,
     credits: isValidCreditAmount(credits) && credits,
-    attainmentDate: (isValidOodiDate(attainmentDate) && new Date(Date(attainmentDate))) || new Date(Date.now()),
+    attainmentDate: (isValidOodiDate(attainmentDate) && moment(attainmentDate, 'D.M.YYYY').toDate()) || new Date(),
     course: isValidCourseCode(course) && course,
     graderId: employeeId
   }

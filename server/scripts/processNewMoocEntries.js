@@ -47,6 +47,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
     // account. Counted here because the matching loop below only sees hits.
     let unmatched = 0
     let unidentified = 0
+    let alreadyAttained = 0
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs(registrations.persons, course.courseCode))
 
@@ -85,6 +86,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
             course.credits
           )
         ) {
+          alreadyAttained += 1
           return matches
         }
         if (matches.some((c) => c.studentNumber === registration.studentNumber)) {
@@ -117,7 +119,7 @@ const processNewMoocEntries = async ({ job, course, grader }, sendToSisu = false
 
     if (!matches) matches = []
     logger.info({
-      message: `${course.courseCode}: ${completions.length} completions checked against ${registrations.persons.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}`
+      message: `${course.courseCode}: ${completions.length} completions checked against ${registrations.persons.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}${alreadyAttained ? `, ${alreadyAttained} already had an earlier attainment` : ''}`
     })
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
     const result = await automatedAddToDb(matches, course, batchId, sendToSisu)

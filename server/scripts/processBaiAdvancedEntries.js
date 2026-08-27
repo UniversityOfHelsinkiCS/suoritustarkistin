@@ -102,6 +102,7 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu = f
 
     let unmatched = 0
     let unidentified = 0
+    let alreadyAttained = 0
 
     const matches = []
     for (const completion of completions) {
@@ -133,7 +134,7 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu = f
         passedAttainmentFound({ attainments: oldBaiAttainments, studentNumber, minCredits: 2 })
 
       if (holdsAdvanced) {
-        logger.info({ message: `Earlier attainment found for student ${studentNumber}` })
+        alreadyAttained += 1
         continue
       }
 
@@ -143,7 +144,7 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu = f
     }
 
     logger.info({
-      message: `${course.courseCode}: ${completions.length} completions checked against ${pending.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}`
+      message: `${course.courseCode}: ${completions.length} completions checked against ${pending.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}${alreadyAttained ? `, ${alreadyAttained} already had an earlier attainment` : ''}`
     })
     logger.info({ message: `${course.courseCode}: Found ${matches.length} new completions.` })
 

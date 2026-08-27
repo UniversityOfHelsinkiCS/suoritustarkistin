@@ -38,6 +38,7 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
 
     let unmatched = 0
     let unidentified = 0
+    let alreadyAttained = 0
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs(pending, NEW_EOAI_CODE))
 
@@ -76,6 +77,7 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
         })
 
         if (!isImprovedGrade(earlierAttainments, registration.studentNumber, 'Hyv.', attainmentDate, course.credits)) {
+          alreadyAttained += 1
           return matches
         }
         if (matches.some((c) => c.studentNumber === registration.studentNumber)) {
@@ -108,7 +110,7 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
 
     if (!matches) matches = []
     logger.info({
-      message: `${NEW_EOAI_CODE}: ${completions.length} completions checked against ${pending.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}`
+      message: `${NEW_EOAI_CODE}: ${completions.length} completions checked against ${pending.length} students${unmatched ? `, ${unmatched} matched no registered email` : ''}${unidentified ? `, ${unidentified} matched a registration without student number` : ''}${alreadyAttained ? `, ${alreadyAttained} already had an earlier attainment` : ''}`
     })
     logger.info({ message: `${NEW_EOAI_CODE}: Found ${matches.length} new completions.` })
 

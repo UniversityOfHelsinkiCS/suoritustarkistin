@@ -4,65 +4,38 @@ const checkNumericImprovement = (earlierAttainments, grade, completionDate, cred
   // due to hours dropped in SISU API, remove one day from completion date
   const completionDateMoment = moment(completionDate).subtract(1, 'days')
 
-  if (earlierAttainments.every((a) => a.grade.numericCorrespondence < grade)) return true
-
-  if (earlierAttainments.every((a) => a.grade.numericCorrespondence === grade && Number(a.credits) < credits))
-    return true
-
-  // Same grade and credits but greater completion date, see the comment above about adding one day
-  if (
-    earlierAttainments
-      .filter((a) => a.grade.numericCorrespondence === grade && Number(a.credits) === credits)
-      .every((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
-  )
-    return true
-
-  return false
+  return earlierAttainments.every((a) => {
+    if (a.grade.numericCorrespondence !== grade) return a.grade.numericCorrespondence < grade
+    if (Number(a.credits) !== credits) return Number(a.credits) < credits
+    return completionDateMoment.isAfter(moment(a.attainmentDate), 'day')
+  })
 }
 
 const checkPassed = (earlierAttainments, completionDate, credits) => {
   const completionDateMoment = moment(completionDate)
 
-  if (earlierAttainments.every((a) => !a.grade.passed)) return true
-
-  // Passed and new mark has greater credits
-  if (earlierAttainments.filter((a) => a.grade.passed).every((a) => Number(a.credits) < credits)) return true
-
-  // Passed with same credits but greater completion date
-  if (
-    earlierAttainments
-      .filter((a) => a.grade.passed && Number(a.credits) === credits)
-      .every((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
-  )
-    return true
-
-  return false
+  return earlierAttainments.every((a) => {
+    if (!a.grade.passed) return true
+    if (Number(a.credits) !== credits) return Number(a.credits) < credits
+    return completionDateMoment.isAfter(moment(a.attainmentDate), 'day')
+  })
 }
 
 const checkFailed = (earlierAttainments, completionDate, credits) => {
   const completionDateMoment = moment(completionDate)
-  if (earlierAttainments.some((a) => a.grade.passed)) return false
 
-  // Failed and new mark has greater credits
-  if (earlierAttainments.filter((a) => !a.grade.passed).every((a) => Number(a.credits) < credits)) return true
-
-  // Failed with same credits but greater completion date
-  if (
-    earlierAttainments
-      .filter((a) => !a.grade.passed && Number(a.credits) === credits)
-      .every((a) => completionDateMoment.isAfter(moment(a.attainmentDate), 'day'))
-  )
-    return true
-
-  return false
+  return earlierAttainments.every((a) => {
+    if (a.grade.passed) return false
+    if (Number(a.credits) !== credits) return Number(a.credits) < credits
+    return completionDateMoment.isAfter(moment(a.attainmentDate), 'day')
+  })
 }
 
 /**
- * Return true if given grade is valid for student. That is any of:
- *  1. Given grade is better than grade in earlier attainments
- *  2. Given grade is same with greater credits than grade in earlier attainments
- *  3. Given grade and credits is same with greater completion date than grade in earlier attainments
- *  4. Given grade is exactly same as than grade in earlier attainments :wat:
+ * Return true if given grade beats every earlier attainment of the student, each by one of:
+ *  1. Given grade is better than grade in the earlier attainment
+ *  2. Given grade is same with greater credits than the earlier attainment
+ *  3. Given grade and credits are same with greater completion date than the earlier attainment
  */
 const isImprovedGrade = (allEarlierAttainments, studentNumber, grade, completionDate, credits) => {
   if (!allEarlierAttainments) return true

@@ -218,10 +218,13 @@ const unsentEntries = async (id) => {
     where: {
       courseId: id
     },
-    include: [{ model: db.entries, as: 'entry' }]
+    include: [
+      { model: db.entries, as: 'entry' },
+      { model: db.extra_entries, as: 'extraEntry' }
+    ]
   })
-  const notSentYet = rawEntries.filter(({ entry }) => !entry.sent)
-  return notSentYet ? notSentYet.map((rawEntry) => rawEntry.id) : []
+  const notSentYet = rawEntries.filter(({ entry, extraEntry }) => !(entry?.sent || extraEntry?.sent))
+  return notSentYet.map((rawEntry) => rawEntry.id)
 }
 
 const confirmDeletion = async (req, res) => {

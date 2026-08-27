@@ -55,9 +55,10 @@ const deleteSingleEntry = (req, res, next) =>
         ],
         attributes: ['graderId']
       })
+      if (!rawEntry) return false
       if (rawEntry.graderId !== req.user.id) return false
-      if (rawEntry.entry.sent) return false
-      return rawEntry.entry.missingEnrolment || rawEntry.extraEntry.id
+      if (rawEntry.entry?.sent) return false
+      return rawEntry.entry?.missingEnrolment || rawEntry.extraEntry?.id
     },
     'Unauthorized access'
   )
@@ -77,6 +78,7 @@ const deleteBatch = (req, res, next) =>
           { model: db.extra_entries, as: 'extraEntry' }
         ]
       })
+      if (!rawEntry) return false
       if (rawEntry.entry && rawEntry.entry.sent) return false
       if (rawEntry.extraEntry && rawEntry.extraEntry.sent) return false
       return rawEntry.graderId === req.user.id

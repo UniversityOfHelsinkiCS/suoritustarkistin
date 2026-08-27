@@ -24,7 +24,7 @@ const checkToken = (req, res, next) => {
   const { query, headers } = req
 
   if (!SUOTAR_TOKEN || (query.token !== SUOTAR_TOKEN && headers.token !== SUOTAR_TOKEN)) {
-    logger.info(`Failed token check`, query, headers)
+    logger.info({ message: 'Failed token check', tokenConfigured: !!SUOTAR_TOKEN, uid: headers.uid })
     return res.status(401).end()
   }
 

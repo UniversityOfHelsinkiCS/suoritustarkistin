@@ -372,15 +372,7 @@ const sendToSis = async (req, res) => {
   } catch (e) {
     logger.error({ message: `Sending attainments to Sisu failed: ${e.message}`, stack: e.stack })
   }
-  const updatedWithRawEntries = await db.raw_entries.findAll({
-    where: {
-      '$entry.id$': { [Op.in]: entryIds.concat(extraEntryIds || []) }
-    },
-    include: [...RAW_ENTRY_INCLUDES],
-    order: [['createdAt', 'DESC'], 'studentNumber']
-  })
-
-  return res.status(200).json(updatedWithRawEntries)
+  return res.status(200).send()
 }
 
 const refreshSisStatus = async (req, res) => {

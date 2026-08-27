@@ -101,7 +101,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
           reason: FAILURE_REASONS.VERIFIER_NOT_FOUND,
-          message: `Person with employee number ${rawEntry.grader.employeeId} not found from Sisu`
+          message: `Person with employee number ${grader.employeeId} not found from Sisu`
         })
         return Promise.resolve()
       }

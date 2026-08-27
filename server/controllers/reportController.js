@@ -253,7 +253,7 @@ const getOffset = async (req, res) => {
 
 const deleteSingleSisEntry = async (req, res) => {
   try {
-    db.raw_entries.destroy({
+    await db.raw_entries.destroy({
       where: {
         id: req.params.id
       }
@@ -266,7 +266,7 @@ const deleteSingleSisEntry = async (req, res) => {
 
 const deleteSisBatch = async (req, res) => {
   try {
-    db.raw_entries.destroy({
+    await db.raw_entries.destroy({
       where: {
         batchId: req.params.batchId
       }

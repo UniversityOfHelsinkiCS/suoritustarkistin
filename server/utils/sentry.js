@@ -39,7 +39,7 @@ const sendSentryError = (title, error, { user, ...extras } = {}) => {
   const response = describeResponse(error)
   return withUserScope(user, { ...response, ...extras }, () => {
     if (error) Sentry.captureException(error, { tags: { operation: title } })
-    else Sentry.captureMessage(title)
+    else Sentry.captureMessage(title, { level: 'error', tags: { operation: title } })
     logger.error({
       message: `Sentry: ${title}`,
       user,

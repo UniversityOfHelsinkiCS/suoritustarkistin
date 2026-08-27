@@ -4,17 +4,16 @@ import { useSelector } from 'react-redux'
 export default () => {
   const { newMooc } = useSelector((state) => state.apiChecks)
 
-  const getCardRow = (instance, attribute) => (
-    <div>
-      <b>{attribute}: </b>
-      {instance[attribute] ? instance[attribute] : 'null'}
-    </div>
-  )
+  const formatValue = (value) => {
+    if (value === null || value === undefined) return 'null'
+    if (typeof value === 'object') return JSON.stringify(value)
+    return String(value)
+  }
 
-  const getGradeRow = (instance) => (
-    <div>
-      <b>grade: </b>
-      {instance.grade ? JSON.stringify(instance.grade) : 'null'}
+  const getCardRow = (instance, attribute) => (
+    <div key={attribute}>
+      <b>{attribute}: </b>
+      {formatValue(instance[attribute])}
     </div>
   )
 
@@ -27,13 +26,7 @@ export default () => {
       <Card variant="outlined" sx={{ padding: '20px' }}>
         {newMooc.map((s) => (
           <div key={s.id}>
-            {getCardRow(s, 'user_id')}
-            {getCardRow(s, 'email')}
-            {getCardRow(s, 'completion_date')}
-            {getCardRow(s, 'completion_registration_attempt_date')}
-            {getCardRow(s, 'completion_language')}
-            {getGradeRow(s)}
-            {getCardRow(s, 'tier')}
+            {Object.keys(s).map((attribute) => getCardRow(s, attribute))}
             ------------------------
           </div>
         ))}

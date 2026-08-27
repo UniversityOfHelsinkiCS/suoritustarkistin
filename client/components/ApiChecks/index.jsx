@@ -19,15 +19,15 @@ export default () => {
           <EduwebCheck />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <MoocCheck />
+          <SisuCheck />
         </Box>
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <NewMoocCheck />
+          <MoocCheck />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <SisuCheck />
+          <NewMoocCheck />
         </Box>
       </Stack>
     </>

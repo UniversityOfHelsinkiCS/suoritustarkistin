@@ -48,8 +48,12 @@ const postRegistrations = async (completionAndStudentIdList, { report = true } =
 }
 
 // Used for ApiCheck-tab
-const checkCompletions = async (course) => {
-  const { data } = await newMoocApi.get(`/study-registry/completions/${course}`)
+const checkCompletions = async (course, registeredIncluded = false) => {
+  const path = registeredIncluded
+    ? `/study-registry/completions/${course}`
+    : `/study-registry/completions/${course}?exclude_already_registered=true`
+
+  const { data } = await newMoocApi.get(path)
   return data
 }
 

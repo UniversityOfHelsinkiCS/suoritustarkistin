@@ -36,9 +36,10 @@ const postRegistrations = async (completionAndStudentIdList, { report = true } =
 }
 
 // Used for ApiCheck-tab
-const checkCompletions = async (course) => {
-  // If registeredIncluded=true, also the ones that are already marked as registered to SIS will be fetched from mooc api
-  const { data } = await moocApi.get(`/completions/${course}`)
+const checkCompletions = async (course, registeredIncluded = false) => {
+  const { data } = registeredIncluded
+    ? await moocApi.get(`/completions/${course}?registered=true`)
+    : await moocApi.get(`/completions/${course}`)
   return data
 }
 

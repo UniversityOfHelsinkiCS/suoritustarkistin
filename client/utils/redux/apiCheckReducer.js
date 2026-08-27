@@ -6,14 +6,14 @@ export const checkEduWeb = (courseCode) => {
   return callBuilder(route, prefix, 'get')
 }
 
-export const checkMooc = (courseCode) => {
-  const route = `/apicheck/mooc/${courseCode}`
+export const checkMooc = (courseCode, registered = false) => {
+  const route = `/apicheck/mooc/${courseCode}?registered=${registered}`
   const prefix = 'CHECK_MOOC_API'
   return callBuilder(route, prefix, 'get')
 }
 
-export const checkNewMooc = (courseCode) => {
-  const route = `apicheck/newmooc/${courseCode}`
+export const checkNewMooc = (courseCode, registered = false) => {
+  const route = `/apicheck/newmooc/${courseCode}?registered=${registered}`
   const prefix = 'CHECK_NEW_MOOC_API'
   return callBuilder(route, prefix, 'get')
 }

@@ -74,10 +74,13 @@ const addCourse = async (req, res) => {
     const course = req.body
     const { graders } = course
 
-    if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
+    if (!isValidCourse(course)) {
+      await transaction.rollback()
+      return res.status(400).json({ error: 'Malformed course data.' })
+    }
 
     delete course.graders
-    const newCourse = await db.courses.create(course, transaction)
+    const newCourse = await db.courses.create(course, { transaction })
     for (const graderId of graders) {
       const user = await db.users.findOne({
         where: {
@@ -86,11 +89,12 @@ const addCourse = async (req, res) => {
         transaction
       })
 
-      await user.addCourse(newCourse, { through: 'users_courses' }, transaction)
+      await user.addCourse(newCourse, { through: 'users_courses', transaction })
     }
 
     const newCourseWithGraders = await db.courses.findOne({
       where: { id: newCourse.id },
+      transaction,
       include: [
         {
           model: db.users,
@@ -105,7 +109,7 @@ const addCourse = async (req, res) => {
       ]
     })
 
-    transaction.commit()
+    await transaction.commit()
     return res.status(200).json(cleanCourses([newCourseWithGraders]))
   } catch (e) {
     await transaction.rollback()
@@ -120,24 +124,30 @@ const addCourse = async (req, res) => {
 
 const editCourse = async (req, res) => {
   const transaction = await db.sequelize.transaction()
+  let committed = false
 
   try {
     const course = req.body
     const { graders } = course
 
-    if (!isValidCourse(course)) return res.status(400).json({ error: 'Malformed course data.' })
+    if (!isValidCourse(course)) {
+      await transaction.rollback()
+      return res.status(400).json({ error: 'Malformed course data.' })
+    }
 
     delete course.graders
     const [rows, [updatedCourse]] = await db.courses.update(course, {
       returning: true,
-      where: { id: req.params.id }
+      where: { id: req.params.id },
+      transaction
     })
 
     if (rows) {
       const usersCourses = await db.users_courses.findAll({
         where: {
           courseId: updatedCourse.id
-        }
+        },
+        transaction
       })
 
       const gradersForRemoval = _.difference(
@@ -165,11 +175,12 @@ const editCourse = async (req, res) => {
         })
 
         if (!usersCourses.find((uc) => uc.userId === graderId)) {
-          await user.addCourse(updatedCourse, { through: 'users_courses' }, transaction)
+          await user.addCourse(updatedCourse, { through: 'users_courses', transaction })
         }
       }
 
-      transaction.commit()
+      await transaction.commit()
+      committed = true
 
       const updatedCourseWithGraders = await db.courses.findOne({
         where: { id: updatedCourse.id },
@@ -189,8 +200,10 @@ const editCourse = async (req, res) => {
       return res.status(200).json(cleanCourses([updatedCourseWithGraders]))
     }
 
+    await transaction.rollback()
     return res.status(400).json({ error: 'id not found.' })
   } catch (e) {
+    if (!committed) await transaction.rollback()
     if (e.message === 'Validation error') {
       logger.error(`Course with the course code already exists`)
       return res.status(400).json({ error: `Course with the course code already exists` })

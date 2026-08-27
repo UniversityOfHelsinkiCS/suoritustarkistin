@@ -78,7 +78,7 @@ const editUser = async (req, res) => {
       returning: true,
       where: { id: req.params.id }
     })
-    if (!rows) res.status(400).json({ error: 'id not found.' })
+    if (!rows) return res.status(400).json({ error: 'id not found.' })
     const userToAddCourses = await db.users.findOne({
       where: { id: req.params.id },
       include: [

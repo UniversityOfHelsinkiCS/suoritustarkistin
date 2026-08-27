@@ -52,7 +52,7 @@ const automatedAddToDb = async (allMatches, course, batchId, sendToSisu = false)
           messages: errors.map(failureMessage),
           rawEntries: errors.map(({ id }) => {
             const rawEntry = newRawEntries.find((entry) => entry.id === id)
-            return rawEntry ? rawEntry.get({ plain: true }) : { id }
+            return rawEntry ? JSON.parse(JSON.stringify(rawEntry.get({ plain: true }))) : { id }
           })
         })
     }

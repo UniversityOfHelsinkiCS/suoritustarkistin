@@ -59,7 +59,7 @@ export const isValidEmailAddress = (address) =>
   )
 
 export const isValidCourseCode = (courseCode) =>
-  /^(TKT|BSCS|BSPH|CSM|MAT|DATA|AY|MFK|JODG|JODG-|ENG|ENG-|ATM|ELK|ECOK|EDUMCE|SOSM|FAF-|TERV-|FOR-|ON-|SUO-|SON-|MED-|PED|SOSK-)[A-Za-z0-9-]{3,12}$/.test(
+  /^(TKT|BSCS|BSPH|CSM|MAT|DATA|AY|MFK|JODG|JODG-|ENG|ENG-|ATM|ELK|ECOK|EDUMCE|SOSM|FAF-|TERV-|FOR-|ON-|SUO-|SON-|MED-|PED|SOSK-)[A-Za-z0-9-]{2,12}$/.test(
     courseCode
   )
 

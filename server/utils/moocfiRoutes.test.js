@@ -12,6 +12,7 @@ const assert = require('node:assert')
 
 const {
   connectDatabase,
+  disconnectDatabase,
   truncateDatabase,
   seedTestUsers,
   createTestApiKey,
@@ -38,7 +39,10 @@ before(async () => {
   await connectDatabase()
   await startFullApp()
 })
-after(() => stopApp())
+after(async () => {
+  await stopApp()
+  await disconnectDatabase()
+})
 
 beforeEach(async () => {
   await truncateDatabase()
@@ -70,9 +74,9 @@ describe('the guard covers the spec paths', () => {
   })
 
   test('lets an authenticated call through the guard', async () => {
-    // No endpoints yet, and an unmatched /api path falls through to graderOrAdminRouter,
-    // so these still answer 401 -- but with checkGrader's body. That is the evidence the
-    // credential was accepted.
+    // A path with no endpoint yet falls through to graderOrAdminRouter and still answers
+    // 401 -- but with checkGrader's body. That difference is the evidence the credential
+    // was accepted.
     for (const path of SPEC_PATHS) {
       const { status, body } = await post(path, { token })
 

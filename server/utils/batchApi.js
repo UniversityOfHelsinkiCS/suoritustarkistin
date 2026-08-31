@@ -25,8 +25,12 @@ const malformedRequest = (res, message) => res.status(400).json({ error: { code:
  * `handler` takes the whole batch at once so it can collapse the items into as few
  * importer calls as possible. Its throwing is a backstop, not a routine path: an endpoint
  * whose importer call fails should map that onto per-item sisuTemporarilyUnavailable.
+ *
+ * `validateItem` returns a message for an item the endpoint cannot read at all. That is a
+ * request-level malformedRequest rather than a per-item error: the spec's per-item codes
+ * describe outcomes for a well-formed item, so a bad shape has nothing to map onto.
  */
-const batchHandler = (handler) => async (req, res) => {
+const batchHandler = (handler, validateItem) => async (req, res) => {
   const items = req.body
 
   if (!Array.isArray(items)) return malformedRequest(res, 'Request body must be a JSON array of request items.')
@@ -39,6 +43,13 @@ const batchHandler = (handler) => async (req, res) => {
 
   const ids = items.map(({ requestItemId }) => requestItemId)
   if (new Set(ids).size !== ids.length) return malformedRequest(res, 'Every requestItemId in a batch must be unique.')
+
+  if (validateItem) {
+    for (const item of items) {
+      const message = validateItem(item)
+      if (message) return malformedRequest(res, `Request item ${item.requestItemId}: ${message}`)
+    }
+  }
 
   try {
     return res.status(200).json(await handler(items))

@@ -4,6 +4,8 @@
  */
 const Router = require('express')
 
+const { resolvePersons } = require('@server/controllers/moocfi/resolvePersons')
+
 const { checkMoocfiToken } = require('./permissions')
 
 // Scoped to prefixes, not the router: this router sees every request reaching the base
@@ -13,5 +15,7 @@ const MOOCFI_PATHS = ['/persons', '/enrolments', '/attainments', '/open-universi
 const router = Router()
 
 router.use(MOOCFI_PATHS, checkMoocfiToken)
+
+router.post('/persons/resolve-by-student-numbers', resolvePersons)
 
 module.exports = { moocfiRouter: router, MOOCFI_PATHS }

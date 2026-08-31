@@ -9,7 +9,15 @@
 const { test, before, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 
-const { startApp, stopApp, post, connectDatabase, truncateDatabase, createTestApiKey } = require('../test/helpers')
+const {
+  startApp,
+  stopApp,
+  post,
+  connectDatabase,
+  disconnectDatabase,
+  truncateDatabase,
+  createTestApiKey
+} = require('../test/helpers')
 
 const Router = require('express')
 const { okItem, errorItem, batchHandler, MAX_BATCH_SIZE } = require('./batchApi')
@@ -42,7 +50,10 @@ before(async () => {
   await connectDatabase()
   await startApp(router)
 })
-after(() => stopApp())
+after(async () => {
+  await stopApp()
+  await disconnectDatabase()
+})
 
 beforeEach(async () => {
   await truncateDatabase()

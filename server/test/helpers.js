@@ -219,6 +219,13 @@ const connectDatabase = async () => {
 }
 
 /**
+ * Sequelize keeps pooled connections open for its idle timeout, which holds the event loop
+ * -- and so the test process -- alive for ten seconds after the last assertion. Every suite
+ * that connects must close.
+ */
+const disconnectDatabase = () => require('@server/models').sequelize.close()
+
+/**
  * The suites share one database, so test:integration runs with --test-concurrency=1:
  * without it a truncate here destroys fixtures another file is midway through using.
  * SequelizeMeta is left alone, so migrations are not re-run between tests.
@@ -248,6 +255,7 @@ module.exports = {
   assertSafeTestDatabase,
   createTestApiKey,
   connectDatabase,
+  disconnectDatabase,
   truncateDatabase,
   IMPORTER_PORT,
   importer,

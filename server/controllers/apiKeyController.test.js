@@ -7,6 +7,7 @@ const assert = require('node:assert')
 
 const {
   connectDatabase,
+  disconnectDatabase,
   truncateDatabase,
   startFullApp,
   seedTestUsers,
@@ -25,7 +26,10 @@ before(async () => {
   await connectDatabase()
   await startFullApp()
 })
-after(() => stopApp())
+after(async () => {
+  await stopApp()
+  await disconnectDatabase()
+})
 beforeEach(async () => {
   await truncateDatabase()
   await seedTestUsers()

@@ -162,6 +162,11 @@ export default () => {
           </NavButton>
         ) : null}
         {user.adminMode ? (
+          <NavButton name="api-keys" to="/api-keys" dataCy="nav-api-keys">
+            API keys
+          </NavButton>
+        ) : null}
+        {user.adminMode ? (
           <NavButton name="sandbox" to="/sandbox" dataCy="nav-sandbox">
             Sandbox
           </NavButton>

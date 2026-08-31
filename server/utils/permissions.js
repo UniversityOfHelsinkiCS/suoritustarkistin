@@ -1,5 +1,6 @@
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
+const { resolveApiKey, MOOCFI_CLIENT } = require('./apiKeys')
 
 /**
  * Reusable permission check
@@ -28,6 +29,22 @@ const checkToken = (req, res, next) => {
     return res.status(401).end()
   }
 
+  next()
+}
+
+// Machine auth for the courses.mooc.fi batch API. Deliberately uncached: a cache would
+// keep revoked keys working.
+const checkMoocfiToken = async (req, res, next) => {
+  const { authorization, token } = req.headers
+  const bearer = authorization?.startsWith('Bearer ') ? authorization.slice('Bearer '.length) : undefined
+
+  const apiKey = await resolveApiKey(bearer || token, MOOCFI_CLIENT)
+  if (!apiKey) {
+    logger.info({ message: 'Failed mooc.fi token check', path: req.path })
+    return res.status(401).json({ error: { code: 'unauthorized', message: 'Missing or invalid credentials.' } })
+  }
+
+  req.apiKey = apiKey
   next()
 }
 
@@ -90,6 +107,7 @@ module.exports = {
   checkGrader,
   checkAdmin,
   checkToken,
+  checkMoocfiToken,
   checkIdMatch,
   deleteSingleEntry,
   deleteBatch

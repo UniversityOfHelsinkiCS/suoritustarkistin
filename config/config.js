@@ -17,7 +17,7 @@ module.exports = {
     ...OPTIONS
   },
   test: {
-    database_url: 'postgres://postgres:postgres@e2e-db:5432/postgres',
+    database_url: process.env.TEST_DATABASE_URL || 'postgres://postgres:postgres@e2e-db:5432/postgres',
     ...OPTIONS
   },
   production: {

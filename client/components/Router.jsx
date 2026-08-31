@@ -1,4 +1,5 @@
 import ApiChecks from '@client/components/ApiChecks'
+import ApiKeysPage from '@client/components/ApiKeysPage'
 import AutomatedReportsPage from '@client/components/AutomatedReportsPage'
 import CoursesPage from '@client/components/CoursesPage'
 import NewReportPage from '@client/components/NewReportPage'
@@ -27,6 +28,7 @@ export default () => (
     <Route path="/reports/sisu/:activeBatch" element={protect(ReportsPage, true)} />
     <Route path="/courses" element={protect(CoursesPage)} />
     <Route path="/users" element={protect(UsersPage, true)} />
+    <Route path="/api-keys" element={protect(ApiKeysPage, true)} />
     <Route path="/automated-reports" element={protect(AutomatedReportsPage)} />
     <Route path="/apichecks" element={protect(ApiChecks, true)} />
     <Route path="/sandbox" element={protect(SandboxPage, true)} />

@@ -41,6 +41,25 @@ const chunkifyApi = async (data, url) => {
   return allData
 }
 
+/**
+ * Employee numbers to Sisu persons, keyed by number. Unlike `getEmployees`, a number Sisu does
+ * not know is simply absent from the result rather than failing every other lookup with it; a
+ * failing importer still throws, because then nothing is known about any of them.
+ */
+const findEmployees = async (employeeNumbers) => {
+  const found = new Map()
+  try {
+    // Sequential: there is no batch route, and the caller only ever looks up a handful.
+    for (const number of _.uniq(employeeNumbers)) {
+      const { data } = await api.get(`employees/${number}`)
+      if (data?.length) found.set(number, data[0])
+    }
+    return found
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 // TODO: Create endpoint to db.api for batch converting employee ids
 async function getEmployees(employeeIds) {
   const responses = await Promise.all(
@@ -228,6 +247,7 @@ const getCourseUnitEnrolments = async (code) => {
 
 module.exports = {
   getEmployees,
+  findEmployees,
   getStudents,
   getEnrolments,
   getGrades,

@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       moocUserId: DataTypes.INTEGER,
       moocCompletionId: DataTypes.STRING,
       newMoocCompletionId: DataTypes.STRING,
+      moocfiRequestItemId: DataTypes.STRING,
       registeredToMooc: DataTypes.DATE,
       graderId: {
         type: DataTypes.INTEGER,

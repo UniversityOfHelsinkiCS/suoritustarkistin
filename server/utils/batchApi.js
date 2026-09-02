@@ -10,6 +10,9 @@ const { sendSentryError } = require('./sentry')
 // Bounds the sequential importer round trips one request can trigger.
 const MAX_BATCH_SIZE = 1000
 
+// Batch size for /attainments/import endpoint, smaller than the other endpoints that just fetch sisu data
+const IMPORT_BATCH_SIZE = 100
+
 const okItem = (requestItemId, code, result) => ({ requestItemId, status: 'ok', code, result })
 
 const errorItem = (requestItemId, code, message) => ({
@@ -29,35 +32,42 @@ const malformedRequest = (res, message) => res.status(400).json({ error: { code:
  * `validateItem` returns a message for an item the endpoint cannot read at all. That is a
  * request-level malformedRequest rather than a per-item error: the spec's per-item codes
  * describe outcomes for a well-formed item, so a bad shape has nothing to map onto.
+ *
+ * `maxBatchSize` lets an endpoint whose cost grows with the batch ask for a lower ceiling.
  */
-const batchHandler = (handler, validateItem) => async (req, res) => {
-  const items = req.body
+const batchHandler =
+  (handler, validateItem, maxBatchSize = MAX_BATCH_SIZE) =>
+  async (req, res) => {
+    const items = req.body
 
-  if (!Array.isArray(items)) return malformedRequest(res, 'Request body must be a JSON array of request items.')
-  if (!items.length) return res.status(200).json([])
-  if (items.length > MAX_BATCH_SIZE)
-    return malformedRequest(res, `A batch may contain at most ${MAX_BATCH_SIZE} request items.`)
+    if (!Array.isArray(items)) return malformedRequest(res, 'Request body must be a JSON array of request items.')
+    if (!items.length) return res.status(200).json([])
+    if (items.length > maxBatchSize) {
+      return malformedRequest(res, `A batch may contain at most ${maxBatchSize} request items.`)
+    }
 
-  const invalid = items.findIndex((item) => !item || typeof item.requestItemId !== 'string' || !item.requestItemId)
-  if (invalid !== -1) return malformedRequest(res, `Request item at index ${invalid} has no string requestItemId.`)
+    const invalid = items.findIndex((item) => !item || typeof item.requestItemId !== 'string' || !item.requestItemId)
+    if (invalid !== -1) return malformedRequest(res, `Request item at index ${invalid} has no string requestItemId.`)
 
-  const ids = items.map(({ requestItemId }) => requestItemId)
-  if (new Set(ids).size !== ids.length) return malformedRequest(res, 'Every requestItemId in a batch must be unique.')
+    const ids = items.map(({ requestItemId }) => requestItemId)
+    if (new Set(ids).size !== ids.length) return malformedRequest(res, 'Every requestItemId in a batch must be unique.')
 
-  if (validateItem) {
-    for (const item of items) {
-      const message = validateItem(item)
-      if (message) return malformedRequest(res, `Request item ${item.requestItemId}: ${message}`)
+    if (validateItem) {
+      for (const item of items) {
+        const message = validateItem(item)
+        if (message) return malformedRequest(res, `Request item ${item.requestItemId}: ${message}`)
+      }
+    }
+
+    try {
+      return res.status(200).json(await handler(items))
+    } catch (error) {
+      logger.error({ message: 'Batch request failed', path: req.path, error: error.message, stack: error.stack })
+      sendSentryError('Batch request failed', error, { path: req.path })
+      return res
+        .status(500)
+        .json({ error: { code: 'internalError', message: 'Suotar failed to process the request.' } })
     }
   }
 
-  try {
-    return res.status(200).json(await handler(items))
-  } catch (error) {
-    logger.error({ message: 'Batch request failed', path: req.path, error: error.message, stack: error.stack })
-    sendSentryError('Batch request failed', error, { path: req.path })
-    return res.status(500).json({ error: { code: 'internalError', message: 'Suotar failed to process the request.' } })
-  }
-}
-
-module.exports = { MAX_BATCH_SIZE, okItem, errorItem, batchHandler }
+module.exports = { MAX_BATCH_SIZE, IMPORT_BATCH_SIZE, okItem, errorItem, batchHandler }

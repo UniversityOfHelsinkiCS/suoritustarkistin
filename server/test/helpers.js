@@ -30,10 +30,20 @@ const importer = {
   respondWith(body) {
     this.handle = (_req, res) => res.end(JSON.stringify(body))
   },
-  // Unmapped paths fail loudly rather than returning an empty array that looks real.
-  respondByPath(routes) {
+  /**
+   * Unmapped paths fail loudly rather than returning an empty array that looks real.
+   * `failFor` answers 500 for the urls it matches, for the suites that need an outage on one
+   * route and real fixtures on the rest.
+   */
+  respondByPath(routes, failFor) {
+    // Longest key first: '/suotar/study-rights' is a prefix of '/suotar/study-rights-by-person'.
+    const paths = Object.keys(routes).sort((a, b) => b.length - a.length)
     this.handle = (req, res) => {
-      const match = Object.keys(routes).find((path) => req.url.startsWith(path))
+      if (failFor?.(req.url)) {
+        res.writeHead(500)
+        return res.end('{}')
+      }
+      const match = paths.find((path) => req.url.startsWith(path))
       if (!match) {
         res.writeHead(500)
         return res.end(JSON.stringify({ error: `no fixture for ${req.url}` }))

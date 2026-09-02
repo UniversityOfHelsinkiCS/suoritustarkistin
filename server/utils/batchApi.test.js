@@ -21,6 +21,8 @@ const {
 
 const Router = require('express')
 const { okItem, errorItem, batchHandler, MAX_BATCH_SIZE } = require('./batchApi')
+
+const LOWERED_CEILING = 3
 const { checkMoocfiToken } = require('./permissions')
 const { MOOCFI_PATHS } = require('./moocfiRoutes')
 
@@ -32,6 +34,14 @@ router.post(
   batchHandler(async () => {
     throw new Error('importer is on fire')
   })
+)
+router.post(
+  '/persons/echo-small',
+  batchHandler(
+    async (items) => items.map(({ requestItemId }) => okItem(requestItemId, 'personFound', { requestItemId })),
+    undefined,
+    LOWERED_CEILING
+  )
 )
 router.post(
   '/persons/echo',
@@ -197,6 +207,19 @@ describe('request-level errors', () => {
 
     assert.equal(status, 200)
     assert.equal(body.length, MAX_BATCH_SIZE)
+  })
+
+  test('honours an endpoint that asks for a lower ceiling than the general one', async () => {
+    const items = Array.from({ length: LOWERED_CEILING + 1 }, (_, i) => ({ requestItemId: `a${i}` }))
+
+    const { status, body } = await post('/api/persons/echo-small', items, { token })
+
+    assert.equal(status, 400)
+    assert.equal(body.error.code, 'malformedRequest')
+    assert.match(body.error.message, new RegExp(`at most ${LOWERED_CEILING} `))
+
+    const atCeiling = await post('/api/persons/echo-small', items.slice(0, LOWERED_CEILING), { token })
+    assert.equal(atCeiling.status, 200)
   })
 })
 

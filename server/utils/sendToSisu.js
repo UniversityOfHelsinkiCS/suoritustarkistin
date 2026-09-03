@@ -157,9 +157,10 @@ const extraEntriesToRequestData = (extraEntries, acceptors) =>
   })
 
 /**
- *
+ * `acceptors`, when given, is used instead of looking them up here. `timeout`, when given,
+ * bounds the send for a caller that cannot wait out the instance default.
  */
-const attainmentsToSisu = async (model, { user, body }) => {
+const attainmentsToSisu = async (model, { user, body, acceptors: prefetchedAcceptors, timeout }) => {
   const { entryIds, extraEntryIds } = body
   const senderId = user.id
 
@@ -175,7 +176,7 @@ const attainmentsToSisu = async (model, { user, body }) => {
       // updateSuccess runs, the entry says it was attempted rather than looking untouched --
       // which is the difference between "safe to resend" and "might duplicate in Sisu".
       await db[model].update({ sendState: 'ATTEMPTED' }, { where: { id: modelIds } })
-      await API.post(url, data)
+      await API.post(url, data, timeout ? { timeout } : undefined)
     } else {
       await new Promise((resolve) => setTimeout(resolve, 3000))
       logger.info(`Dry run, would send to Sisu: ${JSON.stringify(data)}`)
@@ -203,9 +204,10 @@ const attainmentsToSisu = async (model, { user, body }) => {
   const id = rawData.map((entry) => entry.id)
 
   const acceptors =
-    model === 'entries'
+    prefetchedAcceptors ??
+    (model === 'entries'
       ? await getAcceptorPersons(rawData.map(({ courseUnitRealisationId }) => courseUnitRealisationId))
-      : await getAcceptorPersonsByCourseUnit(rawData.map(({ courseUnitId }) => courseUnitId))
+      : await getAcceptorPersonsByCourseUnit(rawData.map(({ courseUnitId }) => courseUnitId)))
 
   const data =
     model === 'entries' ? entriesToRequestData(rawData, acceptors) : extraEntriesToRequestData(rawData, acceptors)

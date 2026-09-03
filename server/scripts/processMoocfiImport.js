@@ -2,12 +2,10 @@
  * Spec section 3, everything up to the Sisu send: resolve each item, and write the
  * raw_entries and entries rows a send will use.
  *
- * Deliberately not `processEntries`. That function picks the enrolment itself by matching
- * the attainment date against realisation activity periods, while the spec has the caller
- * name the enrolment it chose in section 2. What Sisu accepts of an attainment is shared
- * through sisuAttainmentRules.js so the two cannot drift on it; the duplicate and
- * improvement checks come from earlierCompletions.js, where this path does differ -- it
- * scopes the improvement check to the item's own course.
+ * Not `processEntries`: that picks the enrolment itself by matching the attainment date
+ * against realisation activity periods, where the spec has the caller name the enrolment it
+ * chose in section 2. What Sisu accepts of an attainment is shared through
+ * sisuAttainmentRules.js.
  */
 
 const moment = require('moment')
@@ -23,31 +21,30 @@ const {
 } = require('@shared/common')
 
 const db = require('../models/index')
-const { getDateWithinStudyright, validateCredits, mapGrades, generateEntryId } = require('../utils/sisuAttainmentRules')
+const {
+  getDateWithinStudyright,
+  validateCredits,
+  mapGrades,
+  generateEntryId,
+  ASSESSMENT_ITEM_ATTAINMENT_TYPE
+} = require('../utils/sisuAttainmentRules')
 const { identicalCompletionFound, isImprovedGrade } = require('../utils/earlierCompletions')
 const {
   getStudents,
   getGrades,
-  findEmployees,
   getEnrolments,
+  getAcceptorPersons,
   getMultipleStudyRights,
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('../services/importer')
 
-const ATTAINMENT_TYPE = 'AssessmentItemAttainment'
-
-// The only state an attainment may be registered against, checked here rather than trusted
-// of the importer. Section 2 answers enrolmentNotAccepted for the rest; section 3 has no such
-// code, so an enrolment in any other state is simply not found.
 const ACCEPTED_STATE = 'ENROLLED'
 
 // Two importer sync runs, hourly per importer-api's cron, with room for a skipped tick.
 const COOLDOWN_MS = 2 * 60 * 60 * 1000
 
-/**
- * TEMPORARY. Elements of AI and Building AI have their own registration paths in the automated
- * jobs, and how they should behave through this API is not settled. Blocked until it is.
- */
+// TEMPORARY. Elements of AI and Building AI have their own registration paths in the automated
+// jobs, and how they should behave through this API is not settled.
 const UNSETTLED_COURSE_CODES = new Set([
   ...ALL_EOAI_CODES,
   NEW_BAI_INTERMEDIATE_CODE,
@@ -77,9 +74,9 @@ const toAttainment = (attainment) => ({
 })
 
 /**
- * mooc.fi sends (gradeScaleId, gradeId); Suotar's rules downstream are written against the
- * Finnish grade string. The enrolment's scale wins over the one the caller sent, which is
- * what the spec means by "not valid for the resolved enrolment's grade scale".
+ * mooc.fi sends (gradeScaleId, gradeId); the rules downstream are written against the Finnish
+ * grade string. The enrolment's scale wins over the one the caller sent, which is what
+ * invalidGradeForGradeScale means.
  */
 const gradeOnScale = (gradeScales, gradeScaleId, gradeId) => {
   const abbreviation = gradeScales[gradeScaleId]?.find(({ localId }) => String(localId) === String(gradeId))
@@ -90,25 +87,14 @@ const gradeOnScale = (gradeScales, gradeScaleId, gradeId) => {
 }
 
 /**
- * One batch of lookups for the whole request, exposed as lookups by item so the keying stays
- * in here. `earlierAttainments` is also exposed whole, because the shared checks take a batch
- * and find the student in it themselves; resolveItem narrows it where a check needs it.
+ * One batch of lookups for the whole request, exposed as per-item lookups so the keying stays
+ * here. `earlierAttainments` is passed out whole because the shared checks take a batch.
  */
 const fetchContext = async (items) => {
   const courses = await db.courses.findAll({
-    where: { courseCode: [...new Set(items.map(({ courseCode }) => courseCode))] },
-    include: [{ association: 'graders' }]
+    where: { courseCode: [...new Set(items.map(({ courseCode }) => courseCode))] }
   })
   const coursesByCode = new Map(courses.map((course) => [course.courseCode, course]))
-
-  // Several graders per course is normal, so the lowest id wins for a stable choice.
-  const graderFor = (course) => [...(course.graders || [])].sort((a, b) => a.id - b.id)[0]
-  const acceptors = await findEmployees(
-    courses
-      .map(graderFor)
-      .map((grader) => grader?.employeeId)
-      .filter(Boolean)
-  )
 
   const persons = await getStudents([...new Set(items.map(({ studentNumber }) => studentNumber))])
   const personsByStudentNumber = new Map((persons || []).map((person) => [person.studentNumber, person]))
@@ -149,8 +135,6 @@ const fetchContext = async (items) => {
     earlierAttainments,
     gradeScales: await getGrades(),
     courseFor: ({ courseCode }) => coursesByCode.get(courseCode),
-    graderFor,
-    acceptorFor: (grader) => acceptors.get(grader.employeeId),
     personFor: ({ studentNumber }) => personsByStudentNumber.get(studentNumber),
     enrolmentsFor: (person, { courseCode }) => enrolmentsByPair.get(key(person.id, courseCode)) || [],
     attainmentsFor: ({ studentNumber, courseCode }) =>
@@ -166,9 +150,8 @@ const fetchContext = async (items) => {
 
 /**
  * Resolves one item: what Suotar is configured for first, then what Sisu knows, then the
- * payload itself. Reads the context rather than the importer, except that
- * getDateWithinStudyright falls back to a per-person lookup when the enrolment's own study
- * right did not come back.
+ * payload. Reads the context, not the importer -- except getDateWithinStudyright, which falls
+ * back to a per-person lookup when the enrolment's own study right did not come back.
  */
 const resolveItem = async (item, context) => {
   const { requestItemId, studentNumber, courseCode, enrolmentId, attainmentDate, attainmentLanguage } = item
@@ -179,12 +162,6 @@ const resolveItem = async (item, context) => {
 
   const course = context.courseFor(item)
   if (!course) return reject(requestItemId, 'courseNotAllowed', 'Suotar does not carry this course code.')
-
-  const grader = context.graderFor(course)
-  if (!grader) return reject(requestItemId, 'acceptorNotFound', 'The course has no grader in Suotar.')
-
-  const acceptor = context.acceptorFor(grader)
-  if (!acceptor) return reject(requestItemId, 'acceptorNotFound', 'No Sisu person was found to accept the attainment.')
 
   const person = context.personFor(item)
   if (!person)
@@ -269,7 +246,9 @@ const resolveItem = async (item, context) => {
         credits: creditsAsString,
         language: attainmentLanguage,
         attainmentDate,
-        graderId: grader.id,
+        // No person graded or reported this. Sisu's acceptor comes from the realisation's
+        // responsible persons at send time, so nothing here needs a Suotar user.
+        graderId: null,
         reporterId: null,
         courseId: course.id,
         moocfiRequestItemId: requestItemId
@@ -279,7 +258,6 @@ const resolveItem = async (item, context) => {
         personId: person.id,
         studentName: `${person.firstNames.split(' ')[0]} ${person.lastName}`,
         email: person.primaryEmail || person.secondaryEmail,
-        verifierPersonId: acceptor.id,
         courseUnitRealisationId: enrolment.courseUnitRealisationId,
         courseUnitRealisationName: enrolment.courseUnitRealisation?.name,
         assessmentItemId: enrolment.assessmentItemId,
@@ -329,10 +307,17 @@ const submissionPending = (requestItemId, entry) => ({
   },
   result: {
     submittedAttainmentId: entry.id,
-    submittedAttainmentType: ATTAINMENT_TYPE,
+    submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE,
     retryAfter: new Date(entry.createdAt.getTime() + COOLDOWN_MS).toISOString()
   }
 })
+
+// The acceptors Sisu wants named on the attainments. Suotar does not choose them: they are the
+// realisation's own teachers.
+const fetchAcceptors = async (resolved) => {
+  const realisationIds = [...new Set(resolved.map(({ rows }) => rows.entry.courseUnitRealisationId))].filter(Boolean)
+  return realisationIds.length ? await getAcceptorPersons(realisationIds) : {}
+}
 
 /**
  * One transaction for the batch. Everything here has already passed every check, so the only
@@ -356,12 +341,12 @@ const writeAll = async (resolved) => {
 }
 
 /**
- * `results` are the items already answered; `toSend` are the entries whose attainment still
- * has to reach Sisu, in request order. The caller merges the two by requestItemId.
+ * `results` are the items already answered; `send` is what the Sisu send needs -- the entries
+ * still to reach it, in request order, and the acceptors to name on them. The caller merges
+ * the two halves by requestItemId.
  *
- * An item that cannot be registered is answered and costs the others nothing. A failure
- * while resolving is different: the writes come after every item and run in one transaction,
- * so an importer or database error leaves the database exactly as it found it.
+ * An item that cannot be registered is answered and costs the others nothing. A failure while
+ * resolving writes nothing at all.
  */
 const processMoocfiImport = async (items) => {
   const pending = await findPendingSubmissions(items.map(({ requestItemId }) => requestItemId))
@@ -370,8 +355,7 @@ const processMoocfiImport = async (items) => {
 
   const results = [...pending].map(([requestItemId, entry]) => submissionPending(requestItemId, entry))
 
-  // Resolved in full before anything is written, so an importer failure partway through the
-  // batch leaves no completion behind and the request can simply be retried.
+  // Every item resolves before anything is written, so a failure partway leaves nothing behind.
   const resolved = []
   for (const item of fresh) {
     const { result, rows } = await resolveItem(item, context)
@@ -382,11 +366,16 @@ const processMoocfiImport = async (items) => {
     }
   }
 
+  const acceptors = await fetchAcceptors(resolved)
+
   const toSend = await writeAll(resolved)
 
   const order = new Map(items.map(({ requestItemId }, index) => [requestItemId, index]))
   const byRequestOrder = (a, b) => order.get(a.requestItemId) - order.get(b.requestItemId)
-  return { results: results.sort(byRequestOrder), toSend: toSend.sort(byRequestOrder) }
+  return {
+    results: results.sort(byRequestOrder),
+    send: { entries: toSend.sort(byRequestOrder), acceptors }
+  }
 }
 
 module.exports = { processMoocfiImport }

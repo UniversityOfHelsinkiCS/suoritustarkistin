@@ -20,7 +20,6 @@ const db = require('../models/index')
 const STUDENT_NUMBER = '012345678'
 const PERSON_ID = 'hy-hlo-1'
 const CODE = 'TKT10001'
-const EMPLOYEE_ID = '9111111'
 const NAMED_ENROLMENT = 'otm-enrolment-open'
 const OTHER_ENROLMENT = 'otm-enrolment-degree'
 
@@ -102,14 +101,26 @@ const studyRights = () =>
     grantDate: '2020-08-01'
   }))
 
+// As importer-db-api answers it: one entry per realisation asked about, each of the
+// realisation's teachers relabelled as an acceptor. Derived from the request, so asking for
+// the wrong ids cannot go unnoticed.
+const acceptorsFor = (req) =>
+  Object.fromEntries(
+    (req.parsedBody || []).map((courseUnitRealisationId) => [
+      courseUnitRealisationId,
+      [{ roleUrn: 'urn:code:attainment-acceptor-type:approved-by', personId: 'hy-hlo-teacher', text: 'Teacher' }]
+    ])
+  )
+
 const fixtures = ({ persons = [person()], enrolments, attainments = [], rights } = {}) => ({
   '/students': persons,
-  '/employees/': [{ id: 'hy-hlo-verifier', employeeNumber: EMPLOYEE_ID }],
   '/grades': GRADES,
   '/suotar/enrolments': [{ personId: PERSON_ID, code: CODE, enrolments: enrolments ?? bothEnrolments() }],
   '/suotar/study-rights-by-person': [],
   '/suotar/study-rights': rights ?? studyRights(),
-  '/suotar/attainments': [{ studentNumber: STUDENT_NUMBER, courseCode: CODE, attainments }]
+  '/suotar/attainments': [{ studentNumber: STUDENT_NUMBER, courseCode: CODE, attainments }],
+  // Looked up while resolving, so the send has nothing left of its own to fetch.
+  '/suotar/acceptors': acceptorsFor
 })
 
 const item = (overrides = {}) => ({
@@ -125,18 +136,8 @@ const item = (overrides = {}) => ({
   ...overrides
 })
 
-// A course with one grader, which is what makes an acceptor resolvable.
-const seedCourse = async ({ withGrader = true, courseCode = CODE } = {}) => {
-  const course = await db.courses.create({ name: 'Intro', courseCode, language: 'fi', credits: '5' })
-  if (withGrader) {
-    const [grader] = await db.users.findOrCreate({
-      where: { uid: 'grader' },
-      defaults: { name: 'Grader', employeeId: EMPLOYEE_ID, email: 'grader@helsinki.fi', isGrader: true }
-    })
-    await course.setGraders([grader])
-  }
-  return course
-}
+const seedCourse = async ({ courseCode = CODE } = {}) =>
+  await db.courses.create({ name: 'Intro', courseCode, language: 'fi', credits: '5' })
 
 before(async () => {
   await connectDatabase()
@@ -153,7 +154,11 @@ beforeEach(async () => {
   importer.reset()
 })
 
-const run = (items) => processMoocfiImport(items)
+// `send` groups what the Sisu send needs; these assert on the entries in it as `toSend`.
+const run = async (items) => {
+  const { results, send } = await processMoocfiImport(items)
+  return { results, toSend: send.entries, acceptors: send.acceptors }
+}
 
 // The two halves of the return, keyed by request item, so a test can assert on either.
 const codeOf = ({ results, toSend }, requestItemId) =>
@@ -206,45 +211,6 @@ describe('an item that resolves', () => {
     assert.equal(entry.gradeId, '4')
     assert.equal(entry.gradeScaleId, 'sis-0-5')
     assert.equal(rawEntry.grade, '4', 'the raw entry keeps the Finnish grade string the rest of Suotar reads')
-  })
-
-  test('resolves the acceptor from the course grader', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
-
-    await run([item()])
-
-    const [entry] = await db.entries.findAll()
-    assert.equal(entry.verifierPersonId, 'hy-hlo-verifier')
-  })
-
-  test('picks the lowest-id grader when the course has several', async () => {
-    const course = await seedCourse()
-    const second = await db.users.create({
-      name: 'Later Grader',
-      employeeId: '9222222',
-      uid: 'grader-2',
-      email: 'grader2@helsinki.fi',
-      isGrader: true
-    })
-    await course.addGrader(second)
-    importer.respondByPath({
-      ...fixtures(),
-      '/employees/': (req) =>
-        req.url.endsWith(EMPLOYEE_ID)
-          ? [{ id: 'hy-hlo-verifier', employeeNumber: EMPLOYEE_ID }]
-          : [{ id: 'hy-hlo-second', employeeNumber: '9222222' }]
-    })
-
-    await run([item()])
-
-    const [entry] = await db.entries.findAll()
-    assert.equal(entry.verifierPersonId, 'hy-hlo-verifier', 'the grader seeded first has the lower id')
-    assert.equal(
-      importer.requests.filter(({ url }) => url.startsWith('/employees/')).length,
-      1,
-      'only the chosen grader is looked up'
-    )
   })
 
   // Both directions of the pass/fail scale: mapGrades resolves each to its own Finnish string.
@@ -321,24 +287,6 @@ describe('items that cannot be registered', () => {
       ['courseNotAllowed', 'courseNotAllowed', 'courseNotAllowed']
     )
     for (const { error } of results) assert.match(error.message, /cannot be registered through this API yet/)
-  })
-
-  test('acceptorNotFound when the course has no grader', async () => {
-    await seedCourse({ withGrader: false })
-    importer.respondByPath(fixtures())
-
-    const outcome = await run([item()])
-
-    assert.equal(codeOf(outcome, 'moocfi-completion-1'), 'acceptorNotFound')
-  })
-
-  test('acceptorNotFound when Sisu does not know the grader, without blaming an outage', async () => {
-    await seedCourse()
-    importer.respondByPath({ ...fixtures(), '/employees/': [] })
-
-    const { results } = await run([item()])
-
-    assert.equal(results[0].code, 'acceptorNotFound')
   })
 
   test('personNotFound when Sisu has no such student number', async () => {
@@ -603,31 +551,36 @@ describe('batching', () => {
   })
 })
 
-describe('when the acceptor lookup cannot reach Sisu', () => {
-  const employeesFail = () => importer.respondByPath(fixtures(), (url) => url.startsWith('/employees/'))
-
+describe('when a lookup cannot reach Sisu', () => {
   /**
-   * Section 3 has no per-item code for an unreachable importer, and nothing is written before
-   * the lookups finish, so the whole request fails and a retry starts from clean.
+   * Section 3 has no per-item code for an importer that cannot answer, and a batch resolved
+   * against half-missing data is worse than no answer, so the whole request fails. Every
+   * lookup happening before anything is written is what makes that safe to retry.
    */
-  test('fails the request rather than answering per item', async () => {
+  for (const route of ['/students', '/suotar/enrolments', '/suotar/acceptors']) {
+    test(`fails the request rather than answering per item when ${route} fails`, async () => {
+      await seedCourse()
+      importer.respondByPath(fixtures(), (url) => url.startsWith(route))
+
+      await assert.rejects(() => run([item({ requestItemId: 'a' }), item({ requestItemId: 'b' })]), /500/)
+
+      assert.equal((await db.entries.findAll()).length, 0)
+      assert.equal((await db.raw_entries.findAll()).length, 0)
+    })
+  }
+
+  test('the same items go through as soon as the importer answers again', async () => {
     await seedCourse()
-    employeesFail()
+    importer.respondByPath(fixtures(), (url) => url.startsWith('/suotar/acceptors'))
+    await assert.rejects(() => run([item()]))
 
-    await assert.rejects(() => run([item()]), /500/)
-    assert.equal((await db.entries.findAll()).length, 0)
-  })
-
-  test('still reports acceptorNotFound when the course simply has no grader', async () => {
-    await seedCourse({ withGrader: false })
-    employeesFail()
-
+    importer.respondByPath(fixtures())
     const outcome = await run([item()])
 
     assert.equal(
       codeOf(outcome, 'moocfi-completion-1'),
-      'acceptorNotFound',
-      'with no grader configured there is nothing to look up, so the outage is irrelevant'
+      'toSend',
+      'nothing was submitted, so no cooldown may stand in the way of an immediate retry'
     )
   })
 })

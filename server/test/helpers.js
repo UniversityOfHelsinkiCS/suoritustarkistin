@@ -32,16 +32,19 @@ const importer = {
   },
   /**
    * Unmapped paths fail loudly rather than returning an empty array that looks real.
-   * `failFor` answers 500 for the urls it matches, for the suites that need an outage on one
-   * route and real fixtures on the rest.
+   * `failFor` answers an error for the urls it matches, for the suites that need an outage on
+   * one route and real fixtures on the rest. Return true for a bare 500, or [status, body] to
+   * shape the response the way the caller under test parses it.
    */
   respondByPath(routes, failFor) {
     // Longest key first: '/suotar/study-rights' is a prefix of '/suotar/study-rights-by-person'.
     const paths = Object.keys(routes).sort((a, b) => b.length - a.length)
     this.handle = (req, res) => {
-      if (failFor?.(req.url)) {
-        res.writeHead(500)
-        return res.end('{}')
+      const failure = failFor?.(req.url)
+      if (failure) {
+        const [status, body] = Array.isArray(failure) ? failure : [500, {}]
+        res.writeHead(status)
+        return res.end(JSON.stringify(body))
       }
       const match = paths.find((path) => req.url.startsWith(path))
       if (!match) {
@@ -63,7 +66,10 @@ const startImporter = () =>
       req.on('data', (chunk) => chunks.push(chunk))
       req.on('end', () => {
         const raw = Buffer.concat(chunks).toString('utf8')
-        importer.requests.push({ url: req.url, method: req.method, body: raw ? JSON.parse(raw) : undefined })
+        // Attached as well as recorded, so a fixture can answer the request it was asked,
+        // the way a route that reads its body does.
+        req.parsedBody = raw ? JSON.parse(raw) : undefined
+        importer.requests.push({ url: req.url, method: req.method, body: req.parsedBody })
         res.setHeader('content-type', 'application/json')
         importer.handle(req, res)
       })

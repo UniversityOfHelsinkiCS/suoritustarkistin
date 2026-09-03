@@ -48,8 +48,8 @@ keep verifying during the wait, and `retryAfter` so you need not guess when to c
 
 **What does and does not start the wait.** Only a completion that actually reached Sisu. If
 Suotar rejected it — `courseNotAllowed`, `personNotFound`, `enrolmentNotFound`,
-`invalidCredits`, `invalidGradeForGradeScale`, `studyRightNotValid`, `acceptorNotFound` —
-nothing was submitted, and a corrected retry is accepted immediately.
+`invalidCredits`, `invalidGradeForGradeScale`, `studyRightNotValid` — nothing was submitted,
+and a corrected retry is accepted immediately.
 
 | first outcome          | retry within 2 h         | retry after 2 h                                                  |
 | ---------------------- | ------------------------ | ---------------------------------------------------------------- |
@@ -183,20 +183,19 @@ completions against arbitrary course codes across the university. Whether it sta
 step long term is open — the alternatives trade that gate for convenience, so the question is
 what should replace it rather than whether to drop it. Deferred for now.
 
-### Who is recorded as the acceptor is not yet settled
+### `acceptorNotFound` cannot currently occur (section 3)
 
-Every Sisu attainment names an acceptor. For a completion registered through this API there is
-no human acting, so Suotar currently takes one of the graders configured for the course — and
-because nothing marks one of them as the right choice, it is effectively arbitrary which. If
-the course has no grader, or the chosen one has no Sisu person, you get `acceptorNotFound`.
+Every Sisu attainment names its acceptors, but Suotar does not choose them: they are the course
+unit realisation's own teachers and responsible teachers, all of them, looked up when the
+attainment is sent. Nothing in an import item, and nothing about how a course is configured in
+Suotar, affects who they are.
 
-That is not a good answer: the acceptor is visible on the attainment in Sisu, and it should be
-a deliberate choice rather than whichever grader the lookup lands on. The likely fix is letting
-a course have a designated primary grader, set in Suotar's course editor, whom this API always
-uses. Deferred for now.
+So there is no lookup here that can fail, and the code is never returned. It stays defined in
+case that changes.
 
-Nothing about the API contract changes when it is resolved, and `acceptorNotFound` keeps its
-meaning.
+The practical consequence is that a realisation with no teacher on it cannot take an
+attainment. That surfaces as `sisuValidationFailed` on the item, since it is Sisu that
+refuses it, and it affects only the items on that realisation.
 
 ### Elements of AI and Building AI are not covered yet
 

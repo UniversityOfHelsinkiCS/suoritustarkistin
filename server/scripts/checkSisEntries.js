@@ -6,6 +6,7 @@ const { postRegistrations } = require('../services/pointsmooc')
 const { postRegistrations: postNewMoocRegistrations } = require('../services/newMooc')
 const { ALLOW_SEND_TO_MOOC } = require('../utils/common')
 const { sendSentryError } = require('../utils/sentry')
+const { ASSESSMENT_ITEM_ATTAINMENT_TYPE, COURSE_UNIT_ATTAINMENT_TYPE } = require('../utils/sisuAttainmentRules')
 
 function chunkArray(array, size) {
   const SIZE = size || 50
@@ -17,8 +18,12 @@ function chunkArray(array, size) {
 }
 
 const markAsRegistered = async (entries, model) => {
-  const partlyIds = entries.filter(({ registered }) => registered === 'AssessmentItemAttainment').map(({ id }) => id)
-  const registeredIds = entries.filter(({ registered }) => registered === 'CourseUnitAttainment').map(({ id }) => id)
+  const partlyIds = entries
+    .filter(({ registered }) => registered === ASSESSMENT_ITEM_ATTAINMENT_TYPE)
+    .map(({ id }) => id)
+  const registeredIds = entries
+    .filter(({ registered }) => registered === COURSE_UNIT_ATTAINMENT_TYPE)
+    .map(({ id }) => id)
   let partlyAffected = 0
   let registeredAffected = 0
   if (partlyIds.length) {

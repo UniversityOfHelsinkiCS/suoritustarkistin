@@ -66,6 +66,7 @@ const writeErrorsToEntries = async ({ data }, senderId, model) => {
         {
           errors: { ...data.violations[id] },
           sent: new Date(),
+          sendState: 'REJECTED',
           senderId
         },
         {
@@ -81,6 +82,7 @@ const updateSuccess = async (model, entryIds, senderId) =>
   await db[model].update(
     {
       sent: new Date(),
+      sendState: 'ACCEPTED',
       senderId,
       errors: null
     },
@@ -168,8 +170,13 @@ const attainmentsToSisu = async (model, { user, body }) => {
       user: user.name,
       payload: JSON.stringify(data)
     })
-    if (ALLOW_SEND_TO_SISU) await API.post(url, data)
-    else {
+    if (ALLOW_SEND_TO_SISU) {
+      // Recorded before the request leaves. If nothing comes back, or this process dies before
+      // updateSuccess runs, the entry says it was attempted rather than looking untouched --
+      // which is the difference between "safe to resend" and "might duplicate in Sisu".
+      await db[model].update({ sendState: 'ATTEMPTED' }, { where: { id: modelIds } })
+      await API.post(url, data)
+    } else {
       await new Promise((resolve) => setTimeout(resolve, 3000))
       logger.info(`Dry run, would send to Sisu: ${JSON.stringify(data)}`)
     }

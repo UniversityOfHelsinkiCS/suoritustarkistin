@@ -162,6 +162,7 @@ const createTestSisCompletions = async (completions, entriesHylHyv, entries0to5)
               sv: `courseUnitRealisationName-sv-${rawEntry.grade}`
             },
             sent: new Date(),
+            sendState: 'ACCEPTED',
             registered: getRegisteredStatus(course.courseCode)
           },
           { transaction }

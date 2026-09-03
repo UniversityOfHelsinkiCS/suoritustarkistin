@@ -294,13 +294,14 @@ const resolveItem = async (item, context) => {
 }
 
 /**
- * Submissions whose outcome is not yet knowable. Sisu was asked about these less than
- * COOLDOWN_MS ago, and the importer syncs hourly, so neither verify nor the duplicate check
- * can yet say whether the attainment landed -- submitting again risks a second one.
+ * Submissions whose outcome is not yet knowable: given to Sisu less than COOLDOWN_MS ago, and
+ * the importer syncs hourly, so nothing can yet say whether the attainment landed.
  *
- * `errors` exempts a submission: it is written only when Sisu evaluated the attainment and
- * refused it, so nothing exists in Sisu and a corrected retry is safe immediately.
+ * Only these two wait. NOT_SENT never reached Sisu and REJECTED was refused, so neither leaves
+ * anything a retry could duplicate.
  */
+const UNSETTLED_SEND_STATES = ['ATTEMPTED', 'ACCEPTED']
+
 const findPendingSubmissions = async (requestItemIds) => {
   const rows = await db.raw_entries.findAll({
     where: { moocfiRequestItemId: requestItemIds },
@@ -309,7 +310,9 @@ const findPendingSubmissions = async (requestItemIds) => {
   const cutoff = Date.now() - COOLDOWN_MS
   return new Map(
     rows
-      .filter(({ entry }) => entry && !entry.errors && entry.createdAt.getTime() > cutoff)
+      .filter(
+        ({ entry }) => entry && UNSETTLED_SEND_STATES.includes(entry.sendState) && entry.createdAt.getTime() > cutoff
+      )
       .sort((a, b) => a.entry.createdAt - b.entry.createdAt)
       .map((row) => [row.moocfiRequestItemId, row.entry])
   )

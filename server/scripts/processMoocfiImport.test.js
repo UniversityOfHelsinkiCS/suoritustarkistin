@@ -701,11 +701,18 @@ describe('the submission cooldown', () => {
       replacements: { createdAt: new Date(Date.now() - hours * 60 * 60 * 1000), id: entry.id }
     })
 
+  /**
+   * Resolving does not send; the controller does. So a row only waits once its state says it
+   * reached Sisu, which is what these have to stand in for.
+   */
+  const submitted = (entry, sendState = 'ATTEMPTED') => entry.update({ sendState })
+
   test('refuses a resubmission while the first outcome is unknown', async () => {
     await seedCourse()
     importer.respondByPath(fixtures())
 
-    await run([item()])
+    const first = await run([item()])
+    await submitted(first.toSend[0].entry)
     importer.requests = []
     const { results, toSend } = await run([item()])
 
@@ -721,6 +728,7 @@ describe('the submission cooldown', () => {
     importer.respondByPath(fixtures())
 
     const first = await run([item()])
+    await submitted(first.toSend[0].entry)
     const { results } = await run([item()])
 
     assert.equal(results[0].result.submittedAttainmentId, first.toSend[0].entry.id)
@@ -731,15 +739,15 @@ describe('the submission cooldown', () => {
   })
 
   /**
-   * `errors` is written only when Sisu evaluated the attainment and refused it, so nothing
-   * exists in Sisu and there is nothing to duplicate.
+   * REJECTED means Sisu evaluated the attainment and refused it, so nothing exists in Sisu and
+   * there is nothing a correction could duplicate.
    */
   test('exempts a submission Sisu rejected, so a correction goes through at once', async () => {
     await seedCourse()
     importer.respondByPath(fixtures())
 
     const first = await run([item()])
-    await first.toSend[0].entry.update({ errors: { credits: ['invalid'] }, sent: new Date() })
+    await first.toSend[0].entry.update({ sendState: 'REJECTED', errors: { credits: ['invalid'] } })
 
     const { results, toSend } = await run([item({ credits: 5, gradeId: '4' })])
 
@@ -754,6 +762,7 @@ describe('the submission cooldown', () => {
     importer.respondByPath(fixtures())
 
     const first = await run([item()])
+    await submitted(first.toSend[0].entry)
     await age(first.toSend[0].entry, 3)
 
     const { results, toSend } = await run([item()])
@@ -763,11 +772,25 @@ describe('the submission cooldown', () => {
     assert.equal((await db.entries.findAll()).length, 2)
   })
 
+  test('does not wait on a completion that was never sent', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const first = await run([item()])
+
+    const { results, toSend } = await run([item()])
+
+    assert.deepEqual(results, [], 'the first attempt never left Suotar, so there is nothing to duplicate')
+    assert.equal(toSend.length, 1)
+    assert.equal(first.toSend[0].entry.sendState, 'NOT_SENT')
+  })
+
   test('refuses only the item on cooldown, not the rest of the batch', async () => {
     await seedCourse()
     importer.respondByPath(fixtures())
 
-    await run([item()])
+    const first = await run([item()])
+    await submitted(first.toSend[0].entry)
     const { results, toSend } = await run([item(), item({ requestItemId: 'moocfi-completion-2', gradeId: '4' })])
 
     assert.deepEqual(

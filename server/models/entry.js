@@ -2,6 +2,8 @@ const Sequelize = require('sequelize')
 
 const { Op } = Sequelize
 
+const { SEND_STATES } = require('../utils/enums')
+
 /**
  * This model represents assessment item attainment in Sisu. See:
  * https://sis-helsinki.funidata.fi/ori/docs/index.html#_assessmentitemattainment
@@ -27,6 +29,14 @@ module.exports = (sequelize, DataTypes) => {
       gradeScaleId: DataTypes.STRING,
       gradeId: DataTypes.STRING,
       sent: DataTypes.DATE,
+      sendState: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'NOT_SENT',
+        validate: {
+          isIn: [SEND_STATES]
+        }
+      },
       registered: {
         type: DataTypes.STRING,
         validate: {

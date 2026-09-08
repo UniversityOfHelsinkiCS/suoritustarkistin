@@ -50,6 +50,15 @@ const deleteAllUsers = async () => {
   }
 }
 
+const deleteAllApiKeys = async () => {
+  logger.info('Deleting all api keys in test database')
+  try {
+    await db.api_keys.destroy({ where: {} })
+  } catch (error) {
+    logger.error(error.message)
+  }
+}
+
 const deleteAllJobs = async () => {
   logger.info('Deleting all users in test database')
   try {
@@ -248,6 +257,7 @@ const seedDatabaseForTests = async (req, res) => {
     await deleteAllSisReports()
     await deleteAllOodiReports()
     await deleteAllCourses()
+    await deleteAllApiKeys()
     await deleteAllUsers()
     await deleteAllJobs()
     await createTestCourses(testCourses)
@@ -267,6 +277,7 @@ const seedNoEntries = async (req, res) => {
     await deleteAllSisReports()
     await deleteAllOodiReports()
     await deleteAllCourses()
+    await deleteAllApiKeys()
     await deleteAllUsers()
     await deleteAllJobs()
     await createTestCourses(testCourses)
@@ -283,6 +294,7 @@ const seedBachelorData = async (req, res) => {
     await deleteAllSisReports()
     await deleteAllOodiReports()
     await deleteAllCourses()
+    await deleteAllApiKeys()
     await deleteAllUsers()
     await deleteAllJobs()
     await createTestUsers(testUsers)
@@ -338,6 +350,7 @@ const seedErilliskirjaus = async (req, res) => {
     await deleteAllSisReports()
     await deleteAllOodiReports()
     await deleteAllCourses()
+    await deleteAllApiKeys()
     await deleteAllUsers()
     await deleteAllJobs()
     await createTestUsers(testUsers)

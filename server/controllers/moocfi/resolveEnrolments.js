@@ -6,7 +6,6 @@
  */
 
 const _ = require('lodash')
-const logger = require('@server/utils/logger')
 const {
   getStudents,
   getCourseUnitIds,
@@ -14,10 +13,15 @@ const {
   getMultipleStudyRights,
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
-const { sendSentryError } = require('@server/utils/sentry')
-
-const ACCEPTED_STATE = 'ENROLLED'
+const { batchHandler } = require('@server/utils/batchApi')
+const {
+  CODES,
+  okItem,
+  errorItem,
+  serviceUnavailableForAll,
+  requireImporterArray
+} = require('@server/utils/moocfiResults')
+const { ACCEPTED_ENROLMENT_STATE } = require('@server/utils/sisuAttainmentRules')
 
 const validateItem = ({ studentNumber, courseCode }) => {
   if (typeof studentNumber !== 'string' || !studentNumber) return 'studentNumber must be a non-empty string.'
@@ -65,17 +69,12 @@ const toAttainment = (attainment) => ({
   passed: attainment.grade?.passed
 })
 
-const requireArray = (value, what) => {
-  if (!Array.isArray(value)) throw new Error(`Importer returned ${typeof value} instead of an array of ${what}`)
-  return value
-}
-
 /**
  * Resolves the whole batch in five batch-wide importer calls: persons, course codes,
  * enrolments, the study rights those enrolments point at, and earlier attainments.
  */
 const resolveBatch = async (items) => {
-  const persons = requireArray(await getStudents(_.uniq(items.map((item) => item.studentNumber))), 'persons')
+  const persons = requireImporterArray(await getStudents(_.uniq(items.map((item) => item.studentNumber))), 'persons')
   const personsByStudentNumber = new Map(persons.map((person) => [person.studentNumber, person]))
 
   const courseUnitsByCode = (await getCourseUnitIds(_.uniq(items.map((item) => item.courseCode)))) || {}
@@ -90,7 +89,7 @@ const resolveBatch = async (items) => {
   )
 
   const groups = resolvable.length
-    ? requireArray(
+    ? requireImporterArray(
         await getEnrolments(
           resolvable.map(({ studentNumber, courseCode }) => ({
             personId: personsByStudentNumber.get(studentNumber).id,
@@ -106,12 +105,12 @@ const resolveBatch = async (items) => {
     groups.flatMap(({ enrolments }) => (enrolments || []).map(({ studyRightId }) => studyRightId)).filter(Boolean)
   )
   const studyRights = studyRightIds.length
-    ? requireArray(await getMultipleStudyRights(studyRightIds), 'study rights')
+    ? requireImporterArray(await getMultipleStudyRights(studyRightIds), 'study rights')
     : []
   const validityById = new Map(studyRights.map(({ id, valid }) => [id, valid]))
 
   const attainmentGroups = resolvable.length
-    ? requireArray(
+    ? requireImporterArray(
         await getEarlierAttainmentsWithoutSubstituteCourses(
           resolvable.map(({ studentNumber, courseCode }) => ({ studentNumber, courseCode }))
         ),
@@ -130,32 +129,24 @@ const resolveEnrolments = batchHandler(async (items) => {
   try {
     resolved = await resolveBatch(items)
   } catch (error) {
-    logger.error({ message: 'Resolving enrolments failed', error: error.message, stack: error.stack })
-    sendSentryError('Resolving enrolments failed', error, { items: items.length })
-    return items.map(({ requestItemId }) =>
-      errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
-    )
+    return serviceUnavailableForAll(items, 'Resolving enrolments failed', error)
   }
 
   const { personsByStudentNumber, knownCodes, enrolmentsByPair, validityById, attainmentsByPair } = resolved
 
   return items.map(({ requestItemId, studentNumber, courseCode }) => {
     const person = personsByStudentNumber.get(studentNumber)
-    if (!person)
-      return errorItem(requestItemId, 'personNotFound', 'No Sisu person was found for the supplied student number.')
-    if (!knownCodes.has(courseCode))
-      return errorItem(requestItemId, 'courseCodeNotFound', 'Course code could not be resolved in Sisu.')
+    if (!person) return errorItem(requestItemId, CODES.personNotFound)
+    if (!knownCodes.has(courseCode)) return errorItem(requestItemId, CODES.courseCodeNotFound)
 
     const all = enrolmentsByPair.get(key(person.id, courseCode)) || []
-    if (!all.length)
-      return errorItem(requestItemId, 'enrolmentNotFound', 'No Sisu enrolment was found for this person and course.')
+    if (!all.length) return errorItem(requestItemId, CODES.enrolmentNotFound)
 
-    const accepted = all.filter(({ state }) => state === ACCEPTED_STATE)
+    const accepted = all.filter(({ state }) => state === ACCEPTED_ENROLMENT_STATE)
     // Unreachable since importer itself currently filters on state: 'ENROLLED'
-    if (!accepted.length)
-      return errorItem(requestItemId, 'enrolmentNotAccepted', 'The Sisu enrolment has not been accepted.')
+    if (!accepted.length) return errorItem(requestItemId, CODES.enrolmentNotAccepted)
 
-    return okItem(requestItemId, 'enrolmentFound', {
+    return okItem(requestItemId, CODES.enrolmentFound, {
       enrolments: accepted.map((enrolment) => toEnrolment(enrolment, validityById.get(enrolment.studyRightId))),
       existingAttainments: (attainmentsByPair.get(key(studentNumber, courseCode)) || []).map(toAttainment)
     })

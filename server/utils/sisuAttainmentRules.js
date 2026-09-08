@@ -81,6 +81,9 @@ const mapGrades = (gradeScales, id, rawEntry) => {
 // An entry id is the attainment id Sisu is given, so it is generated here and nowhere else.
 const generateEntryId = () => `hy-kur-${uuidv4()}`
 
+// The only enrolment state an attainment may be registered against.
+const ACCEPTED_ENROLMENT_STATE = 'ENROLLED'
+
 const ASSESSMENT_ITEM_ATTAINMENT_TYPE = 'AssessmentItemAttainment'
 const COURSE_UNIT_ATTAINMENT_TYPE = 'CourseUnitAttainment'
 
@@ -89,6 +92,7 @@ module.exports = {
   getDateWithinStudyright,
   mapGrades,
   generateEntryId,
+  ACCEPTED_ENROLMENT_STATE,
   ASSESSMENT_ITEM_ATTAINMENT_TYPE,
   COURSE_UNIT_ATTAINMENT_TYPE
 }

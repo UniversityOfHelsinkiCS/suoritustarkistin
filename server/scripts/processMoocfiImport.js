@@ -26,8 +26,10 @@ const {
   validateCredits,
   mapGrades,
   generateEntryId,
+  ACCEPTED_ENROLMENT_STATE,
   ASSESSMENT_ITEM_ATTAINMENT_TYPE
 } = require('../utils/sisuAttainmentRules')
+const { CODES, okItem, errorItem } = require('../utils/moocfiResults')
 const { identicalCompletionFound, isImprovedGrade } = require('../utils/earlierCompletions')
 const {
   getStudents,
@@ -37,8 +39,6 @@ const {
   getMultipleStudyRights,
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('../services/importer')
-
-const ACCEPTED_STATE = 'ENROLLED'
 
 // Two importer sync runs, hourly per importer-api's cron, with room for a skipped tick.
 const COOLDOWN_MS = 2 * 60 * 60 * 1000
@@ -55,10 +55,8 @@ const UNSETTLED_COURSE_CODES = new Set([
 ])
 
 // The two ways resolveItem answers an item outright. The third is returning rows to send.
-const answer = (requestItemId, code, result) => ({ result: { requestItemId, status: 'ok', code, result } })
-const reject = (requestItemId, code, message) => ({
-  result: { requestItemId, status: 'error', code, error: { message } }
-})
+const answer = (requestItemId, code, result) => ({ result: okItem(requestItemId, code, result) })
+const reject = (requestItemId, code, message) => ({ result: errorItem(requestItemId, code, { message }) })
 
 const key = (left, right) => `${left} ${right}`
 
@@ -157,48 +155,42 @@ const resolveItem = async (item, context) => {
   const { requestItemId, studentNumber, courseCode, enrolmentId, attainmentDate, attainmentLanguage } = item
 
   if (UNSETTLED_COURSE_CODES.has(courseCode)) {
-    return reject(requestItemId, 'courseNotAllowed', `${courseCode} cannot be registered through this API yet.`)
+    return reject(requestItemId, CODES.courseNotAllowed, `${courseCode} cannot be registered through this API yet.`)
   }
 
   const course = context.courseFor(item)
-  if (!course) return reject(requestItemId, 'courseNotAllowed', 'Suotar does not carry this course code.')
+  if (!course) return reject(requestItemId, CODES.courseNotAllowed, 'Suotar does not carry this course code.')
 
   const person = context.personFor(item)
-  if (!person)
-    return reject(requestItemId, 'personNotFound', 'No Sisu person was found for the supplied student number.')
+  if (!person) return reject(requestItemId, CODES.personNotFound)
 
   // The enrolment the caller named in section 2, not whichever one the attainment date
   // happens to match.
   const enrolment = context
     .enrolmentsFor(person, item)
-    .find(({ id, state }) => id === enrolmentId && state === ACCEPTED_STATE)
+    .find(({ id, state }) => id === enrolmentId && state === ACCEPTED_ENROLMENT_STATE)
   if (!enrolment)
     return reject(
       requestItemId,
-      'enrolmentNotFound',
+      CODES.enrolmentNotFound,
       'No ENROLLED Sisu enrolment was found for this student and course code.'
     )
 
   const credits = enrolment.courseUnit?.credits
   if (!credits) {
-    return reject(requestItemId, 'invalidCredits', `Sisu gives no credit range for course ${courseCode}.`)
+    return reject(requestItemId, CODES.invalidCredits, `Sisu gives no credit range for course ${courseCode}.`)
   }
   if (!validateCredits({ credits }, item.credits)) {
     return reject(
       requestItemId,
-      'invalidCredits',
+      CODES.invalidCredits,
       `Credits must be between ${credits.min} and ${credits.max} for course ${courseCode}.`
     )
   }
 
   const gradeScaleId = enrolment.assessmentItem?.gradeScaleId ?? enrolment.courseUnit?.gradeScaleId
   const grade = gradeOnScale(context.gradeScales, gradeScaleId, item.gradeId)
-  if (!grade)
-    return reject(
-      requestItemId,
-      'invalidGradeForGradeScale',
-      "Grade id is not valid for the resolved enrolment's grade scale."
-    )
+  if (!grade) return reject(requestItemId, CODES.invalidGradeForGradeScale)
 
   const creditsAsString = String(item.credits)
   const [previous] = context.attainmentsFor(item)
@@ -219,12 +211,12 @@ const resolveItem = async (item, context) => {
     )
   ) {
     // TODO: return the specific attainment that identicalCompletionFound matched?
-    return answer(requestItemId, 'duplicateAttainment', { attainment: previousAttainment })
+    return answer(requestItemId, CODES.duplicateAttainment, { attainment: previousAttainment })
   }
 
   // Every earlier attainment on the course has to be beaten, not just the latest one.
   if (!isImprovedGrade(courseAttainments, studentNumber, grade.abbreviation, attainmentDate, creditsAsString)) {
-    return answer(requestItemId, 'notImprovedAttainment', { previousAttainment })
+    return answer(requestItemId, CODES.notImprovedAttainment, { previousAttainment })
   }
 
   const validAttainmentDate = await getDateWithinStudyright(
@@ -234,7 +226,7 @@ const resolveItem = async (item, context) => {
     moment(attainmentDate)
   )
   if (!validAttainmentDate) {
-    return reject(requestItemId, 'studyRightNotValid', 'Study right cannot support the attainment.')
+    return reject(requestItemId, CODES.studyRightNotValid)
   }
 
   return {
@@ -296,21 +288,14 @@ const findPendingSubmissions = async (requestItemIds) => {
   )
 }
 
-// Not a spec code: the spec has mooc.fi carry the retry risk, which it cannot do while the
-// data it is told to verify against lags behind Sisu.
-const submissionPending = (requestItemId, entry) => ({
-  requestItemId,
-  status: 'error',
-  code: 'submissionPending',
-  error: {
-    message: 'This completion was submitted recently and its outcome is not yet confirmed. Verify before retrying.'
-  },
-  result: {
-    submittedAttainmentId: entry.id,
-    submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE,
-    retryAfter: new Date(entry.createdAt.getTime() + COOLDOWN_MS).toISOString()
-  }
-})
+const submissionPending = (requestItemId, entry) =>
+  errorItem(requestItemId, CODES.submissionPending, {
+    result: {
+      submittedAttainmentId: entry.id,
+      submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE,
+      retryAfter: new Date(entry.createdAt.getTime() + COOLDOWN_MS).toISOString()
+    }
+  })
 
 // The acceptors Sisu wants named on the attainments. Suotar does not choose them: they are the
 // realisation's own teachers.

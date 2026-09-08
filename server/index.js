@@ -15,6 +15,7 @@ const {
   checkRegisteredForNewMooc
 } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
+const { bodyErrorHandler } = require('./utils/batchApi')
 
 const { IN_MAINTENANCE } = process.env
 
@@ -36,14 +37,7 @@ initializeDatabaseConnection()
 
     app.use(express.json({ limit: '5mb' }))
 
-    // express.json rejects a bad body before routing, so this cannot live on a router.
-    app.use((err, req, res, next) => {
-      if (err?.type === 'entity.parse.failed')
-        return res.status(400).json({ error: { code: 'malformedRequest', message: 'Request body is not valid JSON.' } })
-      if (err?.type === 'entity.too.large')
-        return res.status(413).json({ error: { code: 'requestTooLarge', message: 'Request body is too large.' } })
-      return next(err)
-    })
+    app.use(bodyErrorHandler)
 
     app.use(errorMiddleware)
 

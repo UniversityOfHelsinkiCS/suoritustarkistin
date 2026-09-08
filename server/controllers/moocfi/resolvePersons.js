@@ -5,10 +5,15 @@
  */
 
 const _ = require('lodash')
-const logger = require('@server/utils/logger')
 const { getStudents } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
-const { sendSentryError } = require('@server/utils/sentry')
+const { batchHandler } = require('@server/utils/batchApi')
+const {
+  CODES,
+  okItem,
+  errorItem,
+  serviceUnavailableForAll,
+  requireImporterArray
+} = require('@server/utils/moocfiResults')
 
 const validateItem = ({ studentNumber }) =>
   typeof studentNumber === 'string' && studentNumber ? undefined : 'studentNumber must be a non-empty string.'
@@ -22,8 +27,7 @@ const toResult = ({ id, studentNumber, firstNames, lastName }) => ({
 })
 
 const fetchPersonsByStudentNumber = async (studentNumbers) => {
-  const persons = await getStudents(studentNumbers)
-  if (!Array.isArray(persons)) throw new Error(`Importer returned ${typeof persons} instead of an array of persons`)
+  const persons = requireImporterArray(await getStudents(studentNumbers), 'persons')
   return new Map(persons.map((person) => [person.studentNumber, person]))
 }
 
@@ -32,21 +36,14 @@ const resolvePersons = batchHandler(async (items) => {
   try {
     personsByStudentNumber = await fetchPersonsByStudentNumber(_.uniq(items.map((item) => item.studentNumber)))
   } catch (error) {
-    // The importer is the only thing that can fail here, so one failure fails every item.
-    // Deliberately not rethrown: a request-level 500 would tell mooc.fi to retry the batch,
-    // which is what the per-item code already says, and it would lose the requestItemIds.
-    logger.error({ message: 'Resolving persons failed', error: error.message, stack: error.stack })
-    sendSentryError('Resolving persons failed', error, { items: items.length })
-    return items.map(({ requestItemId }) =>
-      errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
-    )
+    return serviceUnavailableForAll(items, 'Resolving persons failed', error)
   }
 
   return items.map(({ requestItemId, studentNumber }) => {
     const person = personsByStudentNumber.get(studentNumber)
     return person
-      ? okItem(requestItemId, 'personFound', toResult(person))
-      : errorItem(requestItemId, 'personNotFound', 'No Sisu person was found for the supplied student number.')
+      ? okItem(requestItemId, CODES.personFound, toResult(person))
+      : errorItem(requestItemId, CODES.personNotFound)
   })
 }, validateItem)
 

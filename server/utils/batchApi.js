@@ -2,9 +2,11 @@
  * The envelope shared by every courses.mooc.fi batch endpoint: one response item per
  * request item, in request order. Per-item outcomes are always HTTP 200; only a
  * request-level failure is a 4xx.
+ *
+ * The codes and wording themselves live in moocfiResults.js.
  */
 
-const logger = require('@server/utils/logger')
+const { REQUEST_CODES, MESSAGES } = require('./moocfiResults')
 const { sendSentryError } = require('./sentry')
 
 // Bounds the sequential importer round trips one request can trigger.
@@ -13,19 +15,21 @@ const MAX_BATCH_SIZE = 1000
 // Batch size for /attainments/import endpoint, smaller than the other endpoints that just fetch sisu data
 const IMPORT_BATCH_SIZE = 100
 
-// The one message for serviceTemporarilyUnavailable, shared so the endpoints cannot drift.
-const SERVICE_UNAVAILABLE = 'Failed to fetch Sisu data.'
+const requestError = (res, status, code, message) => res.status(status).json({ error: { code, message } })
 
-const okItem = (requestItemId, code, result) => ({ requestItemId, status: 'ok', code, result })
+const malformedRequest = (res, message) => requestError(res, 400, REQUEST_CODES.malformedRequest, message)
 
-const errorItem = (requestItemId, code, message) => ({
-  requestItemId,
-  status: 'error',
-  code,
-  error: { message }
-})
-
-const malformedRequest = (res, message) => res.status(400).json({ error: { code: 'malformedRequest', message } })
+/**
+ * express.json rejects a bad body before routing, so this cannot live on a router. Shared
+ * with the integration harness, which mounts the API the way server/index.js does.
+ */
+const bodyErrorHandler = (err, req, res, next) => {
+  if (err?.type === 'entity.parse.failed') return malformedRequest(res, 'Request body is not valid JSON.')
+  if (err?.type === 'entity.too.large') {
+    return requestError(res, 413, REQUEST_CODES.requestTooLarge, MESSAGES[REQUEST_CODES.requestTooLarge])
+  }
+  return next(err)
+}
 
 /**
  * `handler` takes the whole batch at once so it can collapse the items into as few
@@ -65,12 +69,9 @@ const batchHandler =
     try {
       return res.status(200).json(await handler(items))
     } catch (error) {
-      logger.error({ message: 'Batch request failed', path: req.path, error: error.message, stack: error.stack })
       sendSentryError('Batch request failed', error, { path: req.path })
-      return res
-        .status(500)
-        .json({ error: { code: 'internalError', message: 'Suotar failed to process the request.' } })
+      return requestError(res, 500, REQUEST_CODES.internalError, MESSAGES[REQUEST_CODES.internalError])
     }
   }
 
-module.exports = { MAX_BATCH_SIZE, IMPORT_BATCH_SIZE, SERVICE_UNAVAILABLE, okItem, errorItem, batchHandler }
+module.exports = { MAX_BATCH_SIZE, IMPORT_BATCH_SIZE, bodyErrorHandler, batchHandler }

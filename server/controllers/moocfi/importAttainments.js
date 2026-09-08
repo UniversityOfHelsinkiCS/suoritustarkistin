@@ -9,13 +9,12 @@ const logger = require('@server/utils/logger')
 const db = require('@server/models/index')
 const attainmentsToSisu = require('@server/utils/sendToSisu')
 const { processMoocfiImport } = require('@server/scripts/processMoocfiImport')
-const { okItem, errorItem, batchHandler, IMPORT_BATCH_SIZE } = require('@server/utils/batchApi')
+const { batchHandler, IMPORT_BATCH_SIZE } = require('@server/utils/batchApi')
+const { CODES, okItem, errorItem } = require('@server/utils/moocfiResults')
 const { ASSESSMENT_ITEM_ATTAINMENT_TYPE } = require('@server/utils/sisuAttainmentRules')
 
 // No person is sending these; the name only exists so the send is identifiable in the logs.
 const SENDER = { uid: 'moocfi-api', name: 'courses.mooc.fi' }
-
-const TIMEOUT_MESSAGE = 'Sisu operation timed out; outcome is uncertain.'
 
 // Faster timeout for Sisu send than the internal systems
 const SEND_TIMEOUT_MS = 30_000
@@ -50,12 +49,12 @@ const describeViolations = (errors) => {
  */
 const outcomeFor = (requestItemId, entryId, row) => {
   if (row?.sendState === 'REJECTED') {
-    return errorItem(requestItemId, 'sisuValidationFailed', describeViolations(row.errors))
+    return errorItem(requestItemId, CODES.sisuValidationFailed, { message: describeViolations(row.errors) })
   }
 
   const result = { submittedAttainmentId: entryId, submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE }
-  if (row?.sendState === 'ACCEPTED') return okItem(requestItemId, 'sent', result)
-  return { ...errorItem(requestItemId, 'sisuTimeout', TIMEOUT_MESSAGE), result }
+  if (row?.sendState === 'ACCEPTED') return okItem(requestItemId, CODES.sent, result)
+  return errorItem(requestItemId, CODES.sisuTimeout, { result })
 }
 
 const importAttainments = batchHandler(

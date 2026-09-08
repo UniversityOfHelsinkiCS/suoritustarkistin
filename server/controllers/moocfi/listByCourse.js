@@ -6,9 +6,9 @@
  */
 
 const _ = require('lodash')
-const logger = require('@server/utils/logger')
 const { getAllCourseUnitEnrolments } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
+const { batchHandler } = require('@server/utils/batchApi')
+const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
 const { sendSentryError } = require('@server/utils/sentry')
 
 const validateItem = ({ courseCode, courseUnitRealisationId }) => {
@@ -26,12 +26,7 @@ const validateItem = ({ courseCode, courseUnitRealisationId }) => {
  * whose activity period ended over two months ago, and the caller filters by realisation
  * itself.
  */
-const fetchRealisations = async (code) => {
-  const realisations = await getAllCourseUnitEnrolments(code)
-  if (!Array.isArray(realisations))
-    throw new Error(`Importer returned ${typeof realisations} instead of an array of realisations`)
-  return realisations
-}
+const fetchRealisations = async (code) => requireImporterArray(await getAllCourseUnitEnrolments(code), 'realisations')
 
 // personId comes off the enrolment row rather than the person: the importer selects only
 // five columns of Person, and its id is not among them.
@@ -56,7 +51,6 @@ const listByCourse = batchHandler(async (items) => {
     try {
       byCode.set(code, { realisations: await fetchRealisations(code) })
     } catch (error) {
-      logger.error({ message: `Listing enrolments for ${code} failed`, error: error.message, stack: error.stack })
       sendSentryError('Listing enrolments by course failed', error, { courseCode: code })
       byCode.set(code, { failed: true })
     }
@@ -64,9 +58,8 @@ const listByCourse = batchHandler(async (items) => {
 
   return items.map(({ requestItemId, courseCode, courseUnitRealisationId }) => {
     const { realisations, failed } = byCode.get(courseCode)
-    if (failed) return errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
-    if (!realisations.length)
-      return errorItem(requestItemId, 'courseCodeNotFound', 'Course code could not be resolved in Sisu.')
+    if (failed) return serviceUnavailable(requestItemId)
+    if (!realisations.length) return errorItem(requestItemId, CODES.courseCodeNotFound)
 
     // An unmatched realisation id is an empty list, not courseCodeNotFound: the code did
     // resolve, and nobody is enrolled on the realisation the caller asked about.
@@ -75,7 +68,7 @@ const listByCourse = batchHandler(async (items) => {
       : realisations
 
     const people = wanted.flatMap(({ enrollments }) => (enrollments || []).map(toPerson))
-    return okItem(requestItemId, 'enrolmentsListed', { people })
+    return okItem(requestItemId, CODES.enrolmentsListed, { people })
   })
 }, validateItem)
 

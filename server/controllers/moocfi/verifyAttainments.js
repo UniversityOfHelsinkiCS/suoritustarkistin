@@ -7,13 +7,9 @@
  */
 
 const _ = require('lodash')
-const logger = require('@server/utils/logger')
 const { getAttainmentStatuses } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
-const { sendSentryError } = require('@server/utils/sentry')
-
-const NOT_REGISTERED = 'No final or partial Sisu registration evidence was found for the submitted attainment id.'
-const MISREGISTERED = 'A previously registered attainment has been marked misregistered in Sisu.'
+const { batchHandler } = require('@server/utils/batchApi')
+const { CODES, okItem, errorItem, serviceUnavailableForAll } = require('@server/utils/moocfiResults')
 
 const validateItem = ({ submittedAttainmentId }) =>
   typeof submittedAttainmentId === 'string' && submittedAttainmentId
@@ -28,19 +24,15 @@ const verifyAttainments = batchHandler(async (items) => {
     const statuses = await getAttainmentStatuses(ids)
     statusById = new Map(statuses.map(({ id, attainment }) => [id, attainment]))
   } catch (error) {
-    logger.error({ message: 'Verifying attainments failed', error: error.message, stack: error.stack })
-    sendSentryError('Verifying attainments failed', error, { items: items.length })
-    return items.map(({ requestItemId }) =>
-      errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
-    )
+    return serviceUnavailableForAll(items, 'Verifying attainments failed', error)
   }
 
   return items.map(({ requestItemId, submittedAttainmentId }) => {
     const attainment = statusById.get(submittedAttainmentId)
-    if (!attainment) return errorItem(requestItemId, 'notRegistered', NOT_REGISTERED)
-    if (attainment.misregistration) return errorItem(requestItemId, 'misregistered', MISREGISTERED)
+    if (!attainment) return errorItem(requestItemId, CODES.notRegistered)
+    if (attainment.misregistration) return errorItem(requestItemId, CODES.misregistered)
 
-    return okItem(requestItemId, 'registered', { attainment: { id: attainment.id, type: attainment.type } })
+    return okItem(requestItemId, CODES.registered, { attainment: { id: attainment.id, type: attainment.type } })
   })
 }, validateItem)
 

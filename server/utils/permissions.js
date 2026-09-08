@@ -1,6 +1,7 @@
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { resolveApiKey, MOOCFI_CLIENT } = require('./apiKeys')
+const { REQUEST_CODES, MESSAGES } = require('./moocfiResults')
 
 /**
  * Reusable permission check
@@ -41,7 +42,9 @@ const checkMoocfiToken = async (req, res, next) => {
   const apiKey = await resolveApiKey(bearer || token, MOOCFI_CLIENT)
   if (!apiKey) {
     logger.info({ message: 'Failed mooc.fi token check', path: req.path })
-    return res.status(401).json({ error: { code: 'unauthorized', message: 'Missing or invalid credentials.' } })
+    return res
+      .status(401)
+      .json({ error: { code: REQUEST_CODES.unauthorized, message: MESSAGES[REQUEST_CODES.unauthorized] } })
   }
 
   req.apiKey = apiKey

@@ -20,7 +20,8 @@ const {
 } = require('../test/helpers')
 
 const Router = require('express')
-const { okItem, errorItem, batchHandler, MAX_BATCH_SIZE } = require('./batchApi')
+const { batchHandler, MAX_BATCH_SIZE } = require('./batchApi')
+const { CODES, okItem, errorItem } = require('./moocfiResults')
 
 const LOWERED_CEILING = 3
 const { checkMoocfiToken } = require('./permissions')
@@ -38,7 +39,7 @@ router.post(
 router.post(
   '/persons/echo-small',
   batchHandler(
-    async (items) => items.map(({ requestItemId }) => okItem(requestItemId, 'personFound', { requestItemId })),
+    async (items) => items.map(({ requestItemId }) => okItem(requestItemId, CODES.personFound, { requestItemId })),
     undefined,
     LOWERED_CEILING
   )
@@ -48,8 +49,8 @@ router.post(
   batchHandler(async (items) =>
     items.map(({ requestItemId, fail }) =>
       fail
-        ? errorItem(requestItemId, 'personNotFound', 'No Sisu person was found for the supplied student number.')
-        : okItem(requestItemId, 'personFound', { requestItemId })
+        ? errorItem(requestItemId, CODES.personNotFound)
+        : okItem(requestItemId, CODES.personFound, { requestItemId })
     )
   )
 )

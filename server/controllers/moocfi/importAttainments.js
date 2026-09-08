@@ -15,7 +15,7 @@ const { ASSESSMENT_ITEM_ATTAINMENT_TYPE } = require('@server/utils/sisuAttainmen
 // No person is sending these; the name only exists so the send is identifiable in the logs.
 const SENDER = { uid: 'moocfi-api', name: 'courses.mooc.fi' }
 
-const TIMEOUT_MESSAGE = 'Sisu did not confirm the attainment; its outcome is uncertain. Verify before retrying.'
+const TIMEOUT_MESSAGE = 'Sisu operation timed out; outcome is uncertain.'
 
 // Faster timeout for Sisu send than the internal systems
 const SEND_TIMEOUT_MS = 30_000

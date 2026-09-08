@@ -8,6 +8,7 @@ const { importAttainments } = require('@server/controllers/moocfi/importAttainme
 const { listByCourse } = require('@server/controllers/moocfi/listByCourse')
 const { resolveEnrolments } = require('@server/controllers/moocfi/resolveEnrolments')
 const { resolvePersons } = require('@server/controllers/moocfi/resolvePersons')
+const { verifyAttainments } = require('@server/controllers/moocfi/verifyAttainments')
 
 const { checkMoocfiToken } = require('./permissions')
 
@@ -23,5 +24,6 @@ router.post('/persons/resolve-by-student-numbers', resolvePersons)
 router.post('/enrolments/resolve', resolveEnrolments)
 router.post('/enrolments/list-by-course', listByCourse)
 router.post('/attainments/import', importAttainments)
+router.post('/attainments/verify', verifyAttainments)
 
 module.exports = { moocfiRouter: router, MOOCFI_PATHS }

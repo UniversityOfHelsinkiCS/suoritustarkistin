@@ -66,13 +66,12 @@ with. Suotar picks the attainment id itself and sends it to Sisu, so it exists w
 outcome, and returns it in a `result` with `submittedAttainmentId` and
 `submittedAttainmentType`, exactly as `sent` does.
 
-### `sisuTemporarilyUnavailable` (2)
+### `serviceTemporarilyUnavailable` (1, 2, 4, 6)
 
-Not listed for section 2, unlike 1, 4 and 6, but returned there when Sisu is unreachable. The
-alternative is failing the whole request, which loses every `requestItemId` and tells you
-nothing per item.
+Renamed from the spec's `sisuTemporarilyUnavailable`.
 
--> serviceTemporarilyUnavailable
+Also returned on section 2, which the spec does not list it for. The alternative is failing the
+whole request, which loses every `requestItemId` and tells you nothing per item.
 
 ### `studyRightValidityPeriod` may be absent (2)
 

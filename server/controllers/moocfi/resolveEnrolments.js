@@ -14,7 +14,7 @@ const {
   getMultipleStudyRights,
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler } = require('@server/utils/batchApi')
+const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
 const { sendSentryError } = require('@server/utils/sentry')
 
 const ACCEPTED_STATE = 'ENROLLED'
@@ -133,7 +133,7 @@ const resolveEnrolments = batchHandler(async (items) => {
     logger.error({ message: 'Resolving enrolments failed', error: error.message, stack: error.stack })
     sendSentryError('Resolving enrolments failed', error, { items: items.length })
     return items.map(({ requestItemId }) =>
-      errorItem(requestItemId, 'sisuTemporarilyUnavailable', 'Sisu was temporarily unavailable.')
+      errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
     )
   }
 

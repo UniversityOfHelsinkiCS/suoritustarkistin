@@ -7,10 +7,8 @@
 const _ = require('lodash')
 const logger = require('@server/utils/logger')
 const { getStudents } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler } = require('@server/utils/batchApi')
+const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
 const { sendSentryError } = require('@server/utils/sentry')
-
-const SISU_UNAVAILABLE = 'Sisu was temporarily unavailable.'
 
 const validateItem = ({ studentNumber }) =>
   typeof studentNumber === 'string' && studentNumber ? undefined : 'studentNumber must be a non-empty string.'
@@ -39,7 +37,9 @@ const resolvePersons = batchHandler(async (items) => {
     // which is what the per-item code already says, and it would lose the requestItemIds.
     logger.error({ message: 'Resolving persons failed', error: error.message, stack: error.stack })
     sendSentryError('Resolving persons failed', error, { items: items.length })
-    return items.map(({ requestItemId }) => errorItem(requestItemId, 'sisuTemporarilyUnavailable', SISU_UNAVAILABLE))
+    return items.map(({ requestItemId }) =>
+      errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
+    )
   }
 
   return items.map(({ requestItemId, studentNumber }) => {

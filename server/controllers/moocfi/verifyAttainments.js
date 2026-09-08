@@ -9,12 +9,11 @@
 const _ = require('lodash')
 const logger = require('@server/utils/logger')
 const { getAttainmentStatuses } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler } = require('@server/utils/batchApi')
+const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
 const { sendSentryError } = require('@server/utils/sentry')
 
 const NOT_REGISTERED = 'No final or partial Sisu registration evidence was found for the submitted attainment id.'
 const MISREGISTERED = 'A previously registered attainment has been marked misregistered in Sisu.'
-const SISU_UNAVAILABLE = 'Sisu was temporarily unavailable during verification.'
 
 const validateItem = ({ submittedAttainmentId }) =>
   typeof submittedAttainmentId === 'string' && submittedAttainmentId
@@ -31,7 +30,9 @@ const verifyAttainments = batchHandler(async (items) => {
   } catch (error) {
     logger.error({ message: 'Verifying attainments failed', error: error.message, stack: error.stack })
     sendSentryError('Verifying attainments failed', error, { items: items.length })
-    return items.map(({ requestItemId }) => errorItem(requestItemId, 'sisuTemporarilyUnavailable', SISU_UNAVAILABLE))
+    return items.map(({ requestItemId }) =>
+      errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
+    )
   }
 
   return items.map(({ requestItemId, submittedAttainmentId }) => {

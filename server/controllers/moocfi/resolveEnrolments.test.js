@@ -396,7 +396,7 @@ describe('when the importer fails', () => {
     assert.equal(status, 200, 'an importer failure is a per-item outcome, not a request-level error')
     assert.deepEqual(
       body.map(({ code }) => code),
-      ['sisuTemporarilyUnavailable', 'sisuTemporarilyUnavailable']
+      ['serviceTemporarilyUnavailable', 'serviceTemporarilyUnavailable']
     )
   })
 
@@ -406,7 +406,7 @@ describe('when the importer fails', () => {
     const { status, body } = await resolve([one])
 
     assert.equal(status, 200)
-    assert.equal(body[0].code, 'sisuTemporarilyUnavailable')
+    assert.equal(body[0].code, 'serviceTemporarilyUnavailable')
   })
 })
 

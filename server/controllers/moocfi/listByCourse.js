@@ -8,10 +8,8 @@
 const _ = require('lodash')
 const logger = require('@server/utils/logger')
 const { getAllCourseUnitEnrolments } = require('@server/services/importer')
-const { okItem, errorItem, batchHandler } = require('@server/utils/batchApi')
+const { okItem, errorItem, batchHandler, SERVICE_UNAVAILABLE } = require('@server/utils/batchApi')
 const { sendSentryError } = require('@server/utils/sentry')
-
-const SISU_UNAVAILABLE = 'Suotar could not serve the list of enrolled people.'
 
 const validateItem = ({ courseCode, courseUnitRealisationId }) => {
   if (typeof courseCode !== 'string' || !courseCode) return 'courseCode must be a non-empty string.'
@@ -66,7 +64,7 @@ const listByCourse = batchHandler(async (items) => {
 
   return items.map(({ requestItemId, courseCode, courseUnitRealisationId }) => {
     const { realisations, failed } = byCode.get(courseCode)
-    if (failed) return errorItem(requestItemId, 'sisuTemporarilyUnavailable', SISU_UNAVAILABLE)
+    if (failed) return errorItem(requestItemId, 'serviceTemporarilyUnavailable', SERVICE_UNAVAILABLE)
     if (!realisations.length)
       return errorItem(requestItemId, 'courseCodeNotFound', 'Course code could not be resolved in Sisu.')
 

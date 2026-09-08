@@ -182,7 +182,7 @@ describe('a batch', () => {
 })
 
 describe('when the importer cannot be reached', () => {
-  test('answers every item sisuTemporarilyUnavailable rather than failing the request', async () => {
+  test('answers every item serviceTemporarilyUnavailable rather than failing the request', async () => {
     importer.respondByPath({ [STATUS_PATH]: [] }, (url) => url.startsWith(STATUS_PATH))
 
     const { status, body } = await verify([
@@ -194,8 +194,8 @@ describe('when the importer cannot be reached', () => {
     assert.deepEqual(
       body.map(({ requestItemId, code }) => [requestItemId, code]),
       [
-        ['verify-1', 'sisuTemporarilyUnavailable'],
-        ['verify-2', 'sisuTemporarilyUnavailable']
+        ['verify-1', 'serviceTemporarilyUnavailable'],
+        ['verify-2', 'serviceTemporarilyUnavailable']
       ]
     )
   })

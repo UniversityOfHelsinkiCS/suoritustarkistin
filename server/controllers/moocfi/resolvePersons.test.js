@@ -150,14 +150,14 @@ describe('when the importer fails', () => {
       {
         requestItemId: 'a',
         status: 'error',
-        code: 'sisuTemporarilyUnavailable',
-        error: { message: 'Sisu was temporarily unavailable.' }
+        code: 'serviceTemporarilyUnavailable',
+        error: { message: 'Failed to fetch Sisu data.' }
       },
       {
         requestItemId: 'b',
         status: 'error',
-        code: 'sisuTemporarilyUnavailable',
-        error: { message: 'Sisu was temporarily unavailable.' }
+        code: 'serviceTemporarilyUnavailable',
+        error: { message: 'Failed to fetch Sisu data.' }
       }
     ])
   }

@@ -13,6 +13,9 @@ const MAX_BATCH_SIZE = 1000
 // Batch size for /attainments/import endpoint, smaller than the other endpoints that just fetch sisu data
 const IMPORT_BATCH_SIZE = 100
 
+// The one message for serviceTemporarilyUnavailable, shared so the endpoints cannot drift.
+const SERVICE_UNAVAILABLE = 'Failed to fetch Sisu data.'
+
 const okItem = (requestItemId, code, result) => ({ requestItemId, status: 'ok', code, result })
 
 const errorItem = (requestItemId, code, message) => ({
@@ -27,7 +30,7 @@ const malformedRequest = (res, message) => res.status(400).json({ error: { code:
 /**
  * `handler` takes the whole batch at once so it can collapse the items into as few
  * importer calls as possible. Its throwing is a backstop, not a routine path: an endpoint
- * whose importer call fails should map that onto per-item sisuTemporarilyUnavailable.
+ * whose importer call fails should map that onto per-item serviceTemporarilyUnavailable.
  *
  * `validateItem` returns a message for an item the endpoint cannot read at all. That is a
  * request-level malformedRequest rather than a per-item error: the spec's per-item codes
@@ -70,4 +73,4 @@ const batchHandler =
     }
   }
 
-module.exports = { MAX_BATCH_SIZE, IMPORT_BATCH_SIZE, okItem, errorItem, batchHandler }
+module.exports = { MAX_BATCH_SIZE, IMPORT_BATCH_SIZE, SERVICE_UNAVAILABLE, okItem, errorItem, batchHandler }

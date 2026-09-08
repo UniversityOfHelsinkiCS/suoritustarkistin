@@ -260,8 +260,8 @@ describe('when Sisu does not answer', () => {
     assert.deepEqual(body[0], {
       requestItemId: 'a',
       status: 'error',
-      code: 'sisuTemporarilyUnavailable',
-      error: { message: 'Suotar could not serve the list of enrolled people.' }
+      code: 'serviceTemporarilyUnavailable',
+      error: { message: 'Failed to fetch Sisu data.' }
     })
     assert.equal(body[1].code, 'enrolmentsListed', 'one bad course code must not sink the rest of the batch')
   })
@@ -272,7 +272,7 @@ describe('when Sisu does not answer', () => {
     const { status, body } = await list([{ requestItemId: 'a', courseCode: 'TKT10001' }])
 
     assert.equal(status, 200)
-    assert.equal(body[0].code, 'sisuTemporarilyUnavailable')
+    assert.equal(body[0].code, 'serviceTemporarilyUnavailable')
   })
 })
 

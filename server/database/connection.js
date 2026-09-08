@@ -38,4 +38,4 @@ const initializeDatabaseConnection = async (attempt = 1) => {
   }
 }
 
-module.exports = { initializeDatabaseConnection }
+module.exports = { initializeDatabaseConnection, runMigrations }

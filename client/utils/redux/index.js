@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 
 import apiChecks from './apiCheckReducer'
+import apiKeys from './apiKeysReducer'
 import courses from './coursesReducer'
 import graders from './gradersReducer'
 import message from './messageReducer'
@@ -25,5 +26,6 @@ export default combineReducers({
   users,
   moocJobs,
   systemStatus,
-  apiChecks
+  apiChecks,
+  apiKeys
 })

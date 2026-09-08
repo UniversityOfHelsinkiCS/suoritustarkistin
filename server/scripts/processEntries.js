@@ -3,21 +3,18 @@ const Sequelize = require('sequelize')
 const { Op } = Sequelize
 const moment = require('moment')
 const { flatMap } = require('lodash')
-const { v4: uuidv4 } = require('uuid')
 
-const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { identicalCompletionFound } = require('../utils/earlierCompletions')
 const { FAILURE_REASONS } = require('../utils/failureReasons')
-const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
+const { validateCredits, getDateWithinStudyright, mapGrades, generateEntryId } = require('../utils/sisuAttainmentRules')
 const {
   getEmployees,
   getStudents,
   getGrades,
   getEnrolments,
   getMultipleStudyRights,
-  getEarlierAttainmentsWithoutSubstituteCourses,
-  getMultipleStudyRightsByPersons
+  getEarlierAttainmentsWithoutSubstituteCourses
 } = require('../services/importer')
 
 /**
@@ -274,73 +271,6 @@ const filterEnrolments = (completionDate, { enrolments }) => {
   return null
 }
 
-const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
-
-const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment, attainmentDate) => {
-  if (!studyRights || !personId || !attainmentDate) return null
-  const enrolmentStudyRight = studyRights.find(
-    (s) => s.id === filteredEnrolment.studyRightId && s.personId === personId
-  )
-
-  // If there is a studyright attached to the enrolment, the completion date
-  // needs to be in between studyright's start and end
-  if (enrolmentStudyRight) {
-    const { valid } = enrolmentStudyRight
-    const studyRightStart = moment(valid.startDate)
-    const studyRightEnd = moment(valid.endDate)
-
-    let newAttainmentDate
-    if (attainmentDate.isBetween(studyRightStart, studyRightEnd)) {
-      newAttainmentDate = attainmentDate
-    } else if (attainmentDate.isSameOrBefore(studyRightStart)) {
-      // the API does not handle properly timezones
-      newAttainmentDate = studyRightStart.add(3, 'hours')
-    } else if (attainmentDate.isSameOrAfter(studyRightEnd)) {
-      newAttainmentDate = studyRightEnd.subtract(1, 'day')
-    }
-
-    // If the grant date of studyright is after the start
-    // of studyright the completion fails in Sisu
-    const grantDate = moment(enrolmentStudyRight.grantDate)
-    if (grantDate.isBetween(studyRightStart, studyRightEnd) && newAttainmentDate.isBefore(grantDate)) {
-      logger.info({
-        message: `Attainment date ${newAttainmentDate} is before grant date ${grantDate}`,
-        enrolmentStudyRight
-      })
-      newAttainmentDate = grantDate
-    }
-
-    return newAttainmentDate
-  }
-
-  // If there is no studyright attached to the enrolment, as long as the student
-  // has any enrolment for the time of the registration, it will pass
-  const allStudyRights = await getMultipleStudyRightsByPersons([personId])
-
-  const { id: studyRightId } = resolveStudyRight(allStudyRights, attainmentDate)
-  if (studyRightId) return attainmentDate
-
-  // If there is no active studyright get the closest possible date within past studyrights
-  const [_studyRightId, newAttainmentDate] = getClosestStudyRight(allStudyRights, attainmentDate)
-  return newAttainmentDate
-}
-
-const mapGrades = (gradeScales, id, rawEntry) => {
-  let { grade } = rawEntry
-  if (id === 'sis-0-5') {
-    if (grade === 'Hyl.' || grade === '-') {
-      grade = '0'
-    }
-    return gradeScales[id].find(({ numericCorrespondence }) => String(numericCorrespondence) === grade)
-  }
-  if (id === 'sis-hyl-hyv') {
-    if (grade === 0 || grade === '0' || grade === '-') {
-      grade = 'Hyl.'
-    }
-    return gradeScales[id].find(({ abbreviation }) => abbreviation.fi === grade)
-  }
-}
-
 const getCourses = async (rawEntries) => {
   const courseIds = new Set(rawEntries.map(({ courseId }) => courseId))
   return await db.courses.findAll({
@@ -355,10 +285,6 @@ const getStudyRights = async (enrolments) => {
   const enrolmentArrays = flatMap(enrolments, (student) => student.enrolments)
   const studyRightIds = enrolmentArrays.map((enrolment) => enrolment.studyRightId)
   return await getMultipleStudyRights(studyRightIds)
-}
-
-function generateEntryId() {
-  return `hy-kur-${uuidv4()}`
 }
 
 module.exports = {

@@ -1,0 +1,16 @@
+# Throwaway Postgres for `npm run test:integration`. Separate from the dev db (which is
+# not published) and from e2e-db, and on 5433 so it cannot collide with a local 5432.
+# The integration suites truncate every table, so this must never point at anything real.
+services:
+  test-db:
+    image: postgres:11
+    container_name: suotar_test_db
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5433:5432
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 2s
+      timeout: 5s
+      retries: 15

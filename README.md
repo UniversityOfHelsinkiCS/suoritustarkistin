@@ -88,7 +88,38 @@ Get production data for debugging/development with
 
 ### Testing
 
-Run all test by `npm test` or open Cypress interactively with `npm run cypress:open`
+There are two suites: node:test integration tests for the backend (`server/**/*.test.js`)
+and Cypress E2E specs (`cypress/integration/e2e/`). CI runs `lint:quiet`,
+`test:integration` and `npm test`.
+
+#### Integration tests
+
+These hit a real Postgres and TRUNCATE every table, so they refuse to run unless
+`TEST_DATABASE_URL` is set and differs from `DATABASE_URL`. CI gets its database from a
+service container; locally, use the wrapper that starts a throwaway one on port 5433:
+
+```bash
+npm run test:integration:local   # test:db + TEST_DATABASE_URL + test:integration
+npm run test:db:down             # when finished, discards the volume
+```
+
+The container is left running between invocations, so reruns are fast.
+`npm run test:integration` on its own is the CI entrypoint and expects the URL in the env.
+
+#### E2E tests
+
+`npm test` is the CI path: it rebuilds the image and runs the whole suite in docker
+(a few minutes). While iterating, prefer the warm-container loop, which reuses a running stack
+and takes ~15 s per spec:
+
+```bash
+npm run e2e:spec -- cypress/integration/e2e/permissions.js
+npm run e2e:down    # when finished; REQUIRED before `npm test` (shared container names + ports)
+```
+
+`npm run cypress:open` opens Cypress interactively. External dependencies are faked in
+E2E (`e2e-importer/` for Sisu, `client/utils/mockHeaders.js` for auth), so no secrets are
+needed.
 
 ### Program Logic
 

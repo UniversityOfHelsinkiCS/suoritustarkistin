@@ -393,20 +393,17 @@ describe('when the importer fails', () => {
       { requestItemId: 'enrolment-2', studentNumber: STUDENT_NUMBER, courseCode: CODE }
     ])
 
-    assert.equal(status, 200, 'an importer failure is a per-item outcome, not a request-level error')
-    assert.deepEqual(
-      body.map(({ code }) => code),
-      ['serviceTemporarilyUnavailable', 'serviceTemporarilyUnavailable']
-    )
+    assert.equal(status, 503, 'the lookups are batch-wide, so their failure is request-level')
+    assert.equal(body.error.code, 'serviceTemporarilyUnavailable')
   })
 
-  test('fails every item when the importer drops the connection', async () => {
+  test('fails the request when the importer drops the connection', async () => {
     importer.handle = (req) => req.socket.destroy()
 
     const { status, body } = await resolve([one])
 
-    assert.equal(status, 200)
-    assert.equal(body[0].code, 'serviceTemporarilyUnavailable')
+    assert.equal(status, 503)
+    assert.equal(body.error.code, 'serviceTemporarilyUnavailable')
   })
 })
 

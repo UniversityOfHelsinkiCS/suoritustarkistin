@@ -6,7 +6,7 @@
  * The codes and wording themselves live in moocfiResults.js.
  */
 
-const { REQUEST_CODES, MESSAGES } = require('./moocfiResults')
+const { REQUEST_CODES, MESSAGES, ServiceUnavailableError } = require('./moocfiResults')
 const { sendSentryError } = require('./sentry')
 
 // Bounds the sequential importer round trips one request can trigger.
@@ -33,8 +33,9 @@ const bodyErrorHandler = (err, req, res, next) => {
 
 /**
  * `handler` takes the whole batch at once so it can collapse the items into as few
- * importer calls as possible. Its throwing is a backstop, not a routine path: an endpoint
- * whose importer call fails should map that onto per-item serviceTemporarilyUnavailable.
+ * importer calls as possible. An importer failure is request-level: the lookups are
+ * batch-wide, so it leaves no per-item outcome to report, and the endpoint says so by
+ * throwing the error `serviceUnavailable` builds. Anything else thrown is a bug.
  *
  * `validateItem` returns a message for an item the endpoint cannot read at all. That is a
  * request-level malformedRequest rather than a per-item error: the spec's per-item codes
@@ -69,6 +70,10 @@ const batchHandler =
     try {
       return res.status(200).json(await handler(items))
     } catch (error) {
+      if (error instanceof ServiceUnavailableError) {
+        const code = REQUEST_CODES.serviceTemporarilyUnavailable
+        return requestError(res, 503, code, MESSAGES[code])
+      }
       sendSentryError('Batch request failed', error, { path: req.path })
       return requestError(res, 500, REQUEST_CODES.internalError, MESSAGES[REQUEST_CODES.internalError])
     }

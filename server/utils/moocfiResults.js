@@ -12,20 +12,20 @@
 
 const { sendSentryError } = require('./sentry')
 
-// Request-level codes. These describe a request that could not be read at all, so they
+// Request-level codes. These describe a request that could not be answered at all, so they
 // answer `{ error: { code, message } }` with a 4xx or 5xx rather than per-item results.
 const REQUEST_CODES = {
   malformedRequest: 'malformedRequest',
   requestTooLarge: 'requestTooLarge',
   unauthorized: 'unauthorized',
-  internalError: 'internalError'
+  internalError: 'internalError',
+  // Every endpoint that reads Sisu (1, 2, 3, 4, 6). The lookups behind them are batch-wide,
+  // so a failure takes down the whole request and there is no per-item outcome to report.
+  serviceTemporarilyUnavailable: 'serviceTemporarilyUnavailable'
 }
 
 // Per-item codes, always answered with HTTP 200.
 const CODES = {
-  // Every endpoint that reads Sisu (1, 2, 4, 6)
-  serviceTemporarilyUnavailable: 'serviceTemporarilyUnavailable',
-
   // 1: persons/resolve-by-student-numbers
   personFound: 'personFound',
   personNotFound: 'personNotFound',
@@ -68,8 +68,7 @@ const MESSAGES = {
   [REQUEST_CODES.requestTooLarge]: 'Request body is too large.',
   [REQUEST_CODES.unauthorized]: 'Missing or invalid credentials.',
   [REQUEST_CODES.internalError]: 'Suotar failed to process the request.',
-
-  [CODES.serviceTemporarilyUnavailable]: 'Failed to fetch Sisu data.',
+  [REQUEST_CODES.serviceTemporarilyUnavailable]: 'Failed to fetch Sisu data.',
 
   [CODES.personNotFound]: 'No Sisu person was found for the supplied student number.',
   [CODES.courseCodeNotFound]: 'Course code could not be resolved in Sisu.',
@@ -101,18 +100,16 @@ const errorItem = (requestItemId, code, { message = MESSAGES[code], result } = {
   return result ? { ...item, result } : item
 }
 
-const serviceUnavailable = (requestItemId) => errorItem(requestItemId, CODES.serviceTemporarilyUnavailable)
+// Thrown past the endpoint to batchApi, which answers it 503 serviceTemporarilyUnavailable.
+class ServiceUnavailableError extends Error {}
 
 /**
- * Reports one importer failure and answers every item it took down.
- *
- * Deliberately not rethrown: the lookups are batch-wide, so one failure fails every item,
- * and a request-level 500 would tell mooc.fi to retry the batch -- which is what the
- * per-item code already says -- while losing the requestItemIds.
+ * Reports one importer failure and returns the error to throw for it. Every lookup behind
+ * these endpoints is batch-wide, so nothing is left to answer per item.
  */
-const serviceUnavailableForAll = (items, title, error, context) => {
-  sendSentryError(title, error, { items: items.length, ...context })
-  return items.map(({ requestItemId }) => serviceUnavailable(requestItemId))
+const serviceUnavailable = (title, error, context) => {
+  sendSentryError(title, error, context)
+  return new ServiceUnavailableError(MESSAGES[REQUEST_CODES.serviceTemporarilyUnavailable], { cause: error })
 }
 
 /**
@@ -130,7 +127,7 @@ module.exports = {
   MESSAGES,
   okItem,
   errorItem,
+  ServiceUnavailableError,
   serviceUnavailable,
-  serviceUnavailableForAll,
   requireImporterArray
 }

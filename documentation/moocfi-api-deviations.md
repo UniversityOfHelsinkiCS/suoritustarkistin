@@ -66,12 +66,28 @@ with. Suotar picks the attainment id itself and sends it to Sisu, so it exists w
 outcome, and returns it in a `result` with `submittedAttainmentId` and
 `submittedAttainmentType`, exactly as `sent` does.
 
-### `serviceTemporarilyUnavailable` (1, 2, 4, 6)
+### `serviceTemporarilyUnavailable` is request-level (1, 2, 3, 4, 6)
 
-Renamed from the spec's `sisuTemporarilyUnavailable`.
+Renamed from the spec's per-item `sisuTemporarilyUnavailable`, and answered as a request-level
+error with HTTP 503 rather than as a result per item:
 
-Also returned on section 2, which the spec does not list it for. The alternative is failing the
-whole request, which loses every `requestItemId` and tells you nothing per item.
+```json
+{
+  "error": {
+    "code": "serviceTemporarilyUnavailable",
+    "message": "Failed to fetch Sisu data."
+  }
+}
+```
+
+Every lookup behind these endpoints is batch-wide — one call resolves the persons for the whole
+batch, one the enrolments, and so on — so an importer that cannot answer leaves no item with an
+outcome of its own. Repeating the same code across every `requestItemId` said nothing the
+request-level error does not, and made "some items failed" indistinguishable from "the request
+failed" at the status code. Retry the whole batch; section 3 is safe to retry because it writes
+nothing unless every item resolved.
+
+Section 3 also answers it, which the spec does not list it for.
 
 ### `studyRightValidityPeriod` may be absent (2)
 

@@ -145,21 +145,10 @@ describe('batching', () => {
 
 describe('when the importer fails', () => {
   const assertEveryItemUnavailable = ({ status, body }) => {
-    assert.equal(status, 200, 'an importer failure is a per-item outcome, not a request-level error')
-    assert.deepEqual(body, [
-      {
-        requestItemId: 'a',
-        status: 'error',
-        code: 'serviceTemporarilyUnavailable',
-        error: { message: 'Failed to fetch Sisu data.' }
-      },
-      {
-        requestItemId: 'b',
-        status: 'error',
-        code: 'serviceTemporarilyUnavailable',
-        error: { message: 'Failed to fetch Sisu data.' }
-      }
-    ])
+    assert.equal(status, 503, 'the lookup is batch-wide, so its failure is request-level')
+    assert.deepEqual(body, {
+      error: { code: 'serviceTemporarilyUnavailable', message: 'Failed to fetch Sisu data.' }
+    })
   }
 
   const items = [

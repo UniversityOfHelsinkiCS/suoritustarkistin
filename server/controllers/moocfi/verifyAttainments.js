@@ -9,7 +9,7 @@
 const _ = require('lodash')
 const { getAttainmentStatuses } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
-const { CODES, okItem, errorItem, serviceUnavailableForAll } = require('@server/utils/moocfiResults')
+const { CODES, okItem, errorItem, serviceUnavailable } = require('@server/utils/moocfiResults')
 
 const validateItem = ({ submittedAttainmentId }) =>
   typeof submittedAttainmentId === 'string' && submittedAttainmentId
@@ -24,7 +24,7 @@ const verifyAttainments = batchHandler(async (items) => {
     const statuses = await getAttainmentStatuses(ids)
     statusById = new Map(statuses.map(({ id, attainment }) => [id, attainment]))
   } catch (error) {
-    return serviceUnavailableForAll(items, 'Verifying attainments failed', error)
+    throw serviceUnavailable('Verifying attainments failed', error, { items: items.length })
   }
 
   return items.map(({ requestItemId, submittedAttainmentId }) => {

@@ -256,23 +256,19 @@ describe('when Sisu does not answer', () => {
       { requestItemId: 'b', courseCode: 'TKT10001' }
     ])
 
-    assert.equal(status, 200, 'an importer failure is a per-item outcome, not a request-level error')
-    assert.deepEqual(body[0], {
-      requestItemId: 'a',
-      status: 'error',
-      code: 'serviceTemporarilyUnavailable',
-      error: { message: 'Failed to fetch Sisu data.' }
+    assert.equal(status, 503, 'one course code the importer cannot answer sinks the whole request')
+    assert.deepEqual(body, {
+      error: { code: 'serviceTemporarilyUnavailable', message: 'Failed to fetch Sisu data.' }
     })
-    assert.equal(body[1].code, 'enrolmentsListed', 'one bad course code must not sink the rest of the batch')
   })
 
-  test('fails the item when the importer drops the connection', async () => {
+  test('fails the request when the importer drops the connection', async () => {
     importer.handle = (req) => req.socket.destroy()
 
     const { status, body } = await list([{ requestItemId: 'a', courseCode: 'TKT10001' }])
 
-    assert.equal(status, 200)
-    assert.equal(body[0].code, 'serviceTemporarilyUnavailable')
+    assert.equal(status, 503)
+    assert.equal(body.error.code, 'serviceTemporarilyUnavailable')
   })
 })
 

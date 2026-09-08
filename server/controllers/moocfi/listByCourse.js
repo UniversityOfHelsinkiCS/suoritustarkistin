@@ -2,14 +2,12 @@
  * Spec section 6: POST /api/enrolments/list-by-course.
  *
  * The importer has no batch route for this, so it is one GET per distinct course code.
- * A code that fails takes down only the items asking for it.
  */
 
 const _ = require('lodash')
 const { getAllCourseUnitEnrolments } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
-const { sendSentryError } = require('@server/utils/sentry')
 
 const validateItem = ({ courseCode, courseUnitRealisationId }) => {
   if (typeof courseCode !== 'string' || !courseCode) return 'courseCode must be a non-empty string.'
@@ -49,16 +47,14 @@ const listByCourse = batchHandler(async (items) => {
   const byCode = new Map()
   for (const code of _.uniq(items.map((item) => item.courseCode))) {
     try {
-      byCode.set(code, { realisations: await fetchRealisations(code) })
+      byCode.set(code, await fetchRealisations(code))
     } catch (error) {
-      sendSentryError('Listing enrolments by course failed', error, { courseCode: code })
-      byCode.set(code, { failed: true })
+      throw serviceUnavailable('Listing enrolments by course failed', error, { courseCode: code })
     }
   }
 
   return items.map(({ requestItemId, courseCode, courseUnitRealisationId }) => {
-    const { realisations, failed } = byCode.get(courseCode)
-    if (failed) return serviceUnavailable(requestItemId)
+    const realisations = byCode.get(courseCode)
     if (!realisations.length) return errorItem(requestItemId, CODES.courseCodeNotFound)
 
     // An unmatched realisation id is an empty list, not courseCodeNotFound: the code did

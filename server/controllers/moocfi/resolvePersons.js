@@ -7,13 +7,7 @@
 const _ = require('lodash')
 const { getStudents } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
-const {
-  CODES,
-  okItem,
-  errorItem,
-  serviceUnavailableForAll,
-  requireImporterArray
-} = require('@server/utils/moocfiResults')
+const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
 
 const validateItem = ({ studentNumber }) =>
   typeof studentNumber === 'string' && studentNumber ? undefined : 'studentNumber must be a non-empty string.'
@@ -36,7 +30,7 @@ const resolvePersons = batchHandler(async (items) => {
   try {
     personsByStudentNumber = await fetchPersonsByStudentNumber(_.uniq(items.map((item) => item.studentNumber)))
   } catch (error) {
-    return serviceUnavailableForAll(items, 'Resolving persons failed', error)
+    throw serviceUnavailable('Resolving persons failed', error, { items: items.length })
   }
 
   return items.map(({ requestItemId, studentNumber }) => {

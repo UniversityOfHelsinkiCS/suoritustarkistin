@@ -182,7 +182,7 @@ describe('a batch', () => {
 })
 
 describe('when the importer cannot be reached', () => {
-  test('answers every item serviceTemporarilyUnavailable rather than failing the request', async () => {
+  test('fails the request with serviceTemporarilyUnavailable', async () => {
     importer.respondByPath({ [STATUS_PATH]: [] }, (url) => url.startsWith(STATUS_PATH))
 
     const { status, body } = await verify([
@@ -190,14 +190,10 @@ describe('when the importer cannot be reached', () => {
       { requestItemId: 'verify-2', submittedAttainmentId: 'hy-kur-unknown' }
     ])
 
-    assert.equal(status, 200)
-    assert.deepEqual(
-      body.map(({ requestItemId, code }) => [requestItemId, code]),
-      [
-        ['verify-1', 'serviceTemporarilyUnavailable'],
-        ['verify-2', 'serviceTemporarilyUnavailable']
-      ]
-    )
+    assert.equal(status, 503)
+    assert.deepEqual(body, {
+      error: { code: 'serviceTemporarilyUnavailable', message: 'Failed to fetch Sisu data.' }
+    })
   })
 })
 

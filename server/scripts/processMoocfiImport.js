@@ -29,7 +29,7 @@ const {
   ACCEPTED_ENROLMENT_STATE,
   ASSESSMENT_ITEM_ATTAINMENT_TYPE
 } = require('../utils/sisuAttainmentRules')
-const { CODES, okItem, errorItem } = require('../utils/moocfiResults')
+const { CODES, okItem, errorItem, serviceUnavailable } = require('../utils/moocfiResults')
 const { identicalCompletionFound, isImprovedGrade } = require('../utils/earlierCompletions')
 const {
   getStudents,
@@ -219,12 +219,17 @@ const resolveItem = async (item, context) => {
     return answer(requestItemId, CODES.notImprovedAttainment, { previousAttainment })
   }
 
-  const validAttainmentDate = await getDateWithinStudyright(
-    context.studyRights,
-    person.id,
-    { ...enrolment, credits },
-    moment(attainmentDate)
-  )
+  let validAttainmentDate
+  try {
+    validAttainmentDate = await getDateWithinStudyright(
+      context.studyRights,
+      person.id,
+      { ...enrolment, credits },
+      moment(attainmentDate)
+    )
+  } catch (error) {
+    throw serviceUnavailable('Resolving a study right for a courses.mooc.fi import failed', error, { studentNumber })
+  }
   if (!validAttainmentDate) {
     return reject(requestItemId, CODES.studyRightNotValid)
   }
@@ -301,7 +306,14 @@ const submissionPending = (requestItemId, entry) =>
 // realisation's own teachers.
 const fetchAcceptors = async (resolved) => {
   const realisationIds = [...new Set(resolved.map(({ rows }) => rows.entry.courseUnitRealisationId))].filter(Boolean)
-  return realisationIds.length ? await getAcceptorPersons(realisationIds) : {}
+  if (!realisationIds.length) return {}
+  try {
+    return await getAcceptorPersons(realisationIds)
+  } catch (error) {
+    throw serviceUnavailable('Fetching acceptors for a courses.mooc.fi import failed', error, {
+      realisations: realisationIds.length
+    })
+  }
 }
 
 /**
@@ -336,7 +348,16 @@ const writeAll = async (resolved) => {
 const processMoocfiImport = async (items) => {
   const pending = await findPendingSubmissions(items.map(({ requestItemId }) => requestItemId))
   const fresh = items.filter(({ requestItemId }) => !pending.has(requestItemId))
-  const context = fresh.length ? await fetchContext(fresh) : null
+  let context = null
+  if (fresh.length) {
+    try {
+      context = await fetchContext(fresh)
+    } catch (error) {
+      throw serviceUnavailable('Fetching the context of a courses.mooc.fi import failed', error, {
+        items: fresh.length
+      })
+    }
+  }
 
   const results = [...pending].map(([requestItemId, entry]) => submissionPending(requestItemId, entry))
 

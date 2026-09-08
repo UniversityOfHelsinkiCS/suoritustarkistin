@@ -10,7 +10,15 @@ const assert = require('node:assert')
 
 require('module-alias/register')
 
-const { CODES, REQUEST_CODES, MESSAGES, okItem, errorItem, serviceUnavailable } = require('./moocfiResults')
+const {
+  CODES,
+  REQUEST_CODES,
+  MESSAGES,
+  okItem,
+  errorItem,
+  ServiceUnavailableError,
+  serviceUnavailable
+} = require('./moocfiResults')
 
 describe('the result codes', () => {
   test('name themselves, so a call site cannot ask for a code that does not exist', () => {
@@ -59,13 +67,11 @@ describe('errorItem', () => {
   })
 })
 
-test('serviceUnavailable is the same answer whichever endpoint gives it', () => {
-  assert.deepEqual(serviceUnavailable('item-1'), {
-    requestItemId: 'item-1',
-    status: 'error',
-    code: 'serviceTemporarilyUnavailable',
-    error: { message: 'Failed to fetch Sisu data.' }
-  })
+test('serviceUnavailable builds an error to throw, not an item to answer', () => {
+  const error = serviceUnavailable('Resolving persons failed', new Error('importer is on fire'), { items: 2 })
+
+  assert.ok(error instanceof ServiceUnavailableError)
+  assert.equal(error.message, 'Failed to fetch Sisu data.')
 })
 
 test('okItem carries the result the spec names for the code', () => {

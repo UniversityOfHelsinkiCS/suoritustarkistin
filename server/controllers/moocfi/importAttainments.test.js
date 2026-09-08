@@ -352,8 +352,8 @@ describe('when the importer cannot answer', () => {
 
     const { status, body } = await importItems([item(), otherStudent()])
 
-    assert.equal(status, 500)
-    assert.equal(body.error.code, 'internalError')
+    assert.equal(status, 503)
+    assert.equal(body.error.code, 'serviceTemporarilyUnavailable')
     assert.equal(sends().length, 0)
     assert.equal((await db.entries.findAll()).length, 0)
   })

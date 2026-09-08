@@ -15,6 +15,7 @@ const {
 } = require('../test/helpers')
 
 const { processMoocfiImport } = require('./processMoocfiImport')
+const { ServiceUnavailableError } = require('../utils/moocfiResults')
 const db = require('../models/index')
 
 const STUDENT_NUMBER = '012345678'
@@ -562,7 +563,10 @@ describe('when a lookup cannot reach Sisu', () => {
       await seedCourse()
       importer.respondByPath(fixtures(), (url) => url.startsWith(route))
 
-      await assert.rejects(() => run([item({ requestItemId: 'a' }), item({ requestItemId: 'b' })]), /500/)
+      await assert.rejects(
+        () => run([item({ requestItemId: 'a' }), item({ requestItemId: 'b' })]),
+        ServiceUnavailableError
+      )
 
       assert.equal((await db.entries.findAll()).length, 0)
       assert.equal((await db.raw_entries.findAll()).length, 0)
@@ -607,7 +611,7 @@ describe('when resolving fails partway through the batch', () => {
 
     await assert.rejects(
       () => run([item({ requestItemId: 'a' }), item({ requestItemId: 'b', enrolmentId: OTHER_ENROLMENT })]),
-      /500/
+      ServiceUnavailableError
     )
 
     assert.equal((await db.entries.findAll()).length, 0, 'the first item must not survive the second one failing')

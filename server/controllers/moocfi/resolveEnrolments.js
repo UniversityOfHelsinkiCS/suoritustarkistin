@@ -2,7 +2,7 @@
  * Spec section 2: POST /api/enrolments/resolve.
  *
  * Everything here is projection of data the importer already returns. The lookups are
- * batch-wide, so an importer failure fails every item rather than the request.
+ * batch-wide, so an importer failure fails the whole request.
  */
 
 const _ = require('lodash')
@@ -14,13 +14,7 @@ const {
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
-const {
-  CODES,
-  okItem,
-  errorItem,
-  serviceUnavailableForAll,
-  requireImporterArray
-} = require('@server/utils/moocfiResults')
+const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
 const { ACCEPTED_ENROLMENT_STATE } = require('@server/utils/sisuAttainmentRules')
 
 const validateItem = ({ studentNumber, courseCode }) => {
@@ -129,7 +123,7 @@ const resolveEnrolments = batchHandler(async (items) => {
   try {
     resolved = await resolveBatch(items)
   } catch (error) {
-    return serviceUnavailableForAll(items, 'Resolving enrolments failed', error)
+    throw serviceUnavailable('Resolving enrolments failed', error, { items: items.length })
   }
 
   const { personsByStudentNumber, knownCodes, enrolmentsByPair, validityById, attainmentsByPair } = resolved

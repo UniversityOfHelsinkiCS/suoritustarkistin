@@ -36,7 +36,7 @@ const render = () =>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Provider store={store}>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/+$/, '') || '/'}>
           <ErrorBoundary>
             <App />
           </ErrorBoundary>

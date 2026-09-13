@@ -38,10 +38,14 @@ const enrolment = (studentNumber, courseUnitRealisationId, overrides = {}) => ({
   ...overrides
 })
 
-const realisation = (id, enrollments) => ({
+// getCourseUnitEnrolments trims by activity period against the clock, so a realisation that
+// is meant to survive the trim has to be dated relative to now rather than pinned.
+const daysFromNow = (days) => new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+
+const realisation = (id, enrollments, activityPeriod) => ({
   id,
   name: { fi: 'Ohjelmoinnin perusteet' },
-  activityPeriod: { startDate: '2026-01-01', endDate: '2026-05-31' },
+  activityPeriod: activityPeriod || { startDate: daysFromNow(-120), endDate: daysFromNow(30) },
   gradeScaleId: 'sis-0-5',
   enrollments
 })
@@ -102,7 +106,7 @@ describe('listing the people on a course', () => {
     ])
   })
 
-  test('flattens every realisation of the course when no realisation is named', async () => {
+  test('flattens every realisation of the course into one list of people', async () => {
     importer.respondWith([
       realisation('cur-1', [enrolment('000000000', 'cur-1')]),
       realisation('cur-2', [enrolment('111111111', 'cur-2'), enrolment('222222222', 'cur-2')])
@@ -116,16 +120,30 @@ describe('listing the people on a course', () => {
     )
   })
 
-  test('asks the importer for the whole history, not just the active realisations', async () => {
+  test('asks the importer once for the course code', async () => {
     importer.respondWith([])
 
     await list([{ requestItemId: 'a', courseCode: 'TKT10001' }])
 
     assert.equal(importer.requests.length, 1)
-    assert.match(
-      importer.requests[0].url,
-      /^\/suotar\/course-unit-enrolments\/TKT10001/,
-      'the two-month activityPeriod cutoff in getCourseUnitEnrolments would silently drop realisations'
+    assert.match(importer.requests[0].url, /^\/suotar\/course-unit-enrolments\/TKT10001/)
+  })
+
+  test('drops realisations whose activity period ended over two months ago', async () => {
+    importer.respondWith([
+      realisation('cur-current', [enrolment('000000000', 'cur-current')]),
+      realisation('cur-old', [enrolment('111111111', 'cur-old')], {
+        startDate: daysFromNow(-400),
+        endDate: daysFromNow(-200)
+      })
+    ])
+
+    const { body } = await list([{ requestItemId: 'a', courseCode: 'TKT10001' }])
+
+    assert.deepEqual(
+      body[0].result.people.map(({ studentNumber }) => studentNumber),
+      ['000000000'],
+      'account linking wants the people enrolled now, not everyone the course ever had'
     )
   })
 
@@ -153,30 +171,39 @@ describe('listing the people on a course', () => {
   })
 })
 
-describe('filtering by realisation', () => {
-  test('keeps only the enrolments on the named realisation', async () => {
+describe('the realisation filter the spec asks for', () => {
+  test('refuses an item naming a realisation rather than ignoring the field', async () => {
+    importer.respondWith([realisation('cur-1', [enrolment('000000000', 'cur-1')])])
+
+    const { status, body } = await list([
+      { requestItemId: 'a', courseCode: 'TKT10001', courseUnitRealisationId: 'cur-1' }
+    ])
+
+    assert.equal(status, 400)
+    assert.equal(body.error.code, 'malformedRequest')
+    assert.match(body.error.message, /courseUnitRealisationId/)
+    assert.equal(importer.requests.length, 0, 'a refused batch must not reach the importer')
+  })
+
+  test('refuses a null realisation id too, so the field cannot be sent at all', async () => {
+    const { status, body } = await list([{ requestItemId: 'a', courseCode: 'TKT10001', courseUnitRealisationId: null }])
+
+    assert.equal(status, 400)
+    assert.match(body.error.message, /courseUnitRealisationId/)
+  })
+
+  test('names the realisation of each person so the caller can filter for itself', async () => {
     importer.respondWith([
       realisation('cur-1', [enrolment('000000000', 'cur-1')]),
       realisation('cur-2', [enrolment('111111111', 'cur-2')])
     ])
 
-    const { body } = await list([{ requestItemId: 'a', courseCode: 'TKT10001', courseUnitRealisationId: 'cur-2' }])
+    const { body } = await list([{ requestItemId: 'a', courseCode: 'TKT10001' }])
 
     assert.deepEqual(
-      body[0].result.people.map(({ studentNumber }) => studentNumber),
-      ['111111111']
+      body[0].result.people.map(({ enrolment: e }) => e.courseUnitRealisationId),
+      ['cur-1', 'cur-2']
     )
-  })
-
-  test('returns an empty list, not courseCodeNotFound, for a realisation nobody is on', async () => {
-    importer.respondWith([realisation('cur-1', [enrolment('000000000', 'cur-1')])])
-
-    const { body } = await list([
-      { requestItemId: 'a', courseCode: 'TKT10001', courseUnitRealisationId: 'cur-unknown' }
-    ])
-
-    assert.equal(body[0].code, 'enrolmentsListed', 'the course code did resolve; only the filter matched nothing')
-    assert.deepEqual(body[0].result.people, [])
   })
 })
 
@@ -188,7 +215,7 @@ describe('batching', () => {
     })
 
     const { body } = await list([
-      { requestItemId: 'a', courseCode: 'TKT10001', courseUnitRealisationId: 'cur-1' },
+      { requestItemId: 'a', courseCode: 'TKT10001' },
       { requestItemId: 'b', courseCode: 'TKT10001' },
       { requestItemId: 'c', courseCode: 'TKT10002' }
     ])
@@ -286,5 +313,14 @@ describe('request-level validation', () => {
 
     assert.equal(status, 400)
     assert.match(body.error.message, /courseUnitRealisationId/)
+  })
+
+  test('rejects a realisation id on one item of an otherwise valid batch', async () => {
+    const { status } = await list([
+      { requestItemId: 'a', courseCode: 'TKT10001' },
+      { requestItemId: 'b', courseCode: 'TKT10002', courseUnitRealisationId: 'cur-1' }
+    ])
+
+    assert.equal(status, 400)
   })
 })

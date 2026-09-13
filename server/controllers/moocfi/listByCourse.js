@@ -5,26 +5,18 @@
  */
 
 const _ = require('lodash')
-const { getAllCourseUnitEnrolments } = require('@server/services/importer')
+const { getCourseUnitEnrolments } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
 
 const validateItem = ({ courseCode, courseUnitRealisationId }) => {
   if (typeof courseCode !== 'string' || !courseCode) return 'courseCode must be a non-empty string.'
-  if (
-    courseUnitRealisationId !== undefined &&
-    (typeof courseUnitRealisationId !== 'string' || !courseUnitRealisationId)
-  )
-    return 'courseUnitRealisationId, when given, must be a non-empty string.'
+  if (courseUnitRealisationId !== undefined)
+    return 'courseUnitRealisationId is not accepted; every person comes with the realisation they are enrolled on.'
   return undefined
 }
 
-/**
- * getAllCourseUnitEnrolments, not getCourseUnitEnrolments: the latter drops realisations
- * whose activity period ended over two months ago, and the caller filters by realisation
- * itself.
- */
-const fetchRealisations = async (code) => requireImporterArray(await getAllCourseUnitEnrolments(code), 'realisations')
+const fetchRealisations = async (code) => requireImporterArray(await getCourseUnitEnrolments(code), 'realisations')
 
 // personId comes off the enrolment row rather than the person: the importer selects only
 // five columns of Person, and its id is not among them.
@@ -53,17 +45,11 @@ const listByCourse = batchHandler(async (items) => {
     }
   }
 
-  return items.map(({ requestItemId, courseCode, courseUnitRealisationId }) => {
+  return items.map(({ requestItemId, courseCode }) => {
     const realisations = byCode.get(courseCode)
     if (!realisations.length) return errorItem(requestItemId, CODES.courseCodeNotFound)
 
-    // An unmatched realisation id is an empty list, not courseCodeNotFound: the code did
-    // resolve, and nobody is enrolled on the realisation the caller asked about.
-    const wanted = courseUnitRealisationId
-      ? realisations.filter(({ id }) => id === courseUnitRealisationId)
-      : realisations
-
-    const people = wanted.flatMap(({ enrollments }) => (enrollments || []).map(toPerson))
+    const people = realisations.flatMap(({ enrollments }) => (enrollments || []).map(toPerson))
     return okItem(requestItemId, CODES.enrolmentsListed, { people })
   })
 }, validateItem)

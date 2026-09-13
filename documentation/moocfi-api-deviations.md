@@ -97,20 +97,12 @@ right did not resolve".
 
 ## Behaviour the spec leaves open
 
-### `courseUnitRealisationId` is an optional filter (6)
-
-The spec's example always sends it but never marks it required. Omit it for every enrolled
-person on the course code, include it for one realisation. A realisation nobody is enrolled on
-is `enrolmentsListed` with an empty `people` list, not `courseCodeNotFound` — the course code
-did resolve.
-
--> ditch realisationId, time limit 2months
-
 ### A malformed item fails the whole request
 
 The spec defines `malformedRequest` for a body that is not a JSON array of items. Suotar also
-uses it for an item missing a field the endpoint needs — no `studentNumber`, no `courseCode`, an
-empty `courseUnitRealisationId` — and for a repeated `requestItemId`. The per-item codes describe
+uses it for an item the endpoint cannot read — no `studentNumber`, no `courseCode`, `credits`
+that is not a number, a `courseUnitRealisationId` section 6 does not accept — and for a repeated
+`requestItemId`. The per-item codes describe
 outcomes for a well-formed item, so `personNotFound` for an item carrying no student number
 would mislead.
 
@@ -126,6 +118,19 @@ higher limit.
 -> add limits to spec
 
 ## Known limitations
+
+### `courseUnitRealisationId` is refused (6)
+
+The spec's example always sends it. Suotar answers `malformedRequest` for any item carrying it
+and lists the whole course code instead. Accepting and ignoring it would have been the worse
+failure: a caller that believed it had scoped the request to one realisation would email a
+verification link to everyone on the course. Every person comes back with the realisation they
+are enrolled on, so filter on that.
+
+The list is also trimmed to realisations whose activity period ended less than two months ago,
+the window Suotar's other reads of Sisu enrolments already use.
+
+-> ditch realisationId from spec
 
 ### `enrolmentNotAccepted` cannot currently occur (2)
 

@@ -56,6 +56,34 @@ that a retry could duplicate.
 
 -> pending status to verify (§4) instead of here
 
+### `gradeScaleMismatch` (3)
+
+An item whose `gradeScaleId` is not the scale the resolved enrolment is graded on is refused,
+rather than having its `gradeId` read on the enrolment's scale.
+
+```json
+{
+  "requestItemId": "moocfi-completion-12345",
+  "status": "error",
+  "code": "gradeScaleMismatch",
+  "error": {
+    "message": "Grade scale sis-hyl-hyv was sent, but the enrolment is graded on sis-0-5."
+  }
+}
+```
+
+A grade id means nothing without the scale it is read on, and the two scales in use overlap:
+`1` is Hyv. on `sis-hyl-hyv` and the lowest passing grade on `sis-0-5`. Resolving the enrolment's
+scale regardless would register a grade nobody asked for — a pass turning into a 1, silently and
+in the student's record. `invalidGradeForGradeScale` does not cover it, because the grade is
+perfectly valid on the scale; it is the scale that is wrong.
+
+`gradeScaleId` is therefore **required** on section 3, though the enrolment's own scale is still
+what the grade is read on. Section 2 reports that scale per enrolment, so echoing back the scale
+of the enrolment you chose there always matches.
+
+-> add gradeScaleMismatch to spec
+
 ## Changed responses
 
 ### `sisuTimeout` carries `submittedAttainmentId` (3)
@@ -186,7 +214,8 @@ enrolment in eduweb but not in Sisu is `enrolmentNotFound` here.
 
 ## Open questions
 
-1. `submissionPending` needs adding to section 3, and clients need to handle it.
+1. `submissionPending` and `gradeScaleMismatch` need adding to section 3, and clients need to
+   handle them.
 2. Section 4's polling guidance assumes verify is current, and it can be up to an hour behind.
    The diagram's "attainment shows up in Sisu a few minutes later" is optimistic — expect longer,
    and consider backoff rather than a fixed few-minute interval.

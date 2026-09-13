@@ -410,6 +410,17 @@ describe('the request itself', () => {
     assert.match(body.error.message, /gradeId must be a non-empty string/)
   })
 
+  test('malformedRequest for an item with no gradeScaleId', async () => {
+    const { gradeScaleId: _dropped, ...withoutScale } = item()
+
+    const { status, body } = await importItems([withoutScale])
+
+    assert.equal(status, 400)
+    assert.equal(body.error.code, 'malformedRequest')
+    assert.match(body.error.message, /gradeScaleId must be a non-empty string/)
+    assert.equal((await db.entries.findAll()).length, 0)
+  })
+
   test('malformedRequest for credits that are not a number', async () => {
     const { status, body } = await importItems([item({ credits: '5' })])
 

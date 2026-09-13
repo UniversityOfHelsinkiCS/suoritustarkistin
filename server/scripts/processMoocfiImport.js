@@ -73,8 +73,8 @@ const toAttainment = (attainment) => ({
 
 /**
  * mooc.fi sends (gradeScaleId, gradeId); the rules downstream are written against the Finnish
- * grade string. The enrolment's scale wins over the one the caller sent, which is what
- * invalidGradeForGradeScale means.
+ * grade string. The scale is the enrolment's, which resolveItem has already checked the caller
+ * agrees with, so what is left to fail here is a grade id the scale does not have.
  */
 const gradeOnScale = (gradeScales, gradeScaleId, gradeId) => {
   const abbreviation = gradeScales[gradeScaleId]?.find(({ localId }) => String(localId) === String(gradeId))
@@ -189,6 +189,14 @@ const resolveItem = async (item, context) => {
   }
 
   const gradeScaleId = enrolment.assessmentItem?.gradeScaleId ?? enrolment.courseUnit?.gradeScaleId
+  if (gradeScaleId && item.gradeScaleId !== gradeScaleId) {
+    return reject(
+      requestItemId,
+      CODES.gradeScaleMismatch,
+      `Grade scale ${item.gradeScaleId} was sent, but the enrolment is graded on ${gradeScaleId}.`
+    )
+  }
+
   const grade = gradeOnScale(context.gradeScales, gradeScaleId, item.gradeId)
   if (!grade) return reject(requestItemId, CODES.invalidGradeForGradeScale)
 

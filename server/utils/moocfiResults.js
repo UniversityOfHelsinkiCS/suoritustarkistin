@@ -43,6 +43,7 @@ const CODES = {
   courseNotAllowed: 'courseNotAllowed',
   invalidCredits: 'invalidCredits',
   invalidGradeForGradeScale: 'invalidGradeForGradeScale',
+  gradeScaleMismatch: 'gradeScaleMismatch',
   studyRightNotValid: 'studyRightNotValid',
   sisuValidationFailed: 'sisuValidationFailed',
   sisuTimeout: 'sisuTimeout',

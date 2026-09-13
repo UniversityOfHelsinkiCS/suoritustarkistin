@@ -166,6 +166,9 @@ const codeOf = ({ results, toSend }, requestItemId) =>
   results.find((r) => r.requestItemId === requestItemId)?.code ??
   (toSend.some((s) => s.requestItemId === requestItemId) ? 'toSend' : undefined)
 
+const messageOf = ({ results }, requestItemId) =>
+  results.find((r) => r.requestItemId === requestItemId)?.error?.message ?? ''
+
 describe('an item that resolves', () => {
   test('writes a raw entry and an entry, and reports the entry id', async () => {
     await seedCourse()
@@ -356,7 +359,7 @@ describe('items that cannot be registered', () => {
     assert.equal(codeOf(outcome, 'moocfi-completion-1'), 'invalidGradeForGradeScale')
   })
 
-  test('invalidGradeForGradeScale when the grade is valid on the scale the caller sent but not on the enrolment scale', async () => {
+  test('gradeScaleMismatch when the caller sends a scale the enrolment is not graded on', async () => {
     await seedCourse()
 
     // '5' exists on sis-0-5 but the enrolment here is graded pass/fail.
@@ -364,7 +367,31 @@ describe('items that cannot be registered', () => {
 
     const outcome = await run([item({ gradeScaleId: 'sis-0-5', gradeId: '5' })])
 
-    assert.equal(codeOf(outcome, 'moocfi-completion-1'), 'invalidGradeForGradeScale')
+    assert.equal(codeOf(outcome, 'moocfi-completion-1'), 'gradeScaleMismatch')
+    assert.match(messageOf(outcome, 'moocfi-completion-1'), /sis-0-5 was sent.*sis-hyl-hyv/)
+  })
+
+  /**
+   * The case the check exists for: '1' resolves on either scale, so without it the item would
+   * have been registered as the lowest pass on sis-0-5 rather than refused.
+   */
+  test('gradeScaleMismatch for a grade id that resolves on both scales', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const outcome = await run([item({ gradeScaleId: 'sis-hyl-hyv', gradeId: '1' })])
+
+    assert.equal(codeOf(outcome, 'moocfi-completion-1'), 'gradeScaleMismatch')
+    assert.equal(await db.entries.count(), 0, 'nothing may be written for a refused item')
+  })
+
+  test('no mismatch when the caller sends the scale section 2 named', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures({ enrolments: passFailEnrolments() }))
+
+    const { toSend } = await run([item({ gradeScaleId: 'sis-hyl-hyv', gradeId: '1' })])
+
+    assert.equal(toSend.length, 1)
   })
 
   test('studyRightNotValid when no study right can carry the attainment', async () => {

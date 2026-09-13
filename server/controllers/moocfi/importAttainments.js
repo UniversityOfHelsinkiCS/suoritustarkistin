@@ -22,7 +22,15 @@ const SEND_TIMEOUT_MS = 30_000
 const isBlank = (value) => typeof value !== 'string' || !value
 
 const validateItem = (item) => {
-  const strings = ['studentNumber', 'courseCode', 'enrolmentId', 'attainmentDate', 'attainmentLanguage', 'gradeId']
+  const strings = [
+    'studentNumber',
+    'courseCode',
+    'enrolmentId',
+    'attainmentDate',
+    'attainmentLanguage',
+    'gradeScaleId',
+    'gradeId'
+  ]
   for (const field of strings) {
     if (isBlank(item[field])) return `${field} must be a non-empty string.`
   }

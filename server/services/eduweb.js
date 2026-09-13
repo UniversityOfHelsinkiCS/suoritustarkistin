@@ -31,18 +31,6 @@ const getRegistrations = async (course) => {
   return registrations
 }
 
-const getMultipleCourseRegistrations = async (courseNames) => {
-  let registrationData = []
-
-  for (const cn of courseNames) {
-    const courseData = await getRegistrations(cn)
-
-    registrationData = registrationData.concat(courseData)
-  }
-
-  return registrationData
-}
-
 const getRegistrationsByInstance = async (course) => {
   const instances = await eduwebGet(course)
 
@@ -55,4 +43,4 @@ const getRegistrationsByInstance = async (course) => {
   return registrations
 }
 
-module.exports = { eduwebGet, getRegistrations, getMultipleCourseRegistrations, getRegistrationsByInstance }
+module.exports = { eduwebGet, getRegistrations, getRegistrationsByInstance }

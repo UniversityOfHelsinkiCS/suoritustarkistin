@@ -173,6 +173,33 @@ describe('resolving an enrolment', () => {
     assert.equal(body[0].result.enrolments[0].studyRightValidityPeriod, undefined)
   })
 
+  /**
+   * The two ranges are usually the same; where they differ, this is the one section 3 will hold
+   * the caller to, so promising the other would be an invalidCredits waiting to happen.
+   */
+  test('reports the credit range of the course unit, not the assessment item', async () => {
+    importer.respondByPath(
+      fixtures({
+        enrolments: [
+          {
+            personId: PERSON_ID,
+            code: CODE,
+            enrolments: [
+              enrolment({
+                assessmentItem: { credits: { min: 1, max: 10 }, gradeScaleId: 'sis-0-5' },
+                courseUnit: { credits: { min: 5, max: 5 }, gradeScaleId: 'sis-0-5', code: CODE }
+              })
+            ]
+          }
+        ]
+      })
+    )
+
+    const { body } = await resolve([one])
+
+    assert.deepEqual(body[0].result.enrolments[0].credits, { min: 5, max: 5 })
+  })
+
   test('falls back to the course unit grade scale when the assessment item has none', async () => {
     importer.respondByPath(
       fixtures({
@@ -189,7 +216,6 @@ describe('resolving an enrolment', () => {
     const { body } = await resolve([one])
 
     assert.equal(body[0].result.enrolments[0].gradeScaleId, 'sis-0-5')
-    assert.deepEqual(body[0].result.enrolments[0].credits, { min: 5, max: 5 })
   })
 })
 

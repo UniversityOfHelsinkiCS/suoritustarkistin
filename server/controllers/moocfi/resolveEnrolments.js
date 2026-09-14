@@ -40,7 +40,10 @@ const toEnrolment = (enrolment, studyRightValidityPeriod) => ({
   // The assessment item carries the scale the attainment is graded on; the course unit is
   // the fallback when the item has none.
   gradeScaleId: enrolment.assessmentItem?.gradeScaleId ?? enrolment.courseUnit?.gradeScaleId,
-  credits: enrolment.assessmentItem?.credits ?? enrolment.courseUnit?.credits,
+  // The course unit's range, not the assessment item's: section 3 validates against this one,
+  // as does every other path that registers an attainment, so reporting the other would promise
+  // a range the import can refuse.
+  credits: enrolment.courseUnit?.credits,
   studyRightId: enrolment.studyRightId,
   studyRightValidityPeriod,
   enrolmentDateTime: enrolment.enrolmentDateTime

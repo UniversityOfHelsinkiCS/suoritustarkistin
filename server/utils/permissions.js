@@ -1,3 +1,5 @@
+const { Op } = require('sequelize')
+
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { resolveApiKey, MOOCFI_CLIENT } = require('./apiKeys')
@@ -60,12 +62,16 @@ const checkIdMatch = (req, res, next) =>
     'Unauthorized: User id mismatch'
   )
 
+const isMoocfiImport = async (where) =>
+  Boolean(await db.raw_entries.findOne({ where: { ...where, moocfiRequestItemId: { [Op.not]: null } } }))
+
 const deleteSingleEntry = (req, res, next) =>
   permissionClass(
     req,
     res,
     next,
     async (req) => {
+      if (await isMoocfiImport({ id: req.params.id })) return false
       if (req.user.isAdmin) return true
       const rawEntry = await db.raw_entries.findOne({
         where: { id: req.params.id },
@@ -89,6 +95,7 @@ const deleteBatch = (req, res, next) =>
     res,
     next,
     async (req) => {
+      if (await isMoocfiImport({ batchId: req.params.batchId })) return false
       if (req.user.isAdmin) return true
       const rawEntry = await db.raw_entries.findOne({
         where: { batchId: req.params.batchId },

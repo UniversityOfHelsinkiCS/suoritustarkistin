@@ -33,6 +33,7 @@ const MISSING_ENROLLMENT_QUERY = [
 const NOT_SENT_QUERY = [{ '$entry.sent$': null }, { '$extraEntry.sent$': null }]
 
 const UNSENT_ENTRY_QUERY = {
+  moocfiRequestItemId: null,
   [Op.or]: [
     {
       [Op.and]: [
@@ -324,6 +325,12 @@ const sendEmails = async (email, { missingStudents, batchId, failedInSisu }) => 
     })
 }
 
+const countMoocfiImports = (entryIds) =>
+  db.raw_entries.count({
+    where: { moocfiRequestItemId: { [Op.not]: null } },
+    include: [{ model: db.entries, as: 'entry', required: true, attributes: [], where: { id: entryIds } }]
+  })
+
 /**
  * Send entries to Sisu using importer-db-api.
  * Request body should contain a list of entry ids to be sent to Sisu.
@@ -336,6 +343,12 @@ const sendToSis = async (req, res) => {
   const { entryIds = [], extraEntryIds = [] } = req.body
 
   if (!entryIds.length && !extraEntryIds.length) return res.status(400).send({ message: 'No entries to send' })
+
+  if (entryIds.length && (await countMoocfiImports(entryIds))) {
+    return res
+      .status(400)
+      .send({ message: 'Completions imported through the courses.mooc.fi API are sent by the API itself.' })
+  }
 
   const email = async (failedInSisu) => {
     const pick = entryIds[0] || extraEntryIds[0]

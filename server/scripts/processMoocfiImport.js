@@ -242,7 +242,6 @@ const resolveItem = async (item, context) => {
     rows: {
       rawEntry: {
         studentNumber,
-        batchId: `moocfi-${uuidv4()}`,
         grade: grade.abbreviation,
         credits: creditsAsString,
         language: attainmentLanguage,
@@ -291,11 +290,12 @@ const fetchAcceptors = async (resolved) => {
  * way to fail is the database itself -- and then no completion should be left half-written.
  */
 const writeAll = async (resolved) => {
+  const batchId = `moocfi-${uuidv4()}`
   const transaction = await db.sequelize.transaction()
   try {
     const written = []
     for (const { requestItemId, rows } of resolved) {
-      const rawEntry = await db.raw_entries.create(rows.rawEntry, { transaction })
+      const rawEntry = await db.raw_entries.create({ ...rows.rawEntry, batchId }, { transaction })
       const entry = await db.entries.create({ ...rows.entry, rawEntryId: rawEntry.id }, { transaction })
       written.push({ requestItemId, entry })
     }

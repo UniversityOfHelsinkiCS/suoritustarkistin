@@ -187,6 +187,14 @@ describe('an item that resolves', () => {
     assert.equal(rawEntries.length, 1)
     assert.equal(entries[0].rawEntryId, rawEntries[0].id)
     assert.equal(rawEntries[0].moocfiRequestItemId, 'moocfi-completion-1')
+
+    // What the rest of Suotar reads off these rows: no person stands behind an import, and
+    // the daily check from Sisu only picks up entries whose registration state is set.
+    assert.equal(rawEntries[0].graderId, null)
+    assert.equal(rawEntries[0].reporterId, null)
+    assert.equal(entries[0].verifierPersonId, null)
+    assert.equal(entries[0].registered, 'NOT_REGISTERED')
+    assert.equal(entries[0].sendState, 'NOT_SENT')
   })
 
   test('registers against the enrolment the caller named, not the one the date matches', async () => {
@@ -555,6 +563,22 @@ describe('batching', () => {
       ]
     )
     assert.equal((await db.entries.findAll()).length, 1)
+  })
+
+  test('writes the whole request as one batch, whatever it holds', async () => {
+    await seedCourse()
+    await seedCourse({ courseCode: 'TKT10002' })
+    importer.respondByPath(fixtures())
+
+    await run([item({ requestItemId: 'a' }), item({ requestItemId: 'b', gradeId: '4' })])
+
+    const rawEntries = await db.raw_entries.findAll()
+    assert.equal(rawEntries.length, 2)
+    assert.equal(
+      new Set(rawEntries.map(({ batchId }) => batchId)).size,
+      1,
+      'the reports page is a list of batches, so an import must be one report rather than one per attainment'
+    )
   })
 
   test('returns both halves in request order', async () => {

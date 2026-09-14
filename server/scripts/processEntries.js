@@ -75,7 +75,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
   await Promise.all(
     createdEntries.map(async (rawEntry) => {
       const grader = graders.find((g) => g.id === rawEntry.graderId)
-      const verifier = employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
+      const verifier = grader && employees.find(({ employeeNumber }) => employeeNumber === grader.employeeId)
       const completionDate = moment(rawEntry.attainmentDate)
       const course = courses.find((c) => c.id === rawEntry.courseId)
       const student = students.find((p) => p.studentNumber === rawEntry.studentNumber)
@@ -98,7 +98,9 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
           studentNumber: rawEntry.studentNumber,
           courseCode: course.courseCode,
           reason: FAILURE_REASONS.VERIFIER_NOT_FOUND,
-          message: `Person with employee number ${grader.employeeId} not found from Sisu`
+          message: grader
+            ? `Person with employee number ${grader.employeeId} not found from Sisu`
+            : 'Completion has no grader to verify it'
         })
         return Promise.resolve()
       }

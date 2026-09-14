@@ -44,8 +44,9 @@ const getTableRowStyle = (entry) => {
 }
 
 const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
-  const { entry, graderId } = rawEntry
+  const { entry, graderId, moocfiRequestItemId } = rawEntry
   if (entry.sent) return false
+  if (moocfiRequestItemId) return false
   if (isAdmin) return true
   if (graderId === userId && entry.missingEnrolment) return true
   return false
@@ -295,7 +296,7 @@ const EntryCells = ({ entry, course, grader }) => {
       </TableCell>
       <TableCell data-cy="report-completionLanguage">{completionLanguage || null}</TableCell>
       <TableCell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</TableCell>
-      <TableCell>{grader ? grader.name : 'Grader not found'}</TableCell>
+      <TableCell>{grader?.id ? grader.name : 'Grader not found'}</TableCell>
       <TableCell data-cy={`report-courseUnitRealisationName-${gradeId}`} sx={{ width: '25%' }}>
         <Box style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
           <Box

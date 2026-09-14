@@ -611,7 +611,7 @@ describe('when a lookup cannot reach Sisu', () => {
     assert.equal(
       codeOf(outcome, 'moocfi-completion-1'),
       'toSend',
-      'nothing was submitted, so no cooldown may stand in the way of an immediate retry'
+      'nothing was submitted, so an immediate retry has nothing to duplicate'
     )
   })
 })
@@ -678,112 +678,26 @@ describe('when resolving fails partway through the batch', () => {
   })
 })
 
-describe('the submission cooldown', () => {
-  // Sequelize will not update createdAt through the model, so age the row in SQL.
-  const age = (entry, hours) =>
-    db.sequelize.query('UPDATE entries SET "createdAt" = :createdAt WHERE id = :id', {
-      replacements: { createdAt: new Date(Date.now() - hours * 60 * 60 * 1000), id: entry.id }
-    })
-
-  /**
-   * Resolving does not send; the controller does. So a row only waits once its state says it
-   * reached Sisu, which is what these have to stand in for.
-   */
+/**
+ * Resolving no longer holds anything back for a submission already in flight: mooc.fi's
+ * requestItemIds are not stable across retries, so import cannot recognise a retry at all, and
+ * the wait moved to verify, which is keyed on the attainment id Suotar itself minted.
+ */
+describe('a completion resubmitted while the first attempt is unresolved', () => {
   const submitted = (entry, sendState = 'ATTEMPTED') => entry.update({ sendState })
 
-  test('refuses a resubmission while the first outcome is unknown', async () => {
+  test('is resolved and written again rather than refused', async () => {
     await seedCourse()
     importer.respondByPath(fixtures())
 
     const first = await run([item()])
     await submitted(first.toSend[0].entry)
-    importer.requests = []
+
     const { results, toSend } = await run([item()])
-
-    assert.deepEqual(toSend, [], 'submitting again could create a second attainment in Sisu')
-    assert.equal(results[0].status, 'error')
-    assert.equal(results[0].code, 'submissionPending')
-    assert.equal((await db.entries.findAll()).length, 1)
-    assert.equal(importer.requests.length, 0, 'a refused item needs no importer lookups')
-  })
-
-  test('hands back the attainment id so mooc.fi can verify, and when to retry', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
-
-    const first = await run([item()])
-    await submitted(first.toSend[0].entry)
-    const { results } = await run([item()])
-
-    assert.equal(results[0].result.submittedAttainmentId, first.toSend[0].entry.id)
-    assert.equal(results[0].result.submittedAttainmentType, 'AssessmentItemAttainment')
-    const retryAfter = new Date(results[0].result.retryAfter).getTime()
-    const created = first.toSend[0].entry.createdAt.getTime()
-    assert.equal(retryAfter - created, 2 * 60 * 60 * 1000)
-  })
-
-  /**
-   * REJECTED means Sisu evaluated the attainment and refused it, so nothing exists in Sisu and
-   * there is nothing a correction could duplicate.
-   */
-  test('exempts a submission Sisu rejected, so a correction goes through at once', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
-
-    const first = await run([item()])
-    await first.toSend[0].entry.update({ sendState: 'REJECTED', errors: { credits: ['invalid'] } })
-
-    const { results, toSend } = await run([item({ credits: 5, gradeId: '4' })])
 
     assert.deepEqual(results, [])
     assert.equal(toSend.length, 1)
-    assert.notEqual(toSend[0].entry.id, first.toSend[0].entry.id, 'the correction gets its own attainment')
-    assert.equal((await db.entries.findAll()).length, 2)
-  })
-
-  test('lets a resubmission through once the cooldown has passed', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
-
-    const first = await run([item()])
-    await submitted(first.toSend[0].entry)
-    await age(first.toSend[0].entry, 3)
-
-    const { results, toSend } = await run([item()])
-
-    assert.deepEqual(results, [], 'by now the importer has synced, so the duplicate check can be trusted')
-    assert.equal(toSend.length, 1)
-    assert.equal((await db.entries.findAll()).length, 2)
-  })
-
-  test('does not wait on a completion that was never sent', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
-
-    const first = await run([item()])
-
-    const { results, toSend } = await run([item()])
-
-    assert.deepEqual(results, [], 'the first attempt never left Suotar, so there is nothing to duplicate')
-    assert.equal(toSend.length, 1)
-    assert.equal(first.toSend[0].entry.sendState, 'NOT_SENT')
-  })
-
-  test('refuses only the item on cooldown, not the rest of the batch', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
-
-    const first = await run([item()])
-    await submitted(first.toSend[0].entry)
-    const { results, toSend } = await run([item(), item({ requestItemId: 'moocfi-completion-2', gradeId: '4' })])
-
-    assert.deepEqual(
-      results.map(({ requestItemId, code }) => [requestItemId, code]),
-      [['moocfi-completion-1', 'submissionPending']]
-    )
-    assert.deepEqual(
-      toSend.map(({ requestItemId }) => requestItemId),
-      ['moocfi-completion-2']
-    )
+    assert.notEqual(toSend[0].entry.id, first.toSend[0].entry.id, 'the retry mints its own attainment id')
+    assert.equal(await db.entries.count(), 2)
   })
 })

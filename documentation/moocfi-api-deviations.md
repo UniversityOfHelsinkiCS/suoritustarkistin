@@ -10,25 +10,22 @@ subject to that delay, section 4 verify included.
 
 ## Added result codes
 
-### `submissionPending` (3)
+### `submissionPending` (4)
 
-An item whose `requestItemId` was submitted less than **two hours** ago is refused rather than
-sent to Sisu again.
+An id whose attainment Sisu has not shown Suotar yet, but which Suotar submitted less than **two
+hours** ago, is answered `submissionPending` rather than `notRegistered`.
 
-The spec has courses.mooc.fi verify before retrying a `sisuTimeout`, which the delay above makes
-impossible: for up to an hour verify answers `notRegistered` for an attainment that does exist,
-and a client polling every few minutes would submit a second one. Only Suotar knows immediately
-what it has already submitted. Two hours also means Sisu's data has reached Suotar by the time a
-retry is accepted, so the duplicate check — what protects a retry whose first attempt did land —
-is trustworthy again.
+Section 4 reads the same delayed copy as everything else, so "no attainment" on its own cannot
+tell a submission that failed from one Sisu simply has not handed over yet. Suotar's own record
+of the send can: for as long as it is recent, the honest answer is "not yet", not "no".
 
 ```json
 {
-  "requestItemId": "moocfi-completion-12345",
+  "requestItemId": "verify-1",
   "status": "error",
   "code": "submissionPending",
   "error": {
-    "message": "This completion was submitted recently and its outcome is not yet confirmed. Verify before retrying."
+    "message": "This attainment was submitted too recently for Sisu to have shown it to Suotar yet. Keep polling; do not resubmit before retryAfter."
   },
   "result": {
     "submittedAttainmentId": "hy-kur-...",
@@ -38,23 +35,17 @@ is trustworthy again.
 }
 ```
 
-A `result` on an error item is itself an extension: the id lets you keep verifying during the
-wait, `retryAfter` saves you guessing when to return.
+Keep polling, exactly as for `notRegistered`. The difference is what it says about resubmitting:
+until `retryAfter`, a fresh import of the same completion risks a second attainment in Sisu,
+because the duplicate check reads the same delayed copy. After `retryAfter`, `notRegistered`
+means what it says and the completion can be submitted again.
 
-Only a completion that reached Sisu starts the wait. A rejection — `courseNotAllowed`,
-`personNotFound`, `enrolmentNotFound`, `invalidCredits`, `invalidGradeForGradeScale`,
-`studyRightNotValid` — submitted nothing, so a corrected retry is accepted immediately.
+Only a submission that reached Sisu is held open this way. An attainment Sisu refused
+(`sisuValidationFailed`) is `notRegistered` at once, so a correction can go straight back in.
 
-| first outcome          | retry within 2 h         | retry after 2 h                                                  |
-| ---------------------- | ------------------------ | ---------------------------------------------------------------- |
-| `sisuTimeout`          | `submissionPending`      | accepted; answered `duplicateAttainment` if the first one landed |
-| `sent`                 | `submissionPending`      | accepted; answered `duplicateAttainment`                         |
-| `sisuValidationFailed` | **accepted immediately** | —                                                                |
-
-`sisuValidationFailed` is exempt because Sisu saw the attainment and refused it: nothing exists
-that a retry could duplicate.
-
--> pending status to verify (§4) instead of here
+Section 3 does none of this. It neither recognises a retry nor refuses one: every item is
+resolved and submitted on its own merits, and `requestItemId` is not consulted (see *What we
+assume about your side*).
 
 ### `gradeScaleMismatch` (3)
 
@@ -94,6 +85,9 @@ with. Suotar picks the attainment id itself and sends it to Sisu, so it exists w
 outcome, and returns it in a `result` with `submittedAttainmentId` and
 `submittedAttainmentType`, exactly as `sent` does.
 
+This is the only way you learn the id of a submission whose outcome is uncertain, and section 4
+needs it, so keep it.
+
 ### `serviceTemporarilyUnavailable` is request-level (1, 2, 3, 4, 6)
 
 Renamed from the spec's per-item `sisuTemporarilyUnavailable`, and answered as a request-level
@@ -130,9 +124,8 @@ right did not resolve".
 The spec defines `malformedRequest` for a body that is not a JSON array of items. Suotar also
 uses it for an item the endpoint cannot read — no `studentNumber`, no `courseCode`, `credits`
 that is not a number, a `courseUnitRealisationId` section 6 does not accept — and for a repeated
-`requestItemId`. The per-item codes describe
-outcomes for a well-formed item, so `personNotFound` for an item carrying no student number
-would mislead.
+`requestItemId`. The per-item codes describe outcomes for a well-formed item, so `personNotFound`
+for an item carrying no student number would mislead.
 
 ### Batch size limit
 
@@ -142,6 +135,10 @@ lookups per item, so a large batch risks running past your client's timeout — 
 available, since it leaves you unsure whether the completions were submitted. Section 2 costs
 about as much per item but only reads: a timeout there can simply be retried, so it keeps the
 higher limit.
+
+A full section 3 batch is a lot of sequential Sisu lookups, so allow it minutes rather than
+seconds before your client gives up: a response you never receive is the one case Suotar cannot
+protect you from resubmitting into.
 
 -> add limits to spec
 
@@ -199,13 +196,19 @@ them is a separate project. The other five endpoints do not depend on it.
 
 ## What we assume about your side
 
-### `requestItemId` is stable across retries for section 3
+### You hold the `submittedAttainmentId`, and retry through section 4
 
-The spec says only that it is set by courses.mooc.fi and echoed back. The two-hour wait, and so
-the protection against double submission, works only if a retry carries the same id as the
-original. The section 3 example value `moocfi-completion-12345` suggests a durable completion id
-rather than the per-request handles in sections 1 and 2 — but a client generating a fresh id per
-request silently loses the protection. **Please confirm.**
+`requestItemId` is confirmed not to be stable across retries, so Suotar cannot use it to
+recognise one and does not try. The id that identifies a submission is the
+`submittedAttainmentId` section 3 answers with — on `sent` and on `sisuTimeout` alike — and
+section 4 is where a submission in flight is recognised.
+
+That leaves one case with no protection: an import request that never returns you a response at
+all, so you never learn the id. Set a client timeout generous enough to outlast a full batch (and
+under five minutes, where Suotar's own server gives up) so that a slow Sisu comes back as
+`sisuTimeout` with an id rather than as nothing. If a response is lost anyway, do not resubmit
+immediately — wait out the delay above and look at `existingAttainments` in section 2, which
+lists what Sisu holds for that person and course. Resubmit only if the completion is not there.
 
 ### Enrolments come from Sisu only
 
@@ -214,10 +217,9 @@ enrolment in eduweb but not in Sisu is `enrolmentNotFound` here.
 
 ## Open questions
 
-1. `submissionPending` and `gradeScaleMismatch` need adding to section 3, and clients need to
-   handle them.
+1. `gradeScaleMismatch` needs adding to section 3 and `submissionPending` to section 4, and
+   clients need to handle both.
 2. Section 4's polling guidance assumes verify is current, and it can be up to an hour behind.
    The diagram's "attainment shows up in Sisu a few minutes later" is optimistic — expect longer,
    and consider backoff rather than a fixed few-minute interval.
-3. Is `requestItemId` stable across retries for section 3?
-4. Should the response report the attainment date registered?
+3. Should the response report the attainment date registered?

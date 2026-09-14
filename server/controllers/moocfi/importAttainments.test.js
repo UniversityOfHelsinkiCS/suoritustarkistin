@@ -258,7 +258,7 @@ describe('an attainment Sisu refuses', () => {
     assert.match(body[0].error.message, /grade is not valid for the scale/)
 
     const [entry] = await db.entries.findAll()
-    assert.equal(entry.sendState, 'REJECTED', 'or the cooldown cannot exempt a corrected retry')
+    assert.equal(entry.sendState, 'REJECTED', 'or verify would call a refused attainment pending')
     assert.ok(entry.errors, 'what Sisu objected to belongs on the entry too')
   })
 
@@ -300,7 +300,9 @@ describe('when Sisu does not answer', () => {
     assert.equal(entry.sent, null, 'nothing may claim this reached Sisu')
   })
 
-  test('the entry stays on cooldown, so an immediate retry is refused rather than resent', async () => {
+  // The id is the whole point of answering sisuTimeout with a result: section 4 needs something
+  // to verify, and this is mooc.fi's only chance to learn it.
+  test('an immediate retry is sent again, and section 4 is what holds the first one open', async () => {
     await seedCourse()
     dropTheSend()
     const { body: first } = await importItems([item()])
@@ -309,9 +311,9 @@ describe('when Sisu does not answer', () => {
     importer.respondByPath(fixtures())
     const { body } = await importItems([item()])
 
-    assert.equal(body[0].code, 'submissionPending')
-    assert.equal(body[0].result.submittedAttainmentId, first[0].result.submittedAttainmentId)
-    assert.equal(sends().length, sendsBefore, 'no second attainment may reach Sisu while the first is unresolved')
+    assert.equal(body[0].code, 'sent')
+    assert.notEqual(body[0].result.submittedAttainmentId, first[0].result.submittedAttainmentId)
+    assert.equal(sends().length, sendsBefore + 1)
   })
 })
 
@@ -366,7 +368,7 @@ describe('when the importer cannot answer', () => {
     importer.respondByPath(fixtures())
     const { body } = await importItems([item()])
 
-    assert.equal(body[0].code, 'sent', 'no cooldown may follow a completion that never left Suotar')
+    assert.equal(body[0].code, 'sent')
   })
 })
 

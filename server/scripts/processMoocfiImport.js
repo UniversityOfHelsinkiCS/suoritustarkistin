@@ -26,8 +26,7 @@ const {
   validateCredits,
   mapGrades,
   generateEntryId,
-  ACCEPTED_ENROLMENT_STATE,
-  ASSESSMENT_ITEM_ATTAINMENT_TYPE
+  ACCEPTED_ENROLMENT_STATE
 } = require('../utils/sisuAttainmentRules')
 const { CODES, okItem, errorItem, serviceUnavailable } = require('../utils/moocfiResults')
 const { identicalCompletionFound, isImprovedGrade } = require('../utils/earlierCompletions')
@@ -39,9 +38,6 @@ const {
   getMultipleStudyRights,
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('../services/importer')
-
-// Two importer sync runs, hourly per importer-api's cron, with room for a skipped tick.
-const COOLDOWN_MS = 2 * 60 * 60 * 1000
 
 // TEMPORARY. Elements of AI and Building AI have their own registration paths in the automated
 // jobs, and how they should behave through this API is not settled.
@@ -276,40 +272,6 @@ const resolveItem = async (item, context) => {
   }
 }
 
-/**
- * Submissions whose outcome is not yet knowable: given to Sisu less than COOLDOWN_MS ago, and
- * the importer syncs hourly, so nothing can yet say whether the attainment landed.
- *
- * Only these two wait. NOT_SENT never reached Sisu and REJECTED was refused, so neither leaves
- * anything a retry could duplicate.
- */
-const UNSETTLED_SEND_STATES = ['ATTEMPTED', 'ACCEPTED']
-
-const findPendingSubmissions = async (requestItemIds) => {
-  const rows = await db.raw_entries.findAll({
-    where: { moocfiRequestItemId: requestItemIds },
-    include: [{ association: 'entry' }]
-  })
-  const cutoff = Date.now() - COOLDOWN_MS
-  return new Map(
-    rows
-      .filter(
-        ({ entry }) => entry && UNSETTLED_SEND_STATES.includes(entry.sendState) && entry.createdAt.getTime() > cutoff
-      )
-      .sort((a, b) => a.entry.createdAt - b.entry.createdAt)
-      .map((row) => [row.moocfiRequestItemId, row.entry])
-  )
-}
-
-const submissionPending = (requestItemId, entry) =>
-  errorItem(requestItemId, CODES.submissionPending, {
-    result: {
-      submittedAttainmentId: entry.id,
-      submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE,
-      retryAfter: new Date(entry.createdAt.getTime() + COOLDOWN_MS).toISOString()
-    }
-  })
-
 // The acceptors Sisu wants named on the attainments. Suotar does not choose them: they are the
 // realisation's own teachers.
 const fetchAcceptors = async (resolved) => {
@@ -354,24 +316,20 @@ const writeAll = async (resolved) => {
  * resolving writes nothing at all.
  */
 const processMoocfiImport = async (items) => {
-  const pending = await findPendingSubmissions(items.map(({ requestItemId }) => requestItemId))
-  const fresh = items.filter(({ requestItemId }) => !pending.has(requestItemId))
-  let context = null
-  if (fresh.length) {
-    try {
-      context = await fetchContext(fresh)
-    } catch (error) {
-      throw serviceUnavailable('Fetching the context of a courses.mooc.fi import failed', error, {
-        items: fresh.length
-      })
-    }
+  let context
+  try {
+    context = await fetchContext(items)
+  } catch (error) {
+    throw serviceUnavailable('Fetching the context of a courses.mooc.fi import failed', error, {
+      items: items.length
+    })
   }
 
-  const results = [...pending].map(([requestItemId, entry]) => submissionPending(requestItemId, entry))
+  const results = []
 
   // Every item resolves before anything is written, so a failure partway leaves nothing behind.
   const resolved = []
-  for (const item of fresh) {
+  for (const item of items) {
     const { result, rows } = await resolveItem(item, context)
     if (result) {
       results.push(result)

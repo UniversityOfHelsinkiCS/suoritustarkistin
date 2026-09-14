@@ -47,14 +47,12 @@ const CODES = {
   studyRightNotValid: 'studyRightNotValid',
   sisuValidationFailed: 'sisuValidationFailed',
   sisuTimeout: 'sisuTimeout',
-  // Not a spec code: the spec has mooc.fi carry the retry risk, which it cannot do while the
-  // data it is told to verify against lags behind Sisu.
-  submissionPending: 'submissionPending',
 
   // 4: attainments/verify
   registered: 'registered',
   notRegistered: 'notRegistered',
   misregistered: 'misregistered',
+  submissionPending: 'submissionPending',
 
   // 6: enrolments/list-by-course
   enrolmentsListed: 'enrolmentsListed'
@@ -80,10 +78,10 @@ const MESSAGES = {
   [CODES.invalidGradeForGradeScale]: "Grade id is not valid for the resolved enrolment's grade scale.",
   [CODES.studyRightNotValid]: 'Study right cannot support the attainment.',
   [CODES.sisuTimeout]: 'Sisu operation timed out; outcome is uncertain.',
-  [CODES.submissionPending]:
-    'This completion was submitted recently and its outcome is not yet confirmed. Verify before retrying.',
 
   [CODES.notRegistered]: 'No final or partial Sisu registration evidence was found for the submitted attainment id.',
+  [CODES.submissionPending]:
+    'This attainment was submitted too recently for Sisu to have shown it to Suotar yet. Keep polling; do not resubmit before retryAfter.',
   [CODES.misregistered]: 'A previously registered attainment has been marked misregistered in Sisu.'
 }
 

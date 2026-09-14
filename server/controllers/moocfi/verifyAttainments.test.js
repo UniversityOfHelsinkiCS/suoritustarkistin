@@ -17,6 +17,9 @@ const {
   post
 } = require('../../test/helpers')
 
+// After the helpers: they register the module aliases the models rely on.
+const db = require('../../models/index')
+
 const PATH = '/api/attainments/verify'
 const STATUS_PATH = '/suotar/attainment-status'
 
@@ -111,6 +114,114 @@ describe('verifying an attainment Suotar submitted', () => {
 
     const [request] = importer.requests.filter(({ url }) => url.startsWith(STATUS_PATH))
     assert.deepEqual(request.body, [ATTAINMENT_ID])
+  })
+})
+
+/**
+ * The gap section 4 exists to cover: Suotar reads a copy of Sisu that lags it, so an attainment
+ * it has just submitted is invisible here for a while. Suotar's own entry is what tells that
+ * apart from a submission that never landed.
+ */
+describe('verifying an attainment Sisu has not shown us yet', () => {
+  // Sequelize will not write createdAt through the model, so age the row in SQL.
+  const submittedEntry = async ({ sendState = 'ATTEMPTED', hoursAgo = 0 } = {}) => {
+    const rawEntry = await db.raw_entries.create({
+      studentNumber: '012345678',
+      batchId: 'moocfi-test',
+      grade: '3',
+      credits: '5',
+      attainmentDate: new Date()
+    })
+    const entry = await db.entries.create({
+      id: ATTAINMENT_ID,
+      personId: 'hy-hlo-1',
+      completionDate: new Date(),
+      rawEntryId: rawEntry.id,
+      sendState
+    })
+    if (hoursAgo) {
+      await db.sequelize.query('UPDATE entries SET "createdAt" = :createdAt WHERE id = :id', {
+        replacements: { createdAt: new Date(Date.now() - hoursAgo * 60 * 60 * 1000), id: entry.id }
+      })
+    }
+    return entry.reload()
+  }
+
+  const nothingInSisu = () => importer.respondByPath({ [STATUS_PATH]: statusesFor({}) })
+
+  for (const sendState of ['ATTEMPTED', 'ACCEPTED']) {
+    test(`returns submissionPending for a ${sendState} entry submitted just now`, async () => {
+      nothingInSisu()
+      const entry = await submittedEntry({ sendState })
+
+      const { status, body } = await verify([{ requestItemId: 'verify-1', submittedAttainmentId: ATTAINMENT_ID }])
+
+      assert.equal(status, 200)
+      assert.deepEqual(body, [
+        {
+          requestItemId: 'verify-1',
+          status: 'error',
+          code: 'submissionPending',
+          error: {
+            message:
+              'This attainment was submitted too recently for Sisu to have shown it to Suotar yet. ' +
+              'Keep polling; do not resubmit before retryAfter.'
+          },
+          result: {
+            submittedAttainmentId: ATTAINMENT_ID,
+            submittedAttainmentType: 'AssessmentItemAttainment',
+            retryAfter: new Date(entry.createdAt.getTime() + 2 * 60 * 60 * 1000).toISOString()
+          }
+        }
+      ])
+    })
+  }
+
+  test('returns notRegistered once the window has passed, so mooc.fi may submit again', async () => {
+    nothingInSisu()
+    await submittedEntry({ hoursAgo: 3 })
+
+    const { body } = await verify([{ requestItemId: 'verify-1', submittedAttainmentId: ATTAINMENT_ID }])
+
+    assert.equal(body[0].code, 'notRegistered', 'by now Sisu would have shown it to us')
+  })
+
+  // Sisu evaluated these and refused them, so there is nothing on the way.
+  for (const sendState of ['NOT_SENT', 'REJECTED']) {
+    test(`returns notRegistered for a ${sendState} entry`, async () => {
+      nothingInSisu()
+      await submittedEntry({ sendState })
+
+      const { body } = await verify([{ requestItemId: 'verify-1', submittedAttainmentId: ATTAINMENT_ID }])
+
+      assert.equal(body[0].code, 'notRegistered')
+    })
+  }
+
+  test('lets Sisu answer for an attainment it does hold, whatever the entry says', async () => {
+    importer.respondByPath({
+      [STATUS_PATH]: statusesFor({
+        [ATTAINMENT_ID]: { id: 'hy-opintosuoritus-1', type: 'CourseUnitAttainment', misregistration: false }
+      })
+    })
+    await submittedEntry()
+
+    const { body } = await verify([{ requestItemId: 'verify-1', submittedAttainmentId: ATTAINMENT_ID }])
+
+    assert.equal(body[0].code, 'registered')
+  })
+
+  test('lets a misregistration answer too, so mooc.fi stops polling', async () => {
+    importer.respondByPath({
+      [STATUS_PATH]: statusesFor({
+        [ATTAINMENT_ID]: { id: 'hy-opintosuoritus-1', type: 'CourseUnitAttainment', misregistration: true }
+      })
+    })
+    await submittedEntry()
+
+    const { body } = await verify([{ requestItemId: 'verify-1', submittedAttainmentId: ATTAINMENT_ID }])
+
+    assert.equal(body[0].code, 'misregistered')
   })
 })
 

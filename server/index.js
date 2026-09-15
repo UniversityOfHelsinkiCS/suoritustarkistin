@@ -89,20 +89,35 @@ initializeDatabaseConnection()
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
       logger.info('Suotar: Starting cron jobs')
 
-      cron.schedule('30 17 * * *', () => {
-        logger.info('Suotar: Checking all entries from Sisu cron')
-        checkAllEntriesFromSisu()
-      })
+      const missedExecutionTolerance = 10 * 60 * 1000 // 10 minutes
 
-      cron.schedule('15 3 * * *', () => {
-        logger.info('Suotar: Checking registered for mooc cron')
-        checkRegisteredForMooc()
-      })
+      cron.schedule(
+        '30 17 * * *',
+        () => {
+          logger.info('Suotar: Checking all entries from Sisu cron')
+          checkAllEntriesFromSisu()
+        },
+        { missedExecutionTolerance }
+      )
 
-      cron.schedule('15 4 * * *', () => {
-        logger.info('Suotar: Checking registered for newmooc cron')
-        checkRegisteredForNewMooc()
-      })
+      // do not schedule these earlier, eoai run takes at least 3:00-4:15 timeslot
+      cron.schedule(
+        '30 4 * * *',
+        () => {
+          logger.info('Suotar: Checking registered for mooc cron')
+          checkRegisteredForMooc()
+        },
+        { missedExecutionTolerance }
+      )
+
+      cron.schedule(
+        '31 4 * * *',
+        () => {
+          logger.info('Suotar: Checking registered for newmooc cron')
+          checkRegisteredForNewMooc()
+        },
+        { missedExecutionTolerance }
+      )
     }
 
     /**

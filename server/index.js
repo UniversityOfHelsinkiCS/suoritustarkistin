@@ -18,6 +18,8 @@ const { initializeCronJobs } = require('./scripts/cronjobs')
 
 const { IN_MAINTENANCE } = process.env
 
+cron.setLogger(logger.child({ source: 'node-cron' }))
+
 /**
  * Node >=15 terminates the process on an unhandled promise rejection. Node 14 only
  * warned. Log and keep running, as Node 14 did. Maybe consider a more modern pattern

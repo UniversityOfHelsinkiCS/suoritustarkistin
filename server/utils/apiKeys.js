@@ -10,7 +10,6 @@ const db = require('../models/index')
 
 const TOKEN_PREFIX = 'suotar_'
 
-const MOOCFI_CLIENT = 'moocfi'
 const DISPLAY_PREFIX_LENGTH = TOKEN_PREFIX.length + 6
 
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex')
@@ -18,12 +17,11 @@ const hashToken = (token) => crypto.createHash('sha256').update(token).digest('h
 const generateToken = () => `${TOKEN_PREFIX}${crypto.randomBytes(32).toString('base64url')}`
 
 // Returns [record, token]. The token is the only copy.
-const createApiKey = async ({ name, client, createdById, expiresAt = null }) => {
+const createApiKey = async ({ name, createdById, expiresAt = null }) => {
   const token = generateToken()
 
   const apiKey = await db.api_keys.create({
     name,
-    client,
     createdById,
     expiresAt,
     tokenHash: hashToken(token),
@@ -46,10 +44,10 @@ const touchLastUsed = async (apiKey) => {
   })
 }
 
-const resolveApiKey = async (token, client) => {
+const resolveApiKey = async (token) => {
   if (!token || typeof token !== 'string') return null
 
-  const apiKey = await db.api_keys.findOne({ where: { tokenHash: hashToken(token), client } })
+  const apiKey = await db.api_keys.findOne({ where: { tokenHash: hashToken(token) } })
   if (!apiKey || !apiKey.active) return null
 
   await touchLastUsed(apiKey)
@@ -58,7 +56,6 @@ const resolveApiKey = async (token, client) => {
 
 module.exports = {
   TOKEN_PREFIX,
-  MOOCFI_CLIENT,
   DISPLAY_PREFIX_LENGTH,
   LAST_USED_THROTTLE_MS,
   hashToken,

@@ -13,10 +13,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      client: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
       // SHA-256 of the token
       tokenHash: {
         type: Sequelize.STRING,

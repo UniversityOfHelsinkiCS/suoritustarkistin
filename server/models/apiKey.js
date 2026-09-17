@@ -10,11 +10,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       },
-      // Which system the credential was issued to, e.g. 'moocfi'.
-      client: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
       tokenHash: {
         type: DataTypes.STRING,
         allowNull: false,

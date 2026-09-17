@@ -2,7 +2,7 @@ const { Op } = require('sequelize')
 
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
-const { resolveApiKey, MOOCFI_CLIENT } = require('./apiKeys')
+const { resolveApiKey } = require('./apiKeys')
 const { moocfiLogger } = require('./moocfiLogger')
 const { REQUEST_CODES, MESSAGES } = require('./moocfiResults')
 
@@ -42,7 +42,7 @@ const checkMoocfiToken = async (req, res, next) => {
   const { authorization, token } = req.headers
   const bearer = authorization?.startsWith('Bearer ') ? authorization.slice('Bearer '.length) : undefined
 
-  const apiKey = await resolveApiKey(bearer || token, MOOCFI_CLIENT)
+  const apiKey = await resolveApiKey(bearer || token)
   if (!apiKey) {
     moocfiLogger(req.originalUrl).warn('Failed mooc.fi token check', { status: 401, bearer: !!bearer })
     return res

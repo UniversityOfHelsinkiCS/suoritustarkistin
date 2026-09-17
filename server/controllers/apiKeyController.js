@@ -11,7 +11,6 @@ const handleDatabaseError = (res, error) => {
 const PUBLIC_ATTRIBUTES = [
   'id',
   'name',
-  'client',
   'prefix',
   'createdById',
   'revokedById',
@@ -45,19 +44,18 @@ const getApiKeys = async (_req, res) => {
 
 // The only response that ever carries the token.
 const addApiKey = async (req, res) => {
-  const { name, client, expiresAt } = req.body
+  const { name, expiresAt } = req.body
 
-  if (!name || !client) return res.status(400).json({ error: 'Name and client are required' })
+  if (!name) return res.status(400).json({ error: 'Name is required' })
 
   try {
     const [apiKey, token] = await createApiKey({
       name,
-      client,
       expiresAt: expiresAt || null,
       createdById: req.user.id
     })
 
-    logger.info({ message: 'API key created', apiKeyId: apiKey.id, client, user: req.user.name })
+    logger.info({ message: 'API key created', apiKeyId: apiKey.id, user: req.user.name })
     return res.status(201).json({ apiKey: serialize(apiKey), token })
   } catch (error) {
     return handleDatabaseError(res, error)

@@ -37,7 +37,7 @@ beforeEach(async () => {
 
 describe('creating a key', () => {
   test('returns the token once, and stores only its hash', async () => {
-    const { status, body } = await asAdmin('POST', '/api/api_keys', { name: 'courses.mooc.fi', client: 'moocfi' })
+    const { status, body } = await asAdmin('POST', '/api/api_keys', { name: 'courses.mooc.fi' })
 
     assert.equal(status, 201)
     assert.ok(body.token.startsWith(TOKEN_PREFIX), 'the prefix is what makes a leaked key recognisable')
@@ -49,7 +49,7 @@ describe('creating a key', () => {
   })
 
   test('never exposes the token or its hash again', async () => {
-    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k', client: 'moocfi' })
+    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k' })
 
     const { body: listed } = await asAdmin('GET', '/api/api_keys')
 
@@ -60,22 +60,21 @@ describe('creating a key', () => {
   })
 
   test('records who issued it', async () => {
-    const { body } = await asAdmin('POST', '/api/api_keys', { name: 'k', client: 'moocfi' })
+    const { body } = await asAdmin('POST', '/api/api_keys', { name: 'k' })
 
     const { body: listed } = await asAdmin('GET', '/api/api_keys')
     assert.equal(listed[0].createdBy.name, 'admin')
     assert.ok(body.apiKey.createdById)
   })
 
-  test('rejects a key with no name or client', async () => {
-    assert.equal((await asAdmin('POST', '/api/api_keys', { client: 'moocfi' })).status, 400)
-    assert.equal((await asAdmin('POST', '/api/api_keys', { name: 'k' })).status, 400)
+  test('rejects a key with no name', async () => {
+    assert.equal((await asAdmin('POST', '/api/api_keys', {})).status, 400)
   })
 })
 
 describe('revoking a key', () => {
   test('marks it revoked and records who did it', async () => {
-    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k', client: 'moocfi' })
+    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k' })
 
     const { status, body } = await asAdmin('DELETE', `/api/api_keys/${created.apiKey.id}`)
 
@@ -89,7 +88,7 @@ describe('revoking a key', () => {
   })
 
   test('keeps the original revocation time when revoked twice', async () => {
-    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k', client: 'moocfi' })
+    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k' })
     const { body: first } = await asAdmin('DELETE', `/api/api_keys/${created.apiKey.id}`)
 
     const { body: second } = await asAdmin('DELETE', `/api/api_keys/${created.apiKey.id}`)
@@ -104,11 +103,11 @@ describe('revoking a key', () => {
 
 describe('authorization', () => {
   test('a grader cannot list, create or revoke', async () => {
-    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k', client: 'moocfi' })
+    const { body: created } = await asAdmin('POST', '/api/api_keys', { name: 'k' })
 
     for (const [method, path, body] of [
       ['GET', '/api/api_keys'],
-      ['POST', '/api/api_keys', { name: 'x', client: 'moocfi' }],
+      ['POST', '/api/api_keys', { name: 'x' }],
       ['DELETE', `/api/api_keys/${created.apiKey.id}`]
     ]) {
       const { status } = await request(method, path, { body, headers: AS_GRADER })

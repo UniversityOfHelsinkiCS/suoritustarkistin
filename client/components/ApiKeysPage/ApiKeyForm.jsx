@@ -1,22 +1,19 @@
 import { callApi } from '@client/utils/apiConnection'
 import { getApiKeysAction } from '@client/utils/redux/apiKeysReducer'
 import { setMessageAction } from '@client/utils/redux/messageReducer'
-import { Button, MenuItem, Stack, TextField } from '@mui/material'
+import { Button, Stack, TextField } from '@mui/material'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-
-const CLIENTS = [{ value: 'moocfi', label: 'courses.mooc.fi' }]
 
 export default ({ close, onCreated }) => {
   const dispatch = useDispatch()
   const [name, setName] = useState('')
-  const [client, setClient] = useState(CLIENTS[0].value)
 
   // intentionally not putting the api key into redux thunk
   const submit = async () => {
     close()
     try {
-      const { data } = await callApi('/api_keys', 'post', { name, client })
+      const { data } = await callApi('/api_keys', 'post', { name })
       onCreated(data.token)
       dispatch(getApiKeysAction())
     } catch {
@@ -33,19 +30,6 @@ export default ({ close, onCreated }) => {
         onChange={(e) => setName(e.target.value)}
         data-cy="api-key-name"
       />
-      <TextField
-        select
-        label="Client"
-        value={client}
-        onChange={(e) => setClient(e.target.value)}
-        data-cy="api-key-client"
-      >
-        {CLIENTS.map(({ value, label }) => (
-          <MenuItem key={value} value={value}>
-            {label}
-          </MenuItem>
-        ))}
-      </TextField>
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button onClick={close}>Cancel</Button>
         <Button variant="contained" color="success" disabled={!name} onClick={submit} data-cy="create-api-key">

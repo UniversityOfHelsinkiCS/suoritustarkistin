@@ -31,8 +31,7 @@ const RevokeButton = ({ apiKey }) => {
 }
 
 const columns = [
-  { key: 'name', header: 'Name', width: '22%', sortable: true },
-  { key: 'client', header: 'Client', width: '12%', sortable: true },
+  { key: 'name', header: 'Name', width: '34%', sortable: true },
   {
     key: 'prefix',
     header: 'Token',

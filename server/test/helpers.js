@@ -252,10 +252,9 @@ const truncateDatabase = async () => {
 
 // Returns [record, token]. Overrides let a test ask for a revoked or expired key.
 const createTestApiKey = async (overrides = {}) => {
-  const { createApiKey, MOOCFI_CLIENT } = require('@server/utils/apiKeys')
+  const { createApiKey } = require('@server/utils/apiKeys')
   const [apiKey, token] = await createApiKey({
     name: 'test key',
-    client: MOOCFI_CLIENT,
     createdById: null,
     ...overrides
   })

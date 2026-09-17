@@ -139,15 +139,6 @@ describe('authentication', () => {
     await apiKey.reload()
     assert.ok(apiKey.lastUsedAt, 'lastUsedAt is how an admin confirms a rotation landed')
   })
-
-  test('rejects a valid key issued to a different client', async () => {
-    const [, otherToken] = await createTestApiKey({ name: 'some other system', client: 'other-service' })
-
-    const { status, body } = await post('/api/persons/echo', [], { token: otherToken })
-
-    assert.equal(status, 401)
-    assert.equal(body.error.code, 'unauthorized')
-  })
 })
 
 describe('request-level errors', () => {

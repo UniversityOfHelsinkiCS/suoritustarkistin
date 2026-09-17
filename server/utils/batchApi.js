@@ -52,11 +52,14 @@ const batchHandler =
     const log = moocfiLogger(req.path)
     const started = Date.now()
 
-    const context = () => ({
+    const batch = {
       client: req.apiKey?.name,
-      items: Array.isArray(items) ? items.length : undefined,
-      ms: Date.now() - started
-    })
+      items: Array.isArray(items) ? items.length : undefined
+    }
+    const context = () => ({ ...batch, ms: Date.now() - started })
+
+    log.info('Received a batch', batch)
+
     const rejected = (reason) => {
       log.warn(`Rejected as malformed: ${reason}`, { ...context(), status: 400 })
       return malformedRequest(res, reason)

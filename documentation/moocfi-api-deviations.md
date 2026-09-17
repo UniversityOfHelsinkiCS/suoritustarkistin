@@ -75,6 +75,43 @@ of the enrolment you chose there always matches.
 
 -> add gradeScaleMismatch to spec
 
+## Added endpoints
+
+### `POST /api/course-codes/validate`
+
+Answers whether a course code can be registered through section 3 at all, so a course missing
+from Suotar is found before a completion is sent rather than by one coming back
+`courseNotAllowed`.
+
+Items are `{ requestItemId, courseCode }`, and the batch limit is the usual 1000.
+
+```json
+[
+  {
+    "requestItemId": "course-1",
+    "status": "ok",
+    "code": "courseAllowed",
+    "result": { "courseCode": "TKT10001", "name": "Ohjelmoinnin perusteet" }
+  },
+  {
+    "requestItemId": "course-2",
+    "status": "error",
+    "code": "courseNotAllowed",
+    "error": { "message": "Suotar does not carry this course code." }
+  }
+]
+```
+
+`courseNotAllowed` means here exactly what it means in section 3, with the same wording, and
+the two read the same course list. It is the only per-item error the endpoint answers.
+
+It reads Suotar's own course list and nothing else, so it costs no Sisu lookup, cannot answer
+`serviceTemporarilyUnavailable`, and is not subject to the delay above. By the same token it
+says nothing about the rest of an import: a code that passes here can still fail section 3 on
+the enrolment, the credits, the grade or the study right.
+
+-> add the course code check to spec
+
 ## Changed responses
 
 ### `sisuTimeout` carries `submittedAttainmentId` (3)
@@ -176,9 +213,8 @@ range where necessary. The response does not currently tell you the date registe
 
 `courseNotAllowed` means the course code is not in Suotar's own course list, which an admin
 maintains by hand; Sisu knowing the course is not enough, so a new course needs arranging before
-its first completion is submitted.
-
--> endpoint for checking course codes validity
+its first completion is submitted. `POST /api/course-codes/validate` above answers whether a
+code has been.
 
 ### Elements of AI and Building AI are not covered yet
 

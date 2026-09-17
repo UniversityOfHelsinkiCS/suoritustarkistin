@@ -8,13 +8,18 @@ const { importAttainments } = require('@server/controllers/moocfi/importAttainme
 const { listByCourse } = require('@server/controllers/moocfi/listByCourse')
 const { resolveEnrolments } = require('@server/controllers/moocfi/resolveEnrolments')
 const { resolvePersons } = require('@server/controllers/moocfi/resolvePersons')
+const { validateCourseCodes } = require('@server/controllers/moocfi/validateCourseCodes')
 const { verifyAttainments } = require('@server/controllers/moocfi/verifyAttainments')
 
 const { checkMoocfiToken } = require('./permissions')
 
-// Scoped to prefixes, not the router: this router sees every request reaching the base
-// router, so an unscoped `use` would 401 the whole API.
-const MOOCFI_PATHS = ['/persons', '/enrolments', '/attainments', '/open-university-product-access-tokens']
+const MOOCFI_PATHS = [
+  '/persons',
+  '/enrolments',
+  '/attainments',
+  '/open-university-product-access-tokens',
+  '/course-codes'
+]
 
 const router = Router()
 
@@ -25,5 +30,6 @@ router.post('/enrolments/resolve', resolveEnrolments)
 router.post('/enrolments/list-by-course', listByCourse)
 router.post('/attainments/import', importAttainments)
 router.post('/attainments/verify', verifyAttainments)
+router.post('/course-codes/validate', validateCourseCodes)
 
 module.exports = { moocfiRouter: router, MOOCFI_PATHS }

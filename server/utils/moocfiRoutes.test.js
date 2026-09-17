@@ -24,13 +24,14 @@ const {
 
 const { MOOCFI_PATHS } = require('./moocfiRoutes')
 
-const SPEC_PATHS = [
+const API_PATHS = [
   '/api/persons/resolve-by-student-numbers',
   '/api/enrolments/resolve',
   '/api/enrolments/list-by-course',
   '/api/attainments/import',
   '/api/attainments/verify',
-  '/api/open-university-product-access-tokens/resolve'
+  '/api/open-university-product-access-tokens/resolve',
+  '/api/course-codes/validate'
 ]
 
 let token
@@ -52,16 +53,16 @@ beforeEach(async () => {
 
 const post = (path, headers = {}) => request('POST', path, { body: [], headers })
 
-describe('the guard covers the spec paths', () => {
-  test('every prefix the spec uses is guarded', () => {
-    for (const path of SPEC_PATHS) {
+describe('the guard covers the API paths', () => {
+  test('every prefix the API uses is guarded', () => {
+    for (const path of API_PATHS) {
       const prefix = MOOCFI_PATHS.find((p) => path.startsWith(`/api${p}`))
       assert.ok(prefix, `${path} is not covered by MOOCFI_PATHS, so it would fall through to checkGrader`)
     }
   })
 
   test('answers an unauthenticated batch call with the spec 401 body', async () => {
-    for (const path of SPEC_PATHS) {
+    for (const path of API_PATHS) {
       const { status, body } = await post(path)
 
       assert.equal(status, 401, path)
@@ -77,7 +78,7 @@ describe('the guard covers the spec paths', () => {
     // A path with no endpoint yet falls through to graderOrAdminRouter and still answers
     // 401 -- but with checkGrader's body. That difference is the evidence the credential
     // was accepted.
-    for (const path of SPEC_PATHS) {
+    for (const path of API_PATHS) {
       const { status, body } = await post(path, { token })
 
       assert.notDeepEqual(

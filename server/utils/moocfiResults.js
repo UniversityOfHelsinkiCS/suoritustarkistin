@@ -55,7 +55,10 @@ const CODES = {
   submissionPending: 'submissionPending',
 
   // 6: enrolments/list-by-course
-  enrolmentsListed: 'enrolmentsListed'
+  enrolmentsListed: 'enrolmentsListed',
+
+  // Not in the spec: course-codes/validate, which answers courseNotAllowed above for the rest.
+  courseAllowed: 'courseAllowed'
 }
 
 /**

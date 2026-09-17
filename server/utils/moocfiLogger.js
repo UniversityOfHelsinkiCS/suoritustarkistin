@@ -9,7 +9,8 @@ const ENDPOINTS = [
   '/enrolments/resolve',
   '/enrolments/list-by-course',
   '/attainments/import',
-  '/attainments/verify'
+  '/attainments/verify',
+  '/course-codes/validate'
 ]
 
 const endpointLabel = (path) => {

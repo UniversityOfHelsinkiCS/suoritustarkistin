@@ -12,15 +12,6 @@ const _ = require('lodash')
 const moment = require('moment')
 const { v4: uuidv4 } = require('uuid')
 
-const {
-  ALL_EOAI_CODES,
-  NEW_BAI_INTERMEDIATE_CODE,
-  NEW_BAI_ADVANCED_CODE,
-  OLD_BAI_CODE,
-  OLD_BAI_INTERMEDIATE_CODE,
-  OLD_BAI_ADVANCED_CODE
-} = require('@shared/common')
-
 const db = require('../models/index')
 const {
   getDateWithinStudyright,
@@ -30,6 +21,7 @@ const {
   ACCEPTED_ENROLMENT_STATE
 } = require('../utils/sisuAttainmentRules')
 const { moocfiLogger } = require('../utils/moocfiLogger')
+const { courseNotAllowedReason } = require('../utils/moocfiCourses')
 const { CODES, okItem, errorItem, serviceUnavailable } = require('../utils/moocfiResults')
 const { identicalCompletionFound, isImprovedGrade } = require('../utils/earlierCompletions')
 const {
@@ -40,17 +32,6 @@ const {
   getMultipleStudyRights,
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('../services/importer')
-
-// TEMPORARY. Elements of AI and Building AI have their own registration paths in the automated
-// jobs, and how they should behave through this API is not settled.
-const UNSETTLED_COURSE_CODES = new Set([
-  ...ALL_EOAI_CODES,
-  NEW_BAI_INTERMEDIATE_CODE,
-  NEW_BAI_ADVANCED_CODE,
-  OLD_BAI_CODE,
-  OLD_BAI_INTERMEDIATE_CODE,
-  OLD_BAI_ADVANCED_CODE
-])
 
 // The two ways resolveItem answers an item outright. The third is returning rows to send.
 const answer = (requestItemId, code, result) => ({ result: okItem(requestItemId, code, result) })
@@ -152,12 +133,9 @@ const fetchContext = async (items) => {
 const resolveItem = async (item, context) => {
   const { requestItemId, studentNumber, courseCode, enrolmentId, attainmentDate, attainmentLanguage } = item
 
-  if (UNSETTLED_COURSE_CODES.has(courseCode)) {
-    return reject(requestItemId, CODES.courseNotAllowed, `${courseCode} cannot be registered through this API yet.`)
-  }
-
   const course = context.courseFor(item)
-  if (!course) return reject(requestItemId, CODES.courseNotAllowed, 'Suotar does not carry this course code.')
+  const notAllowed = courseNotAllowedReason(courseCode, course)
+  if (notAllowed) return reject(requestItemId, CODES.courseNotAllowed, notAllowed)
 
   const person = context.personFor(item)
   if (!person) return reject(requestItemId, CODES.personNotFound)

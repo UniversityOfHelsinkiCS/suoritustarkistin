@@ -44,8 +44,8 @@ Only a submission that reached Sisu is held open this way. An attainment Sisu re
 (`sisuValidationFailed`) is `notRegistered` at once, so a correction can go straight back in.
 
 Section 3 does none of this. It neither recognises a retry nor refuses one: every item is
-resolved and submitted on its own merits, and `requestItemId` is not consulted (see *What we
-assume about your side*).
+resolved and submitted on its own merits, and `requestItemId` is not consulted (see _What we
+assume about your side_).
 
 ### `gradeScaleMismatch` (3)
 

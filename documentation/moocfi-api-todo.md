@@ -1,7 +1,7 @@
 # courses.mooc.fi batch API — todo
 
 Work the implementation owes. Client-facing behaviour belongs in
-[moocfi-api-deviations.md](moocfi-api-deviations.md), not here.
+[moocfi-api-spec.md](moocfi-api-spec.md), not here.
 
 ## Batch section 6's lookup in the importer
 

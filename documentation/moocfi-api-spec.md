@@ -1,10 +1,16 @@
-# Proposed Suotar APIs for registering courses.mooc.fi completions in Sisu
+# Suotar APIs for registering courses.mooc.fi completions in Sisu
 
 courses.mooc.fi will use these APIs to register course completions as Sisu attainments, link courses.mooc.fi accounts to Sisu student numbers, and to get access tokens required for Sisu enrolment links.
 
+Adapted from the [original proposal](https://gist.github.com/nygrenh/3d505fff6d747d550b0c2d63a824bfbb); this document describes what Suotar implements.
+
 ## API shape
 
-Every endpoint is a batch endpoint. A request is a JSON array of items, each with a `requestItemId` set by courses.mooc.fi. The response is an array with one item per request item, carrying the same `requestItemId` back.
+Every endpoint is a batch endpoint. A request is a JSON array of items, each with a `requestItemId` set by courses.mooc.fi. The response is an array with one item per request item, carrying the same `requestItemId` back. A `requestItemId` must be unique within its batch; Suotar does not read it otherwise, and does not use it to recognise a retry.
+
+Every request is authenticated with an API key Suotar issues, sent as `Authorization: Bearer <token>`.
+
+A batch holds at most 1000 items, or 100 for section 3. Section 3 does several sequential Sisu lookups per item, so allow it minutes rather than seconds before your client gives up: a response you never receive is the one case Suotar cannot protect you from resubmitting into.
 
 Each response item carries a `status` and a `code`:
 
@@ -55,36 +61,30 @@ Content-Type: application/json
 
 Not batch item results. These fail the whole request with HTTP 4xx or 5xx. Per-item outcomes, including per-item errors, always return HTTP 200.
 
+- `malformedRequest` (400): the body is not a JSON array, an item is one the endpoint cannot read, a `requestItemId` is missing or repeated, or the batch is over the size limit. The per-item codes describe outcomes for a well-formed item, so a bad shape has nothing to map onto.
+- `unauthorized` (401): missing or invalid credentials.
+- `requestTooLarge` (413): the body is over 5 MB.
+- `serviceTemporarilyUnavailable` (503): Suotar could not read Sisu. Every lookup behind these endpoints is batch-wide, so no item is left with an outcome of its own. Retry the whole batch; section 3 writes nothing unless every item resolved.
+- `internalError` (500).
+
 Example:
 
 ```json
 {
   "error": {
     "code": "malformedRequest",
-    "message": "Request body is not valid JSON or has the wrong top-level shape."
+    "message": "Request body must be a JSON array of request items."
   }
 }
 ```
-
-<details>
-<summary>Request-level error: 401 unauthorized (missing or invalid credentials)</summary>
-
-```json
-{
-  "error": {
-    "code": "unauthorized",
-    "message": "Missing or invalid credentials."
-  }
-}
-```
-
-</details>
 
 ## Typical usage
 
 **Account linking.** courses.mooc.fi asks Suotar for the people enrolled in a course and emails a verification link to the address Sisu holds. The verification link is used to link a courses.mooc.fi account with their student number.
 
-**Registration.** courses.mooc.fi resolves the person and enrolment, submits the attainment, then polls until a final result. Import usually returns `sent`, not `registered`, because the attainment shows up in Sisu a few minutes later. courses.mooc.fi holds the submitted id, polls verify, and stores `attainment.id` once Sisu confirms.
+**Registration.** courses.mooc.fi resolves the person and enrolment, submits the attainment, then polls until a final result. Import returns `sent`, not `registered`: the attainment reaches Sisu asynchronously. courses.mooc.fi holds the submitted id, polls verify, and stores `attainment.id` once Sisu confirms.
+
+**The delay.** Suotar reads not Sisu but a copy refreshed periodically, so an attainment or enrolment can take up to about an hour to appear. Everything Suotar tells you about Sisu is subject to that delay, section 4 verify included, so poll with backoff rather than at a fixed few-minute interval.
 
 <details>
 <summary>Diagram: Order of events</summary>
@@ -137,17 +137,20 @@ sequenceDiagram
     Note over M: display to user:<br/>"Registering your completion..."
     M->>SU: POST import {studentNumber, courseCode, grade, credits, date}
     SU-->>M: sent {submittedAttainmentId hy-kur-*}
-    Note over SU,M: import may instead return registered,<br/>duplicateAttainment, notImprovedAttainment, or an error
+    Note over SU,M: import may instead return duplicateAttainment,<br/>notImprovedAttainment, or an error
     Note over M: store submittedAttainmentId temporarily
     Note over M: display to user:<br/>"Submitted, waiting for confirmation..."
 
-    Note over SU: attainment shows up in Sisu<br/>a few minutes later
+    Note over SU: attainment reaches Sisu, and Suotar<br/>sees it up to an hour later
 
-    loop poll every few minutes until complete
+    loop poll with backoff until complete
         M->>SU: POST verify {submittedAttainmentId}
         alt registered
             SU-->>M: registered {attainment.id}, store permanently
             Note over M: display to user:<br/>"Completion registered in Sisu"
+        else submitted, not visible yet
+            SU-->>M: submissionPending {retryAfter}, keep polling,<br/>do not resubmit before retryAfter
+            Note over M: display to user:<br/>"Still processing..."
         else not yet
             SU-->>M: notRegistered, keep polling
             Note over M: display to user:<br/>"Still processing..."
@@ -166,7 +169,7 @@ sequenceDiagram
 
 Matches a student number to a Sisu person and returns their info.
 
-Result codes: `personFound`, `personNotFound`, `sisuTemporarilyUnavailable`.
+Result codes: `personFound`, `personNotFound`.
 
 **Request**
 
@@ -226,31 +229,13 @@ Content-Type: application/json
 
 </details>
 
-<details>
-<summary>Error response: sisuTemporarilyUnavailable (Sisu temporarily unavailable)</summary>
-
-```json
-[
-  {
-    "requestItemId": "person-1",
-    "status": "error",
-    "code": "sisuTemporarilyUnavailable",
-    "error": {
-      "message": "Sisu was temporarily unavailable."
-    }
-  }
-]
-```
-
-</details>
-
 ## 2. Resolve enrolments
 
 `POST /api/enrolments/resolve`
 
-Checks that the student has a usable Sisu enrolment before courses.mooc.fi imports. `result.enrolments` lists every matching enrolment.
+Checks that the student has a usable Sisu enrolment before courses.mooc.fi imports. `result.enrolments` lists every matching enrolment; `studyRightValidityPeriod` is omitted from one whose study right did not resolve. `gradeScaleId` is the scale section 3 requires.
 
-Result codes: `enrolmentFound`, `personNotFound`, `courseCodeNotFound`, `enrolmentNotFound`, `enrolmentNotAccepted`.
+Result codes: `enrolmentFound`, `personNotFound`, `courseCodeNotFound`, `enrolmentNotFound`, `enrolmentNotAccepted`. The last cannot currently occur: Suotar only ever sees enrolments in state `ENROLLED`, so an unaccepted one is indistinguishable from none and comes back as `enrolmentNotFound`.
 
 **Request**
 
@@ -436,9 +421,11 @@ Content-Type: application/json
 
 Creates completions as attainments in Sisu.
 
-Success codes: `registered`, `sent`, `duplicateAttainment`, `notImprovedAttainment`.
+Sisu rejects an attainment dated outside the student's study right, so Suotar moves the date into range where necessary. The response does not currently report the date actually registered.
 
-Error codes: `personNotFound`, `enrolmentNotFound`, `invalidGradeForGradeScale`, `courseNotAllowed`, `invalidCredits`, `studyRightNotValid`, `acceptorNotFound`, `sisuValidationFailed`, and `sisuTimeout`.
+Success codes: `sent`, `duplicateAttainment`, `notImprovedAttainment`.
+
+Error codes: `personNotFound`, `enrolmentNotFound`, `invalidGradeForGradeScale`, `gradeScaleMismatch`, `courseNotAllowed`, `invalidCredits`, `studyRightNotValid`, `sisuValidationFailed`, and `sisuTimeout`.
 
 **Request**
 
@@ -574,9 +561,7 @@ Content-Type: application/json
 </details>
 
 <details>
-<summary>Error response: invalidGradeForGradeScale (grade invalid for the resolved scale, per-item)</summary>
-
-This is per-item because it needs the enrolment's grade scale resolved first. A statically unknown grade id is a request-level error instead (see Request-level errors above).
+<summary>Error response: invalidGradeForGradeScale (grade invalid for the resolved scale)</summary>
 
 ```json
 [
@@ -594,9 +579,27 @@ This is per-item because it needs the enrolment's grade scale resolved first. A 
 </details>
 
 <details>
-<summary>Error responses: courseNotAllowed, invalidCredits, studyRightNotValid, acceptorNotFound, sisuValidationFailed (other per-item errors)</summary>
+<summary>Error response: gradeScaleMismatch (gradeScaleId is not the enrolment's scale)</summary>
 
-These share the same per-item error shape and differ only in `code` and `message`. Example:
+```json
+[
+  {
+    "requestItemId": "moocfi-completion-12345",
+    "status": "error",
+    "code": "gradeScaleMismatch",
+    "error": {
+      "message": "Grade scale sis-hyl-hyv was sent, but the enrolment is graded on sis-0-5."
+    }
+  }
+]
+```
+
+</details>
+
+<details>
+<summary>Error responses: courseNotAllowed, invalidCredits, studyRightNotValid, sisuValidationFailed (other per-item errors)</summary>
+
+These share the same per-item error shape and differ only in `code` and `message`. `courseNotAllowed` means the course code is not in Suotar's own course list, which an admin maintains by hand; section 7 answers whether a code has been added without submitting a completion. Example:
 
 ```json
 [
@@ -616,7 +619,7 @@ These share the same per-item error shape and differ only in `code` and `message
 <details>
 <summary>Error response: sisuTimeout (timed out, result unknown; verify before retrying)</summary>
 
-The submission may or may not have landed. courses.mooc.fi must verify before retrying, or it risks a double submission.
+The submission may or may not have landed. courses.mooc.fi must verify before retrying, or it risks a double submission. The `submittedAttainmentId` comes back as it does on `sent`, because section 4 needs it.
 
 ```json
 [
@@ -626,6 +629,10 @@ The submission may or may not have landed. courses.mooc.fi must verify before re
     "code": "sisuTimeout",
     "error": {
       "message": "Sisu operation timed out; outcome is uncertain."
+    },
+    "result": {
+      "submittedAttainmentId": "hy-kur-...",
+      "submittedAttainmentType": "AssessmentItemAttainment"
     }
   }
 ]
@@ -639,7 +646,7 @@ The submission may or may not have landed. courses.mooc.fi must verify before re
 
 Checks whether a submitted attainment reached its final state in Sisu.
 
-Result codes: `registered`, `notRegistered`, `misregistered`, `sisuTemporarilyUnavailable`.
+Result codes: `registered`, `notRegistered`, `submissionPending`, `misregistered`.
 
 **Request**
 
@@ -700,6 +707,33 @@ Content-Type: application/json
 </details>
 
 <details>
+<summary>Error response: submissionPending (submitted too recently to be visible, keep polling)</summary>
+
+An id Sisu has not shown Suotar yet, but which Suotar submitted less than two hours ago. Because of the delay above, "no attainment" on its own cannot tell a submission that failed from one Sisu has simply not handed over yet; Suotar's own record of the send can.
+
+Keep polling, exactly as for `notRegistered`. The difference is resubmitting: until `retryAfter`, a fresh import of the same completion risks a second attainment in Sisu, because the duplicate check reads the same delayed copy. Only a submission that reached Sisu is held open this way — one Sisu refused (`sisuValidationFailed`) is `notRegistered` at once, so a correction can go straight back in.
+
+```json
+[
+  {
+    "requestItemId": "verify-1",
+    "status": "error",
+    "code": "submissionPending",
+    "error": {
+      "message": "This attainment was submitted too recently for Sisu to have shown it to Suotar yet. Keep polling; do not resubmit before retryAfter."
+    },
+    "result": {
+      "submittedAttainmentId": "hy-kur-...",
+      "submittedAttainmentType": "AssessmentItemAttainment",
+      "retryAfter": "2026-09-01T14:32:00Z"
+    }
+  }
+]
+```
+
+</details>
+
+<details>
 <summary>Error response: misregistered (was registered, now reversed in Sisu; stop polling, drop the id)</summary>
 
 ```json
@@ -717,107 +751,13 @@ Content-Type: application/json
 
 </details>
 
-<details>
-<summary>Error response: sisuTemporarilyUnavailable (Sisu temporarily unavailable)</summary>
-
-```json
-[
-  {
-    "requestItemId": "verify-1",
-    "status": "error",
-    "code": "sisuTemporarilyUnavailable",
-    "error": {
-      "message": "Sisu was temporarily unavailable during verification."
-    }
-  }
-]
-```
-
-</details>
-
 ## 5. Product access tokens
 
 `POST /api/open-university-product-access-tokens/resolve`
 
-Returns the access tokens courses.mooc.fi uses to build Open University enrolment links.
+Would return the access tokens courses.mooc.fi uses to build Open University enrolment links.
 
-Result codes: `found`, `productAccessTokenNotFound`, `sisuTemporarilyUnavailable`.
-
-**Request**
-
-```http
-POST /api/open-university-product-access-tokens/resolve
-Content-Type: application/json
-
-[
-  {
-    "requestItemId": "token-1",
-    "openUniversityProductId": "otm-open-university-product-id"
-  },
-  {
-    "requestItemId": "token-2",
-    ...
-  }
-]
-```
-
-**Response: `found`**
-
-```json
-[
-  {
-    "requestItemId": "token-1",
-    "status": "ok",
-    "code": "found",
-    "result": {
-      "id": "token-id",
-      "accessToken": "token-from-sisu",
-      "state": "ENABLED",
-      "documentState": "ACTIVE"
-    }
-  },
-  {
-    "requestItemId": "token-2",
-    ...
-  }
-]
-```
-
-<details>
-<summary>Error response: productAccessTokenNotFound (no token for that product id)</summary>
-
-```json
-[
-  {
-    "requestItemId": "token-1",
-    "status": "error",
-    "code": "productAccessTokenNotFound",
-    "error": {
-      "message": "No access token was found for the supplied Open University product id."
-    }
-  }
-]
-```
-
-</details>
-
-<details>
-<summary>Error response: sisuTemporarilyUnavailable (Sisu temporarily unavailable)</summary>
-
-```json
-[
-  {
-    "requestItemId": "token-1",
-    "status": "error",
-    "code": "sisuTemporarilyUnavailable",
-    "error": {
-      "message": "Suotar could not fetch the Open University product access token from Sisu."
-    }
-  }
-]
-```
-
-</details>
+**Not implemented yet.** The other endpoints do not depend on it.
 
 ## 6. List enrolled people by course
 
@@ -825,7 +765,9 @@ Content-Type: application/json
 
 Mostly for account linking: returns the people enrolled in a course with the emails Sisu holds, so courses.mooc.fi can email a student number verification link.
 
-Result codes: `enrolmentsListed`, `courseCodeNotFound`, `sisuTemporarilyUnavailable`.
+The list is trimmed to realisations whose activity period ended less than two months ago; a course with none left in that window answers `courseCodeNotFound`.
+
+Result codes: `enrolmentsListed`, `courseCodeNotFound`.
 
 **Request**
 
@@ -836,8 +778,7 @@ Content-Type: application/json
 [
   {
     "requestItemId": "people-1",
-    "courseCode": "TKT10001",
-    "courseUnitRealisationId": "hy-opt-cur-..."
+    "courseCode": "TKT10001"
   },
   {
     "requestItemId": "people-2",
@@ -898,20 +839,51 @@ Content-Type: application/json
 
 </details>
 
-<details>
-<summary>Error response: sisuTemporarilyUnavailable (Sisu temporarily unavailable)</summary>
+## 7. Validate course codes
 
-```json
+`POST /api/course-codes/validate`
+
+Whether a course code can be registered through section 3 at all, so a course missing from Suotar is found before a completion is sent rather than by one coming back `courseNotAllowed`.
+
+It reads Suotar's own course list and nothing else, so it costs no Sisu lookup and is not subject to the delay above. By the same token it says nothing about the rest of an import: a code that passes here can still fail section 3 on the enrolment, the credits, the grade or the study right.
+
+Result codes: `courseAllowed`, `courseNotAllowed`. The latter means here exactly what it means in section 3, and the two read the same course list.
+
+**Request**
+
+```http
+POST /api/course-codes/validate
+Content-Type: application/json
+
 [
   {
-    "requestItemId": "people-1",
-    "status": "error",
-    "code": "sisuTemporarilyUnavailable",
-    "error": {
-      "message": "Suotar could not serve the list of enrolled people."
-    }
+    "requestItemId": "course-1",
+    "courseCode": "TKT10001"
+  },
+  {
+    "requestItemId": "course-2",
+    ...
   }
 ]
 ```
 
-</details>
+**Response**
+
+```json
+[
+  {
+    "requestItemId": "course-1",
+    "status": "ok",
+    "code": "courseAllowed",
+    "result": { "courseCode": "TKT10001", "name": "Ohjelmoinnin perusteet" }
+  },
+  {
+    "requestItemId": "course-2",
+    "status": "error",
+    "code": "courseNotAllowed",
+    "error": { "message": "Suotar does not carry this course code." }
+  }
+]
+```
+
+Elements of AI and Building AI are refused for now: they have their own registration paths in Suotar, and how they should behave through this API is not settled.

@@ -1,5 +1,5 @@
 /**
- * Not in the spec: POST /api/course-codes/validate.
+ * Spec section 7: POST /api/course-codes/validate.
  *
  * Whether a course code can be registered through section 3 at all. Suotar's course list is
  * maintained by hand, so a course Sisu knows perfectly well still has to be added before its

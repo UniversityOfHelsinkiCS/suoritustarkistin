@@ -6,8 +6,7 @@
  * reached from several endpoints -- a person that does not exist is answered by sections 1,
  * 2 and 3 alike -- so a literal per call site is a wording that drifts.
  *
- * Section numbers refer to the spec; documentation/moocfi-api-deviations.md records where
- * this implementation departs from it.
+ * Section numbers refer to documentation/moocfi-api-spec.md.
  */
 
 const { sendSentryError } = require('./sentry')
@@ -57,7 +56,7 @@ const CODES = {
   // 6: enrolments/list-by-course
   enrolmentsListed: 'enrolmentsListed',
 
-  // Not in the spec: course-codes/validate, which answers courseNotAllowed above for the rest.
+  // 7: course-codes/validate, which answers courseNotAllowed above for the rest.
   courseAllowed: 'courseAllowed'
 }
 

@@ -68,10 +68,14 @@ describe('errorItem', () => {
 })
 
 test('serviceUnavailable builds an error to throw, not an item to answer', () => {
-  const error = serviceUnavailable('Resolving persons failed', new Error('importer is on fire'), { items: 2 })
+  const cause = new Error('importer is on fire')
+  const error = serviceUnavailable('Resolving persons failed', cause, { items: 2 })
 
   assert.ok(error instanceof ServiceUnavailableError)
   assert.equal(error.message, 'Failed to fetch Sisu data.')
+  assert.equal(error.title, 'Resolving persons failed')
+  assert.deepEqual(error.context, { items: 2 })
+  assert.equal(error.cause, cause)
 })
 
 test('okItem carries the result the spec names for the code', () => {

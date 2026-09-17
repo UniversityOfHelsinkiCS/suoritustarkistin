@@ -8,6 +8,7 @@
  * sisuAttainmentRules.js.
  */
 
+const _ = require('lodash')
 const moment = require('moment')
 const { v4: uuidv4 } = require('uuid')
 
@@ -28,6 +29,7 @@ const {
   generateEntryId,
   ACCEPTED_ENROLMENT_STATE
 } = require('../utils/sisuAttainmentRules')
+const { moocfiLogger } = require('../utils/moocfiLogger')
 const { CODES, okItem, errorItem, serviceUnavailable } = require('../utils/moocfiResults')
 const { identicalCompletionFound, isImprovedGrade } = require('../utils/earlierCompletions')
 const {
@@ -300,7 +302,7 @@ const writeAll = async (resolved) => {
       written.push({ requestItemId, entry })
     }
     await transaction.commit()
-    return written
+    return { batchId, written }
   } catch (error) {
     await transaction.rollback()
     throw error
@@ -315,7 +317,7 @@ const writeAll = async (resolved) => {
  * An item that cannot be registered is answered and costs the others nothing. A failure while
  * resolving writes nothing at all.
  */
-const processMoocfiImport = async (items) => {
+const processMoocfiImport = async (items, log = moocfiLogger('/attainments/import')) => {
   let context
   try {
     context = await fetchContext(items)
@@ -340,7 +342,14 @@ const processMoocfiImport = async (items) => {
 
   const acceptors = await fetchAcceptors(resolved)
 
-  const toSend = await writeAll(resolved)
+  const { batchId, written: toSend } = await writeAll(resolved)
+
+  log.info(`Resolved ${items.length} items, ${toSend.length} to send`, {
+    answered: results.length,
+    sending: toSend.length,
+    ...(toSend.length ? { batchId } : {}),
+    codes: _.countBy(results, 'code')
+  })
 
   const order = new Map(items.map(({ requestItemId }, index) => [requestItemId, index]))
   const byRequestOrder = (a, b) => order.get(a.requestItemId) - order.get(b.requestItemId)

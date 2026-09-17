@@ -99,8 +99,13 @@ const errorItem = (requestItemId, code, { message = MESSAGES[code], result } = {
   return result ? { ...item, result } : item
 }
 
-// Thrown past the endpoint to batchApi, which answers it 503 serviceTemporarilyUnavailable.
-class ServiceUnavailableError extends Error {}
+class ServiceUnavailableError extends Error {
+  constructor(title, context, options) {
+    super(MESSAGES[REQUEST_CODES.serviceTemporarilyUnavailable], options)
+    this.title = title
+    this.context = context
+  }
+}
 
 /**
  * Reports one importer failure and returns the error to throw for it. Every lookup behind
@@ -108,7 +113,7 @@ class ServiceUnavailableError extends Error {}
  */
 const serviceUnavailable = (title, error, context) => {
   sendSentryError(title, error, context)
-  return new ServiceUnavailableError(MESSAGES[REQUEST_CODES.serviceTemporarilyUnavailable], { cause: error })
+  return new ServiceUnavailableError(title, context, { cause: error })
 }
 
 /**

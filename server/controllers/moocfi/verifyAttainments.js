@@ -50,7 +50,7 @@ const submissionPending = (requestItemId, entry) =>
     }
   })
 
-const verifyAttainments = batchHandler(async (items) => {
+const verifyAttainments = batchHandler(async (items, log) => {
   const ids = _.uniq(items.map(({ submittedAttainmentId }) => submittedAttainmentId))
 
   let statusById
@@ -61,7 +61,13 @@ const verifyAttainments = batchHandler(async (items) => {
     throw serviceUnavailable('Verifying attainments failed', error, { items: items.length })
   }
 
-  const pending = await findPendingSubmissions(ids.filter((id) => !statusById.get(id)))
+  const missing = ids.filter((id) => !statusById.get(id))
+  const pending = await findPendingSubmissions(missing)
+
+  const notRegistered = missing.length - pending.size
+  const line = { ids: ids.length, found: ids.length - missing.length, pending: pending.size, notRegistered }
+  if (notRegistered) log.warn(`${notRegistered} submitted attainments are not registered`, line)
+  else log.info('Verified the batch against the importer', line)
 
   return items.map(({ requestItemId, submittedAttainmentId }) => {
     const attainment = statusById.get(submittedAttainmentId)

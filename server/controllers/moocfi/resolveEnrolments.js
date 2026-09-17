@@ -121,7 +121,7 @@ const resolveBatch = async (items) => {
   return { personsByStudentNumber, knownCodes, enrolmentsByPair, validityById, attainmentsByPair }
 }
 
-const resolveEnrolments = batchHandler(async (items) => {
+const resolveEnrolments = batchHandler(async (items, log) => {
   let resolved
   try {
     resolved = await resolveBatch(items)
@@ -130,6 +130,14 @@ const resolveEnrolments = batchHandler(async (items) => {
   }
 
   const { personsByStudentNumber, knownCodes, enrolmentsByPair, validityById, attainmentsByPair } = resolved
+
+  log.info('Resolved the batch against the importer', {
+    persons: personsByStudentNumber.size,
+    courseCodes: knownCodes.size,
+    enrolmentPairs: enrolmentsByPair.size,
+    studyRights: validityById.size,
+    attainmentPairs: attainmentsByPair.size
+  })
 
   return items.map(({ requestItemId, studentNumber, courseCode }) => {
     const person = personsByStudentNumber.get(studentNumber)

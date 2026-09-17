@@ -5,7 +5,6 @@
  * outcome into one result per request item.
  */
 
-const logger = require('@server/utils/logger')
 const db = require('@server/models/index')
 const attainmentsToSisu = require('@server/utils/sendToSisu')
 const { processMoocfiImport } = require('@server/scripts/processMoocfiImport')
@@ -55,19 +54,25 @@ const describeViolations = (errors) => {
  * Anything not settled is answered as a timeout, with the id, which is what section 4 needs to
  * find out what became of it.
  */
-const outcomeFor = (requestItemId, entryId, row) => {
+const outcomeFor = (requestItemId, entryId, row, log) => {
   if (row?.sendState === 'REJECTED') {
     return errorItem(requestItemId, CODES.sisuValidationFailed, { message: describeViolations(row.errors) })
   }
 
   const result = { submittedAttainmentId: entryId, submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE }
   if (row?.sendState === 'ACCEPTED') return okItem(requestItemId, CODES.sent, result)
+
+  log.warn(`Entry ${entryId} did not settle in Sisu`, {
+    entryId,
+    requestItemId,
+    sendState: row?.sendState ?? null
+  })
   return errorItem(requestItemId, CODES.sisuTimeout, { result })
 }
 
 const importAttainments = batchHandler(
-  async (items) => {
-    const { results, send } = await processMoocfiImport(items)
+  async (items, log) => {
+    const { results, send } = await processMoocfiImport(items, log)
 
     if (send.entries.length) {
       const entryIds = send.entries.map(({ entry }) => entry.id)
@@ -79,12 +84,12 @@ const importAttainments = batchHandler(
         acceptors: send.acceptors,
         timeout: SEND_TIMEOUT_MS
       })
-      logger.info({ message: 'Sent a courses.mooc.fi import to Sisu', amount: entryIds.length, status, body })
+      log.info('Sent a courses.mooc.fi import to Sisu', { amount: entryIds.length, status, body })
 
       const rows = await db.entries.findAll({ where: { id: entryIds }, attributes: ['id', 'sendState', 'errors'] })
       const rowById = new Map(rows.map((row) => [row.id, row]))
       for (const { requestItemId, entry } of send.entries) {
-        results.push(outcomeFor(requestItemId, entry.id, rowById.get(entry.id)))
+        results.push(outcomeFor(requestItemId, entry.id, rowById.get(entry.id), log))
       }
     }
 

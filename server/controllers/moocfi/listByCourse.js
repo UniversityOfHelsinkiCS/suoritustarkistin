@@ -35,7 +35,8 @@ const toPerson = (enrolment) => ({
   }
 })
 
-const listByCourse = batchHandler(async (items) => {
+const listByCourse = batchHandler(async (items, log) => {
+  const started = Date.now()
   const byCode = new Map()
   for (const code of _.uniq(items.map((item) => item.courseCode))) {
     try {
@@ -44,6 +45,14 @@ const listByCourse = batchHandler(async (items) => {
       throw serviceUnavailable('Listing enrolments by course failed', error, { courseCode: code })
     }
   }
+
+  const fetched = [...byCode.values()].flat()
+  log.info(`Fetched enrolments for ${byCode.size} course codes`, {
+    courseCodes: byCode.size,
+    realisations: fetched.length,
+    enrolments: fetched.reduce((total, { enrollments }) => total + (enrollments || []).length, 0),
+    ms: Date.now() - started
+  })
 
   return items.map(({ requestItemId, courseCode }) => {
     const realisations = byCode.get(courseCode)

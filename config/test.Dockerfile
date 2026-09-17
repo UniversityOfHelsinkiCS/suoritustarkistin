@@ -1,4 +1,4 @@
-FROM cypress/base:24.18.0
+FROM cypress/base:24.21.0
 
 # Set timezone to Europe/Helsinki
 ENV TZ="Europe/Helsinki"

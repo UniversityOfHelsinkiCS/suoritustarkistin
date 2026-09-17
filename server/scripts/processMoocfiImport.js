@@ -236,7 +236,7 @@ const resolveItem = async (item, context) => {
       entry: {
         id: generateEntryId(),
         personId: person.id,
-        studentName: `${person.firstNames.split(' ')[0]} ${person.lastName}`,
+        studentName: `${(person.firstNames ?? '').split(' ')[0]} ${person.lastName ?? ''}`,
         email: person.primaryEmail || person.secondaryEmail,
         courseUnitRealisationId: enrolment.courseUnitRealisationId,
         courseUnitRealisationName: enrolment.courseUnitRealisation?.name,

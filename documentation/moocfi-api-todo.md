@@ -11,8 +11,8 @@ what reaches mooc.fi. A new importer route taking an array of course codes and b
 activity period in the query settles three things at once:
 
 - the importer response, the transfer and the parse shrink to the window, not just the output
-- one round trip per batch instead of one per code, so the 1000-item limit stops meaning 1000
-  sequential GETs
+- one round trip per batch instead of one per code, so section 6 can take the ordinary 1000-item
+  batch instead of the 50 it is capped at today
 - the importer resolves the course code already (`CourseUnit.findAll({ where: { code } })`) and
   discards the result, so it can report an unknown code separately from a code with no
   realisations in the window — which is what stops section 6 answering `courseCodeNotFound` for a

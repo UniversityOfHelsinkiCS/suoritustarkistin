@@ -231,6 +231,17 @@ describe('batching', () => {
     )
   })
 
+  test('refuses a batch over the lower ceiling this endpoint asks for', async () => {
+    const items = Array.from({ length: 51 }, (_, i) => ({ requestItemId: `a${i}`, courseCode: `TKT1000${i}` }))
+
+    const { status, body } = await list(items)
+
+    assert.equal(status, 400)
+    assert.equal(body.error.code, 'malformedRequest')
+    assert.match(body.error.message, /at most 50/)
+    assert.equal(importer.requests.length, 0, 'a refused batch must not reach the importer')
+  })
+
   test('answers a mixed batch in request order', async () => {
     importer.respondByPath({
       '/suotar/course-unit-enrolments/TKT10001': [realisation('cur-1', [enrolment('000000000', 'cur-1')])],

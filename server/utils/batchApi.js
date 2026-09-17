@@ -14,9 +14,8 @@ const { sendSentryError } = require('./sentry')
 
 // Bounds the sequential importer round trips one request can trigger.
 const MAX_BATCH_SIZE = 1000
-
-// Batch size for /attainments/import endpoint, smaller than the other endpoints that just fetch sisu data
 const IMPORT_BATCH_SIZE = 100
+const LIST_BY_COURSE_BATCH_SIZE = 50
 
 const requestError = (res, status, code, message) => res.status(status).json({ error: { code, message } })
 
@@ -117,4 +116,4 @@ const batchHandler =
     }
   }
 
-module.exports = { MAX_BATCH_SIZE, IMPORT_BATCH_SIZE, bodyErrorHandler, batchHandler }
+module.exports = { MAX_BATCH_SIZE, IMPORT_BATCH_SIZE, LIST_BY_COURSE_BATCH_SIZE, bodyErrorHandler, batchHandler }

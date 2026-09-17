@@ -6,7 +6,7 @@
 
 const _ = require('lodash')
 const { getCourseUnitEnrolments } = require('@server/services/importer')
-const { batchHandler } = require('@server/utils/batchApi')
+const { batchHandler, LIST_BY_COURSE_BATCH_SIZE } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
 
 const validateItem = ({ courseCode, courseUnitRealisationId }) => {
@@ -35,32 +35,36 @@ const toPerson = (enrolment) => ({
   }
 })
 
-const listByCourse = batchHandler(async (items, log) => {
-  const started = Date.now()
-  const byCode = new Map()
-  for (const code of _.uniq(items.map((item) => item.courseCode))) {
-    try {
-      byCode.set(code, await fetchRealisations(code))
-    } catch (error) {
-      throw serviceUnavailable('Listing enrolments by course failed', error, { courseCode: code })
+const listByCourse = batchHandler(
+  async (items, log) => {
+    const started = Date.now()
+    const byCode = new Map()
+    for (const code of _.uniq(items.map((item) => item.courseCode))) {
+      try {
+        byCode.set(code, await fetchRealisations(code))
+      } catch (error) {
+        throw serviceUnavailable('Listing enrolments by course failed', error, { courseCode: code })
+      }
     }
-  }
 
-  const fetched = [...byCode.values()].flat()
-  log.info(`Fetched enrolments for ${byCode.size} course codes`, {
-    courseCodes: byCode.size,
-    realisations: fetched.length,
-    enrolments: fetched.reduce((total, { enrollments }) => total + (enrollments || []).length, 0),
-    ms: Date.now() - started
-  })
+    const fetched = [...byCode.values()].flat()
+    log.info(`Fetched enrolments for ${byCode.size} course codes`, {
+      courseCodes: byCode.size,
+      realisations: fetched.length,
+      enrolments: fetched.reduce((total, { enrollments }) => total + (enrollments || []).length, 0),
+      ms: Date.now() - started
+    })
 
-  return items.map(({ requestItemId, courseCode }) => {
-    const realisations = byCode.get(courseCode)
-    if (!realisations.length) return errorItem(requestItemId, CODES.courseCodeNotFound)
+    return items.map(({ requestItemId, courseCode }) => {
+      const realisations = byCode.get(courseCode)
+      if (!realisations.length) return errorItem(requestItemId, CODES.courseCodeNotFound)
 
-    const people = realisations.flatMap(({ enrollments }) => (enrollments || []).map(toPerson))
-    return okItem(requestItemId, CODES.enrolmentsListed, { people })
-  })
-}, validateItem)
+      const people = realisations.flatMap(({ enrollments }) => (enrollments || []).map(toPerson))
+      return okItem(requestItemId, CODES.enrolmentsListed, { people })
+    })
+  },
+  validateItem,
+  LIST_BY_COURSE_BATCH_SIZE
+)
 
 module.exports = { listByCourse }

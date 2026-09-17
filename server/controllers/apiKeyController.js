@@ -21,10 +21,11 @@ const PUBLIC_ATTRIBUTES = [
   'createdAt'
 ]
 
-const serialize = (apiKey) => ({
-  ...apiKey.get({ plain: true }),
-  active: apiKey.active
-})
+const serialize = (apiKey) => {
+  const plain = apiKey.get({ plain: true })
+  delete plain.tokenHash
+  return { ...plain, active: apiKey.active }
+}
 
 const getApiKeys = async (_req, res) => {
   try {

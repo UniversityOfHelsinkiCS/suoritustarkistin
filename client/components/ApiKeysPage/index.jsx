@@ -5,11 +5,12 @@ import FormDialog from '@client/components/FormDialog'
 import Message from '@client/components/Message'
 import { getApiKeysAction } from '@client/utils/redux/apiKeysReducer'
 import { Alert, Button } from '@mui/material'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 export default () => {
   const dispatch = useDispatch()
+  const [createdToken, setCreatedToken] = useState(null)
 
   useEffect(() => {
     dispatch(getApiKeysAction())
@@ -28,9 +29,9 @@ export default () => {
           </Button>
         )}
       >
-        {(close) => <ApiKeyForm close={close} />}
+        {(close) => <ApiKeyForm close={close} onCreated={setCreatedToken} />}
       </FormDialog>
-      <CreatedTokenAlert />
+      <CreatedTokenAlert token={createdToken} dismiss={() => setCreatedToken(null)} />
       <Message />
       <ApiKeyTable />
     </>

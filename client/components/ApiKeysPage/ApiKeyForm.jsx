@@ -1,18 +1,27 @@
-import { addApiKeyAction } from '@client/utils/redux/apiKeysReducer'
+import { callApi } from '@client/utils/apiConnection'
+import { getApiKeysAction } from '@client/utils/redux/apiKeysReducer'
+import { setMessageAction } from '@client/utils/redux/messageReducer'
 import { Button, MenuItem, Stack, TextField } from '@mui/material'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 const CLIENTS = [{ value: 'moocfi', label: 'courses.mooc.fi' }]
 
-export default ({ close }) => {
+export default ({ close, onCreated }) => {
   const dispatch = useDispatch()
   const [name, setName] = useState('')
   const [client, setClient] = useState(CLIENTS[0].value)
 
-  const submit = () => {
-    dispatch(addApiKeyAction({ name, client }))
+  // intentionally not putting the api key into redux thunk
+  const submit = async () => {
     close()
+    try {
+      const { data } = await callApi('/api_keys', 'post', { name, client })
+      onCreated(data.token)
+      dispatch(getApiKeysAction())
+    } catch {
+      dispatch(setMessageAction({ header: 'Creating the API key failed', type: 'negative' }))
+    }
   }
 
   return (

@@ -10,7 +10,7 @@ Every endpoint is a batch endpoint. A request is a JSON array of items, each wit
 
 Every request is authenticated with an API key Suotar issues, sent as `Authorization: Bearer <token>`.
 
-A batch holds at most 1000 items, or 100 for section 3. Section 3 does several sequential Sisu lookups per item, so allow it minutes rather than seconds before your client gives up: a response you never receive is the one case Suotar cannot protect you from resubmitting into.
+Each endpoint caps how many items one batch may hold; the limit is given per section below.
 
 Each response item carries a `status` and a `code`:
 
@@ -171,6 +171,8 @@ Matches a student number to a Sisu person and returns their info.
 
 Result codes: `personFound`, `personNotFound`.
 
+A batch holds at most 1000 items.
+
 **Request**
 
 ```http
@@ -236,6 +238,8 @@ Content-Type: application/json
 Checks that the student has a usable Sisu enrolment before courses.mooc.fi imports. `result.enrolments` lists every matching enrolment; `studyRightValidityPeriod` is omitted from one whose study right did not resolve. `gradeScaleId` is the scale section 3 requires.
 
 Result codes: `enrolmentFound`, `personNotFound`, `courseCodeNotFound`, `enrolmentNotFound`, `enrolmentNotAccepted`. The last cannot currently occur: Suotar only ever sees enrolments in state `ENROLLED`, so an unaccepted one is indistinguishable from none and comes back as `enrolmentNotFound`.
+
+A batch holds at most 1000 items.
 
 **Request**
 
@@ -426,6 +430,8 @@ Sisu rejects an attainment dated outside the student's study right, so Suotar mo
 Success codes: `sent`, `duplicateAttainment`, `notImprovedAttainment`.
 
 Error codes: `personNotFound`, `enrolmentNotFound`, `invalidGradeForGradeScale`, `gradeScaleMismatch`, `courseNotAllowed`, `invalidCredits`, `studyRightNotValid`, `sisuValidationFailed`, and `sisuTimeout`.
+
+A batch holds at most 100 items. Allow it a few minutes before your client gives up: a response you never receive is the one case Suotar cannot protect you from resubmitting into.
 
 **Request**
 
@@ -648,6 +654,8 @@ Checks whether a submitted attainment reached its final state in Sisu.
 
 Result codes: `registered`, `notRegistered`, `submissionPending`, `misregistered`.
 
+A batch holds at most 1000 items.
+
 **Request**
 
 ```http
@@ -769,6 +777,8 @@ The list is trimmed to realisations whose activity period ended less than two mo
 
 Result codes: `enrolmentsListed`, `courseCodeNotFound`.
 
+A batch holds at most 50 items.
+
 **Request**
 
 ```http
@@ -848,6 +858,8 @@ Whether a course code can be registered through section 3 at all, so a course mi
 It reads Suotar's own course list and nothing else, so it costs no Sisu lookup and is not subject to the delay above. By the same token it says nothing about the rest of an import: a code that passes here can still fail section 3 on the enrolment, the credits, the grade or the study right.
 
 Result codes: `courseAllowed`, `courseNotAllowed`. The latter means here exactly what it means in section 3, and the two read the same course list.
+
+A batch holds at most 1000 items.
 
 **Request**
 

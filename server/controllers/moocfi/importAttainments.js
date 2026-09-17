@@ -5,6 +5,8 @@
  * outcome into one result per request item.
  */
 
+const moment = require('moment')
+
 const db = require('@server/models/index')
 const attainmentsToSisu = require('@server/utils/sendToSisu')
 const { processMoocfiImport } = require('@server/scripts/processMoocfiImport')
@@ -34,7 +36,9 @@ const validateItem = (item) => {
     if (isBlank(item[field])) return `${field} must be a non-empty string.`
   }
   if (!Number.isFinite(item.credits)) return 'credits must be a number.'
-  if (Number.isNaN(Date.parse(item.attainmentDate))) return 'attainmentDate must be a date.'
+  if (!moment(item.attainmentDate, 'YYYY-MM-DD', true).isValid()) {
+    return 'attainmentDate must be a date in YYYY-MM-DD format.'
+  }
   return undefined
 }
 

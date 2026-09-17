@@ -431,6 +431,25 @@ describe('the request itself', () => {
     assert.match(body.error.message, /credits/)
   })
 
+  // A timestamp would be reduced to whichever local day the server happens to be on, moving the
+  // attainment date and hiding an already registered completion from the duplicate check.
+  test('malformedRequest for an attainmentDate carrying a time', async () => {
+    const { status, body } = await importItems([item({ attainmentDate: '2026-05-22T22:00:00Z' })])
+
+    assert.equal(status, 400)
+    assert.equal(body.error.code, 'malformedRequest')
+    assert.match(body.error.message, /attainmentDate must be a date in YYYY-MM-DD format/)
+    assert.equal((await db.entries.findAll()).length, 0)
+  })
+
+  test('malformedRequest for an attainmentDate that is not a calendar date', async () => {
+    const { status, body } = await importItems([item({ attainmentDate: '2026-02-30' })])
+
+    assert.equal(status, 400)
+    assert.equal(body.error.code, 'malformedRequest')
+    assert.match(body.error.message, /attainmentDate/)
+  })
+
   test('refuses a batch over the lower ceiling this endpoint asks for', async () => {
     const items = Array.from({ length: 101 }, (_, i) => item({ requestItemId: `a${i}` }))
 

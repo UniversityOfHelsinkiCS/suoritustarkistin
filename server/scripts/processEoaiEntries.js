@@ -21,7 +21,9 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
       where: {
         '$course.courseCode$': ALL_EOAI_CODES
       },
-      include: [{ model: db.courses, as: 'course' }]
+      include: [{ model: db.courses, as: 'course', attributes: [] }],
+      attributes: ['studentNumber', 'moocCompletionId', 'moocUserId'],
+      raw: true
     })
 
     const registrations = await fetchRegistrationsFor(NEW_EOAI_CODE)
@@ -42,15 +44,23 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
 
     const earlierAttainments = await getEarlierAttainments(courseStudentPairs(pending, NEW_EOAI_CODE))
 
-    const completions = rawCompletions.filter((completion) => {
-      const earlierCredit = credits.find(
-        (credit) => credit.completionId === completion.id || credit.moocId === completion.user_upstream_id
-      )
-      const earlierEntry = rawEntries.find(
-        (entry) => entry.moocCompletionId === completion.id || entry.moocUserId === completion.user_upstream_id
-      )
-      return !earlierCredit && !earlierEntry
-    })
+    const notNil = (id) => id !== null && id !== undefined
+    const handledCompletionIds = new Set(
+      credits
+        .map((credit) => credit.completionId)
+        .concat(rawEntries.map((entry) => entry.moocCompletionId))
+        .filter(notNil)
+    )
+    const handledMoocIds = new Set(
+      credits
+        .map((credit) => credit.moocId)
+        .concat(rawEntries.map((entry) => entry.moocUserId))
+        .filter(notNil)
+    )
+
+    const completions = rawCompletions.filter(
+      (completion) => !handledCompletionIds.has(completion.id) && !handledMoocIds.has(completion.user_upstream_id)
+    )
 
     const batchId = getBatchId(NEW_EOAI_CODE)
     const date = new Date()

@@ -1,7 +1,8 @@
 import FakeShibboMenu from '@client/components/fakeShibboMenu'
 import { images } from '@client/utils/common'
 import { activateAdminModeAction, disableAdminModeAction, logoutAction } from '@client/utils/redux/userReducer'
-import { AppBar, Box, Button, Switch, Toolbar, Typography } from '@mui/material'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { AppBar, Box, Button, Divider, Menu, MenuItem, Switch, Toolbar, Typography } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -9,6 +10,12 @@ import { Link } from 'react-router-dom'
 import { setFilterAction, getAllSisReportsAction, getUnsentBatchCountAction } from '../utils/redux/sisReportsReducer'
 
 const STAGING = process.env.NODE_ENV === 'staging'
+
+const toolLinks = [
+  { name: 'apichecks', to: '/apichecks', dataCy: 'nav-apichecks', label: 'API checks' },
+  { name: 'api-keys', to: '/api-keys', dataCy: 'nav-api-keys', label: 'API keys' },
+  { name: 'sandbox', to: '/sandbox', dataCy: 'nav-sandbox', label: 'Sandbox' }
+]
 
 const getMenuItemFromUrl = () => {
   // In production path is prefixed with /suoritustarkistin/
@@ -20,6 +27,7 @@ const getMenuItemFromUrl = () => {
 
 export default () => {
   const [activeItem, setActiveItem] = useState(getMenuItemFromUrl())
+  const [toolsAnchor, setToolsAnchor] = useState(null)
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
   const { offset, limit } = useSelector((state) => state.sisReports.reports)
@@ -147,11 +155,6 @@ export default () => {
           </NavButton>
         ) : null}
         {user.adminMode ? (
-          <NavButton name="apichecks" to="/apichecks" dataCy="nav-apichecks">
-            API Checks
-          </NavButton>
-        ) : null}
-        {user.adminMode ? (
           <NavButton name="courses" to="/courses" dataCy="nav-courses">
             Edit courses
           </NavButton>
@@ -161,32 +164,54 @@ export default () => {
             Edit users
           </NavButton>
         ) : null}
-        {user.adminMode ? (
-          <NavButton name="api-keys" to="/api-keys" dataCy="nav-api-keys">
-            API keys
-          </NavButton>
-        ) : null}
-        {user.adminMode ? (
-          <NavButton name="sandbox" to="/sandbox" dataCy="nav-sandbox">
-            Sandbox
-          </NavButton>
-        ) : null}
 
         {user.isAdmin ? (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              alignSelf: 'stretch',
-              px: '1.15em',
-              borderLeft: '1px solid rgba(34, 36, 38, 0.1)'
-            }}
-          >
-            <Typography component="span" sx={{ fontSize: '1rem', color: 'rgba(0, 0, 0, 0.87)', mr: '5px' }}>
-              Admin-mode:
-            </Typography>
-            <Switch data-cy="adminmode-enable" checked={Boolean(user.adminMode)} onChange={handleAdminModeToggle} />
-          </Box>
+          <>
+            <Button
+              data-cy="nav-tools"
+              onClick={(event) => setToolsAnchor(event.currentTarget)}
+              endIcon={<KeyboardArrowDownIcon />}
+              sx={itemStyle('tools')}
+            >
+              Tools
+            </Button>
+            <Menu
+              anchorEl={toolsAnchor}
+              open={Boolean(toolsAnchor)}
+              onClose={() => setToolsAnchor(null)}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              slotProps={{ paper: { sx: { minWidth: '14em' } } }}
+            >
+              {toolLinks.map(({ name, to, dataCy, label }) => (
+                <MenuItem
+                  key={name}
+                  data-cy={dataCy}
+                  component={Link}
+                  to={to}
+                  disabled={!user.adminMode}
+                  selected={activeItem === name}
+                  onClick={() => {
+                    handleItemClick(name)()
+                    setToolsAnchor(null)
+                  }}
+                >
+                  {label}
+                </MenuItem>
+              ))}
+              <Divider />
+              <MenuItem onClick={handleAdminModeToggle} sx={{ justifyContent: 'space-between' }}>
+                Admin-mode
+                <Switch
+                  data-cy="adminmode-enable"
+                  size="small"
+                  checked={Boolean(user.adminMode)}
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={handleAdminModeToggle}
+                />
+              </MenuItem>
+            </Menu>
+          </>
         ) : null}
 
         {window.localStorage.getItem('adminLoggedInAs') ? (

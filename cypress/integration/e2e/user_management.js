@@ -7,7 +7,7 @@ describe('User management', () => {
 
   it('Admins can add new graders and their are shown as graders', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
     cy.get('[data-cy=nav-users]').click()
 
     cy.get('[data-cy=add-user-button]').click()
@@ -29,7 +29,7 @@ describe('User management', () => {
 
   it('Admin can edit users', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
     cy.get('[data-cy=nav-users]').click()
 
     cy.get('[data-cy=regular-not-admin]').click()
@@ -47,7 +47,7 @@ describe('User management', () => {
 
   it('Admin can delete users', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
     cy.get('[data-cy=nav-users]').click()
 
     cy.get('[data-cy=regular-delete]').click()
@@ -58,7 +58,7 @@ describe('User management', () => {
 
   it('User can be created', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
     cy.get('[data-cy=nav-users]').click()
 
     cy.get('[data-cy=add-user-button]').click()

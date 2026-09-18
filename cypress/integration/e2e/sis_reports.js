@@ -4,7 +4,7 @@ describe('SIS Reports -page shows data correctly', () => {
   })
   it('Entry data is shown correctly on the reports page', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-reports]').click()
 
@@ -40,13 +40,13 @@ describe('SIS Reports -page shows data correctly', () => {
     cy.get('[data-cy=reports-list]').children().should('have.length', 4)
     cy.get('[data-cy=report-TKT10002]').should('contain', 'Ohjelmoinnin perusteet')
 
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
     cy.get('[data-cy=reports-list]').children().should('have.length', 7)
   })
 
   it('Reports can be filtered by course', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-reports]').click()
 
@@ -63,7 +63,7 @@ describe('SIS Reports -page shows data correctly', () => {
 
   it('Reports can be filtered by student number', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-reports]').click()
 

@@ -29,6 +29,7 @@ const {
 const {
   getAllSisReports,
   getAllSisMoocReports,
+  getAllSisMoocfiApiReports,
   getAllEnrollmentLimboEntries,
   getAllUnsentEntries,
   getUnsentBatchCount,
@@ -125,12 +126,13 @@ graderOrAdminRouter.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 graderOrAdminRouter.get('/oodi_reports', checkAdmin, getOodiReports)
 
 graderOrAdminRouter.use(
-  ['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo', '/unsent_entries'],
+  ['/sis_reports', '/sis_mooc_reports', '/sis_moocfi_api_reports', '/enrollment_limbo', '/unsent_entries'],
   paginateMiddleware
 )
-graderOrAdminRouter.use(['/sis_reports', '/sis_mooc_reports'], useFilters)
+graderOrAdminRouter.use(['/sis_reports', '/sis_mooc_reports', '/sis_moocfi_api_reports'], useFilters)
 graderOrAdminRouter.get('/sis_reports', getAllSisReports)
 graderOrAdminRouter.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
+graderOrAdminRouter.get('/sis_moocfi_api_reports', checkAdmin, getAllSisMoocfiApiReports)
 graderOrAdminRouter.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
 graderOrAdminRouter.get('/unsent_entries', checkAdmin, getAllUnsentEntries)
 graderOrAdminRouter.get('/unsent_batch_count', checkAdmin, getUnsentBatchCount)

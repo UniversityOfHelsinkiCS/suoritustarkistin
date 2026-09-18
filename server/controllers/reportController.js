@@ -71,15 +71,36 @@ const transformRows = (row) => {
   }
 }
 
-const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, graderId, reporterId, notSent }) => {
+/**
+ * Reports split into three disjoint sets by who produced them: graders (reporterId set),
+ * the MOOC cron jobs (no reporter) and the courses.mooc.fi batch API (no reporter either,
+ * but a requestItemId per entry).
+ */
+const getFilters = ({
+  isMooc,
+  isMoocfiApi,
+  status,
+  student,
+  courseId,
+  errors,
+  noEnrollment,
+  graderId,
+  reporterId,
+  notSent
+}) => {
   const query = {}
 
-  if (reporterId) {
-    query.reporterId = reporterId
+  if (isMoocfiApi) {
+    query.moocfiRequestItemId = { [Op.not]: null }
   } else {
-    query.reporterId = {
-      [isMooc ? Op.eq : Op.not]: null
+    if (reporterId) {
+      query.reporterId = reporterId
+    } else {
+      query.reporterId = {
+        [isMooc ? Op.eq : Op.not]: null
+      }
     }
+    if (isMooc) query.moocfiRequestItemId = null
   }
 
   if (graderId) query.graderId = graderId
@@ -99,8 +120,8 @@ const getFilters = ({ isMooc, status, student, courseId, errors, noEnrollment, g
  * Get full batches of reports using pagination. Callers that select batches by
  * something other than the report filters pass their own query.
  */
-const getBaches = async ({ offset, moocReports = false, filters, query }) => {
-  if (!query) query = { ...getFilters({ ...filters, isMooc: moocReports }) }
+const getBaches = async ({ offset, moocReports = false, moocfiApiReports = false, filters, query }) => {
+  if (!query) query = { ...getFilters({ ...filters, isMooc: moocReports, isMoocfiApi: moocfiApiReports }) }
 
   // Get paginated distinct batch ids using limit and offset
   const batches = await db.raw_entries.findAll({
@@ -193,6 +214,16 @@ const getAllSisMoocReports = async (req, res) => {
   }
 }
 
+const getAllSisMoocfiApiReports = async (req, res) => {
+  try {
+    const { offset, filters } = req
+    const { rows, count } = await getBaches({ offset, filters, moocfiApiReports: true })
+    return res.status(200).send({ rows, offset, count, limit: PAGE_SIZE })
+  } catch (error) {
+    handleDatabaseError(res, error)
+  }
+}
+
 const getAllEnrollmentLimboEntries = async (req, res) => {
   try {
     const { offset } = req
@@ -226,9 +257,10 @@ const getOffset = async (req, res) => {
     raw: true
   })
   if (!rawEntry) return res.status(404).send('Report not found!')
-  const isMooc = !rawEntry.reporterId
+  const isMoocfiApi = Boolean(rawEntry.moocfiRequestItemId)
+  const isMooc = !isMoocfiApi && !rawEntry.reporterId
 
-  const filters = { ...getFilters({ isMooc }) }
+  const filters = { ...getFilters({ isMooc, isMoocfiApi }) }
   if (!req.user.isAdmin) filters.graderId = req.user.id
 
   const batches = await db.raw_entries.findAll({
@@ -249,7 +281,7 @@ const getOffset = async (req, res) => {
   // Get offset for given batch id. Offset needs to be floored to nearest page size
   // as we want offset to be divisible with page size
   const offset = Math.floor(index / PAGE_SIZE) * PAGE_SIZE
-  res.send({ offset, mooc: isMooc })
+  res.send({ offset, mooc: isMooc, moocfiApi: isMoocfiApi })
 }
 
 const deleteSingleSisEntry = async (req, res) => {
@@ -418,6 +450,7 @@ module.exports = {
   refreshSisStatus,
   refreshEnrollments,
   getAllSisMoocReports,
+  getAllSisMoocfiApiReports,
   getAllEnrollmentLimboEntries,
   getUnsentBatchIds,
   getAllUnsentEntries,

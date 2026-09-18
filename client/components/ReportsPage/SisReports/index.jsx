@@ -3,6 +3,7 @@ import {
   openReport,
   refreshBatchStatus,
   getAllMoocSisReportsAction,
+  getAllMoocfiApiSisReportsAction,
   getAllSisReportsAction,
   getAllUnsentEntriesAction,
   getOffsetForBatchAction
@@ -233,20 +234,21 @@ const title = (batch) => {
 // Which slice of state.sisReports this instance renders, and how it is fetched. The
 // unsent variant is the same reports, narrowed to the batches still waiting to be
 // sent, so it reuses everything below rather than displaying a batch its own way.
-const getVariant = ({ mooc, unsent }) => {
+const getVariant = ({ mooc, moocfiApi, unsent }) => {
   if (unsent) return { key: 'unsentEntries', action: getAllUnsentEntriesAction }
+  if (moocfiApi) return { key: 'moocfiApiReports', action: getAllMoocfiApiSisReportsAction }
   if (mooc) return { key: 'moocReports', action: getAllMoocSisReportsAction }
   return { key: 'reports', action: getAllSisReportsAction }
 }
 
-export default ({ mooc, unsent }) => {
+export default ({ mooc, moocfiApi, unsent }) => {
   const { activeBatch } = useParams()
   const openAccordions = useSelector((state) => state.sisReports.openAccordions)
   const batchLoading = useSelector((state) => state.sisReports.singleBatchPending)
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.data)
 
-  const { key, action } = getVariant({ mooc, unsent })
+  const { key, action } = getVariant({ mooc, moocfiApi, unsent })
 
   const { rows, offset, reportsFetched } = useSelector((state) => state.sisReports[key])
   const { pending, allowFetch } = useSelector((state) => state.sisReports)
@@ -255,7 +257,7 @@ export default ({ mooc, unsent }) => {
     // If we have batch id in url we need to wait
     // for correct offset before fetching batch
     if (!reportsFetched && !pending && (!activeBatch || (activeBatch && allowFetch))) dispatch(action({ offset }))
-  }, [allowFetch, mooc, unsent, reportsFetched, pending])
+  }, [allowFetch, mooc, moocfiApi, unsent, reportsFetched, pending])
 
   useEffect(() => {
     // Fire fetch offset for batch in url
@@ -269,7 +271,7 @@ export default ({ mooc, unsent }) => {
     () =>
       Object.values(_.groupBy(rows, 'batchId'))
         .filter((report) => {
-          if (mooc || user.isAdmin) return true
+          if (mooc || moocfiApi || user.isAdmin) return true
           const notSentWithValidEntries = report.every(
             (row) => row.entry && !row.entry.missingEnrolment && !row.entry.sent
           )
@@ -290,7 +292,7 @@ export default ({ mooc, unsent }) => {
           }
         })
         .filter(Boolean),
-    [rows, user, mooc, dispatch]
+    [rows, user, mooc, moocfiApi, dispatch]
   )
 
   return (

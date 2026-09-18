@@ -24,6 +24,13 @@ export const getAllMoocSisReportsAction = ({ offset = 0, limit, filters }) => {
   return callBuilder(route, prefix, 'get', { params: { offset, limit } })
 }
 
+export const getAllMoocfiApiSisReportsAction = ({ offset = 0, limit, filters }) => {
+  if (!filters) filters = { adminmode: window.localStorage.getItem('adminmode') || false }
+  const route = `/sis_moocfi_api_reports?${stringify({ offset, limit, ...filters })}`
+  const prefix = 'GET_ALL_MOOCFI_API_SIS_REPORTS'
+  return callBuilder(route, prefix, 'get', { params: { offset, limit } })
+}
+
 export const getAllEnrollmentLimboEntriesAction = ({ offset = 0, limit }) => {
   const route = `/enrollment_limbo?${stringify({ offset, limit })}`
   const prefix = 'GET_ALL_ENROLLMENT_LIMBO'
@@ -126,6 +133,7 @@ const INITIAL_DATA = {
 const INITIAL_STATE = {
   reports: INITIAL_DATA,
   moocReports: INITIAL_DATA,
+  moocfiApiReports: INITIAL_DATA,
   enrolmentLimbo: INITIAL_DATA,
   unsentEntries: INITIAL_DATA,
   unsentBatchCount: 0,
@@ -161,6 +169,13 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         pending: false,
         error: false
       }
+    case 'GET_ALL_MOOCFI_API_SIS_REPORTS_SUCCESS':
+      return {
+        ...state,
+        moocfiApiReports: { ...action.response, reportsFetched: true },
+        pending: false,
+        error: false
+      }
     case 'GET_ALL_ENROLLMENT_LIMBO_SUCCESS':
       return {
         ...state,
@@ -184,6 +199,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
       }
     case 'GET_ALL_SIS_REPORTS_ATTEMPT':
     case 'GET_ALL_MOOC_SIS_REPORTS_ATTEMPT':
+    case 'GET_ALL_MOOCFI_API_SIS_REPORTS_ATTEMPT':
     case 'GET_ALL_ENROLLMENT_LIMBO_ATTEMPT':
     case 'GET_ALL_UNSENT_ENTRIES_ATTEMPT':
       return {
@@ -194,6 +210,7 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     case 'GET_UNSENT_BATCH_COUNT_ATTEMPT':
     case 'GET_ALL_SIS_REPORTS_FAILURE':
     case 'GET_ALL_MOOC_SIS_REPORTS_FAILURE':
+    case 'GET_ALL_MOOCFI_API_SIS_REPORTS_FAILURE':
     case 'GET_ALL_ENROLLMENT_LIMBO_FAILURE':
     case 'GET_ALL_UNSENT_ENTRIES_FAILURE':
       return {
@@ -334,13 +351,14 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
         reports: { ...state.reports, reportsFetched: false, pending: false }
       }
     case 'GET_OFFSET_SUCCESS': {
-      const key = action.response.mooc ? 'moocReports' : 'reports'
-      const { offset, mooc } = action.response
+      const { offset, mooc, moocfiApi } = action.response
+      const key = moocfiApi ? 'moocfiApiReports' : mooc ? 'moocReports' : 'reports'
       return {
         ...state,
         [key]: { ...state[key], offset },
         allowFetch: true,
-        mooc
+        mooc,
+        moocfiApi
       }
     }
     case 'SET_FILTER': {

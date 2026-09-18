@@ -30,9 +30,8 @@ const postWithRetry = async (url, chunk) => {
   }
 }
 
-const chunkifyApi = async (data, url) => {
+const chunkifyApi = async (data, url, size = 10) => {
   let allData = []
-  const size = 10
   const chunks = _.chunk(data, size)
   for (const chunk of chunks) {
     const res = await postWithRetry(url, chunk)
@@ -137,6 +136,20 @@ const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
   }
 }
 
+/**
+ * Returns a list of objects { id, attainment }, attainment being what Sisu holds for the
+ * submitted hy-kur-* id, or null. Misregistered attainments are included, which is what
+ * separates this from the /suotar/verify the registration cron uses.
+ */
+const getAttainmentStatuses = async (ids) => {
+  if (!ids.length) return []
+  try {
+    return await chunkifyApi(ids, 'suotar/attainment-status', 100)
+  } catch (e) {
+    handleImporterApiErrors(e)
+  }
+}
+
 const getStudentsWithStudyRight = async (studentNumbers) => {
   try {
     const { data } = await api.post(`students/study-rights`, studentNumbers)
@@ -233,6 +246,7 @@ module.exports = {
   getGrades,
   getEarlierAttainments,
   getEarlierAttainmentsWithoutSubstituteCourses,
+  getAttainmentStatuses,
   getAcceptorPersons,
   resolveUser,
   getResponsibles,

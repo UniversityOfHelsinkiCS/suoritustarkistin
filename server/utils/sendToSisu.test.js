@@ -125,6 +125,30 @@ test('reports a failure without crashing when the connection drops after Sisu ac
   assert.equal(sentUpdates().length, 0, 'nothing may be marked sent when the outcome is unknown')
 })
 
+/**
+ * Nothing else bounds the send: the importer sets no timeout on its own call to Sisu, so a
+ * hang there would hold the request until the axios default gives up, long after the caller
+ * has stopped listening.
+ *
+ * The stand-in answers late rather than never, so dropping the timeout fails this on the
+ * assertions below instead of leaving a request pending that no `after` hook can clean up --
+ * node:test will not run one until the abandoned test settles.
+ */
+test('gives up on a send that outlives the timeout it was given', async () => {
+  respond = (req, res) =>
+    setTimeout(() => {
+      if (!res.destroyed) res.end('[]')
+    }, 200)
+
+  const [status, body] = await attainmentsToSisu('entries', { ...request, timeout: 50 })
+
+  assert.equal(status, 400)
+  assert.equal(body.genericError, true)
+  assert.equal(sentUpdates().length, 0, 'an abandoned send may not be recorded as sent')
+  const attempted = updates.find((u) => u.values.sendState === 'ATTEMPTED')
+  assert.ok(attempted, 'it was offered to Sisu, so the entry has to say so')
+})
+
 test('writes per-entry errors back when Sisu rejects an attainment', async () => {
   respond = (req, res) => {
     res.writeHead(400, { 'content-type': 'application/json' })

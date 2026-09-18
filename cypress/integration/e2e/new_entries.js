@@ -5,7 +5,7 @@ describe('New entries can be added correctly', function () {
 
   it('When pasting (typing) completions with valid data, correct entries are created and sent to Sisu', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=copypaste]').should('be.visible').click()
@@ -49,7 +49,7 @@ describe('New entries can be added correctly', function () {
 
   it('When adding entries cancel of confirmation will delete the report', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=copypaste]').should('be.visible').click()
@@ -75,7 +75,7 @@ describe('New entries can be added correctly', function () {
 
   it('When adding entries without enrolment nothing is sent to Sisu', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=copypaste]').should('be.visible').click()
@@ -113,7 +113,7 @@ describe('New extra entries can be added correctly', function () {
 
   it('When pasting (typing) completions with valid data, correct entries are created and sent to Sisu', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-new-report]').click()
     cy.get('[data-cy=copypaste-erilliskirjaus]').should('be.visible').click()

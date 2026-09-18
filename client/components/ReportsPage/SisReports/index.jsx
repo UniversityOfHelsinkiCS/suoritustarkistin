@@ -63,6 +63,7 @@ const reportContents = (report, dispatch, user, loading) => {
   const entriesWithoutErrors = report.filter(({ entry }) => !entry.errors && entry.sent)
   const entriesNotSentOrErroneous = report.filter(({ entry }) => entry.errors || !entry.sent)
   const entriesMissingEnrollment = report.filter(({ entry }) => entry.missingEnrolment)
+  const containsMoocfiApiReports = report.some((rawEntry) => rawEntry.moocfiRequestItemId)
 
   const ViewAttainmentsInSisu = ({ rawEntry }) =>
     !rawEntry.batchId.startsWith('limbo') ? (
@@ -127,7 +128,7 @@ const reportContents = (report, dispatch, user, loading) => {
       <p>
         Completions reported by{' '}
         <strong>
-          {!report[0].reporter || report[0].batchId.startsWith('limbo') ? 'Suotar-bot' : report[0].reporter.name}
+          {!report[0].reporter?.id || report[0].batchId.startsWith('limbo') ? 'Suotar-bot' : report[0].reporter.name}
         </strong>
       </p>
       {report[0].batchId.startsWith('limbo') ? (
@@ -145,19 +146,21 @@ const reportContents = (report, dispatch, user, loading) => {
       <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1, my: 1 }}>
         {user.adminMode && (
           <>
-            <SendToSisButton
-              idsToSend={report
-                .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
-                .reduce(
-                  (acc, { entry }) => {
-                    if (entry.type === 'ENTRY') acc.entries.push(entry.id)
-                    else acc.extraEntries.push(entry.id)
-                    return acc
-                  },
-                  { entries: [], extraEntries: [] }
-                )}
-            />
-            {!batchSent ? <DeleteBatchButton batchId={report[0].batchId} /> : null}
+            {containsMoocfiApiReports ? null : (
+              <SendToSisButton
+                idsToSend={report
+                  .filter(({ entry }) => (!entry.sent || entry.errors) && !entry.missingEnrolment)
+                  .reduce(
+                    (acc, { entry }) => {
+                      if (entry.type === 'ENTRY') acc.entries.push(entry.id)
+                      else acc.extraEntries.push(entry.id)
+                      return acc
+                    },
+                    { entries: [], extraEntries: [] }
+                  )}
+              />
+            )}
+            {!batchSent && !containsMoocfiApiReports ? <DeleteBatchButton batchId={report[0].batchId} /> : null}
             <ViewAttainmentsInSisu rawEntry={report[0]} />
             <RefreshBatch report={report} />
           </>

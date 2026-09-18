@@ -71,13 +71,14 @@ const identicalCompletionFound = (allEarlierAttainments, studentNumber, courseCo
   if (!earlierAttainments || !earlierAttainments.length) return false
 
   const sanitizedCredits = Number(credits.replace(',', '.'))
-  const sanitizedDate = new Date(attainmentDate).setHours(0, 0, 0)
 
+  // Local day, which assumes a non-negative UTC offset: Sisu sends the attainment date at
+  // UTC midnight, so only a zone at or east of UTC renders it as the intended day.
   return earlierAttainments.some(
     (a) =>
       isSameGrade(a, grade) &&
-      new Date(a.attainmentDate).getTime() === new Date(sanitizedDate).getTime() &&
-      a.credits === sanitizedCredits
+      moment(a.attainmentDate).isSame(moment(attainmentDate), 'day') &&
+      Number(a.credits) === sanitizedCredits
   )
 }
 

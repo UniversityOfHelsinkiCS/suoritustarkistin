@@ -5,7 +5,7 @@ describe('Automated reports', () => {
 
   it('Admin can create, edit and delete a job', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
 
     cy.get('[data-cy=nav-automated-reports]').click()
     cy.get('[data-cy=add-job-button]').click()

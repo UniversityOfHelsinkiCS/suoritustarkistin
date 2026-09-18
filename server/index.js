@@ -15,6 +15,7 @@ const {
   checkRegisteredForNewMooc
 } = require('./scripts/checkSisEntries')
 const { initializeCronJobs } = require('./scripts/cronjobs')
+const { bodyErrorHandler } = require('./utils/batchApi')
 
 const { IN_MAINTENANCE } = process.env
 
@@ -37,6 +38,9 @@ initializeDatabaseConnection()
     const app = express()
 
     app.use(express.json({ limit: '5mb' }))
+
+    app.use(bodyErrorHandler)
+
     app.use(errorMiddleware)
 
     /**

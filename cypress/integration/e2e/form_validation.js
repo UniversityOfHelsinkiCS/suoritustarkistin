@@ -8,7 +8,7 @@ describe('Form validation', () => {
   describe('Validation prevents submission of invalid data', () => {
     it('when pasted data is invalid', () => {
       cy.login('admin').visit('')
-      cy.get('[data-cy=adminmode-enable]').click().wait(500)
+      cy.toggleAdminMode()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
       cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
       cy.get('[data-cy=paste-field]').type('010000002;7;2,2;se\n011000002;;2,0\n011100009\n011110002;;;fi', {
@@ -28,7 +28,7 @@ describe('Form validation', () => {
 
     it('when there are missing fields', () => {
       cy.login('admin').visit('')
-      cy.get('[data-cy=adminmode-enable]').click().wait(500)
+      cy.toggleAdminMode()
       cy.get('[data-cy=copypaste]').should('be.visible').click()
       cy.get('[data-cy=confirm-sending-button]').should('be.disabled')
 

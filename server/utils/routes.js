@@ -41,6 +41,7 @@ const {
 } = require('@server/controllers/reportController')
 const { addJob, getJobs, editJob, runJob, deleteJob } = require('@server/controllers/moocJobsController')
 const { login, logout } = require('@server/controllers/loginController')
+const { getApiKeys, addApiKey, revokeApiKey } = require('@server/controllers/apiKeyController')
 
 const { checkAdmin, checkIdMatch, deleteSingleEntry, checkGrader, checkToken, deleteBatch } = require('./permissions')
 const { inProduction } = require('./common')
@@ -97,6 +98,8 @@ router.post('/logout', logout)
 
 router.post('/create', checkToken, createEntries)
 
+router.use(require('./moocfiRoutes').moocfiRouter)
+
 router.get('/status', (_req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
 
 const graderOrAdminRouter = Router()
@@ -141,6 +144,10 @@ graderOrAdminRouter.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
 graderOrAdminRouter.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
 graderOrAdminRouter.get('/sis_reports/offset/:batchId', getOffset)
 graderOrAdminRouter.get('/sis_reports/missing_enrollment_email/:batchId', notifyMissingEnrollment)
+
+graderOrAdminRouter.get('/api_keys', checkAdmin, getApiKeys)
+graderOrAdminRouter.post('/api_keys', checkAdmin, addApiKey)
+graderOrAdminRouter.delete('/api_keys/:id', checkAdmin, revokeApiKey)
 
 graderOrAdminRouter.get('/jobs', checkAdmin, getJobs)
 graderOrAdminRouter.post('/jobs', checkAdmin, addJob)

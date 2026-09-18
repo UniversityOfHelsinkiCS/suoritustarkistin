@@ -15,3 +15,20 @@ Cypress.Commands.add('logout', () => {
   logout()
   cy.log(`Logged user out`)
 })
+
+/**
+ * Opens the admin "Tools" dropdown in the navbar.
+ */
+Cypress.Commands.add('openToolsMenu', () => {
+  cy.get('[data-cy=nav-tools]').click()
+})
+
+/**
+ * Flips the admin-mode switch, which lives in the "Tools" dropdown.
+ */
+Cypress.Commands.add('toggleAdminMode', () => {
+  cy.openToolsMenu()
+  cy.get('[data-cy=adminmode-enable]').click()
+  cy.get('body').type('{esc}')
+  cy.wait(500)
+})

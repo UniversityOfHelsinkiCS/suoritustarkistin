@@ -3,21 +3,22 @@
  * without risking a second submission.
  *
  * Read from Suotar's copy of Sisu, which lags the real thing by up to about an hour, so an
- * attainment Suotar has just submitted is invisible here for a while. A recently submitted
- * (<2h ago) id is answered submissionPending if it's not found from importer yet.
+ * attainment Suotar has just submitted is invisible here for a while. A submitted id the
+ * importer does not hold yet is answered submissionPending rather than notRegistered.
  */
 
 const _ = require('lodash')
-const { Op } = require('sequelize')
 
 const db = require('@server/models/index')
 const { getAttainmentStatuses } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem, serviceUnavailable } = require('@server/utils/moocfiResults')
+const { sendSentryError } = require('@server/utils/sentry')
 const { ASSESSMENT_ITEM_ATTAINMENT_TYPE } = require('@server/utils/sisuAttainmentRules')
 
-// 2 hour pending time, importer syncs with Sisu data hourly
-const PENDING_WINDOW_MS = 2 * 60 * 60 * 1000
+// The importer syncs with Sisu hourly, so this is far longer than the delay it covers. It is
+// the window in which resubmitting risks a duplicate, and a day of waiting costs less than one.
+const PENDING_WINDOW_MS = 24 * 60 * 60 * 1000
 
 const UNSETTLED_SEND_STATES = ['ATTEMPTED', 'ACCEPTED']
 
@@ -26,19 +27,49 @@ const validateItem = ({ submittedAttainmentId }) =>
     ? undefined
     : 'submittedAttainmentId must be a non-empty string.'
 
+const isOverdue = (entry) => entry.createdAt.getTime() < Date.now() - PENDING_WINDOW_MS
+
+/**
+ * The entries whose attainment the importer may simply not have handed over yet.
+ *
+ * ATTEMPTED leaves the set once the window passes: that send was never confirmed, so by then
+ * "it never landed" is the likelier reading and mooc.fi should be free to submit again.
+ * ACCEPTED never leaves it. Sisu answered the POST that wrote that state, so the attainment
+ * exists, and notRegistered would read as permission to submit a second one.
+ */
 const findPendingSubmissions = async (ids) => {
   if (!ids.length) return new Map()
 
   const entries = await db.entries.findAll({
-    where: {
-      id: ids,
-      sendState: UNSETTLED_SEND_STATES,
-      createdAt: { [Op.gt]: new Date(Date.now() - PENDING_WINDOW_MS) }
-    },
-    attributes: ['id', 'createdAt']
+    where: { id: ids, sendState: UNSETTLED_SEND_STATES },
+    attributes: ['id', 'createdAt', 'sendState']
   })
+  const pending = entries.filter((entry) => entry.sendState === 'ACCEPTED' || !isOverdue(entry))
 
-  return new Map(entries.map((entry) => [entry.id, entry]))
+  return new Map(pending.map((entry) => [entry.id, entry]))
+}
+
+/**
+ * An ACCEPTED attainment that cannot be found in sisu data even after the pending time is
+ * reported as a sentry error. It should never happen unless something is wrong with importer
+ */
+const reportStuckSubmissions = (entries, log) => {
+  const ids = entries.map(({ id }) => id)
+  const oldest = entries.reduce((a, b) => (a.createdAt < b.createdAt ? a : b)).createdAt.toISOString()
+
+  log.error(`${ids.length} accepted attainments are still missing from the importer`, { ids, oldest })
+  sendSentryError('Accepted attainments are missing from the importer', null, {
+    attainmentIds: ids.slice(0, 20),
+    amount: ids.length,
+    oldest
+  })
+}
+
+const retryAfter = (entry) => {
+  const scheduled = entry.createdAt.getTime() + PENDING_WINDOW_MS
+  // Only an ACCEPTED entry stays pending past its own window, and a retryAfter in the past
+  // would read as permission to submit a second attainment. Keep it a window ahead instead.
+  return new Date(scheduled > Date.now() ? scheduled : Date.now() + PENDING_WINDOW_MS)
 }
 
 const submissionPending = (requestItemId, entry) =>
@@ -46,7 +77,7 @@ const submissionPending = (requestItemId, entry) =>
     result: {
       submittedAttainmentId: entry.id,
       submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE,
-      retryAfter: new Date(entry.createdAt.getTime() + PENDING_WINDOW_MS).toISOString()
+      retryAfter: retryAfter(entry).toISOString()
     }
   })
 
@@ -63,6 +94,9 @@ const verifyAttainments = batchHandler(async (items, log) => {
 
   const missing = ids.filter((id) => !statusById.get(id))
   const pending = await findPendingSubmissions(missing)
+
+  const stuck = [...pending.values()].filter(isOverdue)
+  if (stuck.length) reportStuckSubmissions(stuck, log)
 
   const notRegistered = missing.length - pending.size
   const line = { ids: ids.length, found: ids.length - missing.length, pending: pending.size, notRegistered }

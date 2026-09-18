@@ -170,20 +170,39 @@ describe('verifying an attainment Sisu has not shown us yet', () => {
           result: {
             submittedAttainmentId: ATTAINMENT_ID,
             submittedAttainmentType: 'AssessmentItemAttainment',
-            retryAfter: new Date(entry.createdAt.getTime() + 2 * 60 * 60 * 1000).toISOString()
+            retryAfter: new Date(entry.createdAt.getTime() + 24 * 60 * 60 * 1000).toISOString()
           }
         }
       ])
     })
   }
 
-  test('returns notRegistered once the window has passed, so mooc.fi may submit again', async () => {
+  test('returns notRegistered for an ATTEMPTED entry once the window has passed', async () => {
     nothingInSisu()
-    await submittedEntry({ hoursAgo: 3 })
+    await submittedEntry({ sendState: 'ATTEMPTED', hoursAgo: 30 })
 
     const { body } = await verify([{ requestItemId: 'verify-1', submittedAttainmentId: ATTAINMENT_ID }])
 
-    assert.equal(body[0].code, 'notRegistered', 'by now Sisu would have shown it to us')
+    assert.equal(body[0].code, 'notRegistered', 'that send was never confirmed, so by now it did not land')
+  })
+
+  /**
+   * ACCEPTED means Sisu answered the POST, so the attainment exists however long the copy takes
+   * to show it. Nothing about waiting longer makes notRegistered true, and answering it would
+   * invite a second attainment for a completion Sisu already holds.
+   */
+  test('keeps an ACCEPTED entry pending past the window, with retryAfter still ahead', async () => {
+    nothingInSisu()
+    await submittedEntry({ sendState: 'ACCEPTED', hoursAgo: 30 })
+
+    const { body } = await verify([{ requestItemId: 'verify-1', submittedAttainmentId: ATTAINMENT_ID }])
+
+    assert.equal(body[0].code, 'submissionPending')
+    assert.equal(body[0].result.submittedAttainmentId, ATTAINMENT_ID)
+    assert.ok(
+      new Date(body[0].result.retryAfter) > new Date(),
+      'a retryAfter in the past would read as permission to resubmit'
+    )
   })
 
   // Sisu evaluated these and refused them, so there is nothing on the way.

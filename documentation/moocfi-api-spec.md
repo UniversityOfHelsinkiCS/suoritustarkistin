@@ -717,7 +717,7 @@ Content-Type: application/json
 <details>
 <summary>Error response: submissionPending (submitted too recently to be visible, keep polling)</summary>
 
-An id Sisu has not shown Suotar yet, but which Suotar submitted less than two hours ago. Because of the delay above, "no attainment" on its own cannot tell a submission that failed from one Sisu has simply not handed over yet; Suotar's own record of the send can.
+An id Sisu has not shown Suotar yet, but which Suotar's own record of the send says is still on its way. Because of the delay above, "no attainment" on its own cannot tell a submission that failed from one Sisu has simply not handed over yet; that record can.
 
 Keep polling, exactly as for `notRegistered`. The difference is resubmitting: until `retryAfter`, a fresh import of the same completion risks a second attainment in Sisu, because the duplicate check reads the same delayed copy. Only a submission that reached Sisu is held open this way — one Sisu refused (`sisuValidationFailed`) is `notRegistered` at once, so a correction can go straight back in.
 

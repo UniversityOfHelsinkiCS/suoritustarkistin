@@ -37,6 +37,7 @@ const stubModule = (request, exports) => {
 }
 
 let updates = []
+let rows
 const ENTRY = {
   id: 'entry-1',
   personId: 'person-1',
@@ -49,8 +50,12 @@ const ENTRY = {
   completionDate: '2021-08-09',
   rawEntry: { credits: '5,0' }
 }
+// The second entry only matters to the retry: Sisu refuses the batch for the first one, and
+// what the retry carries is everything Sisu did not name.
+const SECOND_ENTRY = { ...ENTRY, id: 'entry-2' }
+
 const model = () => ({
-  findAll: async () => [ENTRY],
+  findAll: async () => rows,
   // Mirrors sequelize's signature: update(values, { where }). The yield before
   // recording is load-bearing: a real write is not synchronous, and without it a
   // caller that never awaits this still looks correct to the assertions below.
@@ -92,6 +97,7 @@ after(() => server.close())
 
 beforeEach(() => {
   updates = []
+  rows = [ENTRY]
   connections = new Set()
   posts = 0
   respond = (req, res) => {
@@ -162,6 +168,28 @@ test('writes per-entry errors back when Sisu rejects an attainment', async () =>
   const errorUpdate = updates.find((u) => u.values.errors)
   assert.ok(errorUpdate, 'the violation should be recorded against the entry')
   assert.equal(errorUpdate.options.where.id, ENTRY.id)
+})
+
+const refusal = (id) => JSON.stringify({ failingIds: [id], violations: { [id]: [{ messageTemplate: '{bad}' }] } })
+
+/**
+ * The retry sends what Sisu did not refuse, and Sisu may refuse that too. Recording it is what
+ * separates a rejection from a send that never got an answer: the entry would otherwise keep the
+ * ATTEMPTED that `send` set before the POST, which callers read as an outcome Sisu never gave.
+ */
+test('records a rejection from the retry send too', async () => {
+  rows = [ENTRY, SECOND_ENTRY]
+  respond = (req, res) => {
+    res.writeHead(400, { 'content-type': 'application/json' })
+    res.end(refusal(posts === 1 ? ENTRY.id : SECOND_ENTRY.id))
+  }
+
+  const [status] = await attainmentsToSisu('entries', { ...request, body: { entryIds: [ENTRY.id, SECOND_ENTRY.id] } })
+
+  assert.equal(status, 400)
+  assert.equal(posts, 2, 'the entry Sisu did not name should be sent a second time')
+  const rejected = updates.filter((u) => u.values.sendState === 'REJECTED').map((u) => u.options.where.id)
+  assert.deepEqual(rejected.sort(), [ENTRY.id, SECOND_ENTRY.id])
 })
 
 test('opens a fresh connection per request rather than pooling', async () => {

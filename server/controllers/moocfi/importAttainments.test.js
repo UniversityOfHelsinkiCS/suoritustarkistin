@@ -161,12 +161,23 @@ const acceptorLookups = () => importer.requests.filter(({ url }) => url.startsWi
 
 const codeOf = (body, requestItemId) => body.find((r) => r.requestItemId === requestItemId)?.code
 
+// A violation as Sisu sends them, copied from a production rejection: `message` repeats the
+// validation key rather than saying anything, which is what sisuErrorMessages translates.
+const VIOLATION_TEMPLATE = '{fi.helsinki.otm.ori.validation.validAttainmentStudyRightAndTermRegistrations}'
+const VIOLATION = {
+  message: VIOLATION_TEMPLATE,
+  messageTemplate: VIOLATION_TEMPLATE,
+  path: 'importActiveAttainments.attainments[0].studentNumber.otm-1.studyRightId.otm-2',
+  attributes: { groups: ['fi.helsinki.otm.common.validation.ValidationGroup$Active'], payload: [] },
+  entity: 'AssessmentItemAttainment'
+}
+
 /**
  * Sisu names the attainments it refused by id, and the id is chosen during the request, so the
  * rejection has to be built from what was just posted. `nth` selects it out of that payload
  * rather than out of the request, because the two are not in the same order.
  */
-const refuseAttainment = (nth = 0) => {
+const refuseAttainment = (nth = 0, violations = [VIOLATION]) => {
   let posts = 0
   return (url) => {
     if (url !== SEND_PATH) return false
@@ -174,7 +185,7 @@ const refuseAttainment = (nth = 0) => {
     // Only the first send: the second is attainmentsToSisu retrying what Sisu did not refuse.
     if (posts > 1) return false
     const { id } = importer.requests.at(-1).body[nth]
-    return [400, { failingIds: [id], violations: { [id]: ['grade is not valid for the scale'] } }]
+    return [400, { failingIds: [id], violations: { [id]: violations } }]
   }
 }
 
@@ -255,11 +266,53 @@ describe('an attainment Sisu refuses', () => {
 
     assert.equal(body[0].status, 'error')
     assert.equal(body[0].code, 'sisuValidationFailed')
-    assert.match(body[0].error.message, /grade is not valid for the scale/)
+    assert.match(body[0].error.message, /Student must have an active study right/)
 
     const [entry] = await db.entries.findAll()
     assert.equal(entry.sendState, 'REJECTED', 'or verify would call a refused attainment pending')
     assert.ok(entry.errors, 'what Sisu objected to belongs on the entry too')
+  })
+
+  // A key sisuErrorMessages does not carry, and the bare string it is not settled Sisu ever
+  // sends: both are passed on as they came rather than lost.
+  test('passes on a violation it cannot translate', async () => {
+    await seedCourse()
+    const untranslated = { message: '{fi.helsinki.otm.unmapped}', messageTemplate: '{fi.helsinki.otm.unmapped}' }
+    importer.respondByPath(fixtures(), refuseAttainment(0, [untranslated, 'plain string violation']))
+
+    const { body } = await importItems([item()])
+
+    assert.equal(body[0].code, 'sisuValidationFailed')
+    assert.match(body[0].error.message, /\{fi\.helsinki\.otm\.unmapped\}/)
+    assert.match(body[0].error.message, /plain string violation/)
+  })
+
+  /**
+   * The join from a violation back to a request item is the entry id, through the row Sisu's
+   * rejection was written to. Two items refused for different reasons is what tells a working
+   * join from one that hands everyone the first violation.
+   */
+  test('gives each refused item the violation Sisu named it with', async () => {
+    await seedCourse()
+    const noScale = { messageTemplate: '{fi.helsinki.otm.kori.validation.gradeScaleId}' }
+    const noAcceptor = { messageTemplate: '{fi.helsinki.otm.ori.validation.NotEmptyAcceptorPersons}' }
+    importer.respondByPath(fixtures(), (url) => {
+      if (url !== SEND_PATH) return false
+      const [first, second] = importer.requests.at(-1).body
+      return [
+        400,
+        {
+          failingIds: [first.id, second.id],
+          violations: { [first.id]: [noScale], [second.id]: [noAcceptor] }
+        }
+      ]
+    })
+
+    const { body } = await importItems([item(), otherStudent()])
+
+    const messageOf = (requestItemId) => body.find((r) => r.requestItemId === requestItemId).error.message
+    assert.match(messageOf('moocfi-completion-1'), /No grading scale found/)
+    assert.match(messageOf('moocfi-completion-2'), /Approver is required/)
   })
 
   /**

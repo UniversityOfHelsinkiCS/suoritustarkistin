@@ -13,6 +13,7 @@ const { processMoocfiImport } = require('@server/scripts/processMoocfiImport')
 const { batchHandler, IMPORT_BATCH_SIZE } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem } = require('@server/utils/moocfiResults')
 const { ASSESSMENT_ITEM_ATTAINMENT_TYPE } = require('@server/utils/sisuAttainmentRules')
+const sisuErrorMessages = require('@shared/sisuErrorMessages.json')
 
 // No person is sending these; the name only exists so the send is identifiable in the logs.
 const SENDER = { uid: 'moocfi-api', name: 'courses.mooc.fi' }
@@ -42,12 +43,19 @@ const validateItem = (item) => {
   return undefined
 }
 
-// Sisu reports a rejection as violations per attainment; entries.errors holds whatever it sent.
-// TODO: revisit the whole error handling of this endpoint, make sure every possible case returns
-// the expected errors and that we have the correct expectations about error shapes returned by Sisu
 const describeViolations = (errors) => {
   const violations = Array.isArray(errors) ? errors : Object.values(errors || {}).flat()
-  const described = violations.filter((v) => typeof v === 'string').join('; ')
+  const described = violations
+    .map((violation) =>
+      typeof violation === 'string'
+        ? violation
+        : sisuErrorMessages[violation?.messageTemplate] ||
+          violation?.message ||
+          violation?.messageTemplate ||
+          JSON.stringify(violation)
+    )
+    .filter(Boolean)
+    .join('; ')
   return described ? `Sisu rejected the attainment: ${described}` : 'Sisu rejected the attainment.'
 }
 

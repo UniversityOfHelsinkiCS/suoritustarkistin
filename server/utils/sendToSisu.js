@@ -246,7 +246,11 @@ const attainmentsToSisu = async (model, { user, body, acceptors: prefetchedAccep
     } catch (e) {
       const err = describeError(e)
       logger.error({ message: 'Error when sending entries to Sisu round two', errorMessage: err, payload })
-      sendSentryError('Sending entries to Sisu failed (round two)', e, { user, payload, errorMessage: err })
+      if (isValidSisuError(e.response)) {
+        await writeErrorsToEntries(e.response, senderId, model)
+      } else {
+        sendSentryError('Sending entries to Sisu failed (round two)', e, { user, payload, errorMessage: err })
+      }
       return [400, { message: 'No entries sent to Sisu' }]
     }
   }

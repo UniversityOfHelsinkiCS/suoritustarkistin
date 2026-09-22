@@ -161,7 +161,7 @@ const getStudentsWithStudyRight = async (studentNumbers) => {
 
 async function getResponsibles(courseCode) {
   try {
-    const { data } = await api.get(`suotar/responsibles/${courseCode}`)
+    const { data } = await api.get(`suotar/responsibles/${encodeURIComponent(courseCode)}`)
     return data
   } catch (e) {
     handleImporterApiErrors(e)
@@ -170,7 +170,7 @@ async function getResponsibles(courseCode) {
 
 const getStudyRight = async (id) => {
   try {
-    const { data } = await api.get(`suotar/study-right/${id}`)
+    const { data } = await api.get(`suotar/study-right/${encodeURIComponent(id)}`)
     return data
   } catch (e) {
     handleImporterApiErrors(e)
@@ -218,7 +218,7 @@ const isActiveRealisation = (item, cutoff) => {
 
 const getAllCourseUnitEnrolments = async (code) => {
   try {
-    const { data } = await api.get(`suotar/course-unit-enrolments/${code}`)
+    const { data } = await api.get(`suotar/course-unit-enrolments/${encodeURIComponent(code)}`)
     return data
   } catch (e) {
     handleImporterApiErrors(e)

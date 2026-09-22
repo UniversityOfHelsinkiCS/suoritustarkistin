@@ -129,6 +129,16 @@ describe('listing the people on a course', () => {
     assert.match(importer.requests[0].url, /^\/suotar\/course-unit-enrolments\/TKT10001/)
   })
 
+  // Unencoded, a code carrying ../ resolves away to another importer endpoint entirely, with
+  // the importer token still attached.
+  test('keeps the course code inside its own path segment', async () => {
+    importer.respondWith([])
+
+    await list([{ requestItemId: 'a', courseCode: '../responsibles/TKT10001' }])
+
+    assert.equal(importer.requests[0].url, '/suotar/course-unit-enrolments/..%2Fresponsibles%2FTKT10001')
+  })
+
   test('drops realisations whose activity period ended over two months ago', async () => {
     importer.respondWith([
       realisation('cur-current', [enrolment('000000000', 'cur-current')]),

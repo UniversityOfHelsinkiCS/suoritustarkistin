@@ -31,7 +31,7 @@ const ReportStatus = ({ batch }) => {
 
   const sentDate =
     batch.filter(({ entry }) => entry.sent).sort((a, b) => new Date(b.entry.sent) - new Date(a.entry.sent))[0] || null
-  const senderNames = batch.filter(({ entry }) => entry.sender).map(({ entry }) => entry.sender.name)
+  const senderNames = batch.filter(({ entry }) => entry.sender?.id).map(({ entry }) => entry.sender.name)
   const formattedDate = moment(sentDate ? sentDate.entry.sent : null).format('DD.MM.YYYY')
   const amountOfErrors = batch.filter(({ entry }) => entry.errors).length
   const missingEnrollments = batch.filter(({ entry }) => entry.missingEnrolment).length
@@ -65,7 +65,8 @@ const ReportStatus = ({ batch }) => {
   const getDateSent = () =>
     sentDate ? (
       <p style={styles.info}>
-        {formattedDate}, by: {_.uniq(senderNames).join(',')}
+        {formattedDate}
+        {senderNames.length ? `, by: ${_.uniq(senderNames).join(',')}` : ''}
       </p>
     ) : null
 

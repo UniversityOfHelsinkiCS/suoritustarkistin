@@ -29,6 +29,7 @@ const {
 const {
   getAllSisReports,
   getAllSisMoocReports,
+  getAllSisMoocfiApiReports,
   getAllEnrollmentLimboEntries,
   getAllUnsentEntries,
   getUnsentBatchCount,
@@ -41,6 +42,7 @@ const {
 } = require('@server/controllers/reportController')
 const { addJob, getJobs, editJob, runJob, deleteJob } = require('@server/controllers/moocJobsController')
 const { login, logout } = require('@server/controllers/loginController')
+const { getApiKeys, addApiKey, revokeApiKey } = require('@server/controllers/apiKeyController')
 
 const { checkAdmin, checkIdMatch, deleteSingleEntry, checkGrader, checkToken, deleteBatch } = require('./permissions')
 const { inProduction } = require('./common')
@@ -97,6 +99,8 @@ router.post('/logout', logout)
 
 router.post('/create', checkToken, createEntries)
 
+router.use(require('./moocfiRoutes').moocfiRouter)
+
 router.get('/status', (_req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
 
 const graderOrAdminRouter = Router()
@@ -122,12 +126,13 @@ graderOrAdminRouter.get('/users/:id/courses', checkIdMatch, getUsersCourses)
 graderOrAdminRouter.get('/oodi_reports', checkAdmin, getOodiReports)
 
 graderOrAdminRouter.use(
-  ['/sis_reports', '/sis_mooc_reports', '/enrollment_limbo', '/unsent_entries'],
+  ['/sis_reports', '/sis_mooc_reports', '/sis_moocfi_api_reports', '/enrollment_limbo', '/unsent_entries'],
   paginateMiddleware
 )
-graderOrAdminRouter.use(['/sis_reports', '/sis_mooc_reports'], useFilters)
+graderOrAdminRouter.use(['/sis_reports', '/sis_mooc_reports', '/sis_moocfi_api_reports'], useFilters)
 graderOrAdminRouter.get('/sis_reports', getAllSisReports)
 graderOrAdminRouter.get('/sis_mooc_reports', checkAdmin, getAllSisMoocReports)
+graderOrAdminRouter.get('/sis_moocfi_api_reports', checkAdmin, getAllSisMoocfiApiReports)
 graderOrAdminRouter.get('/enrollment_limbo', checkAdmin, getAllEnrollmentLimboEntries)
 graderOrAdminRouter.get('/unsent_entries', checkAdmin, getAllUnsentEntries)
 graderOrAdminRouter.get('/unsent_batch_count', checkAdmin, getUnsentBatchCount)
@@ -141,6 +146,10 @@ graderOrAdminRouter.post('/refresh_sis_status', checkAdmin, refreshSisStatus)
 graderOrAdminRouter.post('/refresh_sis_enrollments', checkAdmin, refreshEnrollments)
 graderOrAdminRouter.get('/sis_reports/offset/:batchId', getOffset)
 graderOrAdminRouter.get('/sis_reports/missing_enrollment_email/:batchId', notifyMissingEnrollment)
+
+graderOrAdminRouter.get('/api_keys', checkAdmin, getApiKeys)
+graderOrAdminRouter.post('/api_keys', checkAdmin, addApiKey)
+graderOrAdminRouter.delete('/api_keys/:id', checkAdmin, revokeApiKey)
 
 graderOrAdminRouter.get('/jobs', checkAdmin, getJobs)
 graderOrAdminRouter.post('/jobs', checkAdmin, addJob)

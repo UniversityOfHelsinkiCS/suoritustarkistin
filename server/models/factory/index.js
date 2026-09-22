@@ -59,6 +59,7 @@ const entryFactory = async (courseCode, graderName, options) => {
     assessmentItemId: sisu.assessmentItem(),
     completionDate: new Date(),
     sent: new Date(),
+    sendState: 'ACCEPTED',
     completionLanguage: 'fi',
     courseUnitId: sisu.courseUnit(),
     gradeScaleId: 'sis-0-5',

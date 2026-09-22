@@ -1,5 +1,10 @@
+const { Op } = require('sequelize')
+
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
+const { resolveApiKey } = require('./apiKeys')
+const { moocfiLogger } = require('./moocfiLogger')
+const { REQUEST_CODES, MESSAGES } = require('./moocfiResults')
 
 /**
  * Reusable permission check
@@ -31,6 +36,24 @@ const checkToken = (req, res, next) => {
   next()
 }
 
+// Machine auth for the courses.mooc.fi batch API. Deliberately uncached: a cache would
+// keep revoked keys working.
+const checkMoocfiToken = async (req, res, next) => {
+  const { authorization, token } = req.headers
+  const bearer = authorization?.startsWith('Bearer ') ? authorization.slice('Bearer '.length) : undefined
+
+  const apiKey = await resolveApiKey(bearer || token)
+  if (!apiKey) {
+    moocfiLogger(req.originalUrl).warn('Failed mooc.fi token check', { status: 401, bearer: !!bearer })
+    return res
+      .status(401)
+      .json({ error: { code: REQUEST_CODES.unauthorized, message: MESSAGES[REQUEST_CODES.unauthorized] } })
+  }
+
+  req.apiKey = apiKey
+  next()
+}
+
 const checkIdMatch = (req, res, next) =>
   permissionClass(
     req,
@@ -40,12 +63,16 @@ const checkIdMatch = (req, res, next) =>
     'Unauthorized: User id mismatch'
   )
 
+const isMoocfiImport = async (where) =>
+  Boolean(await db.raw_entries.findOne({ where: { ...where, moocfiRequestItemId: { [Op.not]: null } } }))
+
 const deleteSingleEntry = (req, res, next) =>
   permissionClass(
     req,
     res,
     next,
     async (req) => {
+      if (await isMoocfiImport({ id: req.params.id })) return false
       if (req.user.isAdmin) return true
       const rawEntry = await db.raw_entries.findOne({
         where: { id: req.params.id },
@@ -69,6 +96,7 @@ const deleteBatch = (req, res, next) =>
     res,
     next,
     async (req) => {
+      if (await isMoocfiImport({ batchId: req.params.batchId })) return false
       if (req.user.isAdmin) return true
       const rawEntry = await db.raw_entries.findOne({
         where: { batchId: req.params.batchId },
@@ -90,6 +118,7 @@ module.exports = {
   checkGrader,
   checkAdmin,
   checkToken,
+  checkMoocfiToken,
   checkIdMatch,
   deleteSingleEntry,
   deleteBatch

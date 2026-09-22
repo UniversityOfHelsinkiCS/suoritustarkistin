@@ -1,5 +1,4 @@
 import { celledBorders } from '@client/components/tableStyles'
-import sisuErrorMessages from '@client/utils/sisuErrorMessages.json'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import CheckIcon from '@mui/icons-material/Check'
@@ -7,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutlined'
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from '@mui/material'
 import { EOAI_CODES, EOAI_NAMEMAP } from '@shared/common'
+import sisuErrorMessages from '@shared/sisuErrorMessages.json'
 import moment from 'moment'
 import { Fragment, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -44,8 +44,9 @@ const getTableRowStyle = (entry) => {
 }
 
 const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
-  const { entry, graderId } = rawEntry
+  const { entry, graderId, moocfiRequestItemId } = rawEntry
   if (entry.sent) return false
+  if (moocfiRequestItemId) return false
   if (isAdmin) return true
   if (graderId === userId && entry.missingEnrolment) return true
   return false
@@ -57,15 +58,17 @@ export default ({ rows }) => {
   if (!rows.length) return null
 
   const includeDelete = rows.some((r) => allowDelete(user, r))
+  // Batches from the cron jobs and the courses.mooc.fi API have no grader at all
+  const includeGrader = rows.some((r) => r.grader?.id)
   return (
     <Table size="small" className="report-table" sx={celledBorders}>
-      <TableColumns allowDelete={includeDelete} />
-      <EntryRows key={rows[0].batchId} user={user} rawEntries={rows} />
+      <TableColumns allowDelete={includeDelete} includeGrader={includeGrader} />
+      <EntryRows key={rows[0].batchId} user={user} rawEntries={rows} includeGrader={includeGrader} />
     </Table>
   )
 }
 
-const TableColumns = ({ allowDelete }) => (
+const TableColumns = ({ allowDelete, includeGrader }) => (
   <TableHead>
     <TableRow>
       <TableCell>Student number</TableCell>
@@ -75,7 +78,7 @@ const TableColumns = ({ allowDelete }) => (
       <TableCell>Completion date</TableCell>
       <TableCell>Language</TableCell>
       <TableCell>Date sent</TableCell>
-      <TableCell>Grader</TableCell>
+      {includeGrader ? <TableCell>Grader</TableCell> : null}
       <TableCell>Sisu details</TableCell>
       <Tooltip
         title={
@@ -163,7 +166,7 @@ const getGrade = (gradeScaleId, gradeId, language) => {
   return null
 }
 
-const EntryRows = ({ user, rawEntries }) => {
+const EntryRows = ({ user, rawEntries, includeGrader }) => {
   const student = useSelector((state) => state.sisReports.filters.student)
 
   return (
@@ -185,6 +188,7 @@ const EntryRows = ({ user, rawEntries }) => {
                 entry={{ ...rawEntry.entry, gradeId: rawEntry.entry.gradeId || rawEntry.grade }}
                 course={getCourseName(rawEntry, course)}
                 grader={rawEntry.grader}
+                includeGrader={includeGrader}
               />
               {allowDelete(user, rawEntry) ? (
                 <TableCell>
@@ -232,7 +236,7 @@ const getSisuStatusCell = (sent, errors, registered) => (
   </>
 )
 
-const EntryCells = ({ entry, course, grader }) => {
+const EntryCells = ({ entry, course, grader, includeGrader }) => {
   const [open, setOpen] = useState(false)
   const {
     personId,
@@ -295,7 +299,7 @@ const EntryCells = ({ entry, course, grader }) => {
       </TableCell>
       <TableCell data-cy="report-completionLanguage">{completionLanguage || null}</TableCell>
       <TableCell data-cy="report-sent">{sent ? moment(sent).format('DD.MM.YYYY') : null}</TableCell>
-      <TableCell>{grader ? grader.name : 'Grader not found'}</TableCell>
+      {includeGrader ? <TableCell>{grader?.id ? grader.name : '-'}</TableCell> : null}
       <TableCell data-cy={`report-courseUnitRealisationName-${gradeId}`} sx={{ width: '25%' }}>
         <Box style={entry.type === 'EXTRA_ENTRY' ? styles.extraEntry : null}>
           <Box

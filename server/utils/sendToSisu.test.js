@@ -37,6 +37,7 @@ const stubModule = (request, exports) => {
 }
 
 let updates = []
+let rows
 const ENTRY = {
   id: 'entry-1',
   personId: 'person-1',
@@ -49,8 +50,12 @@ const ENTRY = {
   completionDate: '2021-08-09',
   rawEntry: { credits: '5,0' }
 }
+// The second entry only matters to the retry: Sisu refuses the batch for the first one, and
+// what the retry carries is everything Sisu did not name.
+const SECOND_ENTRY = { ...ENTRY, id: 'entry-2' }
+
 const model = () => ({
-  findAll: async () => [ENTRY],
+  findAll: async () => rows,
   // Mirrors sequelize's signature: update(values, { where }). The yield before
   // recording is load-bearing: a real write is not synchronous, and without it a
   // caller that never awaits this still looks correct to the assertions below.
@@ -92,6 +97,7 @@ after(() => server.close())
 
 beforeEach(() => {
   updates = []
+  rows = [ENTRY]
   connections = new Set()
   posts = 0
   respond = (req, res) => {
@@ -125,6 +131,30 @@ test('reports a failure without crashing when the connection drops after Sisu ac
   assert.equal(sentUpdates().length, 0, 'nothing may be marked sent when the outcome is unknown')
 })
 
+/**
+ * Nothing else bounds the send: the importer sets no timeout on its own call to Sisu, so a
+ * hang there would hold the request until the axios default gives up, long after the caller
+ * has stopped listening.
+ *
+ * The stand-in answers late rather than never, so dropping the timeout fails this on the
+ * assertions below instead of leaving a request pending that no `after` hook can clean up --
+ * node:test will not run one until the abandoned test settles.
+ */
+test('gives up on a send that outlives the timeout it was given', async () => {
+  respond = (req, res) =>
+    setTimeout(() => {
+      if (!res.destroyed) res.end('[]')
+    }, 200)
+
+  const [status, body] = await attainmentsToSisu('entries', { ...request, timeout: 50 })
+
+  assert.equal(status, 400)
+  assert.equal(body.genericError, true)
+  assert.equal(sentUpdates().length, 0, 'an abandoned send may not be recorded as sent')
+  const attempted = updates.find((u) => u.values.sendState === 'ATTEMPTED')
+  assert.ok(attempted, 'it was offered to Sisu, so the entry has to say so')
+})
+
 test('writes per-entry errors back when Sisu rejects an attainment', async () => {
   respond = (req, res) => {
     res.writeHead(400, { 'content-type': 'application/json' })
@@ -138,6 +168,28 @@ test('writes per-entry errors back when Sisu rejects an attainment', async () =>
   const errorUpdate = updates.find((u) => u.values.errors)
   assert.ok(errorUpdate, 'the violation should be recorded against the entry')
   assert.equal(errorUpdate.options.where.id, ENTRY.id)
+})
+
+const refusal = (id) => JSON.stringify({ failingIds: [id], violations: { [id]: [{ messageTemplate: '{bad}' }] } })
+
+/**
+ * The retry sends what Sisu did not refuse, and Sisu may refuse that too. Recording it is what
+ * separates a rejection from a send that never got an answer: the entry would otherwise keep the
+ * ATTEMPTED that `send` set before the POST, which callers read as an outcome Sisu never gave.
+ */
+test('records a rejection from the retry send too', async () => {
+  rows = [ENTRY, SECOND_ENTRY]
+  respond = (req, res) => {
+    res.writeHead(400, { 'content-type': 'application/json' })
+    res.end(refusal(posts === 1 ? ENTRY.id : SECOND_ENTRY.id))
+  }
+
+  const [status] = await attainmentsToSisu('entries', { ...request, body: { entryIds: [ENTRY.id, SECOND_ENTRY.id] } })
+
+  assert.equal(status, 400)
+  assert.equal(posts, 2, 'the entry Sisu did not name should be sent a second time')
+  const rejected = updates.filter((u) => u.values.sendState === 'REJECTED').map((u) => u.options.where.id)
+  assert.deepEqual(rejected.sort(), [ENTRY.id, SECOND_ENTRY.id])
 })
 
 test('opens a fresh connection per request rather than pooling', async () => {

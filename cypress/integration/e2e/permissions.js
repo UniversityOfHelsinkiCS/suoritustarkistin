@@ -27,16 +27,18 @@ describe('Permissions', () => {
 
   it('Admin users should be able to see the form tab and admin-tabs', () => {
     cy.login('admin').visit('')
-    cy.get('[data-cy=adminmode-enable]').click().wait(500)
+    cy.toggleAdminMode()
     cy.get('[data-cy=copypaste]')
     cy.get('[data-cy=nav-users]').should('exist')
     cy.get('[data-cy=nav-automated-reports]').should('exist')
+    cy.openToolsMenu()
     cy.get('[data-cy=nav-sandbox]').should('exist')
     cy.logout()
   })
 
   it('Grader users should not be able to see admin-tabs', () => {
     cy.login('grader').visit('')
+    cy.get('[data-cy=nav-tools]').should('not.exist')
     cy.get('[data-cy=adminmode-enable]').should('not.exist')
     cy.get('[data-cy=nav-users]').should('not.exist')
     cy.get('[data-cy=nav-automated-reports]').should('not.exist')

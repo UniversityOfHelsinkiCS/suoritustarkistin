@@ -4,11 +4,28 @@ courses.mooc.fi will use these APIs to register course completions as Sisu attai
 
 Adapted from the [original proposal](https://gist.github.com/nygrenh/3d505fff6d747d550b0c2d63a824bfbb); this document describes what Suotar implements.
 
+## Access
+
+Base URL, which every path in this document is relative to:
+
+```
+https://opetushallinto.cs.helsinki.fi/suoritustarkistin
+```
+
+Every endpoint is a POST, takes `Content-Type: application/json`, and carries an API key Suotar issues as `Authorization: Bearer <token>`. A missing or invalid key answers `unauthorized` (401). No rate limit applies beyond the per-endpoint batch size caps.
+
+Example of a valid fetch:
+
+```bash
+curl -X POST https://opetushallinto.cs.helsinki.fi/suoritustarkistin/api/moocfi/course-codes/validate \
+  -H "Authorization: Bearer $SUOTAR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[{ "requestItemId": "smoke-1", "courseCode": "TKT10002" }]'
+```
+
 ## API shape
 
 Every endpoint is a batch endpoint. A request is a JSON array of items, each with a `requestItemId` set by courses.mooc.fi. The response is an array with one item per request item, carrying the same `requestItemId` back. A `requestItemId` must be unique within its batch; Suotar does not read it otherwise, and does not use it to recognise a retry.
-
-Every request is authenticated with an API key Suotar issues, sent as `Authorization: Bearer <token>`.
 
 Each endpoint caps how many items one batch may hold; the limit is given per section below.
 
@@ -24,7 +41,7 @@ Example request with two items:
 **Request**
 
 ```http
-POST /api/persons/resolve-by-student-numbers
+POST /api/moocfi/persons/resolve-by-student-numbers
 Content-Type: application/json
 
 [
@@ -165,7 +182,7 @@ sequenceDiagram
 
 ## 1. Resolve persons
 
-`POST /api/persons/resolve-by-student-numbers`
+`POST /api/moocfi/persons/resolve-by-student-numbers`
 
 Matches a student number to a Sisu person and returns their info.
 
@@ -176,7 +193,7 @@ A batch holds at most 1000 items.
 **Request**
 
 ```http
-POST /api/persons/resolve-by-student-numbers
+POST /api/moocfi/persons/resolve-by-student-numbers
 Content-Type: application/json
 
 [
@@ -233,7 +250,7 @@ Content-Type: application/json
 
 ## 2. Resolve enrolments
 
-`POST /api/enrolments/resolve`
+`POST /api/moocfi/enrolments/resolve`
 
 Checks that the student has a usable Sisu enrolment before courses.mooc.fi imports. `result.enrolments` lists every matching enrolment; `studyRightValidityPeriod` is omitted from one whose study right did not resolve. `gradeScaleId` is the scale section 3 requires.
 
@@ -244,7 +261,7 @@ A batch holds at most 1000 items.
 **Request**
 
 ```http
-POST /api/enrolments/resolve
+POST /api/moocfi/enrolments/resolve
 Content-Type: application/json
 
 [
@@ -421,7 +438,7 @@ Content-Type: application/json
 
 ## 3. Import attainments
 
-`POST /api/attainments/import`
+`POST /api/moocfi/attainments/import`
 
 Creates completions as attainments in Sisu.
 
@@ -438,7 +455,7 @@ If a batch carries multiple items with identical `studentNumber`, `courseCode`, 
 **Request**
 
 ```http
-POST /api/attainments/import
+POST /api/moocfi/attainments/import
 Content-Type: application/json
 
 [
@@ -654,7 +671,7 @@ The submission may or may not have landed. courses.mooc.fi must verify before re
 The second item is the same completion as the first; the enrolment it names does not make it another one.
 
 ```http
-POST /api/attainments/import
+POST /api/moocfi/attainments/import
 Content-Type: application/json
 
 [
@@ -713,7 +730,7 @@ Content-Type: application/json
 
 ## 4. Verify attainments
 
-`POST /api/attainments/verify`
+`POST /api/moocfi/attainments/verify`
 
 Checks whether a submitted attainment reached its final state in Sisu.
 
@@ -724,7 +741,7 @@ A batch holds at most 1000 items.
 **Request**
 
 ```http
-POST /api/attainments/verify
+POST /api/moocfi/attainments/verify
 Content-Type: application/json
 
 [
@@ -826,7 +843,7 @@ Keep polling, exactly as for `notRegistered`. The difference is resubmitting: un
 
 ## 5. Product access tokens
 
-`POST /api/open-university-product-access-tokens/resolve`
+`POST /api/moocfi/open-university-product-access-tokens/resolve`
 
 Would return the access tokens courses.mooc.fi uses to build Open University enrolment links.
 
@@ -834,7 +851,7 @@ Would return the access tokens courses.mooc.fi uses to build Open University enr
 
 ## 6. List enrolled people by course
 
-`POST /api/enrolments/list-by-course`
+`POST /api/moocfi/enrolments/list-by-course`
 
 Mostly for account linking: returns the people enrolled in a course with the emails Sisu holds, so courses.mooc.fi can email a student number verification link.
 
@@ -847,7 +864,7 @@ A batch holds at most 50 items.
 **Request**
 
 ```http
-POST /api/enrolments/list-by-course
+POST /api/moocfi/enrolments/list-by-course
 Content-Type: application/json
 
 [
@@ -916,7 +933,7 @@ Content-Type: application/json
 
 ## 7. Validate course codes
 
-`POST /api/course-codes/validate`
+`POST /api/moocfi/course-codes/validate`
 
 Whether a course code can be registered through section 3 at all, so a course missing from Suotar is found before a completion is sent rather than by one coming back `courseNotAllowed`.
 
@@ -929,7 +946,7 @@ A batch holds at most 1000 items.
 **Request**
 
 ```http
-POST /api/course-codes/validate
+POST /api/moocfi/course-codes/validate
 Content-Type: application/json
 
 [

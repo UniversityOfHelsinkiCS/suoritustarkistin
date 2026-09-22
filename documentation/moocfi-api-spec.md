@@ -442,13 +442,15 @@ Content-Type: application/json
 
 Creates completions as attainments in Sisu.
 
+`enrolmentId` is the enrolment section 2 returned for this student and course; Suotar registers against that one rather than picking its own. An id that is not among them, or no longer `ENROLLED`, comes back `enrolmentNotFound`.
+
 Sisu rejects an attainment dated outside the student's study right, so Suotar moves the date into range where necessary. The response does not currently report the date actually registered.
 
 Success codes: `sent`, `duplicateAttainment`, `notImprovedAttainment`.
 
 Error codes: `personNotFound`, `enrolmentNotFound`, `invalidGradeForGradeScale`, `gradeScaleMismatch`, `courseNotAllowed`, `invalidCredits`, `studyRightNotValid`, `duplicateRequestItem`, `sisuValidationFailed`, and `sisuTimeout`.
 
-A batch holds at most 100 items. Allow it a few minutes before your client gives up: a response you never receive is the one case Suotar cannot protect you from resubmitting into.
+A batch holds at most 100 items.
 
 If a batch carries multiple items with identical `studentNumber`, `courseCode`, `gradeScaleId`, `gradeId`, `credits` and `attainmentDate`, only the first one is submitted and later records are answered with the `duplicateRequestItem` error. Treat it as a fault to fix on your side, not as something to retry.
 

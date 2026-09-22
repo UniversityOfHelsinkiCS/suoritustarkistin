@@ -18,7 +18,8 @@ const {
   validateCredits,
   mapGrades,
   generateEntryId,
-  ACCEPTED_ENROLMENT_STATE
+  ACCEPTED_ENROLMENT_STATE,
+  ASSESSMENT_ITEM_ATTAINMENT_TYPE
 } = require('../utils/sisuAttainmentRules')
 const { moocfiLogger } = require('../utils/moocfiLogger')
 const { courseNotAllowedReason } = require('../utils/moocfiCourses')
@@ -38,6 +39,10 @@ const answer = (requestItemId, code, result) => ({ result: okItem(requestItemId,
 const reject = (requestItemId, code, message) => ({ result: errorItem(requestItemId, code, { message }) })
 
 const key = (left, right) => `${left} ${right}`
+
+// The intra-batch duplicate check's key
+const completionKey = ({ studentNumber, courseCode, gradeScaleId, gradeId, credits, attainmentDate }) =>
+  [studentNumber, courseCode, gradeScaleId, gradeId, credits, attainmentDate].join('|')
 
 // An existing attainment as duplicateAttainment and notImprovedAttainment report it.
 const toAttainment = (attainment) => ({
@@ -309,13 +314,41 @@ const processMoocfiImport = async (items, log = moocfiLogger('/attainments/impor
 
   // Every item resolves before anything is written, so a failure partway leaves nothing behind.
   const resolved = []
+
+  // completionKey -> the attainment id written for it. Only an item that got as far as rows goes
+  // in: one answered outright registered nothing, so a repeat of it has nothing to duplicate and
+  // reaches that same answer by resolving.
+  const attainmentsWrittenInThisBatch = new Map()
+
   for (const item of items) {
+    const completion = completionKey(item)
+    const earlierInThisBatch = attainmentsWrittenInThisBatch.get(completion)
+    if (earlierInThisBatch) {
+      results.push(
+        errorItem(item.requestItemId, CODES.duplicateRequestItem, {
+          result: {
+            submittedAttainmentId: earlierInThisBatch,
+            submittedAttainmentType: ASSESSMENT_ITEM_ATTAINMENT_TYPE
+          }
+        })
+      )
+      continue
+    }
+
     const { result, rows } = await resolveItem(item, context)
     if (result) {
       results.push(result)
     } else {
+      attainmentsWrittenInThisBatch.set(completion, rows.entry.id)
       resolved.push({ requestItemId: item.requestItemId, rows })
     }
+  }
+
+  const repeats = results.filter(({ code }) => code === CODES.duplicateRequestItem)
+  if (repeats.length) {
+    log.warn(`${repeats.length} request items repeated a completion the batch already carried`, {
+      requestItemIds: repeats.map(({ requestItemId }) => requestItemId)
+    })
   }
 
   const acceptors = await fetchAcceptors(resolved)

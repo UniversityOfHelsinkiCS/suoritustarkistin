@@ -61,7 +61,7 @@ Content-Type: application/json
 
 Not batch item results. These fail the whole request with HTTP 4xx or 5xx. Per-item outcomes, including per-item errors, always return HTTP 200.
 
-- `malformedRequest` (400): the body is not a JSON array, an item is one the endpoint cannot read, a `requestItemId` is missing or repeated, or the batch is over the size limit. The per-item codes describe outcomes for a well-formed item, so a bad shape has nothing to map onto.
+- `malformedRequest` (400): the body is not a JSON array, an item is one the endpoint cannot read, a `requestItemId` is missing or repeated, or the batch is over the size limit.
 - `unauthorized` (401): missing or invalid credentials.
 - `requestTooLarge` (413): the body is over 5 MB.
 - `serviceTemporarilyUnavailable` (503): Suotar could not read Sisu. Every lookup behind these endpoints is batch-wide, so no item is left with an outcome of its own. Retry the whole batch; section 3 writes nothing unless every item resolved.
@@ -429,9 +429,11 @@ Sisu rejects an attainment dated outside the student's study right, so Suotar mo
 
 Success codes: `sent`, `duplicateAttainment`, `notImprovedAttainment`.
 
-Error codes: `personNotFound`, `enrolmentNotFound`, `invalidGradeForGradeScale`, `gradeScaleMismatch`, `courseNotAllowed`, `invalidCredits`, `studyRightNotValid`, `sisuValidationFailed`, and `sisuTimeout`.
+Error codes: `personNotFound`, `enrolmentNotFound`, `invalidGradeForGradeScale`, `gradeScaleMismatch`, `courseNotAllowed`, `invalidCredits`, `studyRightNotValid`, `duplicateRequestItem`, `sisuValidationFailed`, and `sisuTimeout`.
 
 A batch holds at most 100 items. Allow it a few minutes before your client gives up: a response you never receive is the one case Suotar cannot protect you from resubmitting into.
+
+If a batch carries multiple items with identical `studentNumber`, `courseCode`, `gradeScaleId`, `gradeId`, `credits` and `attainmentDate`, only the first one is submitted and later records are answered with the `duplicateRequestItem` error. Treat it as a fault to fix on your side, not as something to retry.
 
 **Request**
 
@@ -638,6 +640,69 @@ The submission may or may not have landed. courses.mooc.fi must verify before re
     },
     "result": {
       "submittedAttainmentId": "hy-kur-...",
+      "submittedAttainmentType": "AssessmentItemAttainment"
+    }
+  }
+]
+```
+
+</details>
+
+<details>
+<summary>Error response: duplicateRequestItem (the batch carries the same completion twice)</summary>
+
+The second item is the same completion as the first; the enrolment it names does not make it another one.
+
+```http
+POST /api/attainments/import
+Content-Type: application/json
+
+[
+  {
+    "requestItemId": "moocfi-completion-12345",
+    "studentNumber": "012345678",
+    "courseCode": "TKT10001",
+    "enrolmentId": "otm-enrolment-open",
+    "attainmentDate": "2026-05-22",
+    "attainmentLanguage": "fi",
+    "gradeScaleId": "sis-hyl-hyv",
+    "gradeId": "1",
+    "credits": 5
+  },
+  {
+    "requestItemId": "moocfi-completion-12346",
+    "studentNumber": "012345678",
+    "courseCode": "TKT10001",
+    "enrolmentId": "otm-enrolment-degree",
+    "attainmentDate": "2026-05-22",
+    "attainmentLanguage": "fi",
+    "gradeScaleId": "sis-hyl-hyv",
+    "gradeId": "1",
+    "credits": 5
+  }
+]
+```
+
+```json
+[
+  {
+    "requestItemId": "moocfi-completion-12345",
+    "status": "ok",
+    "code": "sent",
+    "result": {
+      "submittedAttainmentId": "hy-kur-12345...",
+      "submittedAttainmentType": "AssessmentItemAttainment"
+    }
+  },
+  {
+    "requestItemId": "moocfi-completion-12346",
+    "status": "error",
+    "code": "duplicateRequestItem",
+    "error": {
+      "message": "An earlier request item in this batch is the same completion, and it was registered once. Verify the attainment in `result` rather than submitting this completion again."
+    },
+    "result": {
+      "submittedAttainmentId": "hy-kur-12345...",
       "submittedAttainmentType": "AssessmentItemAttainment"
     }
   }

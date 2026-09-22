@@ -519,3 +519,51 @@ describe('the request itself', () => {
     assert.equal(status, 401)
   })
 })
+
+// Which items count as a repeat is processMoocfiImport's suite; this is what the send does.
+describe('the same completion twice in one batch', () => {
+  const twice = () => [item({ requestItemId: 'a' }), item({ requestItemId: 'b' })]
+
+  test('sends one attainment and answers the repeat with it', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const { status, body } = await importItems(twice())
+
+    assert.equal(status, 200)
+    assert.deepEqual(
+      body.map(({ requestItemId, code }) => [requestItemId, code]),
+      [
+        ['a', 'sent'],
+        ['b', 'duplicateRequestItem']
+      ]
+    )
+    assert.equal(body[1].status, 'error', 'a batch repeating itself is a fault in the batch')
+    assert.deepEqual(body[1].result, {
+      submittedAttainmentId: body[0].result.submittedAttainmentId,
+      submittedAttainmentType: 'AssessmentItemAttainment'
+    })
+    assert.equal(sends().length, 1)
+    assert.equal(importer.requests.at(-1).body.length, 1, 'Sisu is offered one attainment')
+    assert.equal(await db.entries.count(), 1)
+    assert.equal(await db.raw_entries.count(), 1)
+  })
+
+  // Known and deliberate: the repeat is answered before the send, so it names an attainment Sisu
+  // then refused. The first item's sisuValidationFailed is what says the completion did not land.
+  test('still answers duplicateRequestItem when Sisu refuses the attainment', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures(), refuseAttainment())
+
+    const { body } = await importItems(twice())
+
+    assert.deepEqual(
+      body.map(({ requestItemId, code }) => [requestItemId, code]),
+      [
+        ['a', 'sisuValidationFailed'],
+        ['b', 'duplicateRequestItem']
+      ]
+    )
+    assert.equal(body[1].result.submittedAttainmentId, (await db.entries.findAll())[0].id)
+  })
+})

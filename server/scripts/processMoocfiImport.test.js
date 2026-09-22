@@ -585,10 +585,12 @@ describe('batching', () => {
     await seedCourse()
     importer.respondByPath(fixtures())
 
+    // Distinct dates: a and c are otherwise the same completion, and the second of two would
+    // come back as a duplicate rather than as a result of its own.
     const { results, toSend } = await run([
       item({ requestItemId: 'a', courseCode: 'UNKNOWN' }),
       item({ requestItemId: 'b' }),
-      item({ requestItemId: 'c', courseCode: 'UNKNOWN' }),
+      item({ requestItemId: 'c', courseCode: 'UNKNOWN', attainmentDate: '2026-05-23' }),
       item({ requestItemId: 'd', studentNumber: '111111111' })
     ])
 
@@ -645,6 +647,9 @@ describe('when resolving fails partway through the batch', () => {
    * `getDateWithinStudyright` falls back to a per-person importer call when the enrolment's
    * own study right did not come back. Here the first item resolves cleanly and the second
    * one hits that fallback and dies, so the first is what must not be left written.
+   *
+   * The grades differ so that the two stay two completions: the second of a matching pair is a
+   * duplicate, never resolved, and then there is no failure partway to leave anything behind.
    */
   test('writes nothing at all', async () => {
     await seedCourse()
@@ -661,7 +666,8 @@ describe('when resolving fails partway through the batch', () => {
     importer.respondByPath(routes, (url) => url.startsWith('/suotar/study-rights-by-person'))
 
     await assert.rejects(
-      () => run([item({ requestItemId: 'a' }), item({ requestItemId: 'b', enrolmentId: OTHER_ENROLMENT })]),
+      () =>
+        run([item({ requestItemId: 'a' }), item({ requestItemId: 'b', enrolmentId: OTHER_ENROLMENT, gradeId: '4' })]),
       ServiceUnavailableError
     )
 
@@ -669,7 +675,8 @@ describe('when resolving fails partway through the batch', () => {
     assert.equal((await db.raw_entries.findAll()).length, 0)
   })
 
-  // Fails inside the transaction, which is the only path that reaches the rollback.
+  // Fails inside the transaction, which is the only path that reaches the rollback. Two grades,
+  // so the batch really does hold two completions to write.
   test('rolls back rows already written when a later write fails', async () => {
     await seedCourse()
     importer.respondByPath(fixtures())
@@ -683,7 +690,10 @@ describe('when resolving fails partway through the batch', () => {
     }
 
     try {
-      await assert.rejects(() => run([item({ requestItemId: 'a' }), item({ requestItemId: 'b' })]), /write failed/)
+      await assert.rejects(
+        () => run([item({ requestItemId: 'a' }), item({ requestItemId: 'b', gradeId: '4' })]),
+        /write failed/
+      )
     } finally {
       db.entries.create = create
     }
@@ -724,4 +734,101 @@ describe('a completion resubmitted while the first attempt is unresolved', () =>
     assert.notEqual(toSend[0].entry.id, first.toSend[0].entry.id, 'the retry mints its own attainment id')
     assert.equal(await db.entries.count(), 2)
   })
+})
+
+// A completion the batch already carries is not registered a second time.
+describe('the same completion twice in one batch', () => {
+  test('writes it once and answers the repeat with that attainment', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const { results, toSend } = await run([item({ requestItemId: 'a' }), item({ requestItemId: 'b' })])
+
+    assert.deepEqual(
+      toSend.map(({ requestItemId }) => requestItemId),
+      ['a']
+    )
+    assert.equal(results.length, 1)
+    assert.equal(results[0].requestItemId, 'b')
+    assert.equal(results[0].status, 'error')
+    assert.equal(results[0].code, 'duplicateRequestItem')
+    assert.deepEqual(results[0].result, {
+      submittedAttainmentId: toSend[0].entry.id,
+      submittedAttainmentType: 'AssessmentItemAttainment'
+    })
+    assert.equal(await db.entries.count(), 1)
+    assert.equal(await db.raw_entries.count(), 1)
+  })
+
+  test('answers every repeat with the one attainment, not each with the one before it', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const { results, toSend } = await run([
+      item({ requestItemId: 'a' }),
+      item({ requestItemId: 'b' }),
+      item({ requestItemId: 'c' })
+    ])
+
+    assert.deepEqual(
+      results.map(({ requestItemId, result }) => [requestItemId, result.submittedAttainmentId]),
+      [
+        ['b', toSend[0].entry.id],
+        ['c', toSend[0].entry.id]
+      ]
+    )
+    assert.equal(await db.entries.count(), 1)
+  })
+
+  // An item answered outright registered nothing, so a repeat of it has nothing to duplicate.
+  test('resolves a repeat of an item that registered nothing', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures({ persons: [] }))
+
+    const { results } = await run([item({ requestItemId: 'a' }), item({ requestItemId: 'b' })])
+
+    assert.deepEqual(
+      results.map(({ requestItemId, code }) => [requestItemId, code]),
+      [
+        ['a', 'personNotFound'],
+        ['b', 'personNotFound']
+      ]
+    )
+  })
+
+  test('is the same completion even when it names another enrolment or language', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const { results, toSend } = await run([
+      item({ requestItemId: 'a' }),
+      item({ requestItemId: 'b', enrolmentId: OTHER_ENROLMENT, attainmentLanguage: 'en' })
+    ])
+
+    assert.equal(results[0].code, 'duplicateRequestItem')
+    assert.equal(toSend[0].entry.courseUnitRealisationId, `cur-${NAMED_ENROLMENT}`)
+    assert.equal(toSend[0].entry.completionLanguage, 'fi')
+  })
+
+  // `expected` is what the second item resolves to on its own merits: two of these register an
+  // attainment of their own, the rest fail for a reason of their own. Neither is a repeat.
+  for (const [what, overrides, expected] of [
+    ['grade', { gradeId: '4' }, 'toSend'],
+    ['attainment date', { attainmentDate: '2026-05-23' }, 'toSend'],
+    ['grade scale', { gradeScaleId: 'sis-hyl-hyv' }, 'gradeScaleMismatch'],
+    ['credits', { credits: 4 }, 'invalidCredits'],
+    ['course', { courseCode: 'TKT10002' }, 'courseNotAllowed'],
+    ['student', { studentNumber: '111111111' }, 'personNotFound']
+  ]) {
+    test(`is not a duplicate of an item differing in ${what}`, async () => {
+      await seedCourse()
+      importer.respondByPath(fixtures())
+
+      const outcome = await run([item({ requestItemId: 'a' }), item({ requestItemId: 'b', ...overrides })])
+
+      assert.equal(codeOf(outcome, 'a'), 'toSend')
+      assert.equal(codeOf(outcome, 'b'), expected)
+      assert.equal(await db.entries.count(), expected === 'toSend' ? 2 : 1)
+    })
+  }
 })

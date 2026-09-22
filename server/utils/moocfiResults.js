@@ -38,6 +38,7 @@ const CODES = {
   // 3: attainments/import
   sent: 'sent',
   duplicateAttainment: 'duplicateAttainment',
+  duplicateRequestItem: 'duplicateRequestItem',
   notImprovedAttainment: 'notImprovedAttainment',
   courseNotAllowed: 'courseNotAllowed',
   invalidCredits: 'invalidCredits',
@@ -77,6 +78,11 @@ const MESSAGES = {
   [CODES.enrolmentNotFound]: 'No Sisu enrolment was found for this person and course.',
   [CODES.enrolmentNotAccepted]: 'The Sisu enrolment has not been accepted.',
 
+  // Not duplicateAttainment: that is a completion Sisu already held, which is ordinary.
+  [CODES.duplicateRequestItem]:
+    'An earlier request item in this batch is the same completion, and it was registered once. ' +
+    'Verify the attainment in `result` rather than submitting this completion again.',
+
   [CODES.invalidGradeForGradeScale]: "Grade id is not valid for the resolved enrolment's grade scale.",
   [CODES.studyRightNotValid]: 'Study right cannot support the attainment.',
   [CODES.sisuTimeout]: 'Sisu operation timed out; outcome is uncertain.',
@@ -91,8 +97,8 @@ const okItem = (requestItemId, code, result) => ({ requestItemId, status: 'ok', 
 
 /**
  * `message` defaults to the code's own wording; pass one only for a code whose message names
- * the item. `result` is for the two codes that report an error and still hand back the
- * submission it concerns (sisuTimeout, submissionPending).
+ * the item. `result` is for the codes that report an error and still hand back the submission
+ * it concerns (sisuTimeout, submissionPending, duplicateRequestItem).
  */
 const errorItem = (requestItemId, code, { message = MESSAGES[code], result } = {}) => {
   if (!message) throw new Error(`No message for result code ${code}`)

@@ -1,6 +1,6 @@
 /**
- * The courses.mooc.fi batch API, mounted ahead of graderOrAdminRouter because the spec's
- * paths are top level.
+ * The courses.mooc.fi batch API. Everything it serves lives under one prefix of its own, so
+ * the guard sits at the router root and no internal /api route can collide with it.
  */
 const Router = require('express')
 
@@ -13,17 +13,11 @@ const { verifyAttainments } = require('@server/controllers/moocfi/verifyAttainme
 
 const { checkMoocfiToken } = require('./permissions')
 
-const MOOCFI_PATHS = [
-  '/persons',
-  '/enrolments',
-  '/attainments',
-  '/open-university-product-access-tokens',
-  '/course-codes'
-]
+const MOOCFI_PREFIX = '/moocfi'
 
 const router = Router()
 
-router.use(MOOCFI_PATHS, checkMoocfiToken)
+router.use(checkMoocfiToken)
 
 router.post('/persons/resolve-by-student-numbers', resolvePersons)
 router.post('/enrolments/resolve', resolveEnrolments)
@@ -32,4 +26,4 @@ router.post('/attainments/import', importAttainments)
 router.post('/attainments/verify', verifyAttainments)
 router.post('/course-codes/validate', validateCourseCodes)
 
-module.exports = { moocfiRouter: router, MOOCFI_PATHS }
+module.exports = { moocfiRouter: router, MOOCFI_PREFIX }

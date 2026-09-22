@@ -20,7 +20,7 @@ const {
 // After the helpers: they register the module aliases the models rely on.
 const db = require('../../models/index')
 
-const PATH = '/api/attainments/verify'
+const PATH = '/api/moocfi/attainments/verify'
 const STATUS_PATH = '/suotar/attainment-status'
 
 const ATTAINMENT_ID = 'hy-kur-1'

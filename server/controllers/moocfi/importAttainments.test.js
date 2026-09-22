@@ -27,7 +27,7 @@ const {
 
 const db = require('@server/models/index')
 
-const PATH = '/api/attainments/import'
+const PATH = '/api/moocfi/attainments/import'
 const SEND_PATH = '/suotar/'
 
 const STUDENT_NUMBER = '012345678'

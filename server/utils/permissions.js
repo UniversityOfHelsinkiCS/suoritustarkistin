@@ -39,10 +39,10 @@ const checkToken = (req, res, next) => {
 // Machine auth for the courses.mooc.fi batch API. Deliberately uncached: a cache would
 // keep revoked keys working.
 const checkMoocfiToken = async (req, res, next) => {
-  const { authorization, token } = req.headers
+  const { authorization } = req.headers
   const bearer = authorization?.startsWith('Bearer ') ? authorization.slice('Bearer '.length) : undefined
 
-  const apiKey = await resolveApiKey(bearer || token)
+  const apiKey = await resolveApiKey(bearer)
   if (!apiKey) {
     moocfiLogger(req.originalUrl).warn('Failed mooc.fi token check', { status: 401, bearer: !!bearer })
     return res

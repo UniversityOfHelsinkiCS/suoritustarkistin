@@ -17,7 +17,7 @@ const {
   post
 } = require('../../test/helpers')
 
-const PATH = '/api/enrolments/resolve'
+const PATH = '/api/moocfi/enrolments/resolve'
 
 const PERSON_ID = 'hy-hlo-1'
 const STUDENT_NUMBER = '012345678'

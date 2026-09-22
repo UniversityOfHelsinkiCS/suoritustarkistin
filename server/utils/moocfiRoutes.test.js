@@ -22,16 +22,17 @@ const {
   AS_ADMIN
 } = require('../test/helpers')
 
-const { MOOCFI_PATHS, moocfiRouter } = require('./moocfiRoutes')
+const { MOOCFI_PREFIX, moocfiRouter } = require('./moocfiRoutes')
 
-// Read off the router rather than listed here: a route registered under a prefix MOOCFI_PATHS
-// does not name never meets the guard and is served with no credential, and a list written by
-// hand would not notice that either. `.router` because moocfiRouter is an express() sub-app.
-const ROUTE_PATHS = moocfiRouter.router.stack.filter((layer) => layer.route).map((layer) => `/api${layer.route.path}`)
+// Read off the router rather than listed here: a list written by hand would not notice a route
+// that never meets the guard. `.router` because moocfiRouter is an express() sub-app.
+const ROUTE_PATHS = moocfiRouter.router.stack
+  .filter((layer) => layer.route)
+  .map((layer) => `/api${MOOCFI_PREFIX}${layer.route.path}`)
 
 // Spec section 5, which has no handler yet. The guard owns the whole prefix, so it answers this
 // one already, and it is here to keep that true until the handler lands.
-const API_PATHS = [...ROUTE_PATHS, '/api/open-university-product-access-tokens/resolve']
+const API_PATHS = [...ROUTE_PATHS, `/api${MOOCFI_PREFIX}/open-university-product-access-tokens/resolve`]
 
 let token
 
@@ -53,16 +54,9 @@ beforeEach(async () => {
 const post = (path, headers = {}) => request('POST', path, { body: [], headers })
 
 describe('the guard covers the API paths', () => {
-  test('every prefix the API uses is guarded', () => {
+  test('answers an unauthenticated batch call with the spec 401 body', async () => {
     assert.ok(ROUTE_PATHS.length, 'no routes came off the router, so this proves nothing')
 
-    for (const path of API_PATHS) {
-      const prefix = MOOCFI_PATHS.find((p) => path.startsWith(`/api${p}`))
-      assert.ok(prefix, `${path} is not covered by MOOCFI_PATHS, so it is served with no credential at all`)
-    }
-  })
-
-  test('answers an unauthenticated batch call with the spec 401 body', async () => {
     for (const path of API_PATHS) {
       const { status, body } = await post(path)
 
@@ -80,7 +74,7 @@ describe('the guard covers the API paths', () => {
     // 401 -- but with checkGrader's body. That difference is the evidence the credential
     // was accepted.
     for (const path of API_PATHS) {
-      const { status, body } = await post(path, { token })
+      const { status, body } = await post(path, { authorization: `Bearer ${token}` })
 
       assert.notDeepEqual(
         body,
@@ -114,7 +108,7 @@ describe('the guard is not global', () => {
   })
 
   test('a mooc.fi credential does not open the rest of the api', async () => {
-    const { status, body } = await request('GET', '/api/api_keys', { headers: { token } })
+    const { status, body } = await request('GET', '/api/api_keys', { headers: { authorization: `Bearer ${token}` } })
 
     assert.equal(status, 401)
     assert.equal(body.error, 'Unauthorized access')

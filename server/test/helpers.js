@@ -160,10 +160,9 @@ const request = async (method, path, { body, headers = {} } = {}) => {
 }
 
 // `rawBody` sends a string unchanged, which is how the malformed-JSON cases are written.
-const post = async (path, body, { token, bearer, rawBody } = {}) => {
+const post = async (path, body, { token, rawBody } = {}) => {
   const headers = { 'content-type': 'application/json' }
-  if (bearer !== undefined) headers.authorization = `Bearer ${bearer}`
-  else if (token) headers.token = token
+  if (token) headers.authorization = `Bearer ${token}`
 
   const response = await fetch(`${baseUrl}${path}`, {
     method: 'POST',

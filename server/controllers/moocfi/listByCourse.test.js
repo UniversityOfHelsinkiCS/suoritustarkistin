@@ -17,7 +17,7 @@ const {
   post
 } = require('../../test/helpers')
 
-const PATH = '/api/enrolments/list-by-course'
+const PATH = '/api/moocfi/enrolments/list-by-course'
 
 // A whole Enrolment row with a nested Person, as the importer returns it: personId sits on
 // the enrolment, and the person carries five columns and no id.

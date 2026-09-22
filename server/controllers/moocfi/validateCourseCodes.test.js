@@ -22,7 +22,7 @@ const {
 
 const db = require('@server/models/index')
 
-const PATH = '/api/course-codes/validate'
+const PATH = '/api/moocfi/course-codes/validate'
 const CODE = 'TKT10001'
 
 const seedCourse = async (courseCode = CODE, name = 'Intro') =>

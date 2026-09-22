@@ -50,21 +50,21 @@ describe('moocfiLogger', () => {
     // A handler sees the path relative to /api; the auth guard, mounted on a path prefix,
     // sees the original url. The label has to come out the same either way.
     assert.strictEqual(endpointLabel('/enrolments/resolve'), '/enrolments/resolve')
-    assert.strictEqual(endpointLabel('/api/enrolments/resolve'), '/enrolments/resolve')
-    assert.strictEqual(endpointLabel('/api/enrolments/resolve?retry=1'), '/enrolments/resolve')
+    assert.strictEqual(endpointLabel('/api/moocfi/enrolments/resolve'), '/enrolments/resolve')
+    assert.strictEqual(endpointLabel('/api/moocfi/enrolments/resolve?retry=1'), '/enrolments/resolve')
     // Express routes a trailing slash to the same handler, so the label has to survive one.
-    assert.strictEqual(endpointLabel('/api/enrolments/resolve/'), '/enrolments/resolve')
-    assert.strictEqual(endpointLabel('/api/enrolments/resolve/?retry=1'), '/enrolments/resolve')
+    assert.strictEqual(endpointLabel('/api/moocfi/enrolments/resolve/'), '/enrolments/resolve')
+    assert.strictEqual(endpointLabel('/api/moocfi/enrolments/resolve/?retry=1'), '/enrolments/resolve')
   })
 
   test('caps the endpoint at the known ones, whatever it is handed', () => {
     // The guard runs before routing, so an unrouted path reaches it. Passing the path through
     // would put whatever a scanner tries in the field a dashboard filters on.
-    assert.strictEqual(endpointLabel('/api/persons/whatever-was-asked-for'), 'other')
+    assert.strictEqual(endpointLabel('/api/moocfi/persons/whatever-was-asked-for'), 'other')
     assert.strictEqual(endpointLabel(''), 'other')
     assert.strictEqual(endpointLabel(undefined), 'other')
 
-    moocfiLogger('/api/persons/nope').info('unrouted')
+    moocfiLogger('/api/moocfi/persons/nope').info('unrouted')
     assert.strictEqual(emitted('info').endpoint, 'other')
   })
 

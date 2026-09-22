@@ -17,7 +17,7 @@ const {
   post
 } = require('../../test/helpers')
 
-const PATH = '/api/persons/resolve-by-student-numbers'
+const PATH = '/api/moocfi/persons/resolve-by-student-numbers'
 
 // A whole Person row, as POST /students returns it: the projection has something to drop.
 const person = (studentNumber, overrides = {}) => ({

@@ -99,7 +99,8 @@ router.post('/logout', logout)
 
 router.post('/create', checkToken, createEntries)
 
-router.use(require('./moocfiRoutes').moocfiRouter)
+const { moocfiRouter, MOOCFI_PREFIX } = require('./moocfiRoutes')
+router.use(MOOCFI_PREFIX, moocfiRouter)
 
 router.get('/status', (_req, res) => res.send({ inMaintenance: !!process.env.IN_MAINTENANCE }))
 

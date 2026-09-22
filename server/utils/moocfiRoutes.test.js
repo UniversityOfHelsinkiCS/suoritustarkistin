@@ -22,17 +22,16 @@ const {
   AS_ADMIN
 } = require('../test/helpers')
 
-const { MOOCFI_PATHS } = require('./moocfiRoutes')
+const { MOOCFI_PATHS, moocfiRouter } = require('./moocfiRoutes')
 
-const API_PATHS = [
-  '/api/persons/resolve-by-student-numbers',
-  '/api/enrolments/resolve',
-  '/api/enrolments/list-by-course',
-  '/api/attainments/import',
-  '/api/attainments/verify',
-  '/api/open-university-product-access-tokens/resolve',
-  '/api/course-codes/validate'
-]
+// Read off the router rather than listed here: a route registered under a prefix MOOCFI_PATHS
+// does not name never meets the guard and is served with no credential, and a list written by
+// hand would not notice that either. `.router` because moocfiRouter is an express() sub-app.
+const ROUTE_PATHS = moocfiRouter.router.stack.filter((layer) => layer.route).map((layer) => `/api${layer.route.path}`)
+
+// Spec section 5, which has no handler yet. The guard owns the whole prefix, so it answers this
+// one already, and it is here to keep that true until the handler lands.
+const API_PATHS = [...ROUTE_PATHS, '/api/open-university-product-access-tokens/resolve']
 
 let token
 
@@ -55,9 +54,11 @@ const post = (path, headers = {}) => request('POST', path, { body: [], headers }
 
 describe('the guard covers the API paths', () => {
   test('every prefix the API uses is guarded', () => {
+    assert.ok(ROUTE_PATHS.length, 'no routes came off the router, so this proves nothing')
+
     for (const path of API_PATHS) {
       const prefix = MOOCFI_PATHS.find((p) => path.startsWith(`/api${p}`))
-      assert.ok(prefix, `${path} is not covered by MOOCFI_PATHS, so it would fall through to checkGrader`)
+      assert.ok(prefix, `${path} is not covered by MOOCFI_PATHS, so it is served with no credential at all`)
     }
   })
 

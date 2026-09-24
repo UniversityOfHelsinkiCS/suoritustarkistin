@@ -256,6 +256,8 @@ Checks that the student has a usable Sisu enrolment before courses.mooc.fi impor
 
 Result codes: `enrolmentFound`, `personNotFound`, `courseCodeNotFound`, `enrolmentNotFound`, `enrolmentNotAccepted`. The last cannot currently occur: Suotar only ever sees enrolments in state `ENROLLED`, so an unaccepted one is indistinguishable from none and comes back as `enrolmentNotFound`.
 
+`enrolmentNotFound` and `enrolmentNotAccepted` still carry `result.existingAttainments`, so a student with a prior result but no enrolment can be told so rather than asked to re-enrol.
+
 A batch holds at most 1000 items.
 
 **Request**
@@ -429,6 +431,44 @@ Content-Type: application/json
     "code": "courseCodeNotFound",
     "error": {
       "message": "Course code could not be resolved in Sisu."
+    }
+  }
+]
+```
+
+</details>
+
+<details>
+<summary>Error response: enrolmentNotFound (no enrolment, existing attainments still listed)</summary>
+
+`existingAttainments` has the same fields as on `enrolmentFound`, and is an empty list when Sisu holds none.
+
+```json
+[
+  {
+    "requestItemId": "enrolment-1",
+    "status": "error",
+    "code": "enrolmentNotFound",
+    "error": {
+      "message": "No Sisu enrolment was found for this person and course."
+    },
+    "result": {
+      "existingAttainments": [
+        {
+          "id": "existing-attainment-id",
+          "type": "AssessmentItemAttainment",
+          "state": "ATTAINED",
+          "personId": "otm-person-id",
+          "courseUnitId": "hy-CU-118023774-2021-08-01",
+          "assessmentItemId": "hy-AI-118023774",
+          "courseUnitRealisationId": "hy-opt-cur-...",
+          "attainmentDate": "2026-03-01",
+          "registrationDate": "2026-03-05",
+          "gradeScaleId": "sis-0-5",
+          "gradeId": "3",
+          "passed": true
+        }
+      ]
     }
   }
 ]

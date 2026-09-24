@@ -97,8 +97,9 @@ const okItem = (requestItemId, code, result) => ({ requestItemId, status: 'ok', 
 
 /**
  * `message` defaults to the code's own wording; pass one only for a code whose message names
- * the item. `result` is for the codes that report an error and still hand back the submission
- * it concerns (sisuTimeout, submissionPending, duplicateRequestItem).
+ * the item. `result` is for the codes that report an error and still hand back data: the
+ * submission it concerns (sisuTimeout, submissionPending, duplicateRequestItem), or the
+ * existing attainments (enrolmentNotFound, enrolmentNotAccepted in section 2).
  */
 const errorItem = (requestItemId, code, { message = MESSAGES[code], result } = {}) => {
   if (!message) throw new Error(`No message for result code ${code}`)

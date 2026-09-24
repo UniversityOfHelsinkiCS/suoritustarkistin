@@ -144,16 +144,20 @@ const resolveEnrolments = batchHandler(async (items, log) => {
     if (!person) return errorItem(requestItemId, CODES.personNotFound)
     if (!knownCodes.has(courseCode)) return errorItem(requestItemId, CODES.courseCodeNotFound)
 
+    // Returned without an enrolment too: a prior result is why a student may have none.
+    const existingAttainments = (attainmentsByPair.get(key(studentNumber, courseCode)) || []).map(toAttainment)
+
     const all = enrolmentsByPair.get(key(person.id, courseCode)) || []
-    if (!all.length) return errorItem(requestItemId, CODES.enrolmentNotFound)
+    if (!all.length) return errorItem(requestItemId, CODES.enrolmentNotFound, { result: { existingAttainments } })
 
     const accepted = all.filter(({ state }) => state === ACCEPTED_ENROLMENT_STATE)
     // Unreachable since importer itself currently filters on state: 'ENROLLED'
-    if (!accepted.length) return errorItem(requestItemId, CODES.enrolmentNotAccepted)
+    if (!accepted.length)
+      return errorItem(requestItemId, CODES.enrolmentNotAccepted, { result: { existingAttainments } })
 
     return okItem(requestItemId, CODES.enrolmentFound, {
       enrolments: accepted.map((enrolment) => toEnrolment(enrolment, validityById.get(enrolment.studyRightId))),
-      existingAttainments: (attainmentsByPair.get(key(studentNumber, courseCode)) || []).map(toAttainment)
+      existingAttainments
     })
   })
 }, validateItem)

@@ -307,6 +307,24 @@ describe('when something does not resolve', () => {
 
     assert.equal(body[0].code, 'enrolmentNotFound')
     assert.equal(body[0].error.message, 'No Sisu enrolment was found for this person and course.')
+    assert.deepEqual(body[0].result, { existingAttainments: [] }, 'the shape does not depend on Sisu holding any')
+  })
+
+  test('still reports existing attainments when there is no enrolment', async () => {
+    importer.respondByPath(
+      fixtures({
+        enrolments: [{ personId: PERSON_ID, code: CODE, enrolments: [] }],
+        attainments: [{ studentNumber: STUDENT_NUMBER, courseCode: CODE, attainments: [attainment()] }]
+      })
+    )
+
+    const { body } = await resolve([one])
+
+    assert.equal(body[0].code, 'enrolmentNotFound')
+    assert.deepEqual(
+      body[0].result.existingAttainments.map(({ id, passed }) => [id, passed]),
+      [['otm-attainment-1', true]]
+    )
   })
 
   /**
@@ -316,13 +334,18 @@ describe('when something does not resolve', () => {
   test('returns enrolmentNotAccepted when every enrolment is in another state', async () => {
     importer.respondByPath(
       fixtures({
-        enrolments: [{ personId: PERSON_ID, code: CODE, enrolments: [enrolment({ state: 'NOT_ENROLLED' })] }]
+        enrolments: [{ personId: PERSON_ID, code: CODE, enrolments: [enrolment({ state: 'NOT_ENROLLED' })] }],
+        attainments: [{ studentNumber: STUDENT_NUMBER, courseCode: CODE, attainments: [attainment()] }]
       })
     )
 
     const { body } = await resolve([one])
 
     assert.equal(body[0].code, 'enrolmentNotAccepted')
+    assert.deepEqual(
+      body[0].result.existingAttainments.map(({ id }) => id),
+      ['otm-attainment-1']
+    )
   })
 
   test('keeps only the accepted enrolments when states are mixed', async () => {

@@ -5,7 +5,7 @@
  * API is exercised by the node:test suites, which can reach the database directly.
  */
 
-const PATH = '/api/persons/resolve-by-student-numbers'
+const PATH = '/api/moocfi/persons/resolve-by-student-numbers'
 
 // From e2e-importer/data.json. The fixture replayer ignores the request body and always
 // answers with every student it has, so the matching under test is Suotar's own.
@@ -37,7 +37,7 @@ describe('courses.mooc.fi API', () => {
     cy.request({
       method: 'POST',
       url: PATH,
-      headers: { token },
+      headers: { authorization: `Bearer ${token}` },
       body: [{ requestItemId: 'person-1', studentNumber: ALPO.studentNumber }]
     }).then(({ status, body }) => {
       expect(status).to.eq(200)
@@ -61,7 +61,7 @@ describe('courses.mooc.fi API', () => {
     cy.request({
       method: 'POST',
       url: PATH,
-      headers: { token },
+      headers: { authorization: `Bearer ${token}` },
       body: [{ requestItemId: 'person-1', studentNumber: '000000000' }]
     }).then(({ body }) => {
       expect(body[0].status).to.eq('error')

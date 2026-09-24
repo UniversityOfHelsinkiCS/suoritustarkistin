@@ -736,6 +736,87 @@ describe('a completion resubmitted while the first attempt is unresolved', () =>
   })
 })
 
+// Sisu's copy lags, so what Suotar itself got accepted in the last day is checked from its own rows.
+describe('a completion Sisu accepted from Suotar within the last day', () => {
+  const accepted = (entry, sent = new Date()) => entry.update({ sendState: 'ACCEPTED', sent })
+
+  test('is answered duplicateAttainment with the attainment already sent', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const first = await run([item()])
+    await accepted(first.toSend[0].entry)
+
+    const { results, toSend } = await run([item({ requestItemId: 'moocfi-completion-2' })])
+
+    assert.equal(toSend.length, 0)
+    assert.equal(results[0].code, 'duplicateAttainment')
+    assert.equal(results[0].result.attainment.id, first.toSend[0].entry.id)
+    assert.equal(await db.entries.count(), 1)
+  })
+
+  test('is a duplicate whatever date it carries', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const first = await run([item()])
+    await accepted(first.toSend[0].entry)
+
+    const { results } = await run([item({ attainmentDate: '2026-05-01' })])
+
+    assert.equal(results[0].code, 'duplicateAttainment')
+  })
+
+  test('matches credits written with a decimal comma', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const first = await run([item()])
+    await db.raw_entries.update({ credits: '5,0' }, { where: { id: first.toSend[0].entry.rawEntryId } })
+    await accepted(first.toSend[0].entry)
+
+    const { results } = await run([item()])
+
+    assert.equal(results[0].code, 'duplicateAttainment')
+  })
+
+  test('is registered again once the send is over a day old', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const first = await run([item()])
+    await accepted(first.toSend[0].entry, new Date(Date.now() - 25 * 60 * 60 * 1000))
+
+    const { toSend } = await run([item()])
+
+    assert.equal(toSend.length, 1)
+  })
+
+  test('is registered again when Sisu rejected the first send', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const first = await run([item()])
+    await first.toSend[0].entry.update({ sendState: 'REJECTED', sent: new Date() })
+
+    const { toSend } = await run([item()])
+
+    assert.equal(toSend.length, 1)
+  })
+
+  test('does not hold back a different grade', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    const first = await run([item()])
+    await accepted(first.toSend[0].entry)
+
+    const { toSend } = await run([item({ gradeId: '4' })])
+
+    assert.equal(toSend.length, 1)
+  })
+})
+
 // A completion the batch already carries is not registered a second time.
 describe('the same completion twice in one batch', () => {
   test('writes it once and answers the repeat with that attainment', async () => {

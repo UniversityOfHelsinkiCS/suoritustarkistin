@@ -10,6 +10,7 @@
 
 const _ = require('lodash')
 const moment = require('moment')
+const { Op } = require('sequelize')
 const { v4: uuidv4 } = require('uuid')
 
 const db = require('../models/index')
@@ -54,6 +55,29 @@ const toAttainment = (attainment) => ({
   gradeScaleId: attainment.gradeScaleId,
   gradeId: attainment.gradeId
 })
+
+/**
+ * The Sisu copy lags, so a completion Suotar itself got accepted recently may not show up in
+ * the earlier attainments yet. Not matched on the date: a cron run dates the same completion
+ * differently.
+ */
+const fetchRecentlyAccepted = (items, coursesByCode) =>
+  db.entries.findAll({
+    where: {
+      sendState: 'ACCEPTED',
+      sent: { [Op.gte]: moment().subtract(24, 'hours').toDate() }
+    },
+    include: [
+      {
+        association: 'rawEntry',
+        required: true,
+        where: {
+          studentNumber: [...new Set(items.map(({ studentNumber }) => studentNumber))],
+          courseId: [...coursesByCode.values()].map(({ id }) => id)
+        }
+      }
+    ]
+  })
 
 /**
  * mooc.fi sends (gradeScaleId, gradeId); the rules downstream are written against the Finnish
@@ -112,6 +136,8 @@ const fetchContext = async (items) => {
       )
     : []
 
+  const recentlyAccepted = coursesByCode.size ? await fetchRecentlyAccepted(items, coursesByCode) : []
+
   return {
     studyRights,
     earlierAttainments,
@@ -126,7 +152,16 @@ const fetchContext = async (items) => {
       )
         .filter((a) => !a.misregistration)
         // Newest first
-        .sort((a, b) => moment(b.attainmentDate).diff(moment(a.attainmentDate)))
+        .sort((a, b) => moment(b.attainmentDate).diff(moment(a.attainmentDate))),
+    recentlyAcceptedFor: ({ studentNumber, credits }, course, gradeScaleId, gradeId) =>
+      recentlyAccepted.find(
+        (entry) =>
+          entry.rawEntry.studentNumber === studentNumber &&
+          entry.rawEntry.courseId === course.id &&
+          parseFloat(entry.rawEntry.credits?.replace(',', '.')) === credits &&
+          entry.gradeScaleId === gradeScaleId &&
+          entry.gradeId === gradeId
+      )
   }
 }
 
@@ -201,6 +236,19 @@ const resolveItem = async (item, context) => {
   ) {
     // TODO: return the specific attainment that identicalCompletionFound matched?
     return answer(requestItemId, CODES.duplicateAttainment, { attainment: previousAttainment })
+  }
+
+  const recent = context.recentlyAcceptedFor(item, course, gradeScaleId, grade.localId)
+  if (recent) {
+    return answer(requestItemId, CODES.duplicateAttainment, {
+      attainment: {
+        id: recent.id,
+        type: ASSESSMENT_ITEM_ATTAINMENT_TYPE,
+        attainmentDate: moment(recent.completionDate).format('YYYY-MM-DD'),
+        gradeScaleId: recent.gradeScaleId,
+        gradeId: recent.gradeId
+      }
+    })
   }
 
   // Every earlier attainment on the course has to be beaten, not just the latest one.

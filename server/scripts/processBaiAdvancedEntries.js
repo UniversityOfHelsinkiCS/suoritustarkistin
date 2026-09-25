@@ -27,11 +27,16 @@ const processBaiAdvancedEntries = async ({ job, course, grader }, sendToSisu = f
     const advancedCodes = [course.courseCode, OLD_BAI_ADVANCED_CODE]
     const intermediateCodes = [NEW_BAI_INTERMEDIATE_CODE, OLD_BAI_INTERMEDIATE_CODE]
 
+    // Entries Sisu rejected are left out so the completion is retried until it is accepted
     const advancedRawEntries = await db.raw_entries.findAll({
       where: {
-        '$course.courseCode$': advancedCodes
+        '$course.courseCode$': advancedCodes,
+        '$entry.errors$': null
       },
-      include: [{ model: db.courses, as: 'course' }]
+      include: [
+        { model: db.courses, as: 'course' },
+        { model: db.entries, as: 'entry', attributes: [] }
+      ]
     })
 
     const intermediateRawEntries = await db.raw_entries.findAll({

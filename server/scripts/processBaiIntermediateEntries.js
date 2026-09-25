@@ -19,11 +19,16 @@ const processBaiIntermediateEntries = async ({ job, course, grader }, sendToSisu
       raw: true
     })
 
+    // Entries Sisu rejected are left out so the completion is retried until it is accepted
     const rawEntries = await db.raw_entries.findAll({
       where: {
-        '$course.courseCode$': courseCodes
+        '$course.courseCode$': courseCodes,
+        '$entry.errors$': null
       },
-      include: [{ model: db.courses, as: 'course' }]
+      include: [
+        { model: db.courses, as: 'course' },
+        { model: db.entries, as: 'entry', attributes: [] }
+      ]
     })
 
     const registrations = await fetchRegistrationsFor(course.courseCode)

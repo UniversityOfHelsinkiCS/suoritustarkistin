@@ -17,11 +17,16 @@ const processEoaiEntries = async ({ course, grader }, sendToSisu) => {
       raw: true
     })
 
+    // Entries Sisu rejected are left out so the completion is retried until it is accepted
     const rawEntries = await db.raw_entries.findAll({
       where: {
-        '$course.courseCode$': ALL_EOAI_CODES
+        '$course.courseCode$': ALL_EOAI_CODES,
+        '$entry.errors$': null
       },
-      include: [{ model: db.courses, as: 'course', attributes: [] }],
+      include: [
+        { model: db.courses, as: 'course', attributes: [] },
+        { model: db.entries, as: 'entry', attributes: [] }
+      ],
       attributes: ['studentNumber', 'moocCompletionId', 'moocUserId'],
       raw: true
     })

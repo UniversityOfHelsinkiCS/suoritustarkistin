@@ -12,15 +12,15 @@ const SHIBBOLETH_HEADERS = [
 
 const generateSisuId = () => `hy-kur-${uuidv4()}`
 
-// Acually send to Sisu if in prod/staging or explicitly enabled
+// Acually send to Sisu if in prod or explicitly enabled
 const ALLOW_SEND_TO_SISU = process.env.SEND_TO_SISU
   ? process.env.SEND_TO_SISU === 'true'
-  : process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
+  : process.env.NODE_ENV === 'production'
 
-// Actually post registrations to mooc if in prod/staging or explicitly enabled
+// Actually post registrations to mooc if in prod or explicitly enabled
 const ALLOW_SEND_TO_MOOC = process.env.SEND_TO_MOOC
   ? process.env.SEND_TO_MOOC === 'true'
-  : process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
+  : process.env.NODE_ENV === 'production'
 
 module.exports = {
   ...common,

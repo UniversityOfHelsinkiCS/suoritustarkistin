@@ -23,9 +23,5 @@ module.exports = {
   production: {
     database_url: process.env.DATABASE_URL,
     ...OPTIONS
-  },
-  staging: {
-    database_url: process.env.DATABASE_URL,
-    ...OPTIONS
   }
 }

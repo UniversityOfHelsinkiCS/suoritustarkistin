@@ -1,7 +1,7 @@
 const SUOTAR_URL =
   process.env.NODE_ENV === 'production'
     ? 'https://opetushallinto.cs.helsinki.fi/suoritustarkistin'
-    : 'https://toska-staging.cs.helsinki.fi/suotar'
+    : 'http://localhost:8000'
 
 const Template = (content, title) => `
 <!doctype html>

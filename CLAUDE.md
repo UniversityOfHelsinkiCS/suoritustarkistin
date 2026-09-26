@@ -93,7 +93,7 @@ bodies. No secrets needed to run tests.
 ### Cron
 
 `server/scripts/cronjobs.js` plus explicit `cron.schedule` calls in `server/index.js`.
-Guarded by `inProduction && EDUWEB_TOKEN && MOOC_TOKEN && !STAGING && !IN_MAINTENANCE` —
+Guarded by `inProduction && EDUWEB_TOKEN && MOOC_TOKEN && !IN_MAINTENANCE` —
 setting `IN_MAINTENANCE` also flips the client into `MaintenanceView` via `GET /api/status`.
 
 ### Database

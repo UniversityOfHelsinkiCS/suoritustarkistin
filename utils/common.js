@@ -3,7 +3,7 @@
  */
 import moment from 'moment'
 
-export const inProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' // staging is production ¯\_(ツ)_/¯
+export const inProduction = process.env.NODE_ENV === 'production'
 export const inDevelopment = process.env.NODE_ENV === 'development'
 export const inTest = process.env.NODE_ENV === 'test'
 

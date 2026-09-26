@@ -2,14 +2,12 @@ import FakeShibboMenu from '@client/components/fakeShibboMenu'
 import { images } from '@client/utils/common'
 import { activateAdminModeAction, disableAdminModeAction, logoutAction } from '@client/utils/redux/userReducer'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { AppBar, Box, Button, Divider, Menu, MenuItem, Switch, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Button, Divider, Menu, MenuItem, Switch, Toolbar } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import { setFilterAction, getAllSisReportsAction, getUnsentBatchCountAction } from '../utils/redux/sisReportsReducer'
-
-const STAGING = process.env.NODE_ENV === 'staging'
 
 const toolLinks = [
   { name: 'apichecks', to: '/apichecks', dataCy: 'nav-apichecks', label: 'API checks' },
@@ -91,7 +89,7 @@ export default () => {
       color="default"
       elevation={0}
       sx={{
-        backgroundColor: STAGING ? '#ffeaed' : '#fff',
+        backgroundColor: '#fff',
         borderBottom: '1px solid rgba(34, 36, 38, 0.15)'
       }}
     >
@@ -111,11 +109,6 @@ export default () => {
           }}
         >
           <img src={images.toska_color} style={{ marginRight: '0.7em', height: '3rem' }} alt="tosca" /> SUOTAR
-          {STAGING ? (
-            <Typography component="span" sx={{ fontSize: '2rem' }}>
-              -staging
-            </Typography>
-          ) : null}
         </Button>
 
         <Box sx={{ flexGrow: 1 }} />

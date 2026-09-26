@@ -45,14 +45,13 @@ const SisSuccessMessage = () => (
 )
 
 const getCourseUnitRealisationSisuUrl = (realisation) => `
-  https://sis-helsinki${process.env.NODE_ENV === 'staging' ? '-test' : ''}.funidata.fi
+  https://sis-helsinki.funidata.fi
 /teacher/role/staff/teaching/course-unit-realisations/view/${realisation}/attainments/list
 `
 
 const getBatchLink = (id) => {
   if (process.env.NODE_ENV === 'production')
     return `https://opetushallinto.cs.helsinki.fi/suoritustarkistin/reports/sisu/${id}`
-  if (process.env.NODE_ENV === 'staging') return `https://toska-staging.cs.helsinki.fi/suotar/reports/sisu/${id}`
   return `http://localhost:8000/reports/sisu/${id}`
 }
 

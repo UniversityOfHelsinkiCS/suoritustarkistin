@@ -86,13 +86,12 @@ initializeDatabaseConnection()
 
     if (!IN_MAINTENANCE && inProduction) initializeCronJobs()
 
-    const STAGING = process.env.NODE_ENV === 'staging'
     logger.info(
       'Suotar starting',
-      inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE
+      inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !IN_MAINTENANCE
     )
 
-    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !STAGING && !IN_MAINTENANCE) {
+    if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !IN_MAINTENANCE) {
       logger.info('Suotar: Starting cron jobs')
 
       const missedExecutionTolerance = 10 * 60 * 1000 // 10 minutes

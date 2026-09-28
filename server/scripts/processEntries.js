@@ -201,6 +201,28 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
         return Promise.resolve()
       }
 
+      // Sisu holds the moved date, so a resubmission is caught only by comparing against it too
+      if (
+        checkDuplicates &&
+        identicalCompletionFound(
+          earlierAttainments,
+          rawEntry.studentNumber,
+          course.courseCode,
+          rawEntry.grade,
+          validAttainmentDate,
+          rawEntry.credits
+        )
+      ) {
+        failed.push({
+          id: rawEntry.id,
+          studentNumber: rawEntry.studentNumber,
+          courseCode: course.courseCode,
+          reason: FAILURE_REASONS.DUPLICATE_COMPLETION,
+          message: `Identical completion found in Sisu for course ${course.courseCode}`
+        })
+        return Promise.resolve()
+      }
+
       delete filteredEnrolment.studyRightId
       delete filteredEnrolment.enrolmentDateTime
       success.push({

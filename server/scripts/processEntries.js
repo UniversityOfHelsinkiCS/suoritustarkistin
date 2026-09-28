@@ -202,6 +202,7 @@ const processEntries = async (createdEntries, requireEnrollment = false, checkDu
       }
 
       delete filteredEnrolment.studyRightId
+      delete filteredEnrolment.enrolmentDateTime
       success.push({
         ...filteredEnrolment,
         id: generateEntryId(),
@@ -236,7 +237,8 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     assessmentItem,
     courseUnitRealisation,
     courseUnit,
-    studyRightId
+    studyRightId,
+    enrolmentDateTime
   }) => ({
     courseUnitRealisationName: courseUnitRealisation.name,
     gradeScaleId: assessmentItem.gradeScaleId,
@@ -245,6 +247,7 @@ const filterEnrolments = (completionDate, { enrolments }) => {
     courseUnitRealisationId,
     courseUnitId,
     studyRightId,
+    enrolmentDateTime,
     personId
   })
   if (!enrolments || !enrolments.length) return null

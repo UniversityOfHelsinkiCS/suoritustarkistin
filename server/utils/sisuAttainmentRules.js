@@ -13,35 +13,68 @@ const { resolveStudyRight, getClosestStudyRight, resolveTerm } = require('./reso
 
 const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
 
+const findAttendingRegistration = (termRegistrations, date) => {
+  const { attainmentStartYear, attainmentTermIndex } = resolveTerm(date)
+  return (termRegistrations?.termRegistrations || []).find(
+    (r) =>
+      r?.termRegistrationType === 'ATTENDING' &&
+      r.studyTerm?.studyYearStartYear === attainmentStartYear &&
+      r.studyTerm.termIndex === attainmentTermIndex
+  )
+}
+
+// A bare day like valid.startDate; UTC midnight is what Sisu reads back as that day
+const asSisuDay = (date) => moment.utc(moment(date).format('YYYY-MM-DD'))
+
+// A study right without an end date is open-ended
+const isBeforeEnd = (date, { endDate }) => !endDate || date.isBefore(endDate)
+
 /**
  * Sisu refuses an attainment dated before the student registered as attending for its term.
  * Returns the registration date when it is later than the attainment but still within the same
  * term and study right, otherwise null: moving any further only trades one refusal for another.
  */
 const getLateTermRegistrationDate = ({ term_registrations, valid }, attainmentDate) => {
-  const { attainmentStartYear, attainmentTermIndex } = resolveTerm(attainmentDate)
-  const registration = (term_registrations?.termRegistrations || []).find(
-    (r) =>
-      r?.termRegistrationType === 'ATTENDING' &&
-      r.studyTerm?.studyYearStartYear === attainmentStartYear &&
-      r.studyTerm.termIndex === attainmentTermIndex
-  )
+  const registration = findAttendingRegistration(term_registrations, attainmentDate)
   if (!registration?.registrationDate) return null
 
-  // A bare day like valid.startDate; UTC midnight is what Sisu reads back as that day
   const registrationDate = moment.utc(registration.registrationDate)
   if (!registrationDate.isAfter(attainmentDate)) return null
 
+  const attainmentTerm = resolveTerm(attainmentDate)
   const registrationTerm = resolveTerm(registrationDate)
   if (
-    registrationTerm.attainmentStartYear !== attainmentStartYear ||
-    registrationTerm.attainmentTermIndex !== attainmentTermIndex ||
-    !registrationDate.isBefore(valid.endDate)
+    registrationTerm.attainmentStartYear !== attainmentTerm.attainmentStartYear ||
+    registrationTerm.attainmentTermIndex !== attainmentTerm.attainmentTermIndex ||
+    !isBeforeEnd(registrationDate, valid)
   ) {
     return null
   }
 
   return registrationDate
+}
+
+// An extension made by enrolling happens at the enrolment; the importer sees it up to a day later
+const getLapseEnd = ({ endedOn, extendedAt }, enrolmentDateTime) => {
+  const enrolled = enrolmentDateTime && moment(enrolmentDateTime)
+  return enrolled && !enrolled.isBefore(endedOn) && enrolled.isBefore(extendedAt) ? enrolled : moment(extendedAt)
+}
+
+/**
+ * A study right that lapsed and was later extended looks unbroken in its newest validity, yet
+ * Sisu refuses an attainment dated before the day of the extension. The importer reads the lapses
+ * from the version history; the attainment moves to the day the lapse ended. Seen only on study
+ * rights without term registrations, so those with them are left alone.
+ */
+const getLapseEndDate = ({ lapses, valid, term_registrations }, { enrolmentDateTime }, attainmentDate) => {
+  if (term_registrations?.termRegistrations?.length) return null
+
+  const lapseEnd = (lapses || [])
+    .map((lapse) => ({ endedOn: lapse.endedOn, endDay: asSisuDay(getLapseEnd(lapse, enrolmentDateTime)) }))
+    .find(({ endedOn, endDay }) => !moment(endedOn).isAfter(attainmentDate) && endDay.isAfter(attainmentDate))
+  if (!lapseEnd || !isBeforeEnd(lapseEnd.endDay, valid)) return null
+
+  return lapseEnd.endDay
 }
 
 const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment, attainmentDate) => {
@@ -76,6 +109,15 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
         enrolmentStudyRight
       })
       newAttainmentDate = grantDate
+    }
+
+    const lapseEndDate = getLapseEndDate(enrolmentStudyRight, filteredEnrolment, newAttainmentDate)
+    if (lapseEndDate) {
+      logger.info({
+        message: `Attainment date ${newAttainmentDate} falls in a study right lapse that ended ${lapseEndDate}`,
+        studyRightId: enrolmentStudyRight.id
+      })
+      newAttainmentDate = lapseEndDate
     }
 
     const registrationDate = getLateTermRegistrationDate(enrolmentStudyRight, newAttainmentDate)

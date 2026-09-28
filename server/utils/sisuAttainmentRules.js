@@ -9,9 +9,40 @@ const { v4: uuidv4 } = require('uuid')
 
 const logger = require('@server/utils/logger')
 const { getMultipleStudyRightsByPersons } = require('../services/importer')
-const { resolveStudyRight, getClosestStudyRight } = require('./resolveStudyRight')
+const { resolveStudyRight, getClosestStudyRight, resolveTerm } = require('./resolveStudyRight')
 
 const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
+
+/**
+ * Sisu refuses an attainment dated before the student registered as attending for its term.
+ * Returns the registration date when it is later than the attainment but still within the same
+ * term and study right, otherwise null: moving any further only trades one refusal for another.
+ */
+const getLateTermRegistrationDate = ({ term_registrations, valid }, attainmentDate) => {
+  const { attainmentStartYear, attainmentTermIndex } = resolveTerm(attainmentDate)
+  const registration = (term_registrations?.termRegistrations || []).find(
+    (r) =>
+      r?.termRegistrationType === 'ATTENDING' &&
+      r.studyTerm?.studyYearStartYear === attainmentStartYear &&
+      r.studyTerm.termIndex === attainmentTermIndex
+  )
+  if (!registration?.registrationDate) return null
+
+  // A bare day like valid.startDate; UTC midnight is what Sisu reads back as that day
+  const registrationDate = moment.utc(registration.registrationDate)
+  if (!registrationDate.isAfter(attainmentDate)) return null
+
+  const registrationTerm = resolveTerm(registrationDate)
+  if (
+    registrationTerm.attainmentStartYear !== attainmentStartYear ||
+    registrationTerm.attainmentTermIndex !== attainmentTermIndex ||
+    !registrationDate.isBefore(valid.endDate)
+  ) {
+    return null
+  }
+
+  return registrationDate
+}
 
 const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment, attainmentDate) => {
   if (!studyRights || !personId || !attainmentDate) return null
@@ -45,6 +76,15 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
         enrolmentStudyRight
       })
       newAttainmentDate = grantDate
+    }
+
+    const registrationDate = getLateTermRegistrationDate(enrolmentStudyRight, newAttainmentDate)
+    if (registrationDate) {
+      logger.info({
+        message: `Attainment date ${newAttainmentDate} is before term registration date ${registrationDate}`,
+        studyRightId: enrolmentStudyRight.id
+      })
+      newAttainmentDate = registrationDate
     }
 
     return newAttainmentDate

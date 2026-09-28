@@ -102,4 +102,4 @@ const getClosestStudyRight = (studyRights, attainmentDate) => {
   return [id, newAttainmentDate]
 }
 
-module.exports = { resolveStudyRight, getClosestStudyRight }
+module.exports = { resolveStudyRight, getClosestStudyRight, resolveTerm }

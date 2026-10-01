@@ -3,7 +3,7 @@
 # The integration suites truncate every table, so this must never point at anything real.
 services:
   test-db:
-    image: postgres:11
+    image: postgres:18
     container_name: suotar_test_db
     environment:
       - POSTGRES_PASSWORD=postgres

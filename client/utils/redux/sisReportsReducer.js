@@ -158,35 +158,35 @@ export default (state = _.cloneDeep(INITIAL_STATE), action) => {
     case 'GET_ALL_SIS_REPORTS_SUCCESS':
       return {
         ...state,
-        reports: { ...action.response, reportsFetched: true },
+        reports: { ...action.response, rows: action.response?.rows ?? [], reportsFetched: true },
         pending: false,
         error: false
       }
     case 'GET_ALL_MOOC_SIS_REPORTS_SUCCESS':
       return {
         ...state,
-        moocReports: { ...action.response, reportsFetched: true },
+        moocReports: { ...action.response, rows: action.response?.rows ?? [], reportsFetched: true },
         pending: false,
         error: false
       }
     case 'GET_ALL_MOOCFI_API_SIS_REPORTS_SUCCESS':
       return {
         ...state,
-        moocfiApiReports: { ...action.response, reportsFetched: true },
+        moocfiApiReports: { ...action.response, rows: action.response?.rows ?? [], reportsFetched: true },
         pending: false,
         error: false
       }
     case 'GET_ALL_ENROLLMENT_LIMBO_SUCCESS':
       return {
         ...state,
-        enrolmentLimbo: { ...action.response, reportsFetched: true },
+        enrolmentLimbo: { ...action.response, rows: action.response?.rows ?? [], reportsFetched: true },
         pending: false,
         error: false
       }
     case 'GET_ALL_UNSENT_ENTRIES_SUCCESS':
       return {
         ...state,
-        unsentEntries: { ...action.response, reportsFetched: true },
+        unsentEntries: { ...action.response, rows: action.response?.rows ?? [], reportsFetched: true },
         pending: false,
         error: false
       }

@@ -42,7 +42,7 @@ describe('dating an attainment against the term registration of the enrolment st
   test('moves the date to a registration made after the attainment', async () => {
     assert.equal(
       await dateFor([autumn2026('ATTENDING', '2026-09-25')], '2026-09-17T04:24:42.252Z'),
-      '2026-09-25T00:00:00.000Z'
+      moment('2026-09-25').toISOString()
     )
   })
 
@@ -52,7 +52,7 @@ describe('dating an attainment against the term registration of the enrolment st
         [autumn2026('NONATTENDING', '2026-08-23'), autumn2026('ATTENDING', '2026-09-25')],
         '2026-09-17T04:24:42.252Z'
       ),
-      '2026-09-25T00:00:00.000Z'
+      moment('2026-09-25').toISOString()
     )
   })
 
@@ -117,7 +117,7 @@ describe('dating an attainment inside a study right lapse', () => {
           enrolmentDateTime: '2026-09-02T07:27:08.445Z'
         }
       ),
-      '2026-09-02T00:00:00.000Z'
+      moment('2026-09-02').toISOString()
     )
   })
 
@@ -130,7 +130,7 @@ describe('dating an attainment inside a study right lapse', () => {
           enrolmentDateTime: '2026-09-23T22:21:19.749Z'
         }
       ),
-      '2026-09-24T00:00:00.000Z'
+      moment('2026-09-24').toISOString()
     )
   })
 
@@ -165,7 +165,7 @@ describe('dating an attainment inside a study right lapse', () => {
       await lapseDateFor('2026-08-31T12:43:20.456Z', [
         { endedOn: '2025-12-31', extendedAt: '2026-09-02T08:00:00.985Z' }
       ]),
-      '2026-09-02T00:00:00.000Z'
+      moment('2026-09-02').toISOString()
     )
   })
 
@@ -204,7 +204,7 @@ describe('dating an attainment inside a study right lapse', () => {
       await lapseDateFor('2025-01-20T10:00:00.000Z', lapses, {
         valid: { startDate: '2024-01-01', endDate: '2027-10-01' }
       }),
-      '2025-02-10T00:00:00.000Z'
+      moment('2025-02-10').toISOString()
     )
   })
 
@@ -217,7 +217,7 @@ describe('dating an attainment inside a study right lapse', () => {
           valid: { startDate: '2025-04-20' }
         }
       ),
-      '2026-09-02T00:00:00.000Z'
+      moment('2026-09-02').toISOString()
     )
   })
 })

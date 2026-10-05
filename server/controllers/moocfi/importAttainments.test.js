@@ -11,6 +11,7 @@ process.env.SEND_TO_SISU = 'true'
 
 const { test, before, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
+const moment = require('moment')
 
 const {
   connectDatabase,
@@ -257,6 +258,28 @@ describe('an attainment Sisu accepts', () => {
   })
 })
 
+describe('the attainment date', () => {
+  test('a bare date is sent at local midnight', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    await importItems([item({ attainmentDate: '2026-05-22' })])
+
+    const [attainment] = sends()[0].body
+    assert.equal(attainment.completionDate, moment('2026-05-22').toISOString())
+  })
+
+  test('a timestamp is sent as the instant it names', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures())
+
+    await importItems([item({ attainmentDate: '2026-05-22T10:15:00+03:00' })])
+
+    const [attainment] = sends()[0].body
+    assert.equal(attainment.completionDate, '2026-05-22T07:15:00.000Z')
+  })
+})
+
 describe('an attainment Sisu refuses', () => {
   test('answers sisuValidationFailed with what Sisu objected to', async () => {
     await seedCourse()
@@ -484,14 +507,12 @@ describe('the request itself', () => {
     assert.match(body.error.message, /credits/)
   })
 
-  // A timestamp would be reduced to whichever local day the server happens to be on, moving the
-  // attainment date and hiding an already registered completion from the duplicate check.
-  test('malformedRequest for an attainmentDate carrying a time', async () => {
-    const { status, body } = await importItems([item({ attainmentDate: '2026-05-22T22:00:00Z' })])
+  test('malformedRequest for an attainmentDate timestamp without an offset', async () => {
+    const { status, body } = await importItems([item({ attainmentDate: '2026-05-22T22:00:00' })])
 
     assert.equal(status, 400)
     assert.equal(body.error.code, 'malformedRequest')
-    assert.match(body.error.message, /attainmentDate must be a date in YYYY-MM-DD format/)
+    assert.match(body.error.message, /attainmentDate/)
     assert.equal((await db.entries.findAll()).length, 0)
   })
 

@@ -41,6 +41,14 @@ const reject = (requestItemId, code, message) => ({ result: errorItem(requestIte
 
 const key = (left, right) => `${left} ${right}`
 
+// Z is the offset, so a timestamp without one does not parse. The bare date is for backwards
+// compatibility.
+const ATTAINMENT_DATE_FORMATS = ['YYYY-MM-DDTHH:mm:ssZ', 'YYYY-MM-DDTHH:mm:ss.SSSZ', 'YYYY-MM-DD']
+
+// A bare date becomes local midnight: sent at UTC midnight instead, it is in the future for
+// Sisu until 03:00 on the day itself.
+const parseAttainmentDate = (value) => moment(value, ATTAINMENT_DATE_FORMATS, true)
+
 // The intra-batch duplicate check's key
 const completionKey = ({ studentNumber, courseCode, gradeScaleId, gradeId, credits, attainmentDate }) =>
   [studentNumber, courseCode, gradeScaleId, gradeId, credits, attainmentDate].join('|')
@@ -171,7 +179,8 @@ const fetchContext = async (items) => {
  * back to a per-person lookup when the enrolment's own study right did not come back.
  */
 const resolveItem = async (item, context) => {
-  const { requestItemId, studentNumber, courseCode, enrolmentId, attainmentDate, attainmentLanguage } = item
+  const { requestItemId, studentNumber, courseCode, enrolmentId, attainmentLanguage } = item
+  const attainmentDate = parseAttainmentDate(item.attainmentDate)
 
   const course = context.courseFor(item)
   const notAllowed = courseNotAllowedReason(courseCode, course)
@@ -262,7 +271,7 @@ const resolveItem = async (item, context) => {
       context.studyRights,
       person.id,
       { ...enrolment, credits },
-      moment(attainmentDate)
+      attainmentDate
     )
   } catch (error) {
     throw serviceUnavailable('Resolving a study right for a courses.mooc.fi import failed', error, { studentNumber })
@@ -278,7 +287,7 @@ const resolveItem = async (item, context) => {
         grade: grade.abbreviation,
         credits: creditsAsString,
         language: attainmentLanguage,
-        attainmentDate,
+        attainmentDate: attainmentDate.toDate(),
         // No person graded or reported this. Sisu's acceptor comes from the realisation's
         // responsible persons at send time, so nothing here needs a Suotar user.
         graderId: null,
@@ -297,7 +306,7 @@ const resolveItem = async (item, context) => {
         courseUnitId: enrolment.courseUnitId,
         gradeScaleId,
         gradeId: grade.localId,
-        completionDate: moment(validAttainmentDate).format('YYYY-MM-DD'),
+        completionDate: moment(validAttainmentDate).toDate(),
         completionLanguage: attainmentLanguage
       }
     }
@@ -418,4 +427,4 @@ const processMoocfiImport = async (items, log = moocfiLogger('/attainments/impor
   }
 }
 
-module.exports = { processMoocfiImport }
+module.exports = { processMoocfiImport, parseAttainmentDate }

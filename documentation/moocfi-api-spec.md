@@ -484,6 +484,8 @@ Creates completions as attainments in Sisu.
 
 `enrolmentId` is the enrolment section 2 returned for this student and course; Suotar registers against that one rather than picking its own. An id that is not among them, or no longer `ENROLLED`, comes back `enrolmentNotFound`.
 
+`attainmentDate` is an ISO 8601 timestamp with an offset, e.g. `2026-05-22T14:03:00+03:00` or `2026-05-22T11:03:00Z`, and is registered on the day it falls on in Finnish time. A bare date (`2026-05-22`) is still accepted for backwards compatibility only.
+
 Sisu rejects an attainment dated outside the student's study right, so Suotar moves the date into range where necessary. The response does not currently report the date actually registered.
 
 Success codes: `sent`, `duplicateAttainment`, `notImprovedAttainment`.
@@ -506,7 +508,7 @@ Content-Type: application/json
     "studentNumber": "012345678",
     "courseCode": "TKT10001",
     "enrolmentId": "selected-enrolment-id",
-    "attainmentDate": "2026-05-22",
+    "attainmentDate": "2026-05-22T14:03:00+03:00",
     "attainmentLanguage": "fi",
     "gradeScaleId": "sis-hyl-hyv",
     "gradeId": "1",
@@ -722,7 +724,7 @@ Content-Type: application/json
     "studentNumber": "012345678",
     "courseCode": "TKT10001",
     "enrolmentId": "otm-enrolment-open",
-    "attainmentDate": "2026-05-22",
+    "attainmentDate": "2026-05-22T14:03:00+03:00",
     "attainmentLanguage": "fi",
     "gradeScaleId": "sis-hyl-hyv",
     "gradeId": "1",
@@ -733,7 +735,7 @@ Content-Type: application/json
     "studentNumber": "012345678",
     "courseCode": "TKT10001",
     "enrolmentId": "otm-enrolment-degree",
-    "attainmentDate": "2026-05-22",
+    "attainmentDate": "2026-05-22T14:03:00+03:00",
     "attainmentLanguage": "fi",
     "gradeScaleId": "sis-hyl-hyv",
     "gradeId": "1",

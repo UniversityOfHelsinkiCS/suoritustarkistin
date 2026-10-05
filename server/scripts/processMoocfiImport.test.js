@@ -4,6 +4,7 @@
  */
 const { test, before, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
+const moment = require('moment')
 
 const {
   connectDatabase,
@@ -268,7 +269,7 @@ describe('an item that resolves', () => {
 
     const [entry] = await db.entries.findAll()
     assert.equal(
-      entry.completionDate.toISOString().slice(0, 10),
+      moment(entry.completionDate).format('YYYY-MM-DD'),
       '2026-04-30',
       'the day before the study right ended, not the 2026-05-22 that was asked for'
     )

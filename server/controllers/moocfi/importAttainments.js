@@ -5,11 +5,9 @@
  * outcome into one result per request item.
  */
 
-const moment = require('moment')
-
 const db = require('@server/models/index')
 const attainmentsToSisu = require('@server/utils/sendToSisu')
-const { processMoocfiImport } = require('@server/scripts/processMoocfiImport')
+const { processMoocfiImport, parseAttainmentDate } = require('@server/scripts/processMoocfiImport')
 const { batchHandler, IMPORT_BATCH_SIZE } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem } = require('@server/utils/moocfiResults')
 const { ASSESSMENT_ITEM_ATTAINMENT_TYPE } = require('@server/utils/sisuAttainmentRules')
@@ -37,8 +35,8 @@ const validateItem = (item) => {
     if (isBlank(item[field])) return `${field} must be a non-empty string.`
   }
   if (!Number.isFinite(item.credits)) return 'credits must be a number.'
-  if (!moment(item.attainmentDate, 'YYYY-MM-DD', true).isValid()) {
-    return 'attainmentDate must be a date in YYYY-MM-DD format.'
+  if (!parseAttainmentDate(item.attainmentDate).isValid()) {
+    return 'attainmentDate must be an ISO 8601 timestamp with an offset.'
   }
   return undefined
 }

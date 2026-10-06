@@ -26,9 +26,6 @@ const findAttendingRegistration = (termRegistrations, date) => {
 // A bare day like valid.startDate; UTC midnight is what Sisu reads back as that day
 const asSisuDay = (date) => moment.utc(moment(date).format('YYYY-MM-DD'))
 
-// Sent at UTC midnight, today's date is in the future for Sisu until 03:00 Helsinki time
-const asLocalMidnight = (sisuDay) => moment(sisuDay.format('YYYY-MM-DD'))
-
 // A study right without an end date is open-ended
 const isBeforeEnd = (date, { endDate }) => !endDate || date.isBefore(endDate)
 
@@ -120,7 +117,7 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
         message: `Attainment date ${newAttainmentDate} falls in a study right lapse that ended ${lapseEndDate}`,
         studyRightId: enrolmentStudyRight.id
       })
-      newAttainmentDate = asLocalMidnight(lapseEndDate)
+      newAttainmentDate = lapseEndDate
     }
 
     const registrationDate = getLateTermRegistrationDate(enrolmentStudyRight, newAttainmentDate)
@@ -129,7 +126,7 @@ const getDateWithinStudyright = async (studyRights, personId, filteredEnrolment,
         message: `Attainment date ${newAttainmentDate} is before term registration date ${registrationDate}`,
         studyRightId: enrolmentStudyRight.id
       })
-      newAttainmentDate = asLocalMidnight(registrationDate)
+      newAttainmentDate = registrationDate
     }
 
     return newAttainmentDate

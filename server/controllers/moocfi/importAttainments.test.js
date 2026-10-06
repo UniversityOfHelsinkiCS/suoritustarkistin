@@ -8,10 +8,11 @@
 
 // Without this the send is a dry run that sleeps three seconds and always succeeds.
 process.env.SEND_TO_SISU = 'true'
+// Production runs on Finnish time, which decides the day an attainment is sent for
+process.env.TZ = 'Europe/Helsinki'
 
 const { test, before, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
-const moment = require('moment')
 
 const {
   connectDatabase,
@@ -259,25 +260,21 @@ describe('an attainment Sisu accepts', () => {
 })
 
 describe('the attainment date', () => {
-  test('a bare date is sent at local midnight', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
+  for (const [what, attainmentDate] of [
+    ['a bare date', '2026-05-22'],
+    ['a timestamp', '2026-05-22T10:15:00+03:00'],
+    ['a timestamp just past Finnish midnight', '2026-05-22T00:25:00+03:00']
+  ]) {
+    test(`is sent as UTC midnight of its Finnish day for ${what}`, async () => {
+      await seedCourse()
+      importer.respondByPath(fixtures())
 
-    await importItems([item({ attainmentDate: '2026-05-22' })])
+      await importItems([item({ attainmentDate })])
 
-    const [attainment] = sends()[0].body
-    assert.equal(attainment.completionDate, moment('2026-05-22').toISOString())
-  })
-
-  test('a timestamp is sent as the instant it names', async () => {
-    await seedCourse()
-    importer.respondByPath(fixtures())
-
-    await importItems([item({ attainmentDate: '2026-05-22T10:15:00+03:00' })])
-
-    const [attainment] = sends()[0].body
-    assert.equal(attainment.completionDate, '2026-05-22T07:15:00.000Z')
-  })
+      const [attainment] = sends()[0].body
+      assert.equal(attainment.completionDate, '2026-05-22T00:00:00.000Z')
+    })
+  }
 })
 
 describe('an attainment Sisu refuses', () => {

@@ -15,6 +15,7 @@ const { v4: uuidv4 } = require('uuid')
 
 const db = require('../models/index')
 const {
+  asSisuDay,
   getDateWithinStudyright,
   validateCredits,
   mapGrades,
@@ -45,8 +46,6 @@ const key = (left, right) => `${left} ${right}`
 // compatibility.
 const ATTAINMENT_DATE_FORMATS = ['YYYY-MM-DDTHH:mm:ssZ', 'YYYY-MM-DDTHH:mm:ss.SSSZ', 'YYYY-MM-DD']
 
-// A bare date becomes local midnight: sent at UTC midnight instead, it is in the future for
-// Sisu until 03:00 on the day itself.
 const parseAttainmentDate = (value) => moment(value, ATTAINMENT_DATE_FORMATS, true)
 
 // The intra-batch duplicate check's key
@@ -306,7 +305,8 @@ const resolveItem = async (item, context) => {
         courseUnitId: enrolment.courseUnitId,
         gradeScaleId,
         gradeId: grade.localId,
-        completionDate: moment(validAttainmentDate).toDate(),
+        // Sisu keeps only the UTC date, which for the first hours after midnight is the day before
+        completionDate: asSisuDay(validAttainmentDate).toDate(),
         completionLanguage: attainmentLanguage
       }
     }

@@ -170,6 +170,7 @@ const ASSESSMENT_ITEM_ATTAINMENT_TYPE = 'AssessmentItemAttainment'
 const COURSE_UNIT_ATTAINMENT_TYPE = 'CourseUnitAttainment'
 
 module.exports = {
+  asSisuDay,
   validateCredits,
   getDateWithinStudyright,
   mapGrades,

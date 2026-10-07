@@ -2,6 +2,7 @@ const moment = require('moment')
 const { flatten } = require('lodash')
 
 const MATLU_CODE = 'H50'
+const OPEN_UNIVERSITY_CODE = 'H930'
 const TERM_STARTDATE = '08-01'
 
 const resolveTerm = (attainmentDate) => {
@@ -15,9 +16,13 @@ const resolveTerm = (attainmentDate) => {
   }
 }
 
+// Sisu has no field for this; the organisation that granted the study right tells. Not the id:
+// open university study rights created in Sisu itself get the same otm- ids as degree ones.
+const isOpenUniversity = (studyRight) => studyRight?.organisation?.code === OPEN_UNIVERSITY_CODE
+
 /**
  * Filter study right which is within given attainment date and after the grant date of studyright.
- * Filter study right where the student has registered ATTENDING or is avoin studyright (these do not include term registrations)
+ * Filter study right where the student has registered ATTENDING or is an open university one (these do not include term registrations)
  * Take primarily Matlu studyright, if none active exists, take any studyright
  * If doing kandikirjaus, qualify on Matlu studyrights
  * If none found return empty object.
@@ -31,9 +36,9 @@ const resolveStudyRight = (studyRights, attainmentDate, onlyMatlu = false) => {
     moment(valid.endDate).isAfter(attDate) &&
     moment(grantDate).isSameOrBefore(attDate)
 
-  const filterByTermRegistration = ({ term_registrations, id }) => {
-    if (id.includes('avoin')) return true
-    const registrations = term_registrations?.termRegistrations
+  const filterByTermRegistration = (studyRight) => {
+    if (isOpenUniversity(studyRight)) return true
+    const registrations = studyRight.term_registrations?.termRegistrations
     if (!registrations) return false
 
     return registrations.some((registration) => {
@@ -102,4 +107,4 @@ const getClosestStudyRight = (studyRights, attainmentDate) => {
   return [id, newAttainmentDate]
 }
 
-module.exports = { resolveStudyRight, getClosestStudyRight, resolveTerm }
+module.exports = { resolveStudyRight, getClosestStudyRight, resolveTerm, isOpenUniversity }

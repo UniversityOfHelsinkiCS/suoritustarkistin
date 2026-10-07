@@ -10,12 +10,13 @@ const {
   getStudents,
   getCourseUnitIds,
   getEnrolments,
-  getMultipleStudyRights,
+  getMultipleStudyRightsByPersons,
   getEarlierAttainmentsWithoutSubstituteCourses
 } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
 const { ACCEPTED_ENROLMENT_STATE } = require('@server/utils/sisuAttainmentRules')
+const { isOpenUniversity } = require('@server/utils/resolveStudyRight')
 
 const validateItem = ({ studentNumber, courseCode }) => {
   if (typeof studentNumber !== 'string' || !studentNumber) return 'studentNumber must be a non-empty string.'
@@ -25,13 +26,10 @@ const validateItem = ({ studentNumber, courseCode }) => {
 
 const key = (left, right) => `${left} ${right}`
 
-// The convention already used by resolveStudyRight.js: Sisu has no field for this.
-const kindOf = (studyRightId) => (studyRightId?.includes('avoin') ? 'openUniversity' : 'degree')
-
-const toEnrolment = (enrolment, studyRightValidityPeriod) => ({
+const toEnrolment = (enrolment, studyRight) => ({
   id: enrolment.id,
   state: enrolment.state,
-  kind: kindOf(enrolment.studyRightId),
+  kind: isOpenUniversity(studyRight) ? 'openUniversity' : 'degree',
   courseUnitId: enrolment.courseUnitId,
   assessmentItemId: enrolment.assessmentItemId,
   courseUnitRealisationId: enrolment.courseUnitRealisationId,
@@ -45,7 +43,7 @@ const toEnrolment = (enrolment, studyRightValidityPeriod) => ({
   // a range the import can refuse.
   credits: enrolment.courseUnit?.credits,
   studyRightId: enrolment.studyRightId,
-  studyRightValidityPeriod,
+  studyRightValidityPeriod: studyRight?.valid,
   enrolmentDateTime: enrolment.enrolmentDateTime
 })
 
@@ -68,7 +66,7 @@ const toAttainment = (attainment) => ({
 
 /**
  * Resolves the whole batch in five batch-wide importer calls: persons, course codes,
- * enrolments, the study rights those enrolments point at, and earlier attainments.
+ * enrolments, the study rights of the persons enrolled, and earlier attainments.
  */
 const resolveBatch = async (items) => {
   const persons = requireImporterArray(await getStudents(_.uniq(items.map((item) => item.studentNumber))), 'persons')
@@ -98,13 +96,19 @@ const resolveBatch = async (items) => {
     : []
   const enrolmentsByPair = new Map(groups.map((group) => [key(group.personId, group.code), group.enrolments || []]))
 
-  const studyRightIds = _.uniq(
+  const studyRightIds = new Set(
     groups.flatMap(({ enrolments }) => (enrolments || []).map(({ studyRightId }) => studyRightId)).filter(Boolean)
   )
-  const studyRights = studyRightIds.length
-    ? requireImporterArray(await getMultipleStudyRights(studyRightIds), 'study rights')
+  // By person, because only that lookup carries the organisation, which is what tells the kind
+  const personIds = _.uniq(
+    groups
+      .filter(({ enrolments }) => (enrolments || []).some(({ studyRightId }) => studyRightId))
+      .map(({ personId }) => personId)
+  )
+  const studyRights = personIds.length
+    ? requireImporterArray(await getMultipleStudyRightsByPersons(personIds), 'study rights')
     : []
-  const validityById = new Map(studyRights.map(({ id, valid }) => [id, valid]))
+  const studyRightsById = new Map(studyRights.filter(({ id }) => studyRightIds.has(id)).map((s) => [s.id, s]))
 
   const attainmentGroups = resolvable.length
     ? requireImporterArray(
@@ -118,7 +122,7 @@ const resolveBatch = async (items) => {
     attainmentGroups.map((group) => [key(group.studentNumber, group.courseCode), group.attainments || []])
   )
 
-  return { personsByStudentNumber, knownCodes, enrolmentsByPair, validityById, attainmentsByPair }
+  return { personsByStudentNumber, knownCodes, enrolmentsByPair, studyRightsById, attainmentsByPair }
 }
 
 const resolveEnrolments = batchHandler(async (items, log) => {
@@ -129,13 +133,13 @@ const resolveEnrolments = batchHandler(async (items, log) => {
     throw serviceUnavailable('Resolving enrolments failed', error, { items: items.length })
   }
 
-  const { personsByStudentNumber, knownCodes, enrolmentsByPair, validityById, attainmentsByPair } = resolved
+  const { personsByStudentNumber, knownCodes, enrolmentsByPair, studyRightsById, attainmentsByPair } = resolved
 
   log.info('Resolved the batch against the importer', {
     persons: personsByStudentNumber.size,
     courseCodes: knownCodes.size,
     enrolmentPairs: enrolmentsByPair.size,
-    studyRights: validityById.size,
+    studyRights: studyRightsById.size,
     attainmentPairs: attainmentsByPair.size
   })
 
@@ -156,7 +160,7 @@ const resolveEnrolments = batchHandler(async (items, log) => {
       return errorItem(requestItemId, CODES.enrolmentNotAccepted, { result: { existingAttainments } })
 
     return okItem(requestItemId, CODES.enrolmentFound, {
-      enrolments: accepted.map((enrolment) => toEnrolment(enrolment, validityById.get(enrolment.studyRightId))),
+      enrolments: accepted.map((enrolment) => toEnrolment(enrolment, studyRightsById.get(enrolment.studyRightId))),
       existingAttainments
     })
   })

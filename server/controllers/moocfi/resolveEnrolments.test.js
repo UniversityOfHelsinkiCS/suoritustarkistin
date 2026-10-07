@@ -72,8 +72,8 @@ const fixtures = ({ persons = [person()], courseUnits, enrolments, studyRights, 
   '/students': persons,
   '/suotar/course-unit-ids': courseUnits ?? { [CODE]: [{ id: 'hy-CU-1', code: CODE }] },
   '/suotar/enrolments': enrolments ?? [{ personId: PERSON_ID, code: CODE, enrolments: [enrolment()] }],
-  '/suotar/study-rights': studyRights ?? [
-    { id: 'otm-degree-sr-1', valid: { startDate: '2024-08-01', endDate: '2030-07-31' } }
+  '/suotar/study-rights-by-person': studyRights ?? [
+    { id: 'otm-degree-sr-1', organisation: { code: 'H50' }, valid: { startDate: '2024-08-01', endDate: '2030-07-31' } }
   ],
   '/suotar/attainments': attainments ?? [{ studentNumber: STUDENT_NUMBER, courseCode: CODE, attainments: [] }]
 })
@@ -137,17 +137,34 @@ describe('resolving an enrolment', () => {
             code: CODE,
             enrolments: [
               enrolment(),
-              enrolment({
-                id: 'otm-enrolment-2',
-                studyRightId: 'hy-avoin-ew-sr-C4C04',
-                courseUnitRealisationId: 'hy-opt-cur-open'
-              })
+              enrolment({ id: 'otm-enrolment-2', studyRightId: 'hy-avoin-ew-sr-C4C04' }),
+              enrolment({ id: 'otm-enrolment-3', studyRightId: 'otm-open-sr-1' })
             ]
           }
         ],
         studyRights: [
-          { id: 'otm-degree-sr-1', valid: { startDate: '2024-08-01', endDate: '2030-07-31' } },
-          { id: 'hy-avoin-ew-sr-C4C04', valid: { startDate: '2026-01-01', endDate: '2026-12-31' } }
+          {
+            id: 'otm-degree-sr-1',
+            organisation: { code: 'H50' },
+            valid: { startDate: '2024-08-01', endDate: '2030-07-31' }
+          },
+          {
+            id: 'hy-avoin-ew-sr-C4C04',
+            organisation: { code: 'H930' },
+            valid: { startDate: '2026-01-01', endDate: '2026-12-31' }
+          },
+          // Created in Sisu itself, so nothing in the id says open university
+          {
+            id: 'otm-open-sr-1',
+            organisation: { code: 'H930' },
+            valid: { startDate: '2026-10-06', endDate: '2027-09-01' }
+          },
+          // The person's other study rights come back too, and must not be taken for these
+          {
+            id: 'otm-unrelated-sr',
+            organisation: { code: 'H930' },
+            valid: { startDate: '2020-01-01', endDate: '2021-01-01' }
+          }
         ]
       })
     )
@@ -158,9 +175,9 @@ describe('resolving an enrolment', () => {
       body[0].result.enrolments.map(({ kind, studyRightValidityPeriod }) => [kind, studyRightValidityPeriod.endDate]),
       [
         ['degree', '2030-07-31'],
-        ['openUniversity', '2026-12-31']
-      ],
-      'kind is derived from `avoin` in the study right id, and each enrolment gets its own validity period'
+        ['openUniversity', '2026-12-31'],
+        ['openUniversity', '2027-09-01']
+      ]
     )
   })
 

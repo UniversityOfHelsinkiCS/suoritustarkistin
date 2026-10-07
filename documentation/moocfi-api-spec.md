@@ -254,6 +254,8 @@ Content-Type: application/json
 
 Checks that the student has a usable Sisu enrolment before courses.mooc.fi imports. `result.enrolments` lists every matching enrolment; `studyRightValidityPeriod` is omitted from one whose study right did not resolve. `gradeScaleId` is the scale section 3 requires.
 
+`kind` is `openUniversity` when the enrolment's study right was granted by the Open University, otherwise `degree`.
+
 Result codes: `enrolmentFound`, `personNotFound`, `courseCodeNotFound`, `enrolmentNotFound`, `enrolmentNotAccepted`. The last cannot currently occur: Suotar only ever sees enrolments in state `ENROLLED`, so an unaccepted one is indistinguishable from none and comes back as `enrolmentNotFound`.
 
 `enrolmentNotFound` and `enrolmentNotAccepted` still carry `result.existingAttainments`, so a student with a prior result but no enrolment can be told so rather than asked to re-enrol.

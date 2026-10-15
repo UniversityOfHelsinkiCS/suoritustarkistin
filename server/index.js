@@ -21,11 +21,7 @@ const { IN_MAINTENANCE } = process.env
 
 cron.setLogger(logger.child({ source: 'node-cron' }))
 
-/**
- * Node >=15 terminates the process on an unhandled promise rejection. Node 14 only
- * warned. Log and keep running, as Node 14 did. Maybe consider a more modern pattern
- * once Node upgrade is live and stable.
- */
+// Node terminates the process on an unhandled rejection by default; log and keep running.
 process.on('unhandledRejection', (reason) => {
   logger.error({
     message: 'Unhandled promise rejection',
@@ -43,9 +39,6 @@ initializeDatabaseConnection()
 
     app.use(errorMiddleware)
 
-    /**
-     * Use hot loading when in development, else serve the static content
-     */
     if (inDevelopment || inTest) {
       app.use(parseUser)
       app.use(currentUser)
@@ -63,23 +56,13 @@ initializeDatabaseConnection()
       app.get('/{*splat}', (req, res) => res.sendFile(INDEX_PATH))
     }
 
-    /**
-     * Reports errors thrown by the routes above, then hands them on. Must sit after
-     * every route and before the 500 handler at the bottom: that handler ends the
-     * request, so anything registered after it never runs.
-     */
+    // After every route, before the 500 handler: that one ends the request.
     Sentry.setupExpressErrorHandler(app)
 
-    /**
-     * Anything that reaches this point matched no route. In dev and test express
-     * serves nothing but /api, so this is the end of the line for a mistyped or
-     * parameterless api path; in production app.get('/{*splat}') has already answered
-     * every GET, so only unmatched non-GETs land here.
-     */
+    // Unmatched routes. In production the GET catch-all above answers every GET first.
     app.use((_req, res) => res.status(404).send({ error: 'Not found' }))
 
-    // Express only treats a middleware as an error handler if it declares four
-    // arguments, hence _next: with three, `res` here would be `next`.
+    // Express only treats a middleware with four arguments as an error handler, hence _next.
     app.use((err, _req, res, _next) => {
       res.status(500).send(err.toString())
     })
@@ -94,7 +77,7 @@ initializeDatabaseConnection()
     if (inProduction && process.env.EDUWEB_TOKEN && process.env.MOOC_TOKEN && !IN_MAINTENANCE) {
       logger.info('Suotar: Starting cron jobs')
 
-      const missedExecutionTolerance = 10 * 60 * 1000 // 10 minutes
+      const missedExecutionTolerance = 10 * 60 * 1000
 
       cron.schedule(
         '30 17 * * *',
@@ -105,7 +88,6 @@ initializeDatabaseConnection()
         { missedExecutionTolerance }
       )
 
-      // do not schedule these earlier, eoai run takes at least 3:00-4:15 timeslot
       cron.schedule(
         '30 4 * * *',
         () => {
@@ -125,11 +107,8 @@ initializeDatabaseConnection()
       )
     }
 
-    /**
-     * In dev and test the Vite dev server is the one the browser talks to, so it takes
-     * PORT (the only port compose publishes) and proxies /api to express one port above.
-     * In production the client is a static build and express serves it on PORT itself.
-     */
+    // In dev and test the Vite dev server takes PORT, the only one compose publishes, and
+    // proxies /api to express one port above. In production express serves the build on PORT.
     const apiPort = inDevelopment || inTest ? Number(PORT) + 1 : PORT
 
     app.listen(apiPort, () => {

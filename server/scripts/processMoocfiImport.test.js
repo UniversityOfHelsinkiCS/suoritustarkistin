@@ -286,8 +286,8 @@ describe('items that cannot be registered', () => {
     assert.equal((await db.entries.findAll()).length, 0)
   })
 
-  test('courseNotAllowed for Elements of AI and Building AI, which are not settled yet', async () => {
-    const codes = ['TKT21018', 'TKT210281', 'AYTKT21018sv']
+  test('courseNotAllowed for Building AI, which is not settled yet', async () => {
+    const codes = ['TKT210281', 'AYTKT21028en']
     await seedCourse()
     // Seeded like any other course, so the block is what refuses them and not their absence.
     for (const courseCode of codes) await seedCourse({ courseCode })
@@ -297,7 +297,7 @@ describe('items that cannot be registered', () => {
 
     assert.deepEqual(
       results.map(({ code }) => code),
-      ['courseNotAllowed', 'courseNotAllowed', 'courseNotAllowed']
+      ['courseNotAllowed', 'courseNotAllowed']
     )
     for (const { error } of results) assert.match(error.message, /cannot be registered through this API yet/)
   })

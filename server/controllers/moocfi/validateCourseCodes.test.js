@@ -81,8 +81,8 @@ describe('checking a course code', () => {
     ])
   })
 
-  test('answers courseNotAllowed for Elements of AI and Building AI, which are not settled yet', async () => {
-    const codes = ['TKT21018', 'TKT210281', 'AYTKT21018sv']
+  test('answers courseNotAllowed for Building AI, which is not settled yet', async () => {
+    const codes = ['TKT210281', 'AYTKT21028en']
     // Seeded like any other course, so the block is what refuses them and not their absence.
     for (const courseCode of codes) await seedCourse(courseCode)
 
@@ -90,11 +90,10 @@ describe('checking a course code', () => {
 
     assert.deepEqual(
       body.map(({ code }) => code),
-      ['courseNotAllowed', 'courseNotAllowed', 'courseNotAllowed']
+      ['courseNotAllowed', 'courseNotAllowed']
     )
     for (const { error } of body) assert.match(error.message, /cannot be registered through this API yet/)
-  })
-})
+  })})
 
 describe('batching', () => {
   test('answers a mixed batch in request order, from one query', async () => {

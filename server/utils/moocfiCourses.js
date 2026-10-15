@@ -6,7 +6,6 @@
  */
 
 const {
-  ALL_EOAI_CODES,
   NEW_BAI_INTERMEDIATE_CODE,
   NEW_BAI_ADVANCED_CODE,
   OLD_BAI_CODE,
@@ -14,10 +13,9 @@ const {
   OLD_BAI_ADVANCED_CODE
 } = require('@shared/common')
 
-// TEMPORARY. Elements of AI and Building AI have their own registration paths in the automated
-// jobs, and how they should behave through this API is not settled.
+// TEMPORARY. Building AI has its own registration paths in the automated jobs, and how it
+// should behave through this API is not settled.
 const UNSETTLED_COURSE_CODES = new Set([
-  ...ALL_EOAI_CODES,
   NEW_BAI_INTERMEDIATE_CODE,
   NEW_BAI_ADVANCED_CODE,
   OLD_BAI_CODE,

@@ -1,81 +1,31 @@
 const winston = require('winston')
 const LokiTransport = require('winston-loki')
+const safeStringify = require('safe-stable-stringify')
 
-const { NODE_ENV } = process.env
-const { combine, timestamp, printf, splat } = winston.format
+const { inProduction, LOKI_HOST } = require('@server/utils/common')
 
-const LOKI_HOST = 'http://loki-svc.toska-lokki.svc.cluster.local:3100'
+const { combine, errors, json, timestamp, printf } = winston.format
 
-const transports = []
+const prodFormat = json()
 
-if (NODE_ENV !== 'test') {
-  transports.push(new winston.transports.File({ filename: 'debug.log' }))
-}
+const devFormat = printf(({ level, message, timestamp, ...rest }) => {
+  const meta = Object.keys(rest).length ? ` ${safeStringify(rest)}` : ''
+  return `${timestamp} ${level}: ${message}${meta}`
+})
 
-if (NODE_ENV !== 'production') {
-  const devFormat = printf(
-    ({ level, message, timestamp, ...rest }) => `${timestamp} ${level}: ${message} ${JSON.stringify(rest)}`
-  )
-
-  transports.push(
-    new winston.transports.Console({
-      level: 'debug',
-      format: combine(splat(), timestamp(), devFormat)
-    })
-  )
-}
-
-if (NODE_ENV === 'production') {
-  const levels = {
-    error: 0,
-    warn: 1,
-    info: 2,
-    http: 3,
-    verbose: 4,
-    debug: 5,
-    silly: 6
-  }
-
-  // Safe stringify that handles circular references and errors
-  const safeStringify = (obj) => {
-    const seen = new WeakSet()
-    return JSON.stringify(obj, (_key, value) => {
-      // Handle Error objects specifically
-      if (value instanceof Error) {
-        return {
-          message: value.message,
-          stack: value.stack,
-          name: value.name,
-          ...(value.code && { code: value.code })
-        }
-      }
-      // Handle circular references
-      if (typeof value === 'object' && value !== null) {
-        if (seen.has(value)) {
-          return '[Circular]'
-        }
-        seen.add(value)
-      }
-      return value
-    })
-  }
-
-  const prodFormat = winston.format.printf(({ level, ...rest }) =>
-    safeStringify({
-      level: levels[level],
-      ...rest
-    })
-  )
-  transports.push(new winston.transports.Console({ format: prodFormat }))
-
-  transports.push(
-    new LokiTransport({
-      host: LOKI_HOST,
-      labels: { app: 'suotar', environment: process.env.NODE_ENV || 'production' }
-    })
-  )
-}
-
-const logger = winston.createLogger({ transports })
+const logger = winston.createLogger({
+  // Without it, logger.error(err) loses both the message and the stack
+  format: errors({ stack: true }),
+  transports: inProduction
+    ? [
+        new winston.transports.Console({ format: prodFormat }),
+        new LokiTransport({
+          host: LOKI_HOST,
+          format: prodFormat,
+          labels: { app: 'suotar', environment: 'production' }
+        })
+      ]
+    : [new winston.transports.Console({ level: 'debug', format: combine(timestamp(), devFormat) })]
+})
 
 module.exports = logger

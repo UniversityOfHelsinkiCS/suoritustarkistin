@@ -22,6 +22,8 @@ const ALLOW_SEND_TO_MOOC = process.env.SEND_TO_MOOC
   ? process.env.SEND_TO_MOOC === 'true'
   : process.env.NODE_ENV === 'production'
 
+const LOKI_HOST = 'http://loki-svc.toska-lokki.svc.cluster.local:3100'
+
 module.exports = {
   ...common,
   DB_URL: process.env.DB_URL,
@@ -29,5 +31,6 @@ module.exports = {
   ALLOW_SEND_TO_SISU,
   ALLOW_SEND_TO_MOOC,
   SHIBBOLETH_HEADERS,
+  LOKI_HOST,
   generateSisuId
 }

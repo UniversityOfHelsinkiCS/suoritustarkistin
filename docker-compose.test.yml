@@ -4,7 +4,7 @@
 # Its own database name makes another server that grabbed the port fail to connect instead.
 services:
   test-db:
-    image: postgres:11
+    image: postgres:18
     container_name: suotar_test_db
     environment:
       - POSTGRES_PASSWORD=postgres

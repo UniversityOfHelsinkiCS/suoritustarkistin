@@ -18,6 +18,7 @@ const {
   asSisuDay,
   getDateWithinStudyright,
   validateCredits,
+  creditRangeFor,
   mapGrades,
   generateEntryId,
   ACCEPTED_ENROLMENT_STATE,
@@ -127,7 +128,8 @@ const fetchContext = async (items) => {
         resolvable.map(({ studentNumber, courseCode }) => ({
           personId: personsByStudentNumber.get(studentNumber).id,
           code: courseCode
-        }))
+        })),
+        { includeOtherCourseUnits: true }
       )
     : []
   const enrolmentsByPair = new Map((groups || []).map((group) => [key(group.personId, group.code), group.enrolments]))
@@ -139,7 +141,8 @@ const fetchContext = async (items) => {
 
   const earlierAttainments = resolvable.length
     ? await getEarlierAttainmentsWithoutSubstituteCourses(
-        resolvable.map(({ studentNumber, courseCode }) => ({ studentNumber, courseCode }))
+        resolvable.map(({ studentNumber, courseCode }) => ({ studentNumber, courseCode })),
+        { includeOtherCourseUnits: true }
       )
     : []
 
@@ -200,7 +203,7 @@ const resolveItem = async (item, context) => {
       'No ENROLLED Sisu enrolment was found for this student and course code.'
     )
 
-  const credits = enrolment.courseUnit?.credits
+  const credits = creditRangeFor(enrolment, courseCode)
   if (!credits) {
     return reject(requestItemId, CODES.invalidCredits, `Sisu gives no credit range for course ${courseCode}.`)
   }

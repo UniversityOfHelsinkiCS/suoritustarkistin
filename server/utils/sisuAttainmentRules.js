@@ -13,6 +13,18 @@ const { resolveStudyRight, getClosestStudyRight, resolveTerm } = require('./reso
 
 const validateCredits = ({ credits }, targetCredits) => targetCredits >= credits.min && targetCredits <= credits.max
 
+/**
+ * The credit range an attainment registered against this enrolment has to fit: the course
+ * unit's. A course unit can include an assessment item another one owns, and an enrolment made
+ * through it is on that item only, so there the item's own range applies -- the enrolling
+ * course unit's covers its other items as well.
+ */
+const creditRangeFor = (enrolment, courseCode) => {
+  const enrolledThrough = enrolment.courseUnit?.code
+  const throughAnotherCourseUnit = Boolean(enrolledThrough) && enrolledThrough !== courseCode
+  return throughAnotherCourseUnit ? enrolment.assessmentItem?.credits : enrolment.courseUnit?.credits
+}
+
 const findAttendingRegistration = (termRegistrations, date) => {
   const { attainmentStartYear, attainmentTermIndex } = resolveTerm(date)
   return (termRegistrations?.termRegistrations || []).find(
@@ -172,6 +184,7 @@ const COURSE_UNIT_ATTAINMENT_TYPE = 'CourseUnitAttainment'
 module.exports = {
   asSisuDay,
   validateCredits,
+  creditRangeFor,
   getDateWithinStudyright,
   mapGrades,
   generateEntryId,

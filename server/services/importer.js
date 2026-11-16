@@ -62,9 +62,14 @@ async function getStudents(studentNumbers) {
   }
 }
 
-async function getEnrolments(studentCourseCodes) {
+/**
+ * `includeOtherCourseUnits` also returns enrolments made through another course unit on an
+ * assessment item the code owns, under the code asked for.
+ */
+async function getEnrolments(studentCourseCodes, { includeOtherCourseUnits = false } = {}) {
   try {
-    return await chunkifyApi(studentCourseCodes, 'suotar/enrolments/')
+    const params = includeOtherCourseUnits ? '?includeOtherCourseUnits=true' : ''
+    return await chunkifyApi(studentCourseCodes, `suotar/enrolments/${params}`)
   } catch (e) {
     handleImporterApiErrors(e)
   }
@@ -125,12 +130,16 @@ const getEarlierAttainments = async (data) => {
 /**
  * Returns a list of objects { studentNumber, courseCode, earlierAttainments }.
  * The data must be fetched in chunks of 10, since importer-api cannot handle bigger payloads.
+ *
+ * `includeOtherCourseUnits` also returns attainments of the code's own assessment items that
+ * are recorded under another course unit including them.
  */
-const getEarlierAttainmentsWithoutSubstituteCourses = async (data) => {
+const getEarlierAttainmentsWithoutSubstituteCourses = async (data, { includeOtherCourseUnits = false } = {}) => {
   logger.info({ message: `Fetching earlier attainments from importer for ${data ? data.length : 0} students` })
   if (!data) return []
   try {
-    return await chunkifyApi(data, 'suotar/attainments?noSubstitutions=true')
+    const params = includeOtherCourseUnits ? '&includeOtherCourseUnits=true' : ''
+    return await chunkifyApi(data, `suotar/attainments?noSubstitutions=true${params}`)
   } catch (e) {
     handleImporterApiErrors(e)
   }

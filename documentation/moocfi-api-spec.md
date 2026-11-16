@@ -256,6 +256,8 @@ Checks that the student has a usable Sisu enrolment before courses.mooc.fi impor
 
 `kind` is `openUniversity` when the enrolment's study right was granted by the Open University, otherwise `degree`.
 
+`courseUnitCode` is the code of the course unit the enrolment was made through. It is usually the `courseCode` asked about, but not always: another course can include a part of this one, and a student who enrolled through that course is still enrolled on this course's part. Such an enrolment is listed like any other and can be imported with the `courseCode` asked about. Its `courseUnitId` and `courseUnitCode` are the other course's, its `credits` are the range of the part alone, and Sisu records the attainment under the other course.
+
 Result codes: `enrolmentFound`, `personNotFound`, `courseCodeNotFound`, `enrolmentNotFound`, `enrolmentNotAccepted`. The last cannot currently occur: Suotar only ever sees enrolments in state `ENROLLED`, so an unaccepted one is indistinguishable from none and comes back as `enrolmentNotFound`.
 
 `enrolmentNotFound` and `enrolmentNotAccepted` still carry `result.existingAttainments`, so a student with a prior result but no enrolment can be told so rather than asked to re-enrol.
@@ -296,6 +298,7 @@ Content-Type: application/json
           "state": "ENROLLED",
           "kind": "degree",
           "courseUnitId": "hy-CU-118023774-2021-08-01",
+          "courseUnitCode": "TKT10001",
           "assessmentItemId": "hy-AI-118023774",
           "courseUnitRealisationId": "hy-opt-cur-degree",
           "courseUnitRealisationName": {
@@ -324,6 +327,7 @@ Content-Type: application/json
           "state": "ENROLLED",
           "kind": "openUniversity",
           "courseUnitId": "hy-CU-118023774-2021-08-01",
+          "courseUnitCode": "TKT10001",
           "assessmentItemId": "hy-AI-open",
           "courseUnitRealisationId": "hy-opt-cur-open",
           "courseUnitRealisationName": {
@@ -361,7 +365,7 @@ Content-Type: application/json
 <details>
 <summary>Success variant: enrolmentFound, with existing attainments</summary>
 
-`existingAttainments` lists attainments Sisu already has for this person and course, so courses.mooc.fi can spot a prior result before importing. The `enrolments` entries are abbreviated here; the full field set is in the main response above.
+`existingAttainments` lists attainments Sisu already has for this person and course, so courses.mooc.fi can spot a prior result before importing. An attainment of one of the course's parts is listed even when Sisu recorded it under another course that includes the part, so its `courseUnitId` is not always this course's. The `enrolments` entries are abbreviated here; the full field set is in the main response above.
 
 ```json
 [
@@ -374,6 +378,7 @@ Content-Type: application/json
         {
           "id": "otm-enrolment-id",
           "courseUnitId": "hy-CU-118023774-2021-08-01",
+          "courseUnitCode": "TKT10001",
           "assessmentItemId": "hy-AI-118023774",
           "courseUnitRealisationId": "hy-opt-cur-...",
           "studyRightId": "otm-study-right-id",
@@ -485,6 +490,8 @@ Content-Type: application/json
 Creates completions as attainments in Sisu.
 
 `enrolmentId` is the enrolment section 2 returned for this student and course; Suotar registers against that one rather than picking its own. An id that is not among them, or no longer `ENROLLED`, comes back `enrolmentNotFound`.
+
+`credits` must fit the range section 2 gave for that enrolment, or the item comes back `invalidCredits`.
 
 `attainmentDate` is an ISO 8601 timestamp with an offset, e.g. `2026-05-22T14:03:00+03:00` or `2026-05-22T11:03:00Z`, and is registered on the day it falls on in Finnish time. A bare date (`2026-05-22`) is still accepted for backwards compatibility only.
 

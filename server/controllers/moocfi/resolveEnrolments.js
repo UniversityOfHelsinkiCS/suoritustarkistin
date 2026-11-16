@@ -15,7 +15,7 @@ const {
 } = require('@server/services/importer')
 const { batchHandler } = require('@server/utils/batchApi')
 const { CODES, okItem, errorItem, serviceUnavailable, requireImporterArray } = require('@server/utils/moocfiResults')
-const { ACCEPTED_ENROLMENT_STATE } = require('@server/utils/sisuAttainmentRules')
+const { ACCEPTED_ENROLMENT_STATE, creditRangeFor } = require('@server/utils/sisuAttainmentRules')
 const { isOpenUniversity } = require('@server/utils/resolveStudyRight')
 
 const validateItem = ({ studentNumber, courseCode }) => {
@@ -26,11 +26,14 @@ const validateItem = ({ studentNumber, courseCode }) => {
 
 const key = (left, right) => `${left} ${right}`
 
-const toEnrolment = (enrolment, studyRight) => ({
+const toEnrolment = (enrolment, studyRight, courseCode) => ({
   id: enrolment.id,
   state: enrolment.state,
   kind: isOpenUniversity(studyRight) ? 'openUniversity' : 'degree',
   courseUnitId: enrolment.courseUnitId,
+  // Not always the code asked about: the enrolment can be made through another course unit
+  // that includes one of this code's assessment items.
+  courseUnitCode: enrolment.courseUnit?.code,
   assessmentItemId: enrolment.assessmentItemId,
   courseUnitRealisationId: enrolment.courseUnitRealisationId,
   courseUnitRealisationName: enrolment.courseUnitRealisation?.name,
@@ -38,10 +41,8 @@ const toEnrolment = (enrolment, studyRight) => ({
   // The assessment item carries the scale the attainment is graded on; the course unit is
   // the fallback when the item has none.
   gradeScaleId: enrolment.assessmentItem?.gradeScaleId ?? enrolment.courseUnit?.gradeScaleId,
-  // The course unit's range, not the assessment item's: section 3 validates against this one,
-  // as does every other path that registers an attainment, so reporting the other would promise
-  // a range the import can refuse.
-  credits: enrolment.courseUnit?.credits,
+  // The range section 3 validates against, so that this never promises one the import refuses.
+  credits: creditRangeFor(enrolment, courseCode),
   studyRightId: enrolment.studyRightId,
   studyRightValidityPeriod: studyRight?.valid,
   enrolmentDateTime: enrolment.enrolmentDateTime
@@ -89,7 +90,8 @@ const resolveBatch = async (items) => {
           resolvable.map(({ studentNumber, courseCode }) => ({
             personId: personsByStudentNumber.get(studentNumber).id,
             code: courseCode
-          }))
+          })),
+          { includeOtherCourseUnits: true }
         ),
         'enrolment groups'
       )
@@ -113,7 +115,8 @@ const resolveBatch = async (items) => {
   const attainmentGroups = resolvable.length
     ? requireImporterArray(
         await getEarlierAttainmentsWithoutSubstituteCourses(
-          resolvable.map(({ studentNumber, courseCode }) => ({ studentNumber, courseCode }))
+          resolvable.map(({ studentNumber, courseCode }) => ({ studentNumber, courseCode })),
+          { includeOtherCourseUnits: true }
         ),
         'attainment groups'
       )
@@ -160,7 +163,9 @@ const resolveEnrolments = batchHandler(async (items, log) => {
       return errorItem(requestItemId, CODES.enrolmentNotAccepted, { result: { existingAttainments } })
 
     return okItem(requestItemId, CODES.enrolmentFound, {
-      enrolments: accepted.map((enrolment) => toEnrolment(enrolment, studyRightsById.get(enrolment.studyRightId))),
+      enrolments: accepted.map((enrolment) =>
+        toEnrolment(enrolment, studyRightsById.get(enrolment.studyRightId), courseCode)
+      ),
       existingAttainments
     })
   })

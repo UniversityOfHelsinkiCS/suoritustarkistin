@@ -115,6 +115,7 @@ describe('resolving an enrolment', () => {
         state: 'ENROLLED',
         kind: 'degree',
         courseUnitId: 'hy-CU-1',
+        courseUnitCode: CODE,
         assessmentItemId: 'hy-AI-1',
         courseUnitRealisationId: 'hy-opt-cur-degree',
         courseUnitRealisationName: { fi: 'Johdatus', sv: 'Introduktion', en: 'Introduction' },
@@ -233,6 +234,51 @@ describe('resolving an enrolment', () => {
     const { body } = await resolve([one])
 
     assert.equal(body[0].result.enrolments[0].gradeScaleId, 'sis-0-5')
+  })
+})
+
+/**
+ * A course unit can include an assessment item another one owns. A student enrolled through
+ * it is on this course's item all the same, and the importer returns the enrolment under the
+ * code asked for.
+ */
+describe('an enrolment made through another course unit', () => {
+  const throughAnother = () =>
+    enrolment({
+      courseUnitId: 'hy-CU-including',
+      assessmentItem: { credits: { min: 1, max: 1 }, gradeScaleId: 'sis-hyl-hyv' },
+      courseUnit: { credits: { min: 3, max: 3 }, gradeScaleId: 'sis-hyl-hyv', code: 'INCL-100' }
+    })
+
+  const enrolments = () => [{ personId: PERSON_ID, code: CODE, enrolments: [throughAnother()] }]
+
+  test('is found, and names the course unit it was made through', async () => {
+    importer.respondByPath(fixtures({ enrolments: enrolments() }))
+
+    const { body } = await resolve([one])
+
+    assert.equal(body[0].code, 'enrolmentFound')
+    assert.equal(body[0].result.enrolments[0].courseUnitId, 'hy-CU-including')
+    assert.equal(body[0].result.enrolments[0].courseUnitCode, 'INCL-100')
+  })
+
+  test('reports the credit range of the assessment item, which is all the enrolment covers', async () => {
+    importer.respondByPath(fixtures({ enrolments: enrolments() }))
+
+    const { body } = await resolve([one])
+
+    assert.deepEqual(body[0].result.enrolments[0].credits, { min: 1, max: 1 })
+  })
+
+  test('asks the importer for enrolments and attainments under other course units too', async () => {
+    importer.respondByPath(fixtures())
+
+    await resolve([one])
+
+    for (const path of ['/suotar/enrolments', '/suotar/attainments']) {
+      const request = importer.requests.find(({ url }) => url.startsWith(path))
+      assert.match(request.url, /includeOtherCourseUnits=true/, path)
+    }
   })
 })
 

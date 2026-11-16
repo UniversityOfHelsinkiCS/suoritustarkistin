@@ -414,6 +414,61 @@ describe('items that cannot be registered', () => {
   })
 })
 
+/**
+ * A course unit can include an assessment item another one owns. A student enrolled through
+ * it is on this course's item all the same, and the importer returns the enrolment under the
+ * code asked for.
+ */
+describe('an enrolment made through another course unit', () => {
+  const throughAnother = () =>
+    enrolment(
+      NAMED_ENROLMENT,
+      { startDate: '2026-01-01', endDate: '2026-12-31' },
+      {
+        courseUnitId: 'hy-CU-including',
+        assessmentItem: { credits: { min: 1, max: 1 }, gradeScaleId: 'sis-hyl-hyv' },
+        courseUnit: { credits: { min: 3, max: 3 }, gradeScaleId: 'sis-hyl-hyv', code: 'INCL-100' }
+      }
+    )
+
+  const passed = (overrides = {}) => item({ gradeScaleId: 'sis-hyl-hyv', gradeId: '1', credits: 1, ...overrides })
+
+  test('is registered under the course unit it was made through', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures({ enrolments: [throughAnother()] }))
+
+    const { toSend } = await run([passed()])
+
+    assert.equal(toSend.length, 1)
+    const [entry] = await db.entries.findAll()
+    assert.equal(entry.courseUnitId, 'hy-CU-including')
+    assert.equal(entry.assessmentItemId, `hy-AI-${NAMED_ENROLMENT}`)
+    assert.equal(entry.courseUnitRealisationId, `cur-${NAMED_ENROLMENT}`)
+  })
+
+  test('invalidCredits for an amount only the including course unit allows', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures({ enrolments: [throughAnother()] }))
+
+    const outcome = await run([passed({ credits: 3 })])
+
+    assert.equal(codeOf(outcome, 'moocfi-completion-1'), 'invalidCredits')
+    assert.match(messageOf(outcome, 'moocfi-completion-1'), /between 1 and 1/)
+  })
+
+  test('asks the importer for enrolments and attainments under other course units too', async () => {
+    await seedCourse()
+    importer.respondByPath(fixtures({ enrolments: [throughAnother()] }))
+
+    await run([passed()])
+
+    for (const path of ['/suotar/enrolments', '/suotar/attainments']) {
+      const request = importer.requests.find(({ url }) => url.startsWith(path))
+      assert.match(request.url, /includeOtherCourseUnits=true/, path)
+    }
+  })
+})
+
 describe('attainments Sisu already holds', () => {
   const earlier = (overrides = {}) => ({
     id: 'otm-existing-1',

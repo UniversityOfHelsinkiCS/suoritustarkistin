@@ -76,7 +76,7 @@ For some courses, same course instance has students signed in from both AY and T
 4. `npm run prepare` (husky hooks, has to be run manually due to `ignore-scripts=true`)
 5. `npm run dev`
 6. Open [localhost:8000](localhost:8000)
-7. Dev-database can be viewed at: [localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public)
+7. Dev-database can be viewed at: [localhost:8081/?pgsql=db&username=postgres&db=postgres&ns=public](localhost:8081/?pgsql=db&username=postgres&db=postgres&ns=public)
 
 ### Production data
 

@@ -30,7 +30,7 @@ services:
       - ADMINER_DEFAULT_SERVER=db
     image: adminer:4.7.5
     ports:
-      - 8080:8080 # localhost:8080/?pgsql=db&username=postgres&db=postgres&ns=public
+      - 8081:8080 # localhost:8081/?pgsql=db&username=postgres&db=postgres&ns=public
 
 volumes:
   pg_data:

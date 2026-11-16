@@ -16,7 +16,7 @@ Cypress E2E. Backend is CommonJS with `module-alias` path aliases: `@server` →
 ## Commands
 
 ```bash
-npm run dev                    # full dev stack in docker (app :8000, adminer :8080)
+npm run dev                    # full dev stack in docker (app :8000, adminer :8081)
 npm run lint                   # oxlint (pre-commit hook runs this)
 npm run format                 # oxfmt
 npm run test:integration       # node --test on server/**/*.test.js

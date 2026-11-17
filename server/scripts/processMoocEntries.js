@@ -8,9 +8,13 @@ const { isImprovedGrade } = require('../utils/earlierCompletions')
 const { sendSentryError } = require('../utils/sentry')
 const { automatedAddToDb } = require('./automatedAddToDb')
 
-const selectLanguage = (completion, course) => {
+// TEMPORARY: one-off backfill of Swedish runs that share a course row with the Finnish ones.
+// The old platform sends no completion_language. Remove once the backfill is done.
+const SLUG_LANGUAGES = { 'introduktion-till-programmering-2026': 'sv' }
+
+const selectLanguage = (completion, course, job) => {
   const completionLanguage = completion.completion_language
-  const courseLanguage = course.language
+  const courseLanguage = SLUG_LANGUAGES[job.slug] || course.language
   if (!completionLanguage) {
     return courseLanguage
   }
@@ -55,7 +59,7 @@ const processMoocEntries = async ({ job, course, grader }, sendToSisu = false) =
         return matches
       }
 
-      const language = selectLanguage(completion, course)
+      const language = selectLanguage(completion, course, job)
       const registration = findByEmail(registrations, completion.email)
 
       if (registration) {

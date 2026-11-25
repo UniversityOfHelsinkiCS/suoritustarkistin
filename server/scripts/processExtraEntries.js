@@ -9,6 +9,7 @@ const {
   getCourseUnitIds,
   getMultipleStudyRightsByPersons
 } = require('../services/importer')
+const { canBeUsedAsExtra } = require('@shared/common')
 const { generateSisuId } = require('../utils/common')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
 
@@ -61,9 +62,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
     })
   )
 
-  const courseUnitIds = await getCourseUnitIds(
-    courses.filter(({ useAsExtra }) => useAsExtra).map(({ courseCode }) => courseCode)
-  )
+  const courseUnitIds = await getCourseUnitIds(courses.filter(canBeUsedAsExtra).map(({ courseCode }) => courseCode))
   createdRawEntries.forEach((rawEntry) => {
     const course = courses.find((c) => c.id === rawEntry.courseId)
     let completionDate = moment(rawEntry.attainmentDate)
@@ -102,7 +101,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
       })
       return
     }
-    if (!course.useAsExtra) {
+    if (!canBeUsedAsExtra(course)) {
       failed.push({
         id: rawEntry.id,
         studentNumber: rawEntry.studentNumber,

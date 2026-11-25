@@ -36,6 +36,17 @@ const formatGradersForSelection = (data) => {
   return []
 }
 
+/**
+ * KOPA users may choose any grader of the selected KOPA course; otherwise only
+ * the graders returned for the user (themselves, if they are a grader).
+ */
+const availableGraders = (user, graders, course) => {
+  if (user.adminMode || !user.isKopa) return graders
+  const own = graders.filter(({ id }) => id === user.id)
+  if (!course || !course.isKopa) return own
+  return _.uniqBy([...own, ...(course.graders || [])], 'id')
+}
+
 export const formatCoursesForSelection = (data) => {
   const courses = data.map((c) => ({
     key: c.id,
@@ -201,7 +212,15 @@ export default ({ kandi, extra, parseCSV }) => {
     )
   }
 
-  const graderOptions = formatGradersForSelection(graders)
+  const selectedCourse = courses.find((course) => course.id === newRawEntries.courseId)
+  const graderOptions = formatGradersForSelection(availableGraders(user, graders, selectedCourse))
+
+  // Switching courses can make the chosen grader unavailable to a KOPA user
+  useEffect(() => {
+    if (!newRawEntries.graderId) return
+    if (!graderOptions.some(({ value }) => value === newRawEntries.graderId))
+      dispatch(setNewRawEntriesAction({ ...newRawEntries, graderId: undefined }))
+  }, [newRawEntries.courseId])
 
   return (
     <>

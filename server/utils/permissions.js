@@ -1,5 +1,6 @@
 const { Op } = require('sequelize')
 
+const { canReport } = require('@shared/common')
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
 const { resolveApiKey } = require('./apiKeys')
@@ -19,7 +20,7 @@ const permissionClass = async (req, res, next, predicate, error) => {
 }
 
 const checkGrader = (req, res, next) =>
-  permissionClass(req, res, next, (req) => req.user && (req.user.isGrader || req.user.isAdmin), 'Unauthorized access')
+  permissionClass(req, res, next, (req) => canReport(req.user), 'Unauthorized access')
 
 const checkAdmin = (req, res, next) =>
   permissionClass(req, res, next, (req) => req.user && req.user.isAdmin, 'Unauthorized access')
@@ -66,6 +67,9 @@ const checkIdMatch = (req, res, next) =>
 const isMoocfiImport = async (where) =>
   Boolean(await db.raw_entries.findOne({ where: { ...where, moocfiRequestItemId: { [Op.not]: null } } }))
 
+// The user graded it, or reported it (a KOPA user reporting for another grader)
+const isOwnEntry = (user, rawEntry) => rawEntry.graderId === user.id || rawEntry.reporterId === user.id
+
 const deleteSingleEntry = (req, res, next) =>
   permissionClass(
     req,
@@ -80,10 +84,10 @@ const deleteSingleEntry = (req, res, next) =>
           { model: db.entries, as: 'entry' },
           { model: db.extra_entries, as: 'extraEntry' }
         ],
-        attributes: ['graderId']
+        attributes: ['graderId', 'reporterId']
       })
       if (!rawEntry) return false
-      if (rawEntry.graderId !== req.user.id) return false
+      if (!isOwnEntry(req.user, rawEntry)) return false
       if (rawEntry.entry?.sent) return false
       return rawEntry.entry?.missingEnrolment || rawEntry.extraEntry?.id
     },
@@ -100,7 +104,7 @@ const deleteBatch = (req, res, next) =>
       if (req.user.isAdmin) return true
       const rawEntry = await db.raw_entries.findOne({
         where: { batchId: req.params.batchId },
-        attributes: ['graderId'],
+        attributes: ['graderId', 'reporterId'],
         include: [
           { model: db.entries, as: 'entry' },
           { model: db.extra_entries, as: 'extraEntry' }
@@ -109,12 +113,38 @@ const deleteBatch = (req, res, next) =>
       if (!rawEntry) return false
       if (rawEntry.entry && rawEntry.entry.sent) return false
       if (rawEntry.extraEntry && rawEntry.extraEntry.sent) return false
-      return rawEntry.graderId === req.user.id
+      return isOwnEntry(req.user, rawEntry)
     },
     'Unauthorized access'
   )
 
+/**
+ * May `user` report completions in the name of the grader with `graderEmployeeId`?
+ * Admins may name anyone and graders themselves. A KOPA user may also name a grader of a
+ * KOPA course, but only when every course in the report is a KOPA course that grader grades.
+ */
+const canReportAsGrader = async (user, graderEmployeeId, courseIds) => {
+  if (user.isAdmin) return true
+  if (user.isGrader && String(user.employeeId) === String(graderEmployeeId)) return true
+  if (!user.isKopa || !courseIds.length) return false
+
+  const grader = await db.users.findOne({
+    where: { employeeId: String(graderEmployeeId) },
+    include: [
+      {
+        model: db.courses,
+        as: 'courses',
+        where: { id: courseIds, isKopa: true },
+        attributes: ['id'],
+        through: { attributes: [] }
+      }
+    ]
+  })
+  return Boolean(grader && grader.courses.length === new Set(courseIds).size)
+}
+
 module.exports = {
+  canReportAsGrader,
   checkGrader,
   checkAdmin,
   checkToken,

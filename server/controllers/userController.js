@@ -37,8 +37,25 @@ const getGraders = async (req, res) => {
   }
 }
 
-const getUsersGraders = async (req, res) => {
-  res.status(200).json(req.user.isGrader ? [req.user] : [])
+/**
+ * Graders the user may choose: themselves if they are a grader, and for KOPA users
+ * every grader of a KOPA course. The client narrows the KOPA graders to the chosen course.
+ */
+const getUsersGraders = async (req, res, next) => {
+  try {
+    const graders = req.user.isGrader ? [req.user] : []
+    if (req.user.isKopa) {
+      const kopaGraders = await db.users.findAll({
+        include: [
+          { model: db.courses, as: 'courses', where: { isKopa: true }, attributes: [], through: { attributes: [] } }
+        ]
+      })
+      graders.push(...kopaGraders.filter(({ id }) => id !== req.user.id))
+    }
+    res.status(200).json(graders)
+  } catch (e) {
+    next(e)
+  }
 }
 
 const addUser = async (req, res, next) => {

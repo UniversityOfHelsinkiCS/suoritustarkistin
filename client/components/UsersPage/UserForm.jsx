@@ -24,6 +24,7 @@ const INITIAL_FORM_DATA = {
   name: '',
   isGrader: false,
   isAdmin: false,
+  isKopa: false,
   courses: [],
   errors: {}
 }
@@ -173,6 +174,16 @@ export default ({ close, user }) => {
             />
           }
           label="Is admin"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              data-cy="check-is-kopa"
+              checked={Boolean(formData.isKopa)}
+              onChange={(e) => setFormData({ ...formData, isKopa: e.target.checked })}
+            />
+          }
+          label="Is KOPA user"
         />
         <Autocomplete
           multiple

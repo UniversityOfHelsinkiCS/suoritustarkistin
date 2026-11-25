@@ -70,8 +70,13 @@ const THESIS_COURSES = ['TKT20013']
 export const isThesisCourse = (course) => THESIS_COURSES.includes(course.courseCode)
 export const isKandiExtraCourse = (course) => Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode)
 export const isOneOfKandiCourses = (course) => isThesisCourse(course) || isKandiExtraCourse(course)
+// KOPA courses can always be reported as erilliskirjaus, even without useAsExtra.
+export const canBeUsedAsExtra = (course) => Boolean(course.useAsExtra || course.isKopa)
 export const isRegularExtraCourse = (course) =>
-  !Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode) && course.useAsExtra
+  !Object.keys(KANDI_EXTRA_COURSES).includes(course.courseCode) && canBeUsedAsExtra(course)
+
+// Who may open the reporting views: graders, admins and KOPA users.
+export const canReport = (user) => Boolean(user && (user.isGrader || user.isAdmin || user.isKopa))
 
 /**
  * Mooc completion dates:

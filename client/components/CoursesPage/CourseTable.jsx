@@ -20,6 +20,14 @@ const columns = [
     render: (course) => <BooleanIcon value={course.useAsExtra} />
   },
   {
+    key: 'isKopa',
+    header: 'KOPA',
+    width: '6%',
+    align: 'center',
+    sortable: true,
+    render: (course) => <BooleanIcon value={course.isKopa} />
+  },
+  {
     key: 'isNewMooc',
     header: 'New Mooc Course',
     width: '8%',

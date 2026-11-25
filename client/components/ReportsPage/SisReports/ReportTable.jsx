@@ -44,11 +44,11 @@ const getTableRowStyle = (entry) => {
 }
 
 const allowDelete = ({ isAdmin, id: userId }, rawEntry) => {
-  const { entry, graderId, moocfiRequestItemId } = rawEntry
+  const { entry, graderId, reporterId, moocfiRequestItemId } = rawEntry
   if (entry.sent) return false
   if (moocfiRequestItemId) return false
   if (isAdmin) return true
-  if (graderId === userId && entry.missingEnrolment) return true
+  if ((graderId === userId || reporterId === userId) && entry.missingEnrolment) return true
   return false
 }
 

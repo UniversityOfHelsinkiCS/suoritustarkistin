@@ -1,5 +1,5 @@
 import FakeShibboMenu from '@client/components/fakeShibboMenu'
-import { images } from '@client/utils/common'
+import { canReport, images } from '@client/utils/common'
 import { activateAdminModeAction, disableAdminModeAction, logoutAction } from '@client/utils/redux/userReducer'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { AppBar, Box, Button, Divider, Menu, MenuItem, Switch, Toolbar } from '@mui/material'
@@ -81,7 +81,7 @@ export default () => {
 
   if (!user) return null
 
-  const noPermissions = !user.isAdmin && !user.isGrader
+  const noPermissions = !canReport(user)
 
   return (
     <AppBar

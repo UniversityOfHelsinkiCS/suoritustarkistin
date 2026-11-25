@@ -1,4 +1,5 @@
 import { Alert, Paper } from '@mui/material'
+import { canReport } from '@shared/common'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 
@@ -6,7 +7,7 @@ export default () => {
   const user = useSelector((state) => state.user)
 
   // Mainly for development purposes:
-  if (user.data.isAdmin || user.data.isGrader) {
+  if (canReport(user.data)) {
     return <Navigate to="/" state={{ from: '/unauthorized' }} replace />
   }
 

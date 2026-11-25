@@ -15,7 +15,8 @@ const cleanCourses = (courses) =>
     graders: course.graders,
     gradeScale: course.gradeScale,
     useAsExtra: course.useAsExtra,
-    isNewMooc: course.isNewMooc
+    isNewMooc: course.isNewMooc,
+    isKopa: course.isKopa
   }))
 
 const getCourses = async (req, res) => {
@@ -41,26 +42,27 @@ const getCourses = async (req, res) => {
   }
 }
 
+const gradersInclude = {
+  model: db.users,
+  as: 'graders',
+  attributes: ['id', 'name', 'employeeId', 'uid'],
+  through: { attributes: [] }
+}
+
+/**
+ * The courses a user may report: their own, plus every KOPA course for KOPA users.
+ * Graders are included so a KOPA user can pick any grader of the chosen course.
+ */
 const getUsersCourses = async (req, res) => {
   try {
-    const user = await db.users.findOne({
-      where: {
-        id: req.user.id
-      },
-      include: [
-        {
-          model: db.courses,
-          as: 'courses',
-          attributes: {
-            exclude: ['userCourses', 'createdAt', 'updatedAt']
-          },
-          through: {
-            attributes: []
-          }
-        }
-      ]
-    })
-    res.status(200).json(cleanCourses(user.courses))
+    const where = req.user.isKopa
+      ? { [Op.or]: [{ isKopa: true }, { '$graders.id$': req.user.id }] }
+      : { '$graders.id$': req.user.id }
+    const ids = (
+      await db.courses.findAll({ where, attributes: ['id'], include: [{ ...gradersInclude, attributes: [] }] })
+    ).map(({ id }) => id)
+    const courses = await db.courses.findAll({ where: { id: ids }, include: [gradersInclude] })
+    res.status(200).json(cleanCourses(courses))
   } catch (e) {
     logger.error(e.message)
     res.status(500).json({ error: 'server went BOOM!' })

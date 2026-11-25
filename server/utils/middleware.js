@@ -105,7 +105,8 @@ const paginateMiddleware = (req, res, next) => {
 
 const useFilters = (req, res, next) => {
   const { student, course, errors, noEnrollment, status, adminmode, notSent } = req.query
-  const graderId = !req.user.isAdmin ? req.user.id : null
+  // Non-admins see the reports they grade and the ones they reported, e.g. a KOPA user for another grader
+  const ownerId = !req.user.isAdmin ? req.user.id : null
   const reporterId = req.user.isAdmin && adminmode === 'false' ? req.user.id : null
   const filters = {
     student: student || null,
@@ -114,7 +115,7 @@ const useFilters = (req, res, next) => {
     notSent: notSent === 'true',
     noEnrollment: noEnrollment === 'true',
     status: null,
-    graderId,
+    ownerId,
     reporterId
   }
   if (status && ['NOT_REGISTERED', 'PARTLY_REGISTERED', 'REGISTERED'].includes(status.toUpperCase()))

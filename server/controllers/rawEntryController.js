@@ -1,5 +1,7 @@
+const { canReport } = require('@shared/common')
 const logger = require('@server/utils/logger')
 const db = require('../models/index')
+const { canReportAsGrader } = require('../utils/permissions')
 const { processManualEntry } = require('../scripts/processManualEntry')
 const { getCourseUnitEnrolments, getEarlierAttainments } = require('../services/importer')
 const { missingEnrolmentReport } = require('../utils/emailFactory')
@@ -13,7 +15,7 @@ const handleDatabaseError = (res, error) => {
 const addRawEntries = async (req, res) => {
   const transaction = await db.sequelize.transaction()
   try {
-    if (!req.user.isGrader && !req.user.isAdmin) {
+    if (!canReport(req.user)) {
       logger.error({ message: 'User is not authorized to report completions', user: req.user.name })
       return res.status(400).json({ error: 'User is not authorized to report completions.' })
     }
@@ -39,6 +41,21 @@ const addRawEntries = async (req, res) => {
         date
       })
       return res.status(400).json({ error: 'Data missing!' })
+    }
+
+    // processManualEntry lets a row name its own grader or course, so every one is checked
+    const courseCodes = [...new Set(data.map(({ course }) => course).filter(Boolean))]
+    const rowCourses = courseCodes.length
+      ? await db.courses.findAll({ where: { courseCode: courseCodes }, attributes: ['id'] })
+      : []
+    const courseIds = [...new Set([courseId, ...rowCourses.map(({ id }) => id)].filter(Boolean))]
+    const graderIds = [...new Set([graderId, ...data.map((row) => row.graderId).filter(Boolean)])]
+    for (const id of graderIds) {
+      if (!(await canReportAsGrader(req.user, id, courseIds))) {
+        logger.warn({ message: 'Grader not allowed for user', user: req.user.name, graderId: id, courseIds })
+        await transaction.rollback()
+        return res.status(403).json({ error: 'You cannot report completions for this grader.' })
+      }
     }
 
     logger.info({ message: 'Raw sis entries', graderId, date, data: JSON.stringify(data), isKandi })

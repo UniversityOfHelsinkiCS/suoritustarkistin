@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 export default ({ user, roleKey, label }) => {
   const dispatch = useDispatch()
   const granted = user[roleKey]
-  const cyName = roleKey === 'isGrader' ? 'grader' : 'admin'
+  const cyName = { isGrader: 'grader', isAdmin: 'admin', isKopa: 'kopa' }[roleKey]
 
   return (
     <ConfirmPopover

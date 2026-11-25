@@ -24,6 +24,14 @@ const columns = [
     render: (user) => <RoleToggle user={user} roleKey="isAdmin" label="admin" />
   },
   {
+    key: 'isKopa',
+    header: 'KOPA',
+    width: '10%',
+    align: 'center',
+    sortable: true,
+    render: (user) => <RoleToggle user={user} roleKey="isKopa" label="KOPA" />
+  },
+  {
     key: 'lastLogin',
     header: 'Last login',
     width: '15%',

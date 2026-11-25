@@ -89,13 +89,14 @@ const createTestCourses = async (courses) => {
 const createTestUsers = async (users) => {
   try {
     logger.info('Creating test users')
-    for (const { name, employeeId, email, isGrader, isAdmin, uid } of users) {
+    for (const { name, employeeId, email, isGrader, isAdmin, isKopa, uid } of users) {
       await db.users.create({
         name,
         employeeId,
         email,
         isGrader,
         isAdmin,
+        isKopa,
         uid
       })
     }

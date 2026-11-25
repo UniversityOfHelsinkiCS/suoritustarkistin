@@ -1,3 +1,4 @@
+const { canReport } = require('@shared/common')
 const Sequelize = require('sequelize')
 
 const logger = require('@server/utils/logger')
@@ -71,6 +72,9 @@ const transformRows = (row) => {
   }
 }
 
+// A user's own reports: the ones they grade and the ones they reported
+const ownedBy = (userId) => [{ graderId: userId }, { reporterId: userId }]
+
 /**
  * Reports split into three disjoint sets by who produced them: graders (reporterId set),
  * the MOOC cron jobs (no reporter) and the courses.mooc.fi batch API (no reporter either,
@@ -84,7 +88,7 @@ const getFilters = ({
   courseId,
   errors,
   noEnrollment,
-  graderId,
+  ownerId,
   reporterId,
   notSent
 }) => {
@@ -103,7 +107,7 @@ const getFilters = ({
     if (isMooc) query.moocfiRequestItemId = null
   }
 
-  if (graderId) query.graderId = graderId
+  if (ownerId) query[Op.or] = ownedBy(ownerId)
   if (student) query.studentNumber = { [Op.startsWith]: student }
   if (courseId) query.courseId = courseId
   if (notSent) query[Op.and] = NOT_SENT_QUERY
@@ -261,7 +265,7 @@ const getOffset = async (req, res) => {
   const isMooc = !isMoocfiApi && !rawEntry.reporterId
 
   const filters = { ...getFilters({ isMooc, isMoocfiApi }) }
-  if (!req.user.isAdmin) filters.graderId = req.user.id
+  if (!req.user.isAdmin) filters[Op.or] = ownedBy(req.user.id)
 
   const batches = await db.raw_entries.findAll({
     where: {
@@ -311,7 +315,7 @@ const deleteSisBatch = async (req, res) => {
 }
 
 const refreshEnrollments = async (req, res) => {
-  if (!req.user.isGrader && !req.user.isAdmin) throw new Error('User is not authorized to report credits.')
+  if (!canReport(req.user)) throw new Error('User is not authorized to report credits.')
 
   try {
     const entriesWithMissingEnrollment = await db.entries.getMissingEnrollments()
@@ -368,7 +372,7 @@ const countMoocfiImports = (entryIds) =>
  * Request body should contain a list of entry ids to be sent to Sisu.
  */
 const sendToSis = async (req, res) => {
-  if (!req.user.isGrader && !req.user.isAdmin) {
+  if (!canReport(req.user)) {
     throw new Error('User is not authorized to report credits.')
   }
 
@@ -421,7 +425,7 @@ const sendToSis = async (req, res) => {
 }
 
 const refreshSisStatus = async (req, res) => {
-  if (!req.user.isGrader && !req.user.isAdmin) {
+  if (!canReport(req.user)) {
     throw new Error('User is not authorized')
   }
 

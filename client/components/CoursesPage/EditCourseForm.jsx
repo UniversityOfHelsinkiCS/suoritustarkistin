@@ -123,6 +123,21 @@ export default ({ course, close: closeModal }) => {
         <FormControlLabel
           control={
             <Checkbox
+              data-cy="check-is-kopa-course"
+              checked={Boolean(data.isKopa)}
+              onChange={(e) => setData({ ...data, isKopa: e.target.checked })}
+            />
+          }
+          label={
+            <>
+              KOPA course
+              <Help text="All KOPA users can report this course, also as erilliskirjaus, and choose any of its graders" />
+            </>
+          }
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
               checked={Boolean(data.useAsExtra)}
               onChange={(e) => setData({ ...data, useAsExtra: e.target.checked })}
             />

@@ -93,7 +93,8 @@ describe('checking a course code', () => {
       ['courseNotAllowed', 'courseNotAllowed']
     )
     for (const { error } of body) assert.match(error.message, /cannot be registered through this API yet/)
-  })})
+  })
+})
 
 describe('batching', () => {
   test('answers a mixed batch in request order, from one query', async () => {

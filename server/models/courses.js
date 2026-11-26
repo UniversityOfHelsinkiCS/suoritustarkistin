@@ -8,7 +8,9 @@ module.exports = (sequelize, DataTypes) => {
     gradeScale: DataTypes.STRING,
     useAsExtra: DataTypes.BOOLEAN,
     isNewMooc: DataTypes.BOOLEAN,
-    isKopa: DataTypes.BOOLEAN
+    isKopa: DataTypes.BOOLEAN,
+    minCredits: DataTypes.STRING,
+    maxCredits: DataTypes.STRING
   })
 
   Courses.associate = function (models) {

@@ -2,7 +2,13 @@ const { flatten } = require('lodash')
 const logger = require('@server/utils/logger')
 const { getBatchId } = require('@shared/common')
 const db = require('../models/index')
-const { isValidStudentId, isValidGrade, isValidCreditAmount, isValidCourseCode } = require('../../utils/validators')
+const {
+  isValidStudentId,
+  isValidGrade,
+  isValidCreditAmount,
+  isValidCourseCode,
+  isWithinCreditRange
+} = require('../../utils/validators')
 const { processEntries } = require('./processEntries')
 const processExtraEntries = require('./processExtraEntries')
 
@@ -47,13 +53,20 @@ const processManualEntry = async ({ graderId, reporterId, courseId, date, data, 
       if (!entryCourse) throw new Error(`Course with course code '${rawEntry.course}' can not be found in Suotar`)
     }
 
+    const credits = rawEntry.credits ? rawEntry.credits : entryCourse.credits
+    if (!isWithinCreditRange(entryCourse, credits)) {
+      throw new Error(
+        `${credits} credits for ${rawEntry.studentId} is outside the ${entryCourse.minCredits}–${entryCourse.maxCredits} credits of ${entryCourse.courseCode}`
+      )
+    }
+
     return {
       studentNumber: rawEntry.studentId,
       studentName: rawEntry.studentName,
       email: rawEntry.email,
       batchId,
       grade: rawEntry.grade,
-      credits: rawEntry.credits ? rawEntry.credits : entryCourse.credits,
+      credits,
       language: rawEntry.language ? rawEntry.language : entryCourse.language,
       attainmentDate: rawEntry.attainmentDate ? rawEntry.attainmentDate : date,
       graderId: grader.id,

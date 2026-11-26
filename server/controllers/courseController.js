@@ -16,7 +16,9 @@ const cleanCourses = (courses) =>
     gradeScale: course.gradeScale,
     useAsExtra: course.useAsExtra,
     isNewMooc: course.isNewMooc,
-    isKopa: course.isKopa
+    isKopa: course.isKopa,
+    minCredits: course.minCredits,
+    maxCredits: course.maxCredits
   }))
 
 const getCourses = async (req, res) => {

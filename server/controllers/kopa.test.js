@@ -197,3 +197,55 @@ describe('a report a KOPA user made for another grader', () => {
     assert.equal((await request('DELETE', path, { headers: headersFor(kopa) })).status, 200)
   })
 })
+
+describe('the credit range of a KOPA course', () => {
+  const admin = async () => db.users.create({ name: 'admin', uid: 'admin', employeeId: '7009', isAdmin: true })
+
+  const editCourse = async (changes) => {
+    const course = await db.courses.findOne({ where: { courseCode: 'TKT90001' } })
+    const body = { ...course.get({ plain: true }), graders: [kopaGrader.id], ...changes }
+    return request('PUT', `/api/courses/${course.id}`, { headers: headersFor(await admin()), body })
+  }
+
+  test('is saved with the course', async () => {
+    const { status, body } = await editCourse({ minCredits: '1', maxCredits: '10' })
+
+    assert.equal(status, 200)
+    assert.equal(body[0].minCredits, '1')
+    assert.equal(body[0].maxCredits, '10')
+  })
+
+  for (const [why, range] of [
+    ['min above max', { minCredits: '10', maxCredits: '1' }],
+    ['only one end given', { minCredits: '1', maxCredits: null }],
+    ['the default credits outside it', { minCredits: '6', maxCredits: '10' }]
+  ]) {
+    test(`is refused with ${why}`, async () => {
+      assert.equal((await editCourse(range)).status, 400)
+    })
+  }
+
+  const reportCredits = async (credits) => {
+    await db.courses.update({ minCredits: '1', maxCredits: '10' }, { where: { courseCode: 'TKT90001' } })
+    const { id: courseId } = await db.courses.findOne({ where: { courseCode: 'TKT90001' } })
+    return request('POST', '/api/sis_raw_entries', {
+      headers: headersFor(kopa),
+      body: {
+        courseId,
+        graderId: kopaGrader.employeeId,
+        data: [{ studentId: '011000002', grade: '3', credits, course: '' }]
+      }
+    })
+  }
+
+  // Past the range check the report goes on to the importer, which is not running here
+  test('lets a report through with credits inside it', async () => {
+    const { body } = await reportCredits('7,5')
+    assert.doesNotMatch(JSON.stringify(body), /outside/)
+  })
+
+  test('refuses a report with credits outside it', async () => {
+    const { body } = await reportCredits('12')
+    assert.match(body.error, /12 credits for 011000002 is outside the 1–10 credits of TKT90001/)
+  })
+})

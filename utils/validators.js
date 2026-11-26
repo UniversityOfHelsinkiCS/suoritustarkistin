@@ -53,6 +53,24 @@ export const isValidHylHyvGrade = (grade) => /^(|Hyv\.|Hyl\.)$/.test(grade) // H
 
 export const isValidCreditAmount = (credits) => /^[0-9]?[0-9](,[05])?$/.test(credits) // 0,0 to 99,5 in 0,5 steps, including natural numbers
 
+const creditsToNumber = (credits) => parseFloat(String(credits).replace(',', '.'))
+
+// Only a KOPA course can have a credit range; any other course takes whatever its rows say
+export const hasCreditRange = (course) => Boolean(course?.isKopa && course.minCredits && course.maxCredits)
+
+export const isWithinCreditRange = (course, credits) => {
+  if (!hasCreditRange(course)) return true
+  const amount = creditsToNumber(credits)
+  return amount >= creditsToNumber(course.minCredits) && amount <= creditsToNumber(course.maxCredits)
+}
+
+const isValidCreditRange = ({ minCredits, maxCredits, credits }) => {
+  if (!minCredits && !maxCredits) return true
+  if (!isValidCreditAmount(minCredits) || !isValidCreditAmount(maxCredits)) return false
+  if (creditsToNumber(minCredits) > creditsToNumber(maxCredits)) return false
+  return isWithinCreditRange({ isKopa: true, minCredits, maxCredits }, credits)
+}
+
 export const isValidEmailAddress = (address) =>
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
     address
@@ -81,6 +99,7 @@ export const isValidCourse = (course) => {
   if (!course.name) return false
   if (!isValidLanguage(course.language)) return false
   if (!isValidCreditAmount(course.credits)) return false
+  if (!isValidCreditRange(course)) return false
   if (!areValidGraders(course.graders)) return false
   if (!isValidGradeScale(course.gradeScale)) return false
   return true

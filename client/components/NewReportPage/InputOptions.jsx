@@ -2,12 +2,13 @@ import { isOneOfKandiCourses, isRegularExtraCourse } from '@client/utils/common'
 import { getAllCoursesAction, getUsersCoursesAction } from '@client/utils/redux/coursesReducer'
 import { getAllGradersAction, getUsersGradersAction } from '@client/utils/redux/gradersReducer'
 import { setNewRawEntriesAction, sendNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
-import { Alert, Autocomplete, Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
+import { effectiveCredits, isValidReportCredits } from '@client/utils/reportCredits'
 
 import 'react-datepicker/dist/react-datepicker.css'
 
+import { Alert, Autocomplete, Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
 import { isKandiExtraCourse, isThesisCourse } from '@shared/common'
-import { areValidNewRawEntries } from '@shared/validators'
+import { areValidNewRawEntries, isWithinCreditRange, hasCreditRange } from '@shared/validators'
 import * as _ from 'lodash'
 import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
@@ -57,6 +58,8 @@ export const formatCoursesForSelection = (data) => {
   return []
 }
 
+const isNumericGradeScale = (course) => course?.gradeScale === 'sis-0-5'
+
 const filterAYCodes = (courses) => courses.filter((course) => !course.courseCode.startsWith('AY'))
 
 const formatCoursesForKandi = (courses) =>
@@ -86,10 +89,15 @@ const defineCourseOptions = (courses, kandi, extra) => {
 const parseRawEntries = (rawEntries) => {
   if (!rawEntries.data) return rawEntries
 
-  const { defaultGrade } = rawEntries
+  const { defaultGrade, reportCredits } = rawEntries
+  const withReportCredits = (row) =>
+    reportCredits && !row.credits && (!row.course || row.course === rawEntries.defaultCourse)
+      ? { ...row, credits: reportCredits }
+      : row
   return {
     ...rawEntries,
-    data: rawEntries.data.map((row) => {
+    reportCredits: undefined,
+    data: rawEntries.data.map(withReportCredits).map((row) => {
       if (row.registration && !row.grade) {
         return {
           ...row,
@@ -145,9 +153,19 @@ export default ({ kandi, extra, parseCSV }) => {
   }, [user, dispatch])
 
   useEffect(() => {
-    if (areValidNewRawEntries(parseRawEntries(newRawEntries))) setIsValid(true)
+    const reportCourse = courses.find((course) => course.id === newRawEntries.courseId)
+    const courseOf = (row) => (row.course ? courses.find((c) => c.courseCode === row.course) : reportCourse)
+    const creditsFit = (newRawEntries.data || []).every((row) =>
+      isWithinCreditRange(courseOf(row), effectiveCredits(row, newRawEntries, courseOf(row)))
+    )
+    if (
+      areValidNewRawEntries(parseRawEntries(newRawEntries)) &&
+      creditsFit &&
+      isValidReportCredits(newRawEntries, reportCourse)
+    )
+      setIsValid(true)
     else setIsValid(false)
-  }, [newRawEntries])
+  }, [newRawEntries, courses])
 
   useEffect(() => {
     if (!kandi || !courses) return
@@ -179,10 +197,15 @@ export default ({ kandi, extra, parseCSV }) => {
   const handleCourseSelection = (e, { value: courseId }) => {
     const course = courses.find((course) => course.id === courseId)
     if (!course) return
+    // 'Hyv.' is not a grade on the 0-5 scale, so the option goes away with such a course
+    const keepDefaultGrade = defaultGrade && !isNumericGradeScale(course)
+    if (!keepDefaultGrade) setDefaultGrade(false)
     dispatch(
       setNewRawEntriesAction({
         ...newRawEntries,
+        defaultGrade: keepDefaultGrade,
         defaultCourse: course.courseCode,
+        reportCredits: undefined,
         data: parseCSV(newRawEntries.rawData.trim(), course.courseCode),
         courseId
       })
@@ -254,6 +277,23 @@ export default ({ kandi, extra, parseCSV }) => {
             onChange={(e, option) => handleCourseSelection(e, { value: option ? option.value : undefined })}
             renderInput={(params) => <TextField {...params} label="Choose course" />}
           />
+          {selectedCourse?.isKopa && !kandi ? (
+            <TextField
+              fullWidth
+              size="small"
+              data-cy="report-credits"
+              label="Credits"
+              placeholder={selectedCourse.credits}
+              value={newRawEntries.reportCredits || ''}
+              onChange={(e) => dispatch(setNewRawEntriesAction({ ...newRawEntries, reportCredits: e.target.value }))}
+              error={!isValidReportCredits(newRawEntries, selectedCourse)}
+              helperText={
+                hasCreditRange(selectedCourse)
+                  ? `${selectedCourse.minCredits}–${selectedCourse.maxCredits} op`
+                  : 'For rows without their own'
+              }
+            />
+          ) : null}
           <Box sx={{ width: '100%' }}>
             <DatePicker
               id="date-picker"
@@ -264,7 +304,7 @@ export default ({ kandi, extra, parseCSV }) => {
               customInput={<TextField fullWidth size="small" label="Set date for completions" />}
             />
           </Box>
-          {!kandi ? (
+          {!kandi && !isNumericGradeScale(selectedCourse) ? (
             <FormControlLabel
               sx={{ whiteSpace: 'nowrap' }}
               control={

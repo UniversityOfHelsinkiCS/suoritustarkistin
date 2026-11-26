@@ -1,6 +1,7 @@
 import { celledBorders } from '@client/components/tableStyles'
 import { parseCSV } from '@client/utils/inputParser'
 import { setNewRawEntriesAction } from '@client/utils/redux/newRawEntriesReducer'
+import { effectiveCredits } from '@client/utils/reportCredits'
 import BlockIcon from '@mui/icons-material/Block'
 import DeleteIcon from '@mui/icons-material/Delete'
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
@@ -10,6 +11,7 @@ import {
   isValidStudentId,
   isValidGrade,
   isValidCreditAmount,
+  isWithinCreditRange,
   isValidLanguage,
   isValidDate,
   isFutureDate,
@@ -88,7 +90,7 @@ const getGradeCell = (grade, defaultGrade) => {
 
 const getCreditCell = (credits, course) => {
   if (credits) {
-    if (isValidCreditAmount(credits)) {
+    if (isValidCreditAmount(credits) && isWithinCreditRange(course, credits)) {
       return <TableCell style={validStyle}>{commify(credits)}</TableCell>
     }
     return (
@@ -251,7 +253,7 @@ export default ({ allowDelete = true, kandi }) => {
         {getCourseCell(course)}
         {getStudentIdCell(row.studentId, row.registration, row.duplicate)}
         {getGradeCell(row.grade, defaultGrade)}
-        {getCreditCell(row.credits, course)}
+        {getCreditCell(effectiveCredits(row, newRawEntries, course), course)}
         {getLanguageCell(row.language, course)}
         {getGraderCell(row.graderId || graderId, graders)}
         {getDateCell(row.attainmentDate || date)}

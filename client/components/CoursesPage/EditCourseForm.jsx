@@ -125,7 +125,14 @@ export default ({ course, close: closeModal }) => {
             <Checkbox
               data-cy="check-is-kopa-course"
               checked={Boolean(data.isKopa)}
-              onChange={(e) => setData({ ...data, isKopa: e.target.checked })}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  isKopa: e.target.checked,
+                  // The range only means something on a KOPA course
+                  ...(e.target.checked ? {} : { minCredits: null, maxCredits: null })
+                })
+              }
             />
           }
           label={
@@ -135,6 +142,28 @@ export default ({ course, close: closeModal }) => {
             </>
           }
         />
+        {data.isKopa ? (
+          <Stack direction="row" spacing={2}>
+            <TextField
+              data-cy="course-min-credits"
+              label="Min credits"
+              placeholder="1,0"
+              value={data.minCredits || ''}
+              onChange={(e) => setData({ ...data, minCredits: e.target.value })}
+              helperText="Leave both empty for no range"
+              slotProps={{ input: validityAdornment(!data.minCredits || isValidCreditAmount(data.minCredits)) }}
+            />
+            <TextField
+              data-cy="course-max-credits"
+              label="Max credits"
+              placeholder="10,0"
+              value={data.maxCredits || ''}
+              onChange={(e) => setData({ ...data, maxCredits: e.target.value })}
+              helperText="The credit amount above must fit in the range"
+              slotProps={{ input: validityAdornment(!data.maxCredits || isValidCreditAmount(data.maxCredits)) }}
+            />
+          </Stack>
+        ) : null}
         <FormControlLabel
           control={
             <Checkbox

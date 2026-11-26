@@ -32,7 +32,7 @@ export default () => {
             onClick={() => chooseUser(u.employeeNumber)}
             disabled={employeeNumber === u.employeeNumber}
           >
-            {u.employeeNumber}
+            {u.givenName} {u.sn} ({u.role})
           </MenuItem>
         ))}
       </Menu>

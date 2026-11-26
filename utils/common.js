@@ -167,6 +167,45 @@ export const testCourses = [
   }
 ]
 
+/**
+ * The students the fake importer (e2e-importer/data.json) knows, and what each can be used
+ * for. Shown in the dev-only test students panel; keep in step with the fixture.
+ */
+export const DEV_STUDENTS = [
+  {
+    studentNumber: '014979622',
+    name: 'Alpo Petras',
+    uses: [
+      'Normal report on TKT10002 Ohjelmoinnin perusteet (1–10 op) goes all the way to Sisu; date e.g. 30.12.2020',
+      'Erilliskirjaus on any course',
+      'Normal report on other courses: missing enrolment'
+    ]
+  },
+  {
+    studentNumber: '015448314',
+    name: 'Tuula Andersson-Testi',
+    uses: ['Erilliskirjaus on any course; date 2022 or later', 'Normal report on any course: missing enrolment']
+  }
+]
+
+/**
+ * The users of the local dev stack: the fake Shibboleth menu logs in as them and the dev
+ * seed (/api/seed/dev) creates them, so each one arrives with the role it is named for.
+ */
+export const DEV_USERS = [
+  { employeeId: 'admin', uid: 'admin1', name: 'Aino Admin', role: 'admin', isAdmin: true },
+  { employeeId: 'grader', uid: 'grader1', name: 'Gunnar Grader', role: 'grader', isGrader: true },
+  {
+    employeeId: 'kopagrader',
+    uid: 'kopagrader1',
+    name: 'Kaisa KOPA-grader',
+    role: 'grader of KOPA courses',
+    isGrader: true
+  },
+  { employeeId: 'kopa', uid: 'kopa1', name: 'Kalle KOPA', role: 'KOPA user', isKopa: true },
+  { employeeId: 'staff', uid: 'staff1', name: 'Sami Staff', role: 'no permissions' }
+]
+
 export const testUsers = [
   {
     name: 'admin',

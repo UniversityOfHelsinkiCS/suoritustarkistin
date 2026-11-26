@@ -31,6 +31,11 @@ process.on('unhandledRejection', (reason) => {
 
 initializeDatabaseConnection()
   .then(async () => {
+    // A fresh dev database gets the dev seed, so the fake login has users and courses to show
+    if (inDevelopment && !(await require('./models').users.count())) {
+      await require('./controllers/cypressController').seedDevelopmentData()
+    }
+
     const app = express()
 
     app.use(express.json({ limit: '5mb' }))

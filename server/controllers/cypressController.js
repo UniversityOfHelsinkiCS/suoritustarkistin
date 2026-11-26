@@ -7,7 +7,8 @@ const {
   testCompletions,
   testRawEntries0to5,
   testRawEntriesHylHyv,
-  getBatchId
+  getBatchId,
+  DEV_USERS
 } = require('../utils/common')
 
 // These are to be used ONLY for test database and not in production
@@ -373,7 +374,72 @@ const seedErilliskirjaus = async (req, res) => {
   }
 }
 
+/**
+ * Data for clicking around the local dev stack, against the fake importer. Every user of the
+ * fake Shibboleth menu exists with their role, and the courses cover the cases worth trying:
+ * KOPA courses on both grade scales, an erilliskirjaus course and plain graded courses.
+ */
+const DEV_COURSE_SETUP = {
+  TKT10002: { isKopa: true, minCredits: '1', maxCredits: '10', graders: ['kopagrader'] },
+  TKT10005: { isKopa: true, graders: ['kopagrader', 'grader'] },
+  TKT10003: { graders: ['grader'] },
+  TKT21018: { graders: ['grader'] },
+  CSM14113: { graders: ['grader'] },
+  TKT21015: { graders: ['grader'] }
+}
+
+const DEV_COMPLETIONS = [
+  { courseCode: 'TKT10003', graderName: 'Gunnar Grader' },
+  { courseCode: 'TKT21018', graderName: 'Gunnar Grader' },
+  { courseCode: 'TKT10005', graderName: 'Kaisa KOPA-grader' }
+]
+
+const seedDevelopmentData = async () => {
+  logger.info('Seeding the dev database')
+  await deleteAllSisReports()
+  await deleteAllOodiReports()
+  await deleteAllCourses()
+  await deleteAllApiKeys()
+  await deleteAllUsers()
+  await deleteAllJobs()
+
+  await createTestCourses(
+    testCourses.map((course) => {
+      const { isKopa = false, minCredits = null, maxCredits = null } = DEV_COURSE_SETUP[course.courseCode] || {}
+      return { ...course, isKopa, minCredits, maxCredits }
+    })
+  )
+  for (const { employeeId, uid, name, isAdmin, isGrader, isKopa } of DEV_USERS) {
+    const user = await db.users.create({
+      employeeId,
+      uid,
+      name,
+      email: `grp-toska+mock${employeeId}@helsinki.fi`,
+      isAdmin: Boolean(isAdmin),
+      isGrader: Boolean(isGrader),
+      isKopa: Boolean(isKopa)
+    })
+    const courseCodes = Object.keys(DEV_COURSE_SETUP).filter((code) =>
+      DEV_COURSE_SETUP[code].graders.includes(employeeId)
+    )
+    if (courseCodes.length) await user.setCourses(await db.courses.findAll({ where: { courseCode: courseCodes } }))
+  }
+  await createTestSisCompletions(DEV_COMPLETIONS, testRawEntriesHylHyv, testRawEntries0to5)
+}
+
+const seedDev = async (req, res) => {
+  try {
+    await seedDevelopmentData()
+    return res.status(200).send('OK')
+  } catch (error) {
+    logger.error(`Error seeding the dev database: ${error.message}`)
+    res.status(500).json({ error: error.message })
+  }
+}
+
 module.exports = {
+  seedDevelopmentData,
+  seedDev,
   seedDatabaseForTests,
   createTestSisCompletions,
   seedTestCompletions,

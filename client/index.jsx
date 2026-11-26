@@ -1,7 +1,7 @@
 import App from '@client/components/App'
 import ErrorBoundary from '@client/components/ErrorBoundary'
 import theme from '@client/theme'
-import { setHeaders } from '@client/utils/fakeShibboleth'
+import { hasHeaders, setHeaders } from '@client/utils/fakeShibboleth'
 import store from '@client/utils/store'
 import { CssBaseline } from '@mui/material'
 
@@ -48,18 +48,8 @@ const render = () =>
 // Tint the background in dev so a local tab is never mistaken for production.
 if (process.env.NODE_ENV === 'development') document.body.classList.add('dev-env')
 
-if (process.env.NODE_ENV === 'development' && !window.localStorage.getItem('runningCypressTests')) {
-  const newUser = 'admin'
-  const currentFakeUser = window.localStorage.getItem('fakeUser')
-  if (currentFakeUser) {
-    const parsedFakeCurrentUser = JSON.parse(currentFakeUser)
-
-    if (parsedFakeCurrentUser.employeeId !== 'cypressUser' && parsedFakeCurrentUser.employeeId !== 'cypressAdminUser') {
-      setHeaders(newUser)
-    }
-  } else {
-    setHeaders(newUser)
-  }
-}
+// A fresh browser starts as the dev admin; after that the fake Shibboleth menu decides.
+if (process.env.NODE_ENV === 'development' && !window.localStorage.getItem('runningCypressTests') && !hasHeaders())
+  setHeaders('admin')
 
 render()

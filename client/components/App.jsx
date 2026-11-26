@@ -1,3 +1,4 @@
+import DevStudentsPanel from '@client/components/DevStudentsPanel'
 import Footer from '@client/components/Footer'
 import MaintenanceView, { MaintenanceMessage } from '@client/components/MaintenanceView'
 import NavBar from '@client/components/NavBar'
@@ -55,6 +56,7 @@ export default () => {
       <NavBar />
       {renderContent()}
       <Footer />
+      {process.env.NODE_ENV === 'development' ? <DevStudentsPanel /> : null}
     </div>
   )
 }

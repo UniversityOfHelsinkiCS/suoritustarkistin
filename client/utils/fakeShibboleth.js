@@ -1,34 +1,17 @@
+import { DEV_USERS } from '@shared/common'
+
 const ITEM_NAME = 'fakeUser'
 
-export const possibleUsers = [
-  {
-    employeeNumber: 'admin',
-    givenName: 'adminEtunimi',
-    uid: 'admin1',
-    mail: 'grp-toska+mockadmin@helsinki.fi',
-    schacDateOfBirth: undefined,
-    schacPersonalUniqueCode: undefined,
-    sn: 'admin'
-  },
-  {
-    employeeNumber: 'staff',
-    givenName: 'non-admin-staffEtunimi',
-    uid: 'staff1',
-    mail: 'grp-toska+mockstaff@helsinki.fi',
-    schacDateOfBirth: undefined,
-    schacPersonalUniqueCode: undefined,
-    sn: 'staff'
-  },
-  {
-    employeeNumber: 'grader',
-    givenName: 'graderEtunimi',
-    uid: 'grader1',
-    mail: 'grp-toska+mockgrader@helsinki.fi',
-    schacDateOfBirth: undefined,
-    schacPersonalUniqueCode: undefined,
-    sn: 'grader'
-  }
-]
+export const possibleUsers = DEV_USERS.map(({ employeeId, uid, name, role }) => ({
+  employeeNumber: employeeId,
+  givenName: name.split(' ')[0],
+  sn: name.split(' ').slice(1).join(' '),
+  uid,
+  mail: `grp-toska+mock${employeeId}@helsinki.fi`,
+  role,
+  schacDateOfBirth: undefined,
+  schacPersonalUniqueCode: undefined
+}))
 
 export const setHeaders = (employeeNumber) => {
   const user = possibleUsers.find((u) => u.employeeNumber === employeeNumber)
@@ -41,6 +24,8 @@ export const getHeaders = () => {
   const user = JSON.parse(localStorage.getItem(ITEM_NAME) || '{}')
   return user
 }
+
+export const hasHeaders = () => Boolean(localStorage.getItem(ITEM_NAME))
 
 export const clearHeaders = () => {
   localStorage.removeItem(ITEM_NAME)

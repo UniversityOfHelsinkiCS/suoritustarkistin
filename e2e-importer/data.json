@@ -80,8 +80,8 @@
           "updatedAt": "2021-12-27T09:00:01.426Z",
           "assessmentItem": {
             "credits": {
-              "max": 5,
-              "min": 5
+              "max": 10,
+              "min": 1
             },
             "gradeScaleId": "sis-0-5"
           },
@@ -98,8 +98,8 @@
           },
           "courseUnit": {
             "credits": {
-              "max": 5,
-              "min": 5
+              "max": 10,
+              "min": 1
             },
             "gradeScaleId": "sis-0-5",
             "code": "TKT10002"

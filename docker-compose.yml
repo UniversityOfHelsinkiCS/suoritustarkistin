@@ -1,4 +1,6 @@
-version: '3.5'
+# Own project name: the e2e compose files share this directory, and under the default name
+# their runs and cleanups would stop or remove the dev containers.
+name: suotar-dev
 
 services:
   app:
@@ -8,13 +10,28 @@ services:
     image: suotar_dev
     volumes:
       - ./:/usr/src/app
+      # Shields the image's node_modules from the bind mount; `docker compose down -v` after
+      # changing package.json, so the volume is repopulated from the rebuilt image
+      - dev_node_modules:/usr/src/app/node_modules
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
       - NODE_ENV=development
+      # The fake importer unless .env points at a real one, so dev runs without any secrets
+      - IMPORTER_DB_API_URL=${IMPORTER_DB_API_URL:-http://importer-mock:3000/}
+      - POST_IMPORTER_DB_API_URL=${POST_IMPORTER_DB_API_URL:-http://importer-mock:3000/}
     ports:
       - 8000:8000
     container_name: suotar_dev
-    env_file: '.env'
+    env_file:
+      - path: '.env'
+        required: false
+    depends_on:
+      - importer-mock
+  importer-mock:
+    build:
+      context: ./e2e-importer
+      dockerfile: Dockerfile
+    container_name: suotar_dev_importer
   db:
     image: postgres:13.1
     container_name: suotar_db
@@ -34,3 +51,4 @@ services:
 
 volumes:
   pg_data:
+  dev_node_modules:

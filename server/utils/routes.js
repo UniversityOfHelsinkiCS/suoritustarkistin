@@ -83,7 +83,8 @@ if (!inProduction) {
     seedTestCompletions,
     seedBachelorData,
     seedNoEntries,
-    seedErilliskirjaus
+    seedErilliskirjaus,
+    seedDev
   } = require('@server/controllers/cypressController')
 
   router.get('/seed/all', seedDatabaseForTests)
@@ -91,6 +92,7 @@ if (!inProduction) {
   router.get('/seed/bsc_thesis', seedBachelorData)
   router.post('/seed/sis_completions', seedTestCompletions)
   router.post('/seed/erilliskirjaus', seedErilliskirjaus)
+  router.get('/seed/dev', seedDev)
 }
 
 // Production routes

@@ -7,18 +7,19 @@ const {
   getStudents,
   getEarlierAttainments,
   getCourseUnitIds,
+  getGrades,
   getMultipleStudyRightsByPersons
 } = require('../services/importer')
+const { FAILURE_REASONS } = require('../utils/failureReasons')
+const { mapGrades } = require('../utils/sisuAttainmentRules')
 const { canBeUsedAsExtra } = require('@shared/common')
 const { generateSisuId } = require('../utils/common')
 const { resolveStudyRight, getClosestStudyRight } = require('../utils/resolveStudyRight')
 
 const { Op } = Sequelize
 
-const COMMON = {
-  gradeId: '1',
-  gradeScaleId: 'sis-hyl-hyv'
-}
+// Courses with no grade scale in Sisu or Suotar keep the pass/fail scale erilliskirjaus always used
+const DEFAULT_GRADE_SCALE = 'sis-hyl-hyv'
 
 const getActiveCourseUnitId = (courseUnits) => {
   const now = moment()
@@ -62,6 +63,7 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
     })
   )
 
+  const gradeScales = await getGrades()
   const courseUnitIds = await getCourseUnitIds(courses.filter(canBeUsedAsExtra).map(({ courseCode }) => courseCode))
   createdRawEntries.forEach((rawEntry) => {
     const course = courses.find((c) => c.id === rawEntry.courseId)
@@ -116,11 +118,40 @@ const processExtraEntries = async (createdRawEntries, requireMatluStudyRight) =>
     if (!studyRightId)
       [studyRightId, completionDate] = getClosestStudyRight(studyRightsForPerson, rawEntry.attainmentDate)
     const { courseCode } = course
-    const { id: courseUnitId } = getActiveCourseUnitId(courseUnitIds[courseCode])
+    const courseUnit = getActiveCourseUnitId(courseUnitIds[courseCode])
+
+    // The scale Sisu has for the course unit wins; Suotar's own setting is the fallback
+    const gradeScaleId = courseUnit.gradeScaleId || course.gradeScale || DEFAULT_GRADE_SCALE
+    const grade = gradeScales[gradeScaleId] && mapGrades(gradeScales, gradeScaleId, rawEntry)
+    if (!grade) {
+      const availableGrades = (gradeScales[gradeScaleId] || [])
+        .filter(({ passed }) => passed)
+        .map(({ abbreviation }) => abbreviation.fi)
+        .join(', ')
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        courseCode,
+        reason: FAILURE_REASONS.INVALID_GRADE,
+        message: `Invalid grade "${rawEntry.grade}" for erilliskirjaus on "${courseCode}". Available grades are: ${availableGrades}`
+      })
+      return
+    }
+    if (!grade.passed) {
+      failed.push({
+        id: rawEntry.id,
+        studentNumber: rawEntry.studentNumber,
+        courseCode,
+        reason: FAILURE_REASONS.INVALID_GRADE,
+        message: `Failing grade "${rawEntry.grade}" cannot be registered as erilliskirjaus`
+      })
+      return
+    }
 
     success.push({
-      ...COMMON,
-      courseUnitId,
+      gradeId: grade.localId,
+      gradeScaleId,
+      courseUnitId: courseUnit.id,
       studyRightId,
       id: generateSisuId(),
       personId: student.id,
